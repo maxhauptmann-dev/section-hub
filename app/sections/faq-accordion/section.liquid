@@ -1,0 +1,162 @@
+{% comment %}
+  Section Hub - FAQ Accordion
+  Elegantes FAQ mit animiertem Accordion.
+{% endcomment %}
+
+{{ 'section-faq-accordion.css' | asset_url | stylesheet_tag }}
+
+<section class="faq-accordion" style="
+  --faq-bg: {{ section.settings.background_color }};
+  --faq-text: {{ section.settings.text_color }};
+  --faq-accent: {{ section.settings.accent_color }};
+  --faq-border: {{ section.settings.border_color }};
+">
+  <div class="faq-accordion__container">
+    {% if section.settings.heading != blank %}
+      <div class="faq-accordion__header">
+        {% if section.settings.eyebrow != blank %}
+          <span class="faq-accordion__eyebrow">{{ section.settings.eyebrow }}</span>
+        {% endif %}
+        <h2 class="faq-accordion__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="faq-accordion__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="faq-accordion__list">
+      {% for block in section.blocks %}
+        <details class="faq-accordion__item" {{ block.shopify_attributes }}>
+          <summary class="faq-accordion__question">
+            <span>{{ block.settings.question }}</span>
+            <svg class="faq-accordion__icon" width="24" height="24" viewBox="0 0 24 24" fill="none">
+              <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+          </summary>
+          <div class="faq-accordion__answer">
+            <div class="faq-accordion__answer-inner">
+              {{ block.settings.answer }}
+            </div>
+          </div>
+        </details>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<script>
+  // Optional: Nur ein Item gleichzeitig offen
+  document.querySelectorAll('.faq-accordion__item').forEach((item) => {
+    item.addEventListener('toggle', (e) => {
+      if (e.target.open) {
+        document.querySelectorAll('.faq-accordion__item').forEach((other) => {
+          if (other !== e.target) other.open = false;
+        });
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "FAQ Accordion",
+  "tag": "section",
+  "class": "section-faq-accordion",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "Support"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Häufig gestellte Fragen"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Unterüberschrift",
+      "default": "Finde schnelle Antworten auf die wichtigsten Fragen."
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrundfarbe",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Akzentfarbe",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Rahmenfarbe",
+      "default": "#e5e5e5"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Eintrag",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Frage",
+          "default": "Wie funktioniert der Versand?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Antwort",
+          "default": "<p>Wir versenden alle Bestellungen innerhalb von 1-2 Werktagen. Die Lieferzeit beträgt in der Regel 3-5 Werktage innerhalb Deutschlands.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "FAQ Accordion",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Wie funktioniert der Versand?",
+            "answer": "<p>Wir versenden alle Bestellungen innerhalb von 1-2 Werktagen. Die Lieferzeit beträgt in der Regel 3-5 Werktage.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Kann ich meine Bestellung zurückgeben?",
+            "answer": "<p>Ja, du hast 30 Tage Zeit, um deine Bestellung kostenlos zurückzusenden. Kontaktiere einfach unseren Support.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Welche Zahlungsmethoden akzeptiert ihr?",
+            "answer": "<p>Wir akzeptieren alle gängigen Zahlungsmethoden: Kreditkarte, PayPal, Klarna, Apple Pay und Google Pay.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

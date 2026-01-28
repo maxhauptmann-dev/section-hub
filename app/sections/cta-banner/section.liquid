@@ -1,0 +1,144 @@
+{% comment %}
+  Section Hub - CTA Banner
+  Auffälliger Call-to-Action Banner mit Gradient-Hintergrund.
+{% endcomment %}
+
+{{ 'section-cta-banner.css' | asset_url | stylesheet_tag }}
+
+<section class="cta-banner" style="
+  --cta-gradient-start: {{ section.settings.gradient_start }};
+  --cta-gradient-end: {{ section.settings.gradient_end }};
+  --cta-text: {{ section.settings.text_color }};
+  --cta-btn-bg: {{ section.settings.button_background }};
+  --cta-btn-text: {{ section.settings.button_text_color }};
+">
+  <div class="cta-banner__container">
+    <div class="cta-banner__content">
+      {% if section.settings.eyebrow != blank %}
+        <span class="cta-banner__eyebrow">{{ section.settings.eyebrow }}</span>
+      {% endif %}
+      
+      <h2 class="cta-banner__heading">{{ section.settings.heading }}</h2>
+      
+      {% if section.settings.subheading != blank %}
+        <p class="cta-banner__subheading">{{ section.settings.subheading }}</p>
+      {% endif %}
+    </div>
+    
+    <div class="cta-banner__actions">
+      {% if section.settings.primary_button_text != blank %}
+        <a href="{{ section.settings.primary_button_link }}" class="cta-banner__button cta-banner__button--primary">
+          {{ section.settings.primary_button_text }}
+        </a>
+      {% endif %}
+      
+      {% if section.settings.secondary_button_text != blank %}
+        <a href="{{ section.settings.secondary_button_link }}" class="cta-banner__button cta-banner__button--secondary">
+          {{ section.settings.secondary_button_text }}
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  
+  {%- comment -%} Decorative elements {%- endcomment -%}
+  <div class="cta-banner__decoration cta-banner__decoration--1"></div>
+  <div class="cta-banner__decoration cta-banner__decoration--2"></div>
+</section>
+
+{% schema %}
+{
+  "name": "CTA Banner",
+  "tag": "section",
+  "class": "section-cta-banner",
+  "settings": [
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "Limitiertes Angebot"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Bereit durchzustarten?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Unterüberschrift",
+      "default": "Sichere dir jetzt 20% Rabatt auf deine erste Bestellung."
+    },
+    {
+      "type": "header",
+      "content": "Primärer Button"
+    },
+    {
+      "type": "text",
+      "id": "primary_button_text",
+      "label": "Button Text",
+      "default": "Jetzt shoppen"
+    },
+    {
+      "type": "url",
+      "id": "primary_button_link",
+      "label": "Button Link",
+      "default": "/collections/all"
+    },
+    {
+      "type": "header",
+      "content": "Sekundärer Button"
+    },
+    {
+      "type": "text",
+      "id": "secondary_button_text",
+      "label": "Button Text",
+      "default": "Mehr erfahren"
+    },
+    {
+      "type": "url",
+      "id": "secondary_button_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Gradient Start",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Gradient Ende",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_background",
+      "label": "Button Hintergrund",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Textfarbe",
+      "default": "#6366f1"
+    }
+  ],
+  "presets": [
+    {
+      "name": "CTA Banner"
+    }
+  ]
+}
+{% endschema %}

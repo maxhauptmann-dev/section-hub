@@ -1,0 +1,133 @@
+{% comment %}
+  Section Hub - Logo Cloud
+  Vertrauens-Leiste mit Partner-/Medien-Logos.
+{% endcomment %}
+
+{{ 'section-logo-cloud.css' | asset_url | stylesheet_tag }}
+
+<section class="logo-cloud" style="
+  --lc-bg: {{ section.settings.background_color }};
+  --lc-text: {{ section.settings.text_color }};
+  --lc-logo-opacity: {{ section.settings.logo_opacity | divided_by: 100.0 }};
+">
+  <div class="logo-cloud__container">
+    {% if section.settings.heading != blank %}
+      <p class="logo-cloud__heading">{{ section.settings.heading }}</p>
+    {% endif %}
+    
+    <div class="logo-cloud__grid {% if section.settings.animate %}logo-cloud__grid--animate{% endif %}">
+      {% for block in section.blocks %}
+        <div class="logo-cloud__item" {{ block.shopify_attributes }}>
+          {% if block.settings.link != blank %}
+            <a href="{{ block.settings.link }}" target="_blank" rel="noopener" class="logo-cloud__link">
+          {% endif %}
+          
+          {% if block.settings.logo != blank %}
+            <img 
+              src="{{ block.settings.logo | image_url: width: 200 }}" 
+              alt="{{ block.settings.alt_text | default: 'Partner Logo' }}"
+              class="logo-cloud__logo"
+              loading="lazy"
+              width="140"
+              height="48"
+            >
+          {% else %}
+            <div class="logo-cloud__placeholder">{{ block.settings.alt_text | default: 'Logo' }}</div>
+          {% endif %}
+          
+          {% if block.settings.link != blank %}
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Logo Cloud",
+  "tag": "section",
+  "class": "section-logo-cloud",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Bekannt aus"
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrundfarbe",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#6b7280"
+    },
+    {
+      "type": "header",
+      "content": "Logo Einstellungen"
+    },
+    {
+      "type": "range",
+      "id": "logo_opacity",
+      "min": 20,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "label": "Logo Deckkraft",
+      "default": 60
+    },
+    {
+      "type": "checkbox",
+      "id": "animate",
+      "label": "Endlos-Animation",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "logo",
+      "name": "Logo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "logo",
+          "label": "Logo Bild"
+        },
+        {
+          "type": "text",
+          "id": "alt_text",
+          "label": "Alt Text",
+          "default": "Partner Logo"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Logo Cloud",
+      "blocks": [
+        { "type": "logo", "settings": { "alt_text": "TechCrunch" } },
+        { "type": "logo", "settings": { "alt_text": "Forbes" } },
+        { "type": "logo", "settings": { "alt_text": "Wired" } },
+        { "type": "logo", "settings": { "alt_text": "The Verge" } },
+        { "type": "logo", "settings": { "alt_text": "Mashable" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,88 @@
+.logo-cloud {
+  background-color: var(--lc-bg);
+  color: var(--lc-text);
+  padding: 3rem 2rem;
+}
+
+.logo-cloud__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.logo-cloud__heading {
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin: 0 0 2rem 0;
+}
+
+.logo-cloud__grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem 3rem;
+}
+
+.logo-cloud__item {
+  flex-shrink: 0;
+}
+
+.logo-cloud__link {
+  display: block;
+}
+
+.logo-cloud__logo {
+  height: 32px;
+  width: auto;
+  object-fit: contain;
+  filter: grayscale(100%);
+  opacity: var(--lc-logo-opacity);
+  transition: all 0.3s ease;
+}
+
+.logo-cloud__logo:hover {
+  filter: grayscale(0%);
+  opacity: 1;
+}
+
+.logo-cloud__placeholder {
+  font-size: 1.25rem;
+  font-weight: 700;
+  opacity: var(--lc-logo-opacity);
+  padding: 0.5rem 1rem;
+  border: 2px dashed currentColor;
+  border-radius: 8px;
+}
+
+/* Endlos-Animation */
+.logo-cloud__grid--animate {
+  flex-wrap: nowrap;
+  overflow: hidden;
+  animation: logo-scroll 20s linear infinite;
+}
+
+@keyframes logo-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.logo-cloud__grid--animate:hover {
+  animation-play-state: paused;
+}
+
+@media (max-width: 768px) {
+  .logo-cloud__grid {
+    gap: 1.5rem 2rem;
+  }
+  
+  .logo-cloud__logo {
+    height: 24px;
+  }
+}

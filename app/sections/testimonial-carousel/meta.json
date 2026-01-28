@@ -1,0 +1,25 @@
+{
+  "id": "testimonial-carousel",
+  "name": "Testimonial Carousel",
+  "description": "Modernes Testimonial-Karussell mit Sterne-Bewertung, Autoplay und manueller Navigation. Perfekt für Social Proof.",
+  "category": "Social Proof",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 29,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Trust", "Animated", "Carousel", "Responsive"],
+  "author": "Section Hub",
+  "previewColor": "#f59e0b",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-22",
+  "updatedAt": "2026-01-28"
+}

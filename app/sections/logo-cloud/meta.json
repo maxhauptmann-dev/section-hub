@@ -1,0 +1,25 @@
+{
+  "id": "logo-cloud",
+  "name": "Logo Cloud",
+  "description": "Vertrauens-Leiste mit Partner- oder Medien-Logos. Grayscale-Effekt, Hover-Animation, optionale Endlos-Animation.",
+  "category": "Social Proof",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Trust", "Minimal", "Responsive"],
+  "author": "Section Hub",
+  "previewColor": "#64748b",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-20",
+  "updatedAt": "2026-01-28"
+}

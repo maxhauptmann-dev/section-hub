@@ -1,0 +1,23 @@
+{
+  "id": "hero-minimal",
+  "name": "Hero Minimal",
+  "description": "Ein cleaner, minimalistischer Hero-Bereich mit Überschrift, Text und animiertem CTA-Button.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "free"
+  },
+  "tags": ["OS2.0", "Minimal", "Clean", "Responsive"],
+  "author": "Section Hub",
+  "previewColor": "#6366f1",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-15",
+  "updatedAt": "2026-01-28"
+}

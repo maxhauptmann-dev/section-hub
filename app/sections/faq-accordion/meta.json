@@ -1,0 +1,25 @@
+{
+  "id": "faq-accordion",
+  "name": "FAQ Accordion",
+  "description": "Elegantes FAQ mit animiertem Accordion. Nur ein Item gleichzeitig offen. Perfekt für Support-Seiten.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 19,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Conversion", "Support", "Animated"],
+  "author": "Section Hub",
+  "previewColor": "#10b981",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-18",
+  "updatedAt": "2026-01-28"
+}

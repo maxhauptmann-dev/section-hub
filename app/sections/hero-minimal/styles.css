@@ -1,0 +1,72 @@
+.hero-minimal {
+  background-color: var(--hero-bg);
+  color: var(--hero-text);
+  min-height: var(--hero-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.hero-minimal__container {
+  max-width: 800px;
+  text-align: center;
+}
+
+.hero-minimal__eyebrow {
+  display: inline-block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--hero-accent);
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 100px;
+}
+
+.hero-minimal__heading {
+  font-size: clamp(2.5rem, 6vw, 4.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  margin: 0 0 1.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.hero-minimal__subheading {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  opacity: 0.8;
+  margin: 0 0 2.5rem 0;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero-minimal__button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2rem;
+  background: var(--hero-accent);
+  color: white;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.hero-minimal__button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.hero-minimal__button svg {
+  transition: transform 0.3s ease;
+}
+
+.hero-minimal__button:hover svg {
+  transform: translateX(4px);
+}

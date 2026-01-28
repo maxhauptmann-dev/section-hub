@@ -1,0 +1,25 @@
+{
+  "id": "cta-banner",
+  "name": "CTA Banner",
+  "description": "Auffälliger Call-to-Action Banner mit Gradient-Hintergrund, dekorativen Elementen und zwei Button-Optionen.",
+  "category": "Conversion",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Conversion", "Gradient", "Responsive"],
+  "author": "Section Hub",
+  "previewColor": "#8b5cf6",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-25",
+  "updatedAt": "2026-01-28"
+}
