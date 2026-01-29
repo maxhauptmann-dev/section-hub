@@ -1,3 +1,37 @@
-.cache
-build
+# Git
+.git
+.gitignore
+
+# Node / package managers
 node_modules
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-store
+**/.pnpm-store
+
+# Env / secrets
+.env
+.env.*
+*.pem
+
+# Build outputs / caches
+build
+dist
+out
+.next
+.cache
+**/.cache
+tmp
+**/tmp
+coverage
+**/coverage
+
+# OS / editor
+.DS_Store
+.vscode
+.idea
+
+# Logs
+*.log

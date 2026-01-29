@@ -10,12 +10,26 @@ import { authenticate } from "../shopify.server";
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
-  // eslint-disable-next-line no-undef
-  return { apiKey: process.env.SHOPIFY_API_KEY || "" };
+  return { 
+    apiKey: process.env.SHOPIFY_API_KEY || "",
+    env: process.env.NODE_ENV,
+  };
 };
 
 export default function App() {
-  const { apiKey } = useLoaderData<typeof loader>();
+  const { apiKey, env } = useLoaderData<typeof loader>();
+
+  console.log("App loading with apiKey:", apiKey ? "present" : "missing", "env:", env);
+
+  if (!apiKey) {
+    return (
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h1>Configuration Error</h1>
+        <p>SHOPIFY_API_KEY is missing. Please check your environment variables.</p>
+        <p>Environment: {env}</p>
+      </div>
+    );
+  }
 
   return (
     <AppProvider embedded apiKey={apiKey}>

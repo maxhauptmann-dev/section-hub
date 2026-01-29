@@ -108,7 +108,6 @@ ${section.liquidContent || ""}`;
             }
             job {
               id
-              status
             }
           }
         }`,
@@ -125,7 +124,7 @@ ${section.liquidContent || ""}`;
           themeFilesUpsert?: {
             upsertedThemeFiles?: { filename: string }[];
             userErrors?: { field?: string[] | null; message: string }[];
-            job?: { id?: string; status?: string } | null;
+            job?: { id?: string } | null;
           };
         };
         errors?: { message: string }[];
