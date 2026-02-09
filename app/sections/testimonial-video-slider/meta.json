@@ -1,0 +1,25 @@
+{
+  "id": "testimonial-video-slider",
+  "name": "Testimonial Video Slider",
+  "description": "Video-Testimonial-Slider mit Sternbewertung, Autoplay und Overlay-Text. Perfekt für authentischen Social Proof mit echten Kundenstimmen.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Video", "Slider", "Trust", "Responsive", "Social Proof"],
+  "author": "Section Hub",
+  "previewColor": "#6366f1",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-09",
+  "updatedAt": "2026-02-09"
+}

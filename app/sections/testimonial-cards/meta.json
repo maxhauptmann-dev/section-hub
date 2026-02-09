@@ -1,0 +1,25 @@
+{
+  "id": "testimonial-cards",
+  "name": "Testimonial Cards",
+  "description": "Trustpilot-Style Testimonial-Karten mit Sternbewertung, Gesamtbewertung und Karussell. Voll anpassbare Farben, Größen und Texte.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Trust", "Carousel", "Responsive", "Trustpilot", "Social Proof"],
+  "author": "Section Hub",
+  "previewColor": "#00b67a",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-09",
+  "updatedAt": "2026-02-09"
+}

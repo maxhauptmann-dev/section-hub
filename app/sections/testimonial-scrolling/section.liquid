@@ -1,0 +1,298 @@
+{% comment %}
+  Section Hub – Testimonial Scrolling Images
+  Infinite marquee scroll of testimonial images / screenshots.
+  Fully customisable size, shape (round / square / rounded), speed, direction.
+{% endcomment %}
+
+{{ 'section-testimonial-scrolling.css' | asset_url | stylesheet_tag }}
+
+{%- assign shape_class = 'ts-shape--rounded' -%}
+{%- if section.settings.image_shape == 'circle' -%}
+  {%- assign shape_class = 'ts-shape--circle' -%}
+{%- elsif section.settings.image_shape == 'square' -%}
+  {%- assign shape_class = 'ts-shape--square' -%}
+{%- endif -%}
+
+<section class="ts-scroll" id="ts-scroll-{{ section.id }}" style="
+  --ts-bg: {{ section.settings.background_color }};
+  --ts-text: {{ section.settings.text_color }};
+  --ts-accent: {{ section.settings.accent_color }};
+  --ts-img-width: {{ section.settings.image_width }}px;
+  --ts-img-height: {{ section.settings.image_height }}px;
+  --ts-gap: {{ section.settings.gap }}px;
+  --ts-speed: {{ section.settings.scroll_speed }}s;
+  --ts-border-radius: {{ section.settings.border_radius }}px;
+  --ts-heading-size: {{ section.settings.heading_size }}px;
+  --ts-padding-top: {{ section.settings.padding_top }}px;
+  --ts-padding-bottom: {{ section.settings.padding_bottom }}px;
+  --ts-rows: {{ section.settings.rows }};
+">
+  <div class="ts-scroll__container">
+    {% if section.settings.heading != blank %}
+      <div class="ts-scroll__header">
+        {% if section.settings.subheading != blank %}
+          <span class="ts-scroll__subheading">{{ section.settings.subheading }}</span>
+        {% endif %}
+        <h2 class="ts-scroll__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.description != blank %}
+          <p class="ts-scroll__desc">{{ section.settings.description }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Marquee rows {%- endcomment -%}
+    {% for row in (1..section.settings.rows) %}
+      <div class="ts-scroll__marquee {% if row == 2 %}ts-scroll__marquee--reverse{% endif %}">
+        <div class="ts-scroll__track">
+          {%- comment -%} Duplicate blocks for seamless loop {%- endcomment -%}
+          {% for pass in (1..2) %}
+            {% for block in section.blocks %}
+              <div class="ts-scroll__item {{ shape_class }}" {{ block.shopify_attributes }}>
+                {% if block.settings.image != blank %}
+                  <img
+                    src="{{ block.settings.image | image_url: width: 600 }}"
+                    alt="{{ block.settings.alt | default: block.settings.name }}"
+                    class="ts-scroll__img"
+                    loading="lazy"
+                    width="{{ section.settings.image_width }}"
+                    height="{{ section.settings.image_height }}"
+                  >
+                {% else %}
+                  <div class="ts-scroll__placeholder">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                {% endif %}
+
+                {% if section.settings.show_overlay and block.settings.name != blank %}
+                  <div class="ts-scroll__overlay">
+                    {% if block.settings.rating > 0 %}
+                      <div class="ts-scroll__overlay-stars">
+                        {% for i in (1..5) %}
+                          {% if i <= block.settings.rating %}
+                            <svg class="ts-star-sm" viewBox="0 0 24 24" fill="var(--ts-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                          {% endif %}
+                        {% endfor %}
+                      </div>
+                    {% endif %}
+                    <span class="ts-scroll__overlay-name">{{ block.settings.name }}</span>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% endfor %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Scrolling Testimonials",
+  "tag": "section",
+  "class": "section-testimonial-scrolling",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Loved by everyone, everywhere"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Unterüberschrift",
+      "default": "TESTIMONIALS"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Beschreibung",
+      "default": "Don't miss out."
+    },
+    {
+      "type": "header",
+      "content": "Bild-Einstellungen"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "min": 100,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "label": "Bildbreite",
+      "default": 220
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "min": 100,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "label": "Bildhöhe",
+      "default": 280
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "label": "Bildform",
+      "options": [
+        { "value": "rounded", "label": "Abgerundet" },
+        { "value": "circle",  "label": "Rund (Kreis)" },
+        { "value": "square",  "label": "Eckig" }
+      ],
+      "default": "rounded"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Eckenradius (nur Abgerundet)",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand zwischen Bildern",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overlay",
+      "label": "Overlay mit Name / Sternen anzeigen",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "rows",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Anzahl Reihen",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "label": "Scroll-Geschwindigkeit",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Überschrift-Größe",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand oben",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand unten",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrund",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Akzentfarbe (Sterne)",
+      "default": "#00b67a"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image_testimonial",
+      "name": "Bild",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Bild / Screenshot"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt-Text",
+          "default": ""
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name / Quelle",
+          "default": ""
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 0,
+          "max": 5,
+          "step": 1,
+          "label": "Bewertung (0 = keine)",
+          "default": 5
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling Testimonials",
+      "blocks": [
+        { "type": "image_testimonial", "settings": { "name": "@customer_1", "rating": 5 } },
+        { "type": "image_testimonial", "settings": { "name": "@customer_2", "rating": 5 } },
+        { "type": "image_testimonial", "settings": { "name": "@customer_3", "rating": 4 } },
+        { "type": "image_testimonial", "settings": { "name": "@customer_4", "rating": 5 } },
+        { "type": "image_testimonial", "settings": { "name": "@customer_5", "rating": 5 } },
+        { "type": "image_testimonial", "settings": { "name": "@customer_6", "rating": 4 } }
+      ]
+    }
+  ]
+}
+{% endschema %}

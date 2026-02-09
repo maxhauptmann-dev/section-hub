@@ -1,0 +1,397 @@
+{% comment %}
+  Section Hub – Testimonial Image Review
+  Grid of product-image testimonials with star ratings and customer comments.
+  Fully configurable columns, image aspect ratio, card styling.
+{% endcomment %}
+
+{{ 'section-testimonial-image-review.css' | asset_url | stylesheet_tag }}
+
+<section class="tir" id="tir-{{ section.id }}" style="
+  --tir-bg: {{ section.settings.background_color }};
+  --tir-text: {{ section.settings.text_color }};
+  --tir-accent: {{ section.settings.accent_color }};
+  --tir-card-bg: {{ section.settings.card_background }};
+  --tir-card-radius: {{ section.settings.card_radius }}px;
+  --tir-star-size: {{ section.settings.star_size }}px;
+  --tir-cols: {{ section.settings.columns }};
+  --tir-img-ratio: {{ section.settings.image_ratio }};
+  --tir-heading-size: {{ section.settings.heading_size }}px;
+  --tir-padding-top: {{ section.settings.padding_top }}px;
+  --tir-padding-bottom: {{ section.settings.padding_bottom }}px;
+">
+  <div class="tir__container">
+    {% if section.settings.heading != blank %}
+      <div class="tir__header">
+        {% if section.settings.subheading != blank %}
+          <span class="tir__subheading">{{ section.settings.subheading }}</span>
+        {% endif %}
+        <h2 class="tir__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.description != blank %}
+          <p class="tir__desc">{{ section.settings.description }}</p>
+        {% endif %}
+
+        {% if section.settings.show_overall_rating %}
+          <div class="tir__overall">
+            <div class="tir__overall-stars">
+              {% assign full = section.settings.overall_stars | floor %}
+              {% for i in (1..5) %}
+                {% if i <= full %}
+                  <svg class="tir-star" viewBox="0 0 24 24" fill="var(--tir-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% else %}
+                  <svg class="tir-star" viewBox="0 0 24 24" fill="none" stroke="var(--tir-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% if section.settings.review_count != blank %}
+              <span class="tir__review-count">{{ section.settings.review_count }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="tir__grid">
+      {% for block in section.blocks %}
+        <div class="tir__card" {{ block.shopify_attributes }}>
+          {%- comment -%} Image {%- endcomment -%}
+          <div class="tir__image-wrap">
+            {% if block.settings.image != blank %}
+              <img
+                src="{{ block.settings.image | image_url: width: 800 }}"
+                alt="{{ block.settings.alt | default: block.settings.name }}"
+                class="tir__image"
+                loading="lazy"
+              >
+            {% else %}
+              <div class="tir__image-placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.15)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+            {% endif %}
+          </div>
+
+          {%- comment -%} Content {%- endcomment -%}
+          <div class="tir__content">
+            <div class="tir__stars">
+              {% for i in (1..5) %}
+                {% if i <= block.settings.rating %}
+                  <svg class="tir-star" viewBox="0 0 24 24" fill="var(--tir-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% else %}
+                  <svg class="tir-star" viewBox="0 0 24 24" fill="none" stroke="var(--tir-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            {% if block.settings.title != blank %}
+              <h3 class="tir__title">{{ block.settings.title }}</h3>
+            {% endif %}
+
+            <p class="tir__quote">{{ block.settings.quote }}</p>
+
+            <div class="tir__author">
+              {% if block.settings.avatar != blank %}
+                <img src="{{ block.settings.avatar | image_url: width: 80 }}" alt="{{ block.settings.name }}" class="tir__avatar" width="36" height="36" loading="lazy">
+              {% endif %}
+              <div>
+                <span class="tir__name">{{ block.settings.name }}</span>
+                {% if block.settings.verified %}
+                  <span class="tir__verified">✓ Verifiziert</span>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% if section.settings.show_load_more %}
+      <div class="tir__footer">
+        <button class="tir__load-more" id="tir-load-{{ section.id }}">{{ section.settings.load_more_text }}</button>
+      </div>
+    {% endif %}
+  </div>
+</section>
+
+<script>
+(function(){
+  var btn = document.getElementById('tir-load-{{ section.id }}');
+  if(!btn) return;
+  var grid = document.querySelector('#tir-{{ section.id }} .tir__grid');
+  var cards = grid.querySelectorAll('.tir__card');
+  var show = {{ section.settings.initial_visible }};
+  cards.forEach(function(c,i){ if(i >= show) c.style.display = 'none'; });
+  btn.addEventListener('click', function(){
+    cards.forEach(function(c){ c.style.display = ''; });
+    btn.style.display = 'none';
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Image Reviews",
+  "tag": "section",
+  "class": "section-testimonial-image-review",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Was unsere Kunden sagen"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Unterüberschrift",
+      "default": "KUNDENSTIMMEN"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Beschreibung",
+      "default": ""
+    },
+    {
+      "type": "header",
+      "content": "Gesamtbewertung"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overall_rating",
+      "label": "Gesamtbewertung anzeigen",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "overall_stars",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Sterne",
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Bewertungstext",
+      "default": "4.9 von 5 — 1.240+ Bewertungen"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Spalten (Desktop)",
+      "default": 3
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Bild-Seitenverhältnis",
+      "options": [
+        { "value": "1 / 1",    "label": "Quadratisch (1:1)" },
+        { "value": "4 / 3",    "label": "Querformat (4:3)" },
+        { "value": "3 / 4",    "label": "Hochformat (3:4)" },
+        { "value": "16 / 9",   "label": "Breitbild (16:9)" },
+        { "value": "auto",     "label": "Original" }
+      ],
+      "default": "4 / 3"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Eckenradius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Sterngröße",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Überschrift-Größe",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand oben",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand unten",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrund",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Akzentfarbe (Sterne)",
+      "default": "#00b67a"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Karten-Hintergrund",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Mehr laden"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_load_more",
+      "label": "\"Mehr laden\" Button anzeigen",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "load_more_text",
+      "label": "Button-Text",
+      "default": "Mehr Bewertungen laden"
+    },
+    {
+      "type": "range",
+      "id": "initial_visible",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "label": "Anfangs sichtbare Karten",
+      "default": 6
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Produktbild / Foto"
+        },
+        {
+          "type": "text",
+          "id": "alt",
+          "label": "Alt-Text",
+          "default": ""
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Bewertung",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titel / Betreff",
+          "default": ""
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Kommentar",
+          "default": "Tolles Produkt! Bin sehr zufrieden und werde definitiv wieder bestellen."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Anna M."
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Avatar (optional)"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verifizierter Kauf",
+          "default": true
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": { "rating": 5, "title": "Absolut begeistert!", "quote": "Die Qualität hat meine Erwartungen übertroffen. Schneller Versand und top Kundenservice. Kann ich nur weiterempfehlen!", "name": "Lori M.", "verified": true }
+        },
+        {
+          "type": "review",
+          "settings": { "rating": 5, "title": "Mega zufrieden", "quote": "Habe schon mehrfach bestellt und war jedes Mal zufrieden. Preis-Leistung stimmt einfach!", "name": "Thomas K.", "verified": true }
+        },
+        {
+          "type": "review",
+          "settings": { "rating": 4, "title": "Sehr schön", "quote": "Sehr schöne Produkte und liebevolle Verpackung. Wird definitiv nicht meine letzte Bestellung sein.", "name": "Sarah L.", "verified": true }
+        },
+        {
+          "type": "review",
+          "settings": { "rating": 5, "title": "Perfekt!", "quote": "Genau das was ich gesucht habe. Super Qualität, schnelle Lieferung. 100% empfehlenswert.", "name": "Max P.", "verified": true }
+        },
+        {
+          "type": "review",
+          "settings": { "rating": 5, "title": "Love it!", "quote": "Bin total begeistert von der Qualität. Das Material fühlt sich luxuriös an.", "name": "Elena S.", "verified": true }
+        },
+        {
+          "type": "review",
+          "settings": { "rating": 5, "title": "Toller Shop", "quote": "Sehr zufrieden mit meiner Bestellung. Die Kommunikation war super und die Lieferung kam schnell.", "name": "Jan W.", "verified": true }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

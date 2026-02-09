@@ -27,9 +27,10 @@ const CATEGORIES = [
   { id: "free", label: "Kostenlos", icon: "🎁" },
   { id: "Hero", label: "Hero", icon: "🎯" },
   { id: "FAQ", label: "FAQ", icon: "❓" },
-  { id: "Testimonial", label: "Testimonial", icon: "💬" },
+  { id: "Testimonials", label: "Testimonials", icon: "💬" },
   { id: "Trust", label: "Trust", icon: "🛡️" },
   { id: "CTA", label: "CTA", icon: "🚀" },
+  { id: "Social Proof", label: "Social Proof", icon: "⭐" },
 ];
 
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {

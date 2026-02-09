@@ -1,0 +1,25 @@
+{
+  "id": "testimonial-image-review",
+  "name": "Testimonial Image Review",
+  "description": "Bild-Testimonials mit Produktfoto, Sternbewertung und Kundenkommentar. Grid-Layout mit anpassbaren Spalten und Bildgrößen.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Images", "Review", "Grid", "Responsive", "Social Proof"],
+  "author": "Section Hub",
+  "previewColor": "#f59e0b",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-09",
+  "updatedAt": "2026-02-09"
+}

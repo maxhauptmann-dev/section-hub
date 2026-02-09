@@ -22,7 +22,7 @@ type SectionItem = {
   id: string;
   name: string;
   description: string;
-  category: "Hero" | "FAQ" | "Social proof" | "Conversion" | "Footer";
+  category: "Hero" | "FAQ" | "Social proof" | "Conversion" | "Footer" | "Testimonials";
   price: Price;
   tags: string[];
   updatedAt: string; // ISO
@@ -134,6 +134,7 @@ export default function SectionsPage() {
                     { label: "Hero", value: "Hero" },
                     { label: "FAQ", value: "FAQ" },
                     { label: "Social proof", value: "Social proof" },
+                    { label: "Testimonials", value: "Testimonials" },
                     { label: "Conversion", value: "Conversion" },
                     { label: "Footer", value: "Footer" },
                   ]}

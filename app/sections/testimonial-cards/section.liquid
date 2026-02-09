@@ -1,0 +1,426 @@
+{% comment %}
+  Section Hub – Testimonial Cards
+  Trustpilot-style testimonial cards with overall rating, star badges,
+  carousel navigation and fully customisable colours / sizes.
+{% endcomment %}
+
+{{ 'section-testimonial-cards.css' | asset_url | stylesheet_tag }}
+
+<section class="tc-cards" id="tc-cards-{{ section.id }}" style="
+  --tc-bg: {{ section.settings.background_color }};
+  --tc-text: {{ section.settings.text_color }};
+  --tc-accent: {{ section.settings.accent_color }};
+  --tc-card-bg: {{ section.settings.card_background }};
+  --tc-card-radius: {{ section.settings.card_radius }}px;
+  --tc-star-size: {{ section.settings.star_size }}px;
+  --tc-heading-size: {{ section.settings.heading_size }}px;
+  --tc-quote-size: {{ section.settings.quote_font_size }}px;
+  --tc-cards-per-view: {{ section.settings.cards_per_row }};
+  --tc-card-padding: {{ section.settings.card_padding }}px;
+  --tc-section-padding-top: {{ section.settings.padding_top }}px;
+  --tc-section-padding-bottom: {{ section.settings.padding_bottom }}px;
+">
+  <div class="tc-cards__container">
+    {%- comment -%} Header with overall rating {%- endcomment -%}
+    {% if section.settings.heading != blank %}
+      <div class="tc-cards__header">
+        <h2 class="tc-cards__heading">{{ section.settings.heading }}</h2>
+
+        {% if section.settings.show_overall_rating %}
+          <div class="tc-cards__overall">
+            <span class="tc-cards__overall-label">{{ section.settings.overall_label }}</span>
+            <span class="tc-cards__overall-score">{{ section.settings.overall_score }}</span>
+            <div class="tc-cards__overall-stars">
+              {% assign full_stars = section.settings.overall_score | floor %}
+              {% assign half = section.settings.overall_score | minus: full_stars %}
+              {% for i in (1..5) %}
+                {% if i <= full_stars %}
+                  <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24" fill="var(--tc-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% elsif i == full_stars | plus: 1 and half >= 0.3 %}
+                  <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24">
+                    <defs><linearGradient id="half-{{ section.id }}"><stop offset="50%" stop-color="var(--tc-accent)"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>
+                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="url(#half-{{ section.id }})" stroke="var(--tc-accent)" stroke-width="1"/>
+                  </svg>
+                {% else %}
+                  <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24" fill="none" stroke="var(--tc-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% if section.settings.review_count != blank %}
+              <span class="tc-cards__review-count">{{ section.settings.review_count }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Cards track {%- endcomment -%}
+    <div class="tc-cards__viewport">
+      <div class="tc-cards__track" id="tc-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="tc-cards__card" {{ block.shopify_attributes }}>
+            {%- comment -%} Star badge {%- endcomment -%}
+            <div class="tc-cards__stars">
+              {% for i in (1..5) %}
+                {% if i <= block.settings.rating %}
+                  <svg class="tc-star" viewBox="0 0 24 24" fill="var(--tc-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% else %}
+                  <svg class="tc-star" viewBox="0 0 24 24" fill="none" stroke="var(--tc-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% endif %}
+              {% endfor %}
+            </div>
+
+            {%- comment -%} Optional date tag {%- endcomment -%}
+            {% if block.settings.date != blank %}
+              <span class="tc-cards__date">{{ block.settings.date }}</span>
+            {% endif %}
+
+            {%- comment -%} Title {%- endcomment -%}
+            {% if block.settings.title != blank %}
+              <h3 class="tc-cards__title">{{ block.settings.title }}</h3>
+            {% endif %}
+
+            {%- comment -%} Quote {%- endcomment -%}
+            <p class="tc-cards__quote">{{ block.settings.quote }}</p>
+
+            {%- comment -%} Author {%- endcomment -%}
+            <div class="tc-cards__author">
+              <span class="tc-cards__name">{{ block.settings.name }}</span>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    {%- comment -%} Navigation {%- endcomment -%}
+    <div class="tc-cards__nav">
+      <button class="tc-cards__btn tc-cards__btn--prev" aria-label="Previous">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="tc-cards__dots" id="tc-dots-{{ section.id }}"></div>
+      <button class="tc-cards__btn tc-cards__btn--next" aria-label="Next">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var wrap = document.getElementById('tc-cards-{{ section.id }}');
+  var track = document.getElementById('tc-track-{{ section.id }}');
+  var dotsC = document.getElementById('tc-dots-{{ section.id }}');
+  var prev  = wrap.querySelector('.tc-cards__btn--prev');
+  var next  = wrap.querySelector('.tc-cards__btn--next');
+  var cards = track.children;
+  var perView = parseInt(getComputedStyle(wrap).getPropertyValue('--tc-cards-per-view')) || 3;
+  var gap = 24;
+  var current = 0;
+  var maxIndex = Math.max(0, cards.length - perView);
+
+  function buildDots(){
+    dotsC.innerHTML = '';
+    for(var i = 0; i <= maxIndex; i++){
+      var d = document.createElement('button');
+      d.className = 'tc-cards__dot' + (i===0?' active':'');
+      d.dataset.index = i;
+      d.setAttribute('aria-label','Page '+(i+1));
+      d.addEventListener('click', function(){ goTo(parseInt(this.dataset.index)); });
+      dotsC.appendChild(d);
+    }
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(i, maxIndex));
+    var cardW = cards[0].offsetWidth + gap;
+    track.style.transform = 'translateX(-' + (current * cardW) + 'px)';
+    var dots = dotsC.querySelectorAll('.tc-cards__dot');
+    dots.forEach(function(d,idx){ d.classList.toggle('active', idx===current); });
+  }
+
+  prev.addEventListener('click', function(){ goTo(current - 1); });
+  next.addEventListener('click', function(){ goTo(current + 1); });
+  buildDots();
+
+  {% if section.settings.autoplay %}
+  var iv = setInterval(function(){ goTo(current >= maxIndex ? 0 : current + 1); }, {{ section.settings.autoplay_speed }}000);
+  wrap.addEventListener('mouseenter', function(){ clearInterval(iv); });
+  wrap.addEventListener('mouseleave', function(){ iv = setInterval(function(){ goTo(current >= maxIndex ? 0 : current + 1); }, {{ section.settings.autoplay_speed }}000); });
+  {% endif %}
+
+  window.addEventListener('resize', function(){
+    perView = parseInt(getComputedStyle(wrap).getPropertyValue('--tc-cards-per-view')) || 3;
+    maxIndex = Math.max(0, cards.length - perView);
+    buildDots();
+    goTo(Math.min(current, maxIndex));
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Testimonial Cards",
+  "tag": "section",
+  "class": "section-testimonial-cards",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Unsere Kunden erzählen es besser als wir!"
+    },
+    {
+      "type": "header",
+      "content": "Gesamtbewertung"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overall_rating",
+      "label": "Gesamtbewertung anzeigen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "overall_label",
+      "label": "Label",
+      "default": "Excellent"
+    },
+    {
+      "type": "text",
+      "id": "overall_score",
+      "label": "Bewertung (z.B. 4.9 / 5)",
+      "default": "4.9 / 5"
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Anzahl Bewertungen",
+      "default": "basierend auf 22467 Bewertungen"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "cards_per_row",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Karten pro Reihe (Desktop)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Karten-Eckenradius",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "label": "Karten-Innenabstand",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Sterngröße",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "label": "Überschrift-Größe",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "quote_font_size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Kommentar-Schriftgröße",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand oben",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand unten",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrundfarbe",
+      "default": "#f5f0eb"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Akzentfarbe (Sterne)",
+      "default": "#00b67a"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Karten-Hintergrund",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Automatisch abspielen",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "label": "Autoplay-Geschwindigkeit",
+      "default": 5
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Bewertung",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Titel / Betreff",
+          "default": "Das ist das ding!"
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Kommentar",
+          "default": "Die Produkte haben meine Erwartungen wirklich übertroffen. Ich bin so glücklich mit dem Ergebnis und werde definitiv weiterhin verwenden."
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Merle W."
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Datum (optional)",
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Testimonial Cards",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "title": "Das ist das ding!",
+            "quote": "Die Eyebrow Booster haben meine Augenbrauen wirklich voller und definierter gemacht. Ich bin so glücklich mit dem Ergebnis und werde sie definitiv weiterhin verwenden.",
+            "name": "Merle W."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "title": "I love it! 😍",
+            "quote": "Die Vitamin-C-Produkte haben meiner Haut einen echten Glow verliehen. Ich fühle mich so viel selbstbewusster und strahlender. Danke!",
+            "name": "Luisa A."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "title": "Ich bin mega Happy!",
+            "quote": "Hat meine Erwartungen übertroffen! Die Produkte sind luxuriös und wirksam, und das zu einem erschwinglichen Preis. Ich werde definitiv Stammkundin.",
+            "name": "Olga W."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 5,
+            "title": "Lohnt sich definitiv!",
+            "quote": "Ich liebe es, dass die Produkte tierversuchsfrei sind. Es ist großartig zu wissen, dass meine Hautpflegebedürfnisse erfüllt werden.",
+            "name": "Helen R."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "rating": 4,
+            "title": "Kann ich empfehlen",
+            "quote": "Gute Qualität und schneller Versand. Einziger kleiner Kritikpunkt: Die Verpackung könnte etwas nachhaltiger sein. Aber die Produkte selbst – top!",
+            "name": "Katarina E."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

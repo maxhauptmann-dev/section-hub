@@ -1,0 +1,366 @@
+{% comment %}
+  Section Hub – Testimonial Video Slider
+  Video testimonials with star ratings, overlay text and carousel navigation.
+{% endcomment %}
+
+{{ 'section-testimonial-video-slider.css' | asset_url | stylesheet_tag }}
+
+<section class="tv-slider" id="tv-slider-{{ section.id }}" style="
+  --tv-bg: {{ section.settings.background_color }};
+  --tv-text: {{ section.settings.text_color }};
+  --tv-accent: {{ section.settings.accent_color }};
+  --tv-card-bg: {{ section.settings.card_background }};
+  --tv-card-radius: {{ section.settings.card_radius }}px;
+  --tv-star-size: {{ section.settings.star_size }}px;
+  --tv-video-height: {{ section.settings.video_height }}px;
+  --tv-cards-per-view: {{ section.settings.cards_per_row }};
+  --tv-padding-top: {{ section.settings.padding_top }}px;
+  --tv-padding-bottom: {{ section.settings.padding_bottom }}px;
+">
+  <div class="tv-slider__container">
+    {% if section.settings.heading != blank %}
+      <div class="tv-slider__header">
+        {% if section.settings.subheading != blank %}
+          <span class="tv-slider__subheading">{{ section.settings.subheading }}</span>
+        {% endif %}
+        <h2 class="tv-slider__heading">{{ section.settings.heading }}</h2>
+
+        {% if section.settings.show_overall_rating %}
+          <div class="tv-slider__overall">
+            <span class="tv-slider__overall-label">{{ section.settings.overall_label }}</span>
+            <div class="tv-slider__overall-stars">
+              {% assign full = section.settings.overall_stars | floor %}
+              {% for i in (1..5) %}
+                {% if i <= full %}
+                  <svg class="tv-star" viewBox="0 0 24 24" fill="var(--tv-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% else %}
+                  <svg class="tv-star" viewBox="0 0 24 24" fill="none" stroke="var(--tv-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {% endif %}
+              {% endfor %}
+            </div>
+            {% if section.settings.review_count != blank %}
+              <span class="tv-slider__review-count">{{ section.settings.review_count }}</span>
+            {% endif %}
+          </div>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="tv-slider__viewport">
+      <div class="tv-slider__track" id="tv-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="tv-slider__card" {{ block.shopify_attributes }}>
+            <div class="tv-slider__video-wrap">
+              {% if block.settings.video_url != blank %}
+                <video
+                  class="tv-slider__video"
+                  src="{{ block.settings.video_url }}"
+                  poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 600 }}{% endif %}"
+                  playsinline
+                  muted
+                  loop
+                  preload="metadata"
+                ></video>
+                <button class="tv-slider__play" aria-label="Play">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                    <circle cx="24" cy="24" r="23" fill="rgba(0,0,0,0.45)" stroke="#fff" stroke-width="2"/>
+                    <path d="M19 15L34 24L19 33V15Z" fill="#fff"/>
+                  </svg>
+                </button>
+              {% elsif block.settings.poster != blank %}
+                <img class="tv-slider__poster-img" src="{{ block.settings.poster | image_url: width: 600 }}" alt="{{ block.settings.name }}" loading="lazy">
+              {% else %}
+                <div class="tv-slider__placeholder">
+                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none"><circle cx="24" cy="24" r="23" stroke="rgba(255,255,255,0.3)" stroke-width="2"/><path d="M19 15L34 24L19 33V15Z" fill="rgba(255,255,255,0.3)"/></svg>
+                </div>
+              {% endif %}
+
+              {%- comment -%} Overlay info {%- endcomment -%}
+              <div class="tv-slider__overlay">
+                <div class="tv-slider__overlay-stars">
+                  {% for i in (1..5) %}
+                    {% if i <= block.settings.rating %}
+                      <svg class="tv-star-sm" viewBox="0 0 24 24" fill="var(--tv-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                    {% else %}
+                      <svg class="tv-star-sm" viewBox="0 0 24 24" fill="none" stroke="var(--tv-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                    {% endif %}
+                  {% endfor %}
+                </div>
+                <span class="tv-slider__overlay-name">{{ block.settings.name }}</span>
+              </div>
+            </div>
+
+            {% if block.settings.quote != blank %}
+              <div class="tv-slider__caption">
+                <p class="tv-slider__quote">{{ block.settings.quote }}</p>
+              </div>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="tv-slider__nav">
+      <button class="tv-slider__btn tv-slider__btn--prev" aria-label="Previous">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div class="tv-slider__dots" id="tv-dots-{{ section.id }}"></div>
+      <button class="tv-slider__btn tv-slider__btn--next" aria-label="Next">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var wrap  = document.getElementById('tv-slider-{{ section.id }}');
+  var track = document.getElementById('tv-track-{{ section.id }}');
+  var dotsC = document.getElementById('tv-dots-{{ section.id }}');
+  var prev  = wrap.querySelector('.tv-slider__btn--prev');
+  var next  = wrap.querySelector('.tv-slider__btn--next');
+  var cards = track.children;
+  var perView = parseInt(getComputedStyle(wrap).getPropertyValue('--tv-cards-per-view')) || 3;
+  var gap = 20;
+  var current = 0;
+  var maxIdx = Math.max(0, cards.length - perView);
+
+  function buildDots(){
+    dotsC.innerHTML='';
+    for(var i=0;i<=maxIdx;i++){
+      var d=document.createElement('button');
+      d.className='tv-slider__dot'+(i===0?' active':'');
+      d.dataset.index=i;
+      d.addEventListener('click',function(){goTo(parseInt(this.dataset.index));});
+      dotsC.appendChild(d);
+    }
+  }
+
+  function goTo(i){
+    current=Math.max(0,Math.min(i,maxIdx));
+    var w=cards[0].offsetWidth+gap;
+    track.style.transform='translateX(-'+(current*w)+'px)';
+    dotsC.querySelectorAll('.tv-slider__dot').forEach(function(d,idx){d.classList.toggle('active',idx===current);});
+  }
+
+  prev.addEventListener('click',function(){goTo(current-1);});
+  next.addEventListener('click',function(){goTo(current+1);});
+  buildDots();
+
+  /* Play / pause videos on click */
+  wrap.querySelectorAll('.tv-slider__play').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var vid=this.parentElement.querySelector('video');
+      if(vid){vid.paused?vid.play():vid.pause();this.style.opacity=vid.paused?'1':'0';}
+    });
+  });
+
+  window.addEventListener('resize',function(){
+    perView=parseInt(getComputedStyle(wrap).getPropertyValue('--tv-cards-per-view'))||3;
+    maxIdx=Math.max(0,cards.length-perView);
+    buildDots();goTo(Math.min(current,maxIdx));
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Video Testimonials",
+  "tag": "section",
+  "class": "section-testimonial-video-slider",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Überschrift",
+      "default": "Echte Kunden, echte Ergebnisse"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Unterüberschrift",
+      "default": "VIDEO TESTIMONIALS"
+    },
+    {
+      "type": "header",
+      "content": "Gesamtbewertung"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_overall_rating",
+      "label": "Gesamtbewertung anzeigen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "overall_label",
+      "label": "Label",
+      "default": "Excellent 4.8 / 5"
+    },
+    {
+      "type": "range",
+      "id": "overall_stars",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Sterne",
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "review_count",
+      "label": "Anzahl Bewertungen",
+      "default": "based on 1.067 reviews"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "cards_per_row",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "label": "Videos pro Reihe (Desktop)",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "video_height",
+      "min": 250,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "label": "Video-Höhe",
+      "default": 420
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Eckenradius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "min": 14,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "label": "Sterngröße",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand oben",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "label": "Abstand unten",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Hintergrund",
+      "default": "#f9f6f2"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Akzentfarbe (Sterne)",
+      "default": "#00b67a"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Karten-Hintergrund",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_testimonial",
+      "name": "Video Testimonial",
+      "settings": [
+        {
+          "type": "url",
+          "id": "video_url",
+          "label": "Video URL (mp4 / hosted)"
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster / Vorschaubild"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "label": "Bewertung",
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Sarah"
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Kurztext (optional)",
+          "default": ""
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Video Testimonials",
+      "blocks": [
+        {
+          "type": "video_testimonial",
+          "settings": { "rating": 5, "name": "Sarah, 6 days ago", "quote": "Feels like a cloud on your eyes" }
+        },
+        {
+          "type": "video_testimonial",
+          "settings": { "rating": 5, "name": "Alex, 2 days ago", "quote": "Soft and perfect for rest" }
+        },
+        {
+          "type": "video_testimonial",
+          "settings": { "rating": 5, "name": "James, yesterday", "quote": "Very comfortable and high quality" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

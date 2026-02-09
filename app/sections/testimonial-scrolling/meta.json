@@ -1,0 +1,25 @@
+{
+  "id": "testimonial-scrolling",
+  "name": "Testimonial Scrolling Images",
+  "description": "Endlos scrollende Testimonial-Bilder mit anpassbarer Größe, Form (rund/eckig/abgerundet) und Überschrift. Automatisches Marquee mit Hover-Pause.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Scrolling", "Marquee", "Images", "Responsive", "Social Proof"],
+  "author": "Section Hub",
+  "previewColor": "#ec4899",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-09",
+  "updatedAt": "2026-02-09"
+}
