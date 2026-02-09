@@ -1,0 +1,11 @@
+7-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    'X-Stats-Apipermissionid': [ '965174002033' ],
+8-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    'X-Stats-Userid': [ '' ],
+9-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    'X-Xss-Protection': [ '1; mode=block' ]
+10-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]  },
+11-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]  body: {
+12:[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    data: { themeFilesUpsert: null },
+13-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    extensions: { cost: [Object] },
+14-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]    headers: Headers {
+15-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]      date: 'Thu, 05 Feb 2026 20:24:06 GMT',
+16-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]      'content-type': 'application/json; charset=utf-8',
+17-[2m2026-02-05T20:24:06Z[0m app[e2861562c03948] [32mfra[0m [[34minfo[0m]      'transfer-encoding': 'chunked',
