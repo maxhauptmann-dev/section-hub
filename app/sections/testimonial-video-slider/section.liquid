@@ -51,17 +51,37 @@
         {% for block in section.blocks %}
           <div class="tv-slider__card" {{ block.shopify_attributes }}>
             <div class="tv-slider__video-wrap">
+              {%- comment -%} YouTube/Vimeo/MP4 support {%- endcomment -%}
               {% if block.settings.video_url != blank %}
-                <video
-                  class="tv-slider__video"
-                  src="{{ block.settings.video_url }}"
-                  poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 600 }}{% endif %}"
-                  playsinline
-                  muted
-                  loop
-                  preload="metadata"
-                ></video>
-                <button class="tv-slider__play" aria-label="Play">
+                {% if block.settings.video_type == 'youtube' %}
+                  <iframe
+                    class="tv-slider__video"
+                    src="https://www.youtube.com/embed/{{ block.settings.video_url }}?controls=0&modestbranding=1"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                {% elsif block.settings.video_type == 'vimeo' %}
+                  <iframe
+                    class="tv-slider__video"
+                    src="https://player.vimeo.com/video/{{ block.settings.video_url }}"
+                    frameborder="0"
+                    allow="autoplay; fullscreen; picture-in-picture"
+                    allowfullscreen
+                  ></iframe>
+                {% else %}
+                  <video
+                    class="tv-slider__video"
+                    src="{{ block.settings.video_url }}"
+                    poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 600 }}{% endif %}"
+                    playsinline
+                    muted
+                    loop
+                    preload="metadata"
+                    controls
+                  ></video>
+                {% endif %}
+                <button class="tv-slider__play" aria-label="Play" style="display: {% if block.settings.video_type == 'youtube' or block.settings.video_type == 'vimeo' %}none{% endif %}">
                   <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
                     <circle cx="24" cy="24" r="23" fill="rgba(0,0,0,0.45)" stroke="#fff" stroke-width="2"/>
                     <path d="M19 15L34 24L19 33V15Z" fill="#fff"/>
@@ -310,9 +330,16 @@
       "name": "Video Testimonial",
       "settings": [
         {
+          "type": "text",
+          "id": "video_type",
+          "label": "Video-Typ",
+          "placeholder": "youtube, vimeo oder mp4"
+        },
+        {
           "type": "url",
           "id": "video_url",
-          "label": "Video URL (mp4 / hosted)"
+          "label": "Video URL / ID",
+          "placeholder": "YouTube/Vimeo ID oder direkter MP4 Link"
         },
         {
           "type": "image_picker",
@@ -348,15 +375,15 @@
       "blocks": [
         {
           "type": "video_testimonial",
-          "settings": { "rating": 5, "name": "Sarah, 6 days ago", "quote": "Feels like a cloud on your eyes" }
+          "settings": { "video_type": "youtube", "rating": 5, "name": "Sarah, 6 days ago", "quote": "Feels like a cloud on your eyes" }
         },
         {
           "type": "video_testimonial",
-          "settings": { "rating": 5, "name": "Alex, 2 days ago", "quote": "Soft and perfect for rest" }
+          "settings": { "video_type": "youtube", "rating": 5, "name": "Alex, 2 days ago", "quote": "Soft and perfect for rest" }
         },
         {
           "type": "video_testimonial",
-          "settings": { "rating": 5, "name": "James, yesterday", "quote": "Very comfortable and high quality" }
+          "settings": { "video_type": "youtube", "rating": 5, "name": "James, yesterday", "quote": "Very comfortable and high quality" }
         }
       ]
     }
