@@ -31,16 +31,9 @@
             <span class="tc-cards__overall-label">{{ section.settings.overall_label }}</span>
             <span class="tc-cards__overall-score">{{ section.settings.overall_score }}</span>
             <div class="tc-cards__overall-stars">
-              {% assign full_stars = section.settings.overall_score | floor %}
-              {% assign half = section.settings.overall_score | minus: full_stars %}
               {% for i in (1..5) %}
-                {% if i <= full_stars %}
+                {% if i <= 4 %}
                   <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24" fill="var(--tc-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-                {% elsif i == full_stars | plus: 1 and half >= 0.3 %}
-                  <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24">
-                    <defs><linearGradient id="half-{{ section.id }}"><stop offset="50%" stop-color="var(--tc-accent)"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs>
-                    <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z" fill="url(#half-{{ section.id }})" stroke="var(--tc-accent)" stroke-width="1"/>
-                  </svg>
                 {% else %}
                   <svg class="tc-star" width="var(--tc-star-size)" height="var(--tc-star-size)" viewBox="0 0 24 24" fill="none" stroke="var(--tc-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
                 {% endif %}
