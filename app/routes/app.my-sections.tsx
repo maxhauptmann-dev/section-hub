@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useLoaderData, useSubmit, useNavigation, useActionData } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
-import { getAllSections } from "../lib/sections.server";
+import { getAllSections, getSectionWithFiles } from "../lib/sections.server";
 import {
   Page,
   Layout,
@@ -163,6 +163,113 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }
   }
 
+  if (actionType === "install") {
+    const section = getSectionWithFiles(sectionId);
+    if (!section) {
+      return { success: false, error: "Section nicht gefunden" };
+    }
+
+    try {
+      const sectionFileName = `section-${sectionId}.liquid`;
+
+      // CSS inline einbetten
+      const liquidWithStyles = `{% comment %}
+  Section Hub - ${section.name}
+  Version: ${section.version}
+  Installiert via Section Hub App
+{% endcomment %}
+
+<style>
+${section.cssContent || ""}
+</style>
+
+${section.liquidContent || ""}`;
+
+      // Hole das aktive Theme via GraphQL
+      const themesResponse = await admin.graphql(`
+        query {
+          themes(first: 10) {
+            nodes {
+              id
+              name
+              role
+            }
+          }
+        }
+      `);
+      const themesData = await themesResponse.json();
+      const themes = themesData.data?.themes?.nodes || [];
+      const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+      if (!mainTheme) {
+        return { success: false, error: "Kein aktives Theme gefunden." };
+      }
+
+      const fileInput = {
+        filename: `sections/${sectionFileName}`,
+        body: {
+          type: "TEXT",
+          value: liquidWithStyles,
+        },
+      };
+
+      const themeFilesResponse = await admin.graphql(
+        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
+          themeFilesUpsert(files: $files, themeId: $themeId) {
+            upsertedThemeFiles {
+              filename
+            }
+            userErrors {
+              field
+              message
+            }
+            job {
+              id
+            }
+          }
+        }`,
+        {
+          variables: {
+            files: [fileInput],
+            themeId: mainTheme.id,
+          },
+        }
+      );
+
+      const themeFilesData = (await themeFilesResponse.json()) as any;
+      console.log("GraphQL themeFilesUpsert Response:", JSON.stringify(themeFilesData, null, 2));
+
+      if (themeFilesData.errors) {
+        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
+        return { success: false, error: `GraphQL Fehler: ${errorMsg}` };
+      }
+
+      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
+      if (userErrors.length > 0) {
+        const errorMsg = userErrors
+          .map((e: { field?: string[]; message: string }) => `${(e.field || []).join(".")}: ${e.message}`)
+          .join(", ");
+        return { success: false, error: `Fehler beim Erstellen der Section: ${errorMsg}` };
+      }
+
+      const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
+      if (upsertedFiles.length === 0) {
+        return { success: false, error: "Section konnte nicht installiert werden. Bitte versuche es später erneut." };
+      }
+
+      return {
+        success: true,
+        message: `${section.name} wurde erfolgreich in "${mainTheme.name}" installiert!`,
+      };
+    } catch (error) {
+      console.error("Install error:", error);
+      return {
+        success: false,
+        error: `Fehler beim Installieren: ${error instanceof Error ? error.message : "Unbekannt"}`,
+      };
+    }
+  }
+
   return { success: false, error: "Unbekannte Aktion" };
 };
 
@@ -192,6 +299,13 @@ export default function MySectionsPage() {
   const handleUninstall = (sectionId: string) => {
     submit(
       { action: "uninstall", sectionId },
+      { method: "post" }
+    );
+  };
+
+  const handleInstall = (sectionId: string) => {
+    submit(
+      { action: "install", sectionId },
       { method: "post" }
     );
   };
@@ -364,7 +478,8 @@ export default function MySectionsPage() {
                             variant="primary"
                             size="slim"
                             fullWidth
-                            url={`/app/section?id=${section.id}`}
+                            onClick={() => handleInstall(section.id)}
+                            loading={isSubmitting}
                           >
                             + Installieren
                           </Button>
