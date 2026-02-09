@@ -525,37 +525,52 @@ export default function MySectionsPage() {
                 >
                   {installedSections.map((section) => (
                     <Card key={section.id} padding="0">
-                      <PreviewSlider section={section} showPriceBadge={false} />
+                      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                        <PreviewSlider section={section} showPriceBadge={false} />
 
-                      <Box padding="400">
-                        <BlockStack gap="200">
-                          <Text as="h3" variant="headingSm">
-                            {section.name}
-                          </Text>
-                          <Text as="p" variant="bodySm" tone="subdued">
-                            {section.description}
-                          </Text>
-                          <InlineStack gap="100" wrap>
-                            <Badge tone="info">{section.category}</Badge>
-                            {section.tags.slice(0, 2).map((tag: string) => (
-                              <Badge key={tag}>{tag}</Badge>
-                            ))}
-                          </InlineStack>
-
-                          <InlineStack gap="200">
-                            <Button variant="primary" size="slim" fullWidth disabled>
-                              ✓ Installed
-                            </Button>
-                            <Button
-                              size="slim"
-                              variant="secondary"
-                              onClick={() => setShowUninstallModal(section.id)}
-                            >
-                              Remove
-                            </Button>
-                          </InlineStack>
-                        </BlockStack>
-                      </Box>
+                        <Box padding="400">
+                          <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 180 }}>
+                            <Text as="h3" variant="headingSm">
+                              {section.name}
+                            </Text>
+                            <div style={{ 
+                              marginTop: 8,
+                              marginBottom: 8,
+                              minHeight: 40,
+                              overflow: "hidden",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical" as const,
+                            }}>
+                              <Text as="p" variant="bodySm" tone="subdued">
+                                {section.description}
+                              </Text>
+                            </div>
+                            <div style={{ marginTop: "auto" }}>
+                              <InlineStack gap="100" wrap>
+                                <Badge tone="success">{section.category}</Badge>
+                                {section.tags.slice(0, 2).map((tag: string) => (
+                                  <Badge key={tag}>{tag}</Badge>
+                                ))}
+                              </InlineStack>
+                              <div style={{ marginTop: 12 }}>
+                                <InlineStack gap="200">
+                                  <Button variant="primary" size="slim" fullWidth disabled>
+                                    ✓ Installed
+                                  </Button>
+                                  <Button
+                                    size="slim"
+                                    variant="secondary"
+                                    onClick={() => setShowUninstallModal(section.id)}
+                                  >
+                                    Remove
+                                  </Button>
+                                </InlineStack>
+                              </div>
+                            </div>
+                          </div>
+                        </Box>
+                      </div>
                     </Card>
                   ))}
                 </div>
@@ -591,34 +606,49 @@ export default function MySectionsPage() {
                 >
                   {availableSections.map((section) => (
                     <Card key={section.id} padding="0">
-                      <PreviewSlider section={section} showPriceBadge={true} />
+                      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                        <PreviewSlider section={section} showPriceBadge={true} />
 
-                      <Box padding="400">
-                        <BlockStack gap="200">
-                          <Text as="h3" variant="headingSm">
-                            {section.name}
-                          </Text>
-                          <Text as="p" variant="bodySm" tone="subdued">
-                            {section.description}
-                          </Text>
-                          <InlineStack gap="100" wrap>
-                            <Badge tone="info">{section.category}</Badge>
-                            {section.tags.slice(0, 2).map((tag: string) => (
-                              <Badge key={tag}>{tag}</Badge>
-                            ))}
-                          </InlineStack>
-
-                          <Button
-                            variant="primary"
-                            size="slim"
-                            fullWidth
-                            onClick={() => handleInstall(section.id)}
-                            loading={isSubmitting}
-                          >
-                            + Install
-                          </Button>
-                        </BlockStack>
-                      </Box>
+                        <Box padding="400">
+                          <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 180 }}>
+                            <Text as="h3" variant="headingSm">
+                              {section.name}
+                            </Text>
+                            <div style={{ 
+                              marginTop: 8,
+                              marginBottom: 8,
+                              minHeight: 40,
+                              overflow: "hidden",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 2,
+                              WebkitBoxOrient: "vertical" as const,
+                            }}>
+                              <Text as="p" variant="bodySm" tone="subdued">
+                                {section.description}
+                              </Text>
+                            </div>
+                            <div style={{ marginTop: "auto" }}>
+                              <InlineStack gap="100" wrap>
+                                <Badge tone="info">{section.category}</Badge>
+                                {section.tags.slice(0, 2).map((tag: string) => (
+                                  <Badge key={tag}>{tag}</Badge>
+                                ))}
+                              </InlineStack>
+                              <div style={{ marginTop: 12 }}>
+                                <Button
+                                  variant="primary"
+                                  size="slim"
+                                  fullWidth
+                                  onClick={() => handleInstall(section.id)}
+                                  loading={isSubmitting}
+                                >
+                                  + Install
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </Box>
+                      </div>
                     </Card>
                   ))}
                 </div>

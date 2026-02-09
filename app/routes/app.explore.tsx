@@ -326,50 +326,64 @@ export default function ExploreSectionsPage() {
               }}>
                 {filteredSections.map((section) => (
                   <Card key={section.id} padding="0">
-                    {/* Preview Slider */}
-                    <PreviewSlider 
-                      section={section} 
-                      onNavigate={() => navigate(`/app/section?id=${section.id}`)}
-                    />
+                    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                      {/* Preview Slider */}
+                      <PreviewSlider 
+                        section={section} 
+                        onNavigate={() => navigate(`/app/section?id=${section.id}`)}
+                      />
 
-                    {/* Content */}
-                    <Box padding="400">
-                      <BlockStack gap="200">
-                        <button
-                          type="button"
-                          style={{ 
-                            cursor: "pointer", 
-                            border: "none", 
-                            background: "transparent", 
-                            padding: 0, 
-                            textAlign: "left",
-                            width: "100%",
-                          }}
-                          onClick={() => navigate(`/app/section?id=${section.id}`)}
-                        >
-                          <Text as="h3" variant="headingSm">{section.name}</Text>
-                        </button>
-                        <Text as="p" variant="bodySm" tone="subdued">
-                          {section.description}
-                        </Text>
-                        <InlineStack gap="100" wrap>
-                          <Badge tone="info">{section.category}</Badge>
-                          {section.tags.slice(0, 2).map((tag: string) => (
-                            <Badge key={tag}>{tag}</Badge>
-                          ))}
-                        </InlineStack>
-                        <Box paddingBlockStart="200">
-                          <Button 
-                            variant="primary" 
-                            size="slim" 
-                            fullWidth
+                      {/* Content */}
+                      <Box padding="400">
+                        <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 180 }}>
+                          <button
+                            type="button"
+                            style={{ 
+                              cursor: "pointer", 
+                              border: "none", 
+                              background: "transparent", 
+                              padding: 0, 
+                              textAlign: "left",
+                              width: "100%",
+                            }}
                             onClick={() => navigate(`/app/section?id=${section.id}`)}
                           >
-                            View Details
-                          </Button>
-                        </Box>
-                      </BlockStack>
-                    </Box>
+                            <Text as="h3" variant="headingSm">{section.name}</Text>
+                          </button>
+                          <div style={{ 
+                            marginTop: 8,
+                            marginBottom: 8,
+                            minHeight: 40,
+                            overflow: "hidden",
+                            display: "-webkit-box",
+                            WebkitLineClamp: 2,
+                            WebkitBoxOrient: "vertical" as const,
+                          }}>
+                            <Text as="p" variant="bodySm" tone="subdued">
+                              {section.description}
+                            </Text>
+                          </div>
+                          <div style={{ marginTop: "auto" }}>
+                            <InlineStack gap="100" wrap>
+                              <Badge tone="info">{section.category}</Badge>
+                              {section.tags.slice(0, 2).map((tag: string) => (
+                                <Badge key={tag}>{tag}</Badge>
+                              ))}
+                            </InlineStack>
+                            <div style={{ marginTop: 12 }}>
+                              <Button 
+                                variant="primary" 
+                                size="slim" 
+                                fullWidth
+                                onClick={() => navigate(`/app/section?id=${section.id}`)}
+                              >
+                                View Details
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      </Box>
+                    </div>
                   </Card>
                 ))}
               </div>
