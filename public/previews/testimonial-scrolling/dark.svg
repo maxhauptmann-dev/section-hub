@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#0a0a0a"/>
+  
+  <!-- Header -->
+  <text x="300" y="40" text-anchor="middle" font-family="system-ui" font-size="18" fill="white" font-weight="700">Loved by Thousands</text>
+  
+  <!-- Scrolling Row -->
+  <g transform="translate(0, 70)">
+    <!-- Card 1 -->
+    <rect x="20" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="35" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="35" y="45" font-family="system-ui" font-size="9" fill="#888">"Amazing!"</text>
+    <text x="35" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">Sarah M.</text>
+    
+    <!-- Card 2 -->
+    <rect x="195" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="210" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="210" y="45" font-family="system-ui" font-size="9" fill="#888">"Love it!"</text>
+    <text x="210" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">Mike R.</text>
+    
+    <!-- Card 3 -->
+    <rect x="370" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="385" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="385" y="45" font-family="system-ui" font-size="9" fill="#888">"Perfect!"</text>
+    <text x="385" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">Emma L.</text>
+    
+    <!-- Partial Card -->
+    <rect x="545" y="0" width="160" height="100" rx="10" fill="#1a1a1a" opacity="0.5"/>
+  </g>
+  
+  <!-- Second Row -->
+  <g transform="translate(0, 185)">
+    <rect x="-30" y="0" width="160" height="100" rx="10" fill="#1a1a1a" opacity="0.5"/>
+    
+    <rect x="105" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="120" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="120" y="45" font-family="system-ui" font-size="9" fill="#888">"Best ever!"</text>
+    <text x="120" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">Tom B.</text>
+    
+    <rect x="280" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="295" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="295" y="45" font-family="system-ui" font-size="9" fill="#888">"So good!"</text>
+    <text x="295" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">Lisa K.</text>
+    
+    <rect x="455" y="0" width="160" height="100" rx="10" fill="#1a1a1a"/>
+    <text x="470" y="25" font-family="system-ui" font-size="10" fill="#fbbf24">★★★★★</text>
+    <text x="470" y="45" font-family="system-ui" font-size="9" fill="#888">"Incredible!"</text>
+    <text x="470" y="75" font-family="system-ui" font-size="10" fill="white" font-weight="500">John D.</text>
+  </g>
+</svg>

@@ -12,6 +12,10 @@
   "tags": ["OS2.0", "Images", "Review", "Grid", "Responsive", "Social Proof"],
   "author": "Section Hub",
   "previewColor": "#f59e0b",
+  "previews": [
+    { "src": "/previews/testimonial-image-review/default.svg", "alt": "Testimonial Image Review - Light Mode", "label": "Light" },
+    { "src": "/previews/testimonial-image-review/dark.svg", "alt": "Testimonial Image Review - Dark Mode", "label": "Dark" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true

@@ -12,6 +12,10 @@
   "tags": ["OS2.0", "Conversion", "Support", "Animated"],
   "author": "Section Hub",
   "previewColor": "#10b981",
+  "previews": [
+    { "src": "/previews/faq-accordion/default.svg", "alt": "FAQ Accordion - Light Mode", "label": "Light" },
+    { "src": "/previews/faq-accordion/dark.svg", "alt": "FAQ Accordion - Dark Mode", "label": "Dark" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true
@@ -21,5 +25,5 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-18",
-  "updatedAt": "2026-01-28"
+  "updatedAt": "2026-02-09"
 }

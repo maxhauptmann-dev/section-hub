@@ -12,6 +12,10 @@
   "tags": ["OS2.0", "Trust", "Animated", "Carousel", "Responsive"],
   "author": "Section Hub",
   "previewColor": "#f59e0b",
+  "previews": [
+    { "src": "/previews/testimonial-carousel/default.svg", "alt": "Testimonial Carousel - Light Mode", "label": "Light" },
+    { "src": "/previews/testimonial-carousel/dark.svg", "alt": "Testimonial Carousel - Dark Mode", "label": "Dark" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true
@@ -21,5 +25,5 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-22",
-  "updatedAt": "2026-01-28"
+  "updatedAt": "2026-02-09"
 }

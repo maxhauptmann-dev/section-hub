@@ -12,6 +12,10 @@
   "tags": ["OS2.0", "Trust", "Carousel", "Responsive", "Trustpilot", "Social Proof"],
   "author": "Section Hub",
   "previewColor": "#00b67a",
+  "previews": [
+    { "src": "/previews/testimonial-cards/default.svg", "alt": "Testimonial Cards - Light Mode", "label": "Light" },
+    { "src": "/previews/testimonial-cards/dark.svg", "alt": "Testimonial Cards - Dark Mode", "label": "Dark" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true

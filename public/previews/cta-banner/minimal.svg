@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="300" viewBox="0 0 600 300">
+  <!-- Background -->
+  <rect width="600" height="300" fill="#fafafa"/>
+  
+  <!-- Border -->
+  <rect x="40" y="40" width="520" height="220" rx="12" fill="none" stroke="#e5e5e5" stroke-width="2"/>
+  
+  <!-- Content -->
+  <text x="300" y="110" text-anchor="middle" font-family="system-ui" font-size="24" fill="#1a1a1a" font-weight="600">Ready to Get Started?</text>
+  <text x="300" y="145" text-anchor="middle" font-family="system-ui" font-size="13" fill="#666">Join thousands of happy customers today</text>
+  
+  <!-- Button -->
+  <rect x="220" y="175" width="160" height="40" rx="6" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+  <text x="300" y="201" text-anchor="middle" font-family="system-ui" font-size="13" fill="#1a1a1a" font-weight="500">Shop Now</text>
+</svg>

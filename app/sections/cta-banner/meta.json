@@ -12,6 +12,11 @@
   "tags": ["OS2.0", "Conversion", "Gradient", "Responsive"],
   "author": "Section Hub",
   "previewColor": "#8b5cf6",
+  "previews": [
+    { "src": "/previews/cta-banner/default.svg", "alt": "CTA Banner - Gradient Style", "label": "Gradient" },
+    { "src": "/previews/cta-banner/dark.svg", "alt": "CTA Banner - Dark Mode", "label": "Dark" },
+    { "src": "/previews/cta-banner/minimal.svg", "alt": "CTA Banner - Minimal Style", "label": "Minimal" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true
@@ -21,5 +26,5 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-25",
-  "updatedAt": "2026-01-28"
+  "updatedAt": "2026-02-09"
 }

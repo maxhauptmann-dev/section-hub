@@ -12,6 +12,10 @@
   "tags": ["OS2.0", "Trust", "Minimal", "Responsive"],
   "author": "Section Hub",
   "previewColor": "#64748b",
+  "previews": [
+    { "src": "/previews/logo-cloud/default.svg", "alt": "Logo Cloud - Light Mode", "label": "Light" },
+    { "src": "/previews/logo-cloud/dark.svg", "alt": "Logo Cloud - Dark Mode", "label": "Dark" }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true
@@ -21,5 +25,5 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-20",
-  "updatedAt": "2026-01-28"
+  "updatedAt": "2026-02-09"
 }

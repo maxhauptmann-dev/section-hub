@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <!-- Background -->
+  <rect width="600" height="400" fill="#0a0a0a"/>
+  
+  <!-- Header -->
+  <text x="300" y="40" text-anchor="middle" font-family="system-ui" font-size="20" fill="white" font-weight="700">Customer Reviews</text>
+  
+  <!-- Review Cards -->
+  <g transform="translate(30, 60)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="260" height="150" rx="12" fill="#1a1a1a"/>
+    <rect x="10" y="10" width="100" height="80" rx="8" fill="#2a2a2a"/>
+    <text x="120" y="30" font-family="system-ui" font-size="11" fill="#fbbf24">★★★★★</text>
+    <text x="120" y="50" font-family="system-ui" font-size="10" fill="#888">"Love this product!</text>
+    <text x="120" y="65" font-family="system-ui" font-size="10" fill="#888">Works perfectly."</text>
+    <circle cx="130" cy="115" r="14" fill="#333"/>
+    <text x="150" y="112" font-family="system-ui" font-size="11" fill="white" font-weight="500">Anna S.</text>
+    <text x="150" y="126" font-family="system-ui" font-size="9" fill="#22c55e">✓ Verified</text>
+    
+    <!-- Card 2 -->
+    <rect x="280" y="0" width="260" height="150" rx="12" fill="#1a1a1a"/>
+    <rect x="290" y="10" width="100" height="80" rx="8" fill="#2a2a2a"/>
+    <text x="400" y="30" font-family="system-ui" font-size="11" fill="#fbbf24">★★★★★</text>
+    <text x="400" y="50" font-family="system-ui" font-size="10" fill="#888">"Exceeded my</text>
+    <text x="400" y="65" font-family="system-ui" font-size="10" fill="#888">expectations!"</text>
+    <circle cx="410" cy="115" r="14" fill="#333"/>
+    <text x="430" y="112" font-family="system-ui" font-size="11" fill="white" font-weight="500">Tom B.</text>
+    <text x="430" y="126" font-family="system-ui" font-size="9" fill="#22c55e">✓ Verified</text>
+  </g>
+  
+  <!-- Second Row -->
+  <g transform="translate(30, 230)">
+    <rect x="0" y="0" width="260" height="150" rx="12" fill="#1a1a1a"/>
+    <rect x="10" y="10" width="100" height="80" rx="8" fill="#2a2a2a"/>
+    <text x="120" y="30" font-family="system-ui" font-size="11" fill="#fbbf24">★★★★☆</text>
+    <text x="120" y="50" font-family="system-ui" font-size="10" fill="#888">"Great quality,</text>
+    <text x="120" y="65" font-family="system-ui" font-size="10" fill="#888">fast delivery!"</text>
+    <circle cx="130" cy="115" r="14" fill="#333"/>
+    <text x="150" y="112" font-family="system-ui" font-size="11" fill="white" font-weight="500">Lisa M.</text>
+    <text x="150" y="126" font-family="system-ui" font-size="9" fill="#22c55e">✓ Verified</text>
+    
+    <rect x="280" y="0" width="260" height="150" rx="12" fill="#1a1a1a"/>
+    <rect x="290" y="10" width="100" height="80" rx="8" fill="#2a2a2a"/>
+    <text x="400" y="30" font-family="system-ui" font-size="11" fill="#fbbf24">★★★★★</text>
+    <text x="400" y="50" font-family="system-ui" font-size="10" fill="#888">"Will definitely</text>
+    <text x="400" y="65" font-family="system-ui" font-size="10" fill="#888">buy again!"</text>
+    <circle cx="410" cy="115" r="14" fill="#333"/>
+    <text x="430" y="112" font-family="system-ui" font-size="11" fill="white" font-weight="500">John D.</text>
+    <text x="430" y="126" font-family="system-ui" font-size="9" fill="#22c55e">✓ Verified</text>
+  </g>
+</svg>
