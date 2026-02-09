@@ -1,6 +1,12 @@
 import fs from "fs";
 import path from "path";
 
+export interface SectionPreview {
+  src: string;       // relative path or URL to image
+  alt: string;       // description of this variant
+  label?: string;    // e.g. "Dark Mode", "Minimal", "With Icons"
+}
+
 export interface SectionMeta {
   id: string;
   name: string;
@@ -15,6 +21,7 @@ export interface SectionMeta {
   tags: string[];
   author: string;
   previewColor: string;
+  previews?: SectionPreview[];  // multiple preview images showing different variants
   compatibility: {
     themes: string[];
     os2: boolean;

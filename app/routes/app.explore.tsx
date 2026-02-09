@@ -3,6 +3,7 @@ import { useNavigate, useLoaderData } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getAllSections } from "../lib/sections.server";
+import type { SectionMeta, SectionPreview } from "../lib/sections.server";
 import {
   Page,
   Layout,
@@ -14,7 +15,9 @@ import {
   Button,
   TextField,
   Box,
+  Icon,
 } from "@shopify/polaris";
+import { ChevronLeftIcon, ChevronRightIcon } from "@shopify/polaris-icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -36,6 +39,175 @@ const CATEGORIES = [
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
   if (price.type === "free") return "Free";
   return `€${price.amount}`;
+}
+
+// Preview Image Slider Component
+function PreviewSlider({ 
+  section, 
+  onNavigate 
+}: { 
+  section: SectionMeta; 
+  onNavigate: () => void;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const previews = section.previews || [];
+  const hasPreviews = previews.length > 0;
+  const hasMultiple = previews.length > 1;
+
+  const goNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((i) => (i + 1) % previews.length);
+  };
+
+  const goPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((i) => (i - 1 + previews.length) % previews.length);
+  };
+
+  return (
+    <div 
+      style={{
+        position: "relative",
+        height: 180,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+        overflow: "hidden",
+        background: section.previewColor || "#6366f1",
+      }}
+    >
+      {/* Image or Fallback */}
+      {hasPreviews ? (
+        <img
+          src={previews[currentIndex].src}
+          alt={previews[currentIndex].alt}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "opacity 0.3s ease",
+          }}
+          onClick={onNavigate}
+        />
+      ) : (
+        <div 
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "pointer",
+          }}
+          onClick={onNavigate}
+        >
+          <Text as="p" variant="headingMd">
+            <span style={{ color: "white" }}>{section.name}</span>
+          </Text>
+        </div>
+      )}
+
+      {/* Price Badge */}
+      <div style={{ position: "absolute", top: 12, right: 12 }}>
+        <Badge tone={section.price.type === "free" ? "success" : "info"}>
+          {priceLabel(section.price)}
+        </Badge>
+      </div>
+
+      {/* Variant Label */}
+      {hasPreviews && previews[currentIndex].label && (
+        <div style={{ 
+          position: "absolute", 
+          bottom: 12, 
+          left: 12,
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          padding: "4px 8px",
+          borderRadius: 4,
+          fontSize: 12,
+        }}>
+          {previews[currentIndex].label}
+        </div>
+      )}
+
+      {/* Navigation Arrows */}
+      {hasMultiple && (
+        <>
+          <button
+            onClick={goPrev}
+            style={{
+              position: "absolute",
+              left: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.9)",
+              border: "none",
+              borderRadius: "50%",
+              width: 28,
+              height: 28,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            aria-label="Previous preview"
+          >
+            <Icon source={ChevronLeftIcon} />
+          </button>
+          <button
+            onClick={goNext}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.9)",
+              border: "none",
+              borderRadius: "50%",
+              width: 28,
+              height: 28,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            aria-label="Next preview"
+          >
+            <Icon source={ChevronRightIcon} />
+          </button>
+        </>
+      )}
+
+      {/* Dots Indicator */}
+      {hasMultiple && (
+        <div style={{
+          position: "absolute",
+          bottom: 12,
+          right: 12,
+          display: "flex",
+          gap: 4,
+        }}>
+          {previews.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={(e) => { e.stopPropagation(); setCurrentIndex(idx); }}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                border: "none",
+                background: idx === currentIndex ? "white" : "rgba(255,255,255,0.5)",
+                cursor: "pointer",
+                padding: 0,
+              }}
+              aria-label={`Go to preview ${idx + 1}`}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }
 
 export default function ExploreSectionsPage() {
@@ -154,60 +326,50 @@ export default function ExploreSectionsPage() {
               }}>
                 {filteredSections.map((section) => (
                   <Card key={section.id} padding="0">
-                    <button
-                      type="button"
-                      style={{ cursor: "pointer", width: "100%", border: "none", background: "transparent", padding: 0, textAlign: "left" }}
-                      role="link"
-                      onKeyDown={(event) => {
-                        if (event.key === "Enter" || event.key === " ") {
-                          event.preventDefault();
-                          navigate(`/app/section?id=${section.id}`);
-                        }
-                      }}
-                      onClick={() => navigate(`/app/section?id=${section.id}`)}
-                    >
-                      {/* Preview */}
-                      <div style={{
-                        background: section.previewColor || "#6366f1",
-                        height: 140,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        borderTopLeftRadius: 12,
-                        borderTopRightRadius: 12,
-                        position: "relative",
-                      }}>
-                        <div style={{ position: "absolute", top: 12, right: 12 }}>
-                          <Badge tone={section.price.type === "free" ? "success" : "info"}>
-                            {priceLabel(section.price)}
-                          </Badge>
-                        </div>
-                        <Text as="p" variant="headingMd">
-                          <span style={{ color: "white" }}>{section.name}</span>
-                        </Text>
-                      </div>
+                    {/* Preview Slider */}
+                    <PreviewSlider 
+                      section={section} 
+                      onNavigate={() => navigate(`/app/section?id=${section.id}`)}
+                    />
 
-                      {/* Content */}
-                      <Box padding="400">
-                        <BlockStack gap="200">
+                    {/* Content */}
+                    <Box padding="400">
+                      <BlockStack gap="200">
+                        <button
+                          type="button"
+                          style={{ 
+                            cursor: "pointer", 
+                            border: "none", 
+                            background: "transparent", 
+                            padding: 0, 
+                            textAlign: "left",
+                            width: "100%",
+                          }}
+                          onClick={() => navigate(`/app/section?id=${section.id}`)}
+                        >
                           <Text as="h3" variant="headingSm">{section.name}</Text>
-                          <Text as="p" variant="bodySm" tone="subdued">
-                            {section.description}
-                          </Text>
-                          <InlineStack gap="100" wrap>
-                            <Badge tone="info">{section.category}</Badge>
-                            {section.tags.slice(0, 2).map((tag: string) => (
-                              <Badge key={tag}>{tag}</Badge>
-                            ))}
-                          </InlineStack>
-                          <Box paddingBlockStart="200">
-                            <Button variant="primary" size="slim" fullWidth>
-                            Install
-                            </Button>
-                          </Box>
-                        </BlockStack>
-                      </Box>
-                    </button>
+                        </button>
+                        <Text as="p" variant="bodySm" tone="subdued">
+                          {section.description}
+                        </Text>
+                        <InlineStack gap="100" wrap>
+                          <Badge tone="info">{section.category}</Badge>
+                          {section.tags.slice(0, 2).map((tag: string) => (
+                            <Badge key={tag}>{tag}</Badge>
+                          ))}
+                        </InlineStack>
+                        <Box paddingBlockStart="200">
+                          <Button 
+                            variant="primary" 
+                            size="slim" 
+                            fullWidth
+                            onClick={() => navigate(`/app/section?id=${section.id}`)}
+                          >
+                            View Details
+                          </Button>
+                        </Box>
+                      </BlockStack>
+                    </Box>
                   </Card>
                 ))}
               </div>

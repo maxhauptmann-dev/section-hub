@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#f9f6f2"/>
+      <stop offset="100%" style="stop-color:#f3f0eb"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="600" height="400" fill="url(#bg)"/>
+  
+  <!-- Header -->
+  <text x="300" y="50" text-anchor="middle" font-family="system-ui" font-size="12" fill="#666" letter-spacing="2">VIDEO TESTIMONIALS</text>
+  <text x="300" y="80" text-anchor="middle" font-family="system-ui" font-size="20" fill="#1a1a1a" font-weight="600">Real Customers, Real Results</text>
+  
+  <!-- Stars -->
+  <g transform="translate(240, 95)">
+    <polygon points="10,0 12,7 20,7 14,11 16,18 10,14 4,18 6,11 0,7 8,7" fill="#00b67a"/>
+    <polygon points="30,0 32,7 40,7 34,11 36,18 30,14 24,18 26,11 20,7 28,7" fill="#00b67a"/>
+    <polygon points="50,0 52,7 60,7 54,11 56,18 50,14 44,18 46,11 40,7 48,7" fill="#00b67a"/>
+    <polygon points="70,0 72,7 80,7 74,11 76,18 70,14 64,18 66,11 60,7 68,7" fill="#00b67a"/>
+    <polygon points="90,0 92,7 100,7 94,11 96,18 90,14 84,18 86,11 80,7 88,7" fill="#00b67a"/>
+  </g>
+  
+  <!-- Video Cards -->
+  <g transform="translate(30, 150)">
+    <!-- Card 1 -->
+    <rect x="0" y="0" width="170" height="200" rx="12" fill="#fff" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.08))"/>
+    <rect x="0" y="0" width="170" height="130" rx="12" fill="#e8e5e0"/>
+    <circle cx="85" cy="65" r="24" fill="rgba(0,0,0,0.4)"/>
+    <polygon points="80,55 80,75 95,65" fill="white"/>
+    <text x="20" y="155" font-family="system-ui" font-size="10" fill="#666">★★★★★</text>
+    <text x="20" y="175" font-family="system-ui" font-size="11" fill="#1a1a1a" font-weight="500">Sarah M.</text>
+    <text x="20" y="190" font-family="system-ui" font-size="9" fill="#666">"Amazing results!"</text>
+    
+    <!-- Card 2 -->
+    <rect x="185" y="0" width="170" height="200" rx="12" fill="#fff" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.08))"/>
+    <rect x="185" y="0" width="170" height="130" rx="12" fill="#d8d5d0"/>
+    <circle cx="270" cy="65" r="24" fill="rgba(0,0,0,0.4)"/>
+    <polygon points="265,55 265,75 280,65" fill="white"/>
+    <text x="205" y="155" font-family="system-ui" font-size="10" fill="#666">★★★★★</text>
+    <text x="205" y="175" font-family="system-ui" font-size="11" fill="#1a1a1a" font-weight="500">Mike R.</text>
+    <text x="205" y="190" font-family="system-ui" font-size="9" fill="#666">"Life changing!"</text>
+    
+    <!-- Card 3 -->
+    <rect x="370" y="0" width="170" height="200" rx="12" fill="#fff" filter="drop-shadow(0 2px 8px rgba(0,0,0,0.08))"/>
+    <rect x="370" y="0" width="170" height="130" rx="12" fill="#e0ddd8"/>
+    <circle cx="455" cy="65" r="24" fill="rgba(0,0,0,0.4)"/>
+    <polygon points="450,55 450,75 465,65" fill="white"/>
+    <text x="390" y="155" font-family="system-ui" font-size="10" fill="#666">★★★★★</text>
+    <text x="390" y="175" font-family="system-ui" font-size="11" fill="#1a1a1a" font-weight="500">Emma L.</text>
+    <text x="390" y="190" font-family="system-ui" font-size="9" fill="#666">"Highly recommend!"</text>
+  </g>
+  
+  <!-- Navigation -->
+  <circle cx="280" cy="375" r="4" fill="#6366f1"/>
+  <circle cx="295" cy="375" r="4" fill="#d1d5db"/>
+  <circle cx="310" cy="375" r="4" fill="#d1d5db"/>
+  <circle cx="325" cy="375" r="4" fill="#d1d5db"/>
+</svg>

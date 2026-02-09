@@ -12,6 +12,23 @@
   "tags": ["OS2.0", "Video", "Slider", "Trust", "Responsive", "Social Proof"],
   "author": "Section Hub",
   "previewColor": "#6366f1",
+  "previews": [
+    {
+      "src": "/previews/testimonial-video-slider/default.svg",
+      "alt": "Testimonial Video Slider - Default Style",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/testimonial-video-slider/dark.svg",
+      "alt": "Testimonial Video Slider - Dark Mode",
+      "label": "Dark Mode"
+    },
+    {
+      "src": "/previews/testimonial-video-slider/minimal.svg",
+      "alt": "Testimonial Video Slider - Minimal Style",
+      "label": "Minimal"
+    }
+  ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
     "os2": true
