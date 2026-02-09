@@ -20,7 +20,7 @@ export default function SuggestIdeaPage() {
           <Layout.Section>
             <Banner tone="success" onDismiss={() => setSubmitted(false)}>
               <Text as="p" variant="bodyMd">
-                Danke für deine Idee! Wir prüfen jeden Vorschlag.
+                Thanks for your idea! We review every suggestion.
               </Text>
             </Banner>
           </Layout.Section>
@@ -30,22 +30,22 @@ export default function SuggestIdeaPage() {
           <Card>
             <BlockStack gap="400">
               <Text as="h2" variant="headingMd">
-                Hast du eine Idee für eine neue Section?
+                Have an idea for a new section?
               </Text>
               <Text as="p" variant="bodyMd">
-                Wir entwickeln regelmäßig neue Sections basierend auf Community-Feedback. 
-                Teile deine Idee mit uns!
+                We regularly develop new sections based on community feedback. 
+                Share your idea with us!
               </Text>
               <TextField
-                label="Deine Idee"
+                label="Your Idea"
                 value={idea}
                 onChange={setIdea}
                 multiline={4}
                 autoComplete="off"
-                placeholder="Beschreibe deine Section-Idee..."
+                placeholder="Describe your section idea..."
               />
               <Button variant="primary" onClick={handleSubmit} disabled={!idea.trim()}>
-                Idee einreichen
+                Submit Idea
               </Button>
             </BlockStack>
           </Card>
@@ -55,7 +55,7 @@ export default function SuggestIdeaPage() {
           <Card>
             <BlockStack gap="300">
               <Text as="h2" variant="headingMd">
-                Beliebte Vorschläge
+                Popular Suggestions
               </Text>
               <Text as="p" variant="bodyMd">
                 🔥 Animated Product Showcase — 127 Votes
@@ -64,7 +64,7 @@ export default function SuggestIdeaPage() {
                 ⭐ Instagram Feed Section — 98 Votes
               </Text>
               <Text as="p" variant="bodyMd">
-                🎯 Quiz Section für Produktempfehlungen — 76 Votes
+                🎯 Quiz Section for Product Recommendations — 76 Votes
               </Text>
               <Text as="p" variant="bodyMd">
                 📊 Live Sales Notification — 64 Votes

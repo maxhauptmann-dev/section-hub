@@ -1,7 +1,7 @@
 {
   "id": "faq-accordion",
   "name": "FAQ Accordion",
-  "description": "Elegantes FAQ mit animiertem Accordion. Nur ein Item gleichzeitig offen. Perfekt für Support-Seiten.",
+  "description": "Elegant FAQ with animated accordion. Only one item open at a time. Perfect for support pages.",
   "category": "FAQ",
   "version": "1.0.0",
   "price": {

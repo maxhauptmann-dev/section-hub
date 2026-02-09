@@ -1,7 +1,7 @@
 import { Page, Layout, Card, Text, BlockStack, InlineStack, Thumbnail } from "@shopify/polaris";
 
 const INSPIRATIONS = [
-  { title: "Hero mit Video Background", category: "Hero", color: "#dbeafe" },
+  { title: "Hero with Video Background", category: "Hero", color: "#dbeafe" },
   { title: "Animated Testimonials", category: "Social Proof", color: "#dcfce7" },
   { title: "Before/After Slider", category: "Product", color: "#fef3c7" },
   { title: "Mega Footer", category: "Footer", color: "#fee2e2" },
@@ -15,10 +15,10 @@ export default function InspirationPage() {
           <Card>
             <BlockStack gap="300">
               <Text as="h2" variant="headingMd">
-                Lass dich inspirieren
+                Get inspired
               </Text>
               <Text as="p" variant="bodyMd">
-                Entdecke kreative Section-Designs von erfolgreichen Shopify Stores.
+                Discover creative section designs from successful Shopify stores.
               </Text>
             </BlockStack>
           </Card>

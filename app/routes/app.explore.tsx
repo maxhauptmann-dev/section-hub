@@ -23,8 +23,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 const CATEGORIES = [
-  { id: "all", label: "Alle", icon: "✨" },
-  { id: "free", label: "Kostenlos", icon: "🎁" },
+  { id: "all", label: "All", icon: "✨" },
+  { id: "free", label: "Free", icon: "🎁" },
   { id: "Hero", label: "Hero", icon: "🎯" },
   { id: "FAQ", label: "FAQ", icon: "❓" },
   { id: "Testimonials", label: "Testimonials", icon: "💬" },
@@ -34,7 +34,7 @@ const CATEGORIES = [
 ];
 
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
-  if (price.type === "free") return "Kostenlos";
+  if (price.type === "free") return "Free";
   return `€${price.amount}`;
 }
 
@@ -69,7 +69,7 @@ export default function ExploreSectionsPage() {
   return (
     <Page
       title="Explore Sections"
-      subtitle="Entdecke professionelle Sections für deinen Shop"
+      subtitle="Discover professional sections for your store"
     >
       <Layout>
         {/* Hero Banner */}
@@ -83,7 +83,7 @@ export default function ExploreSectionsPage() {
               <BlockStack gap="400">
                 <Badge tone="info">Section Hub</Badge>
                 <Text as="h1" variant="heading2xl" fontWeight="bold">
-                  <span style={{ color: "white" }}>Premium Sections für Shopify</span>
+                  <span style={{ color: "white" }}>Premium Sections for Shopify</span>
                 </Text>
                 <Text as="p" variant="bodyLg">
                   <span style={{ color: "rgba(255,255,255,0.9)" }}>
@@ -99,11 +99,11 @@ export default function ExploreSectionsPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Suche</Text>
+              <Text as="h2" variant="headingMd">Search</Text>
               <TextField
                 label=""
                 labelHidden
-                placeholder="Suche nach Sections..."
+                placeholder="Search sections..."
                 value={query}
                 onChange={setQuery}
                 autoComplete="off"
@@ -131,7 +131,7 @@ export default function ExploreSectionsPage() {
           <BlockStack gap="400">
             <InlineStack align="space-between" blockAlign="center">
               <Text as="h2" variant="headingLg">
-                {selectedCategory === "all" ? "Alle Sections" : CATEGORIES.find(c => c.id === selectedCategory)?.label || selectedCategory}
+                {selectedCategory === "all" ? "All Sections" : CATEGORIES.find(c => c.id === selectedCategory)?.label || selectedCategory}
               </Text>
               <Text as="p" variant="bodySm" tone="subdued">
                 {filteredSections.length} Section{filteredSections.length !== 1 ? "s" : ""}
@@ -142,7 +142,7 @@ export default function ExploreSectionsPage() {
               <Card>
                 <BlockStack gap="300" inlineAlign="center">
                   <Text as="p" variant="bodyMd" tone="subdued">
-                    Keine Sections gefunden.
+                  No sections found.
                   </Text>
                 </BlockStack>
               </Card>
@@ -202,7 +202,7 @@ export default function ExploreSectionsPage() {
                           </InlineStack>
                           <Box paddingBlockStart="200">
                             <Button variant="primary" size="slim" fullWidth>
-                              Installieren
+                            Install
                             </Button>
                           </Box>
                         </BlockStack>

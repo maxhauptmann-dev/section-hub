@@ -86,7 +86,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const sectionId = formData.get("sectionId") as string;
 
   if (!sectionId) {
-    return { success: false, error: "Section ID fehlt" };
+    return { success: false, error: "Section ID is missing" };
   }
 
   if (actionType === "uninstall") {
@@ -108,7 +108,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
 
       if (!mainTheme) {
-        return { success: false, error: "Kein aktives Theme gefunden." };
+        return { success: false, error: "No active theme found." };
       }
 
       const filename = `sections/section-${sectionId}.liquid`;
@@ -139,7 +139,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       if (deleteData.errors) {
         const errorMsg = deleteData.errors[0]?.message || JSON.stringify(deleteData.errors);
-        return { success: false, error: `GraphQL Fehler: ${errorMsg}` };
+        return { success: false, error: `GraphQL Error: ${errorMsg}` };
       }
 
       const userErrors = deleteData.data?.themeFilesDelete?.userErrors || [];
@@ -147,18 +147,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         const errorMsg = userErrors.map((e: { field?: string[]; message: string }) =>
           `${(e.field || []).join(".")}: ${e.message}`
         ).join(", ");
-        return { success: false, error: `Fehler: ${errorMsg}` };
+        return { success: false, error: `Error: ${errorMsg}` };
       }
 
       return {
         success: true,
-        message: `Section "${sectionId}" wurde erfolgreich aus "${mainTheme.name}" entfernt.`,
+        message: `Section "${sectionId}" was successfully removed from "${mainTheme.name}".`,
       };
     } catch (error) {
       console.error("Uninstall error:", error);
       return {
         success: false,
-        error: `Fehler beim Entfernen: ${error instanceof Error ? error.message : "Unbekannt"}`,
+        error: `Error removing section: ${error instanceof Error ? error.message : "Unknown"}`,
       };
     }
   }
@@ -166,17 +166,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (actionType === "install") {
     const section = getSectionWithFiles(sectionId);
     if (!section) {
-      return { success: false, error: "Section nicht gefunden" };
+      return { success: false, error: "Section not found" };
     }
 
     try {
       const sectionFileName = `section-${sectionId}.liquid`;
 
-      // CSS inline einbetten
+      // Embed CSS inline
       const liquidWithStyles = `{% comment %}
   Section Hub - ${section.name}
   Version: ${section.version}
-  Installiert via Section Hub App
+  Installed via Section Hub App
 {% endcomment %}
 
 <style>
@@ -202,7 +202,7 @@ ${section.liquidContent || ""}`;
       const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
 
       if (!mainTheme) {
-        return { success: false, error: "Kein aktives Theme gefunden." };
+        return { success: false, error: "No active theme found." };
       }
 
       const fileInput = {
@@ -241,7 +241,7 @@ ${section.liquidContent || ""}`;
 
       if (themeFilesData.errors) {
         const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
-        return { success: false, error: `GraphQL Fehler: ${errorMsg}` };
+        return { success: false, error: `GraphQL Error: ${errorMsg}` };
       }
 
       const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
@@ -249,28 +249,28 @@ ${section.liquidContent || ""}`;
         const errorMsg = userErrors
           .map((e: { field?: string[]; message: string }) => `${(e.field || []).join(".")}: ${e.message}`)
           .join(", ");
-        return { success: false, error: `Fehler beim Erstellen der Section: ${errorMsg}` };
+        return { success: false, error: `Error creating section: ${errorMsg}` };
       }
 
       const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
       if (upsertedFiles.length === 0) {
-        return { success: false, error: "Section konnte nicht installiert werden. Bitte versuche es später erneut." };
+        return { success: false, error: "Section could not be installed. Please try again later." };
       }
 
       return {
         success: true,
-        message: `${section.name} wurde erfolgreich in "${mainTheme.name}" installiert!`,
+        message: `${section.name} was successfully installed in "${mainTheme.name}"!`,
       };
     } catch (error) {
       console.error("Install error:", error);
       return {
         success: false,
-        error: `Fehler beim Installieren: ${error instanceof Error ? error.message : "Unbekannt"}`,
+        error: `Error installing: ${error instanceof Error ? error.message : "Unknown"}`,
       };
     }
   }
 
-  return { success: false, error: "Unbekannte Aktion" };
+  return { success: false, error: "Unknown action" };
 };
 
 export default function MySectionsPage() {
@@ -317,7 +317,7 @@ export default function MySectionsPage() {
         {result && (
           <Layout.Section>
             <Banner
-              title={result.success ? "Erfolgreich!" : "Fehler"}
+              title={result.success ? "Success!" : "Error"}
               tone={result.success ? "success" : "critical"}
               onDismiss={() => setResult(null)}
             >
@@ -332,16 +332,16 @@ export default function MySectionsPage() {
             <BlockStack gap="400">
               <div>
                 <Text as="h2" variant="headingLg">
-                  📥 Installierte Sections ({installedSections.length})
+                  📥 Installed Sections ({installedSections.length})
                 </Text>
                 <Text as="p" variant="bodySm" tone="subdued">
-                  Diese Sections sind in deinem Theme installiert und können verwaltet werden.
+                  These sections are installed in your theme and can be managed.
                 </Text>
               </div>
 
               {installedSections.length === 0 ? (
                 <Text as="p" variant="bodySm" tone="subdued">
-                  Keine Sections installiert. Erkunde den Store um neue hinzuzufügen.
+                  No sections installed. Explore the store to add new ones.
                 </Text>
               ) : (
                 <div
@@ -386,14 +386,14 @@ export default function MySectionsPage() {
 
                           <InlineStack gap="200">
                             <Button variant="primary" size="slim" fullWidth disabled>
-                              ✓ Installiert
+                              ✓ Installed
                             </Button>
                             <Button
                               size="slim"
                               variant="secondary"
                               onClick={() => setShowUninstallModal(section.id)}
                             >
-                              Entfernen
+                              Remove
                             </Button>
                           </InlineStack>
                         </BlockStack>
@@ -412,16 +412,16 @@ export default function MySectionsPage() {
             <BlockStack gap="400">
               <div>
                 <Text as="h2" variant="headingLg">
-                  ⭐ Verfügbare Sections ({availableSections.length})
+                  ⭐ Available Sections ({availableSections.length})
                 </Text>
                 <Text as="p" variant="bodySm" tone="subdued">
-                  Weitere Sections, die du installieren kannst.
+                  More sections you can install.
                 </Text>
               </div>
 
               {availableSections.length === 0 ? (
                 <Text as="p" variant="bodySm" tone="subdued">
-                  Alle verfügbaren Sections sind bereits installiert!
+                  All available sections are already installed!
                 </Text>
               ) : (
                 <div
@@ -450,7 +450,7 @@ export default function MySectionsPage() {
                             tone={section.price.type === "free" ? "success" : "info"}
                           >
                             {section.price.type === "free"
-                              ? "Kostenlos"
+                              ? "Free"
                               : `€${section.price.amount}`}
                           </Badge>
                         </div>
@@ -481,7 +481,7 @@ export default function MySectionsPage() {
                             onClick={() => handleInstall(section.id)}
                             loading={isSubmitting}
                           >
-                            + Installieren
+                            + Install
                           </Button>
                         </BlockStack>
                       </Box>
@@ -499,16 +499,16 @@ export default function MySectionsPage() {
         <Modal
           open={true}
           onClose={() => setShowUninstallModal(null)}
-          title={`"${sectionToRemove.name}" entfernen?`}
+          title={`Remove "${sectionToRemove.name}"?`}
           primaryAction={{
-            content: isSubmitting ? "Wird entfernt..." : "Ja, entfernen",
+            content: isSubmitting ? "Removing..." : "Yes, remove",
             destructive: true,
             onAction: () => handleUninstall(showUninstallModal),
             loading: isSubmitting,
           }}
           secondaryActions={[
             {
-              content: "Abbrechen",
+              content: "Cancel",
               onAction: () => setShowUninstallModal(null),
             },
           ]}
@@ -516,11 +516,11 @@ export default function MySectionsPage() {
           <Modal.Section>
             <BlockStack gap="200">
               <Text as="p" variant="bodyMd">
-                Die Section <strong>{sectionToRemove.name}</strong> wird aus deinem aktiven Theme entfernt.
+                The section <strong>{sectionToRemove.name}</strong> will be removed from your active theme.
               </Text>
               <Text as="p" variant="bodySm" tone="caution">
-                ⚠️ Wenn du die Section auf einer Seite verwendest, wird sie dort ebenfalls entfernt.
-                Du kannst sie jederzeit wieder installieren.
+                ⚠️ If you are using this section on a page, it will be removed there as well.
+                You can reinstall it at any time.
               </Text>
             </BlockStack>
           </Modal.Section>

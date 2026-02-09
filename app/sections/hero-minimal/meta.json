@@ -1,7 +1,7 @@
 {
   "id": "hero-minimal",
   "name": "Hero Minimal",
-  "description": "Ein cleaner, minimalistischer Hero-Bereich mit Überschrift, Text und animiertem CTA-Button.",
+  "description": "A clean, minimalist hero section with headline, text, and animated CTA button.",
   "category": "Hero",
   "version": "1.0.0",
   "price": {

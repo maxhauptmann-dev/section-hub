@@ -35,7 +35,7 @@ export interface SectionWithFiles extends SectionMeta {
 const SECTIONS_DIR = path.join(process.cwd(), "app", "sections");
 
 /**
- * Lädt alle verfügbaren Sections aus dem Dateisystem
+ * Loads all available sections from the filesystem
  */
 export function getAllSections(): SectionMeta[] {
   const sections: SectionMeta[] = [];
@@ -63,14 +63,14 @@ export function getAllSections(): SectionMeta[] {
     }
   }
 
-  // Sortiere nach updatedAt (neueste zuerst)
+  // Sort by updatedAt (newest first)
   sections.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
 
   return sections;
 }
 
 /**
- * Lädt eine einzelne Section mit allen Dateien (für Installation)
+ * Loads a single section with all files (for installation)
  */
 export function getSectionWithFiles(sectionId: string): SectionWithFiles | null {
   const sectionDir = path.join(SECTIONS_DIR, sectionId);
@@ -107,7 +107,7 @@ export function getSectionWithFiles(sectionId: string): SectionWithFiles | null 
 }
 
 /**
- * Gibt die Section-Kategorien zurück
+ * Returns the section categories
  */
 export function getSectionCategories(): string[] {
   const sections = getAllSections();
@@ -116,7 +116,7 @@ export function getSectionCategories(): string[] {
 }
 
 /**
- * Filtert Sections nach Kategorie
+ * Filters sections by category
  */
 export function getSectionsByCategory(category: string): SectionMeta[] {
   const sections = getAllSections();
@@ -125,7 +125,7 @@ export function getSectionsByCategory(category: string): SectionMeta[] {
 }
 
 /**
- * Sucht Sections nach Query
+ * Searches sections by query
  */
 export function searchSections(query: string): SectionMeta[] {
   const sections = getAllSections();

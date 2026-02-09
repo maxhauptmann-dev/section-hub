@@ -32,7 +32,7 @@ const BUNDLES: Bundle[] = [
   {
     id: "starter",
     name: "Starter Bundle",
-    description: "Perfekt für neue Shops. Die wichtigsten Sections zum Start.",
+    description: "Perfect for new stores. The essential sections to get started.",
     sections: ["Hero Simple", "FAQ Accordion", "Feature Grid", "Footer Pro"],
     originalPrice: 49,
     discountedPrice: 29,
@@ -46,7 +46,7 @@ const BUNDLES: Bundle[] = [
   {
     id: "conversion",
     name: "Conversion Bundle",
-    description: "Maximiere deine Conversion Rate mit bewährten Sections.",
+    description: "Maximize your conversion rate with proven sections.",
     sections: [
       "Countdown Timer",
       "Trust Badges",
@@ -67,7 +67,7 @@ const BUNDLES: Bundle[] = [
   {
     id: "pro",
     name: "Pro Bundle",
-    description: "Alle Premium Sections. Unbegrenzte Updates. Priority Support.",
+    description: "All premium sections. Unlimited updates. Priority support.",
     sections: [
       "Hero Pro",
       "Video Background Hero",
@@ -79,7 +79,7 @@ const BUNDLES: Bundle[] = [
       "Trust Badges",
       "Payment Icons",
       "Instagram Feed",
-      "+ alle zukünftigen Sections",
+      "+ all future sections",
     ],
     originalPrice: 199,
     discountedPrice: 99,
@@ -98,17 +98,17 @@ export default function BundlesPage() {
   return (
     <Page
       title="Bundle & Save"
-      subtitle="Spare bis zu 50% mit unseren kuratierten Section-Paketen"
-      primaryAction={{ content: "Einzelne Sections", url: "/app/explore" }}
+      subtitle="Save up to 50% with our curated section bundles"
+      primaryAction={{ content: "Individual Sections", url: "/app/explore" }}
     >
       <Layout>
         {/* Limited Time Banner */}
         <Layout.Section>
           <Banner tone="warning">
             <InlineStack gap="200" blockAlign="center">
-              <Text as="span" variant="headingSm">⏰ Limitiertes Angebot:</Text>
+              <Text as="span" variant="headingSm">⏰ Limited Offer:</Text>
               <Text as="span" variant="bodyMd">
-                Pro Bundle für nur €99 statt €199 — Endet bald!
+                Pro Bundle for only €99 instead of €199 — Ending soon!
               </Text>
             </InlineStack>
           </Banner>
@@ -157,7 +157,7 @@ export default function BundlesPage() {
                         textTransform: "uppercase",
                         letterSpacing: 0.5,
                       }}>
-                        ⭐ Beliebteste Wahl
+                        ⭐ Most Popular
                       </div>
                     )}
 
@@ -192,7 +192,7 @@ export default function BundlesPage() {
                   <Box padding="400" minHeight="300px">
                     <BlockStack gap="400">
                       <Text as="h3" variant="headingSm">
-                        Enthaltene Sections ({bundle.sections.length}):
+                        Included Sections ({bundle.sections.length}):
                       </Text>
 
                       <BlockStack gap="200">
@@ -227,14 +227,14 @@ export default function BundlesPage() {
                         fullWidth
                         variant="primary"
                         size="large"
-                        onClick={() => alert(`Kaufen: ${bundle.name} für €${bundle.discountedPrice}`)}
+                        onClick={() => alert(`Buy: ${bundle.name} for €${bundle.discountedPrice}`)}
                       >
-                        {bundle.name} kaufen — €{bundle.discountedPrice.toString()}
+                        Buy {bundle.name} — €{bundle.discountedPrice.toString()}
                       </Button>
 
                       {bundle.limitedTime && (
                         <Text as="p" variant="bodySm" tone="subdued" alignment="center">
-                          ⏰ Nur noch 3 Tage verfügbar
+                          ⏰ Only 3 days left
                         </Text>
                       )}
                     </BlockStack>
@@ -249,7 +249,7 @@ export default function BundlesPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <Text as="h2" variant="headingLg">Warum ein Bundle?</Text>
+              <Text as="h2" variant="headingLg">Why a Bundle?</Text>
               
               <div style={{
                 display: "grid",
@@ -258,9 +258,9 @@ export default function BundlesPage() {
               }}>
                 <BlockStack gap="200">
                   <span style={{ fontSize: 32 }}>💰</span>
-                  <Text as="h3" variant="headingMd">Spare bis zu 50%</Text>
+                  <Text as="h3" variant="headingMd">Save up to 50%</Text>
                   <Text as="p" variant="bodySm" tone="subdued">
-                    Im Vergleich zum Einzelkauf sparst du massiv.
+                    Save massively compared to buying individually.
                   </Text>
                 </BlockStack>
 
@@ -268,23 +268,23 @@ export default function BundlesPage() {
                   <span style={{ fontSize: 32 }}>🔄</span>
                   <Text as="h3" variant="headingMd">Lifetime Updates</Text>
                   <Text as="p" variant="bodySm" tone="subdued">
-                    Alle zukünftigen Updates kostenlos inklusive.
+                    All future updates included for free.
                   </Text>
                 </BlockStack>
 
                 <BlockStack gap="200">
                   <span style={{ fontSize: 32 }}>⚡</span>
-                  <Text as="h3" variant="headingMd">Sofort einsatzbereit</Text>
+                  <Text as="h3" variant="headingMd">Ready to use</Text>
                   <Text as="p" variant="bodySm" tone="subdued">
-                    One-Click Install in dein Theme.
+                    One-click install into your theme.
                   </Text>
                 </BlockStack>
 
                 <BlockStack gap="200">
                   <span style={{ fontSize: 32 }}>🎨</span>
-                  <Text as="h3" variant="headingMd">Perfekt abgestimmt</Text>
+                  <Text as="h3" variant="headingMd">Perfectly matched</Text>
                   <Text as="p" variant="bodySm" tone="subdued">
-                    Alle Sections passen optisch zusammen.
+                    All sections are visually consistent.
                   </Text>
                 </BlockStack>
               </div>
@@ -296,31 +296,31 @@ export default function BundlesPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <Text as="h2" variant="headingLg">Häufige Fragen</Text>
+              <Text as="h2" variant="headingLg">Frequently Asked Questions</Text>
               
               <BlockStack gap="300">
                 <BlockStack gap="100">
-                  <Text as="h3" variant="headingSm">Kann ich später upgraden?</Text>
+                  <Text as="h3" variant="headingSm">Can I upgrade later?</Text>
                   <Text as="p" variant="bodyMd" tone="subdued">
-                    Ja! Du zahlst nur die Differenz zum größeren Bundle.
+                    Yes! You only pay the difference to the larger bundle.
                   </Text>
                 </BlockStack>
 
                 <Divider />
 
                 <BlockStack gap="100">
-                  <Text as="h3" variant="headingSm">Funktioniert es mit meinem Theme?</Text>
+                  <Text as="h3" variant="headingSm">Does it work with my theme?</Text>
                   <Text as="p" variant="bodyMd" tone="subdued">
-                    Alle Sections sind kompatibel mit jedem OS 2.0 Theme.
+                    All sections are compatible with any OS 2.0 theme.
                   </Text>
                 </BlockStack>
 
                 <Divider />
 
                 <BlockStack gap="100">
-                  <Text as="h3" variant="headingSm">Was ist &quot;Lifetime Updates&quot;?</Text>
+                  <Text as="h3" variant="headingSm">What is &quot;Lifetime Updates&quot;?</Text>
                   <Text as="p" variant="bodyMd" tone="subdued">
-                    Du bekommst alle zukünftigen Updates und Verbesserungen kostenlos.
+                    You get all future updates and improvements for free.
                   </Text>
                 </BlockStack>
               </BlockStack>

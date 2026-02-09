@@ -39,7 +39,7 @@ export default function App() {
           <s-link href="/app/explore">Explore Sections</s-link>
           <s-link href="/app/bundles">Bundle &amp; Save</s-link>
           <s-link href="/app/blocks">Conversion Blocks</s-link>
-          <s-link href="/app/help">Helpcenter</s-link>
+          <s-link href="/app/help">Help Center</s-link>
           <s-link href="/app/inspiration">Section Inspiration</s-link>
           <s-link href="/app/migrator">Theme Migrator</s-link>
           <s-link href="/app/suggest">Suggest Idea 💡</s-link>

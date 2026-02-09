@@ -3,29 +3,29 @@ import { authenticate } from "../shopify.server";
 import { getSectionWithFiles } from "../lib/sections.server";
 
 /**
- * API Route: Section ins Theme installieren
+ * API Route: Install section to theme
  * POST /app/api/install-section
  * Body: { sectionId: string }
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
 
-  // Request Body parsen
+  // Parse request body
   const formData = await request.formData();
   const sectionId = formData.get("sectionId") as string;
 
   if (!sectionId) {
-    return Response.json({ success: false, error: "Section ID fehlt" }, { status: 400 });
+    return Response.json({ success: false, error: "Section ID is missing" }, { status: 400 });
   }
 
-  // Section-Dateien laden
+  // Load section files
   const section = getSectionWithFiles(sectionId);
   if (!section) {
-    return Response.json({ success: false, error: "Section nicht gefunden" }, { status: 404 });
+    return Response.json({ success: false, error: "Section not found" }, { status: 404 });
   }
 
   try {
-    // 1. Alle Themes abrufen und das Main-Theme finden
+    // 1. Fetch all themes and find the main theme
     const themesResponse = await admin.graphql(`
       query {
         themes(first: 10) {
@@ -43,20 +43,20 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
 
     if (!mainTheme) {
-      return Response.json({ success: false, error: "Kein aktives Theme gefunden" }, { status: 400 });
+      return Response.json({ success: false, error: "No active theme found" }, { status: 400 });
     }
 
-    // Theme ID aus GID extrahieren (gid://shopify/Theme/123456789 -> 123456789)
+    // Extract theme ID from GID (gid://shopify/Theme/123456789 -> 123456789)
     const themeId = mainTheme.id.split("/").pop();
 
-    // 2. Section Liquid-Datei ins Theme hochladen
+    // 2. Upload section liquid file to theme
     const sectionFileName = `section-${sectionId}.liquid`;
     
-    // CSS in die Liquid-Datei einbetten (inline)
+    // Embed CSS inline into liquid file
     const liquidWithStyles = `{% comment %}
   Section Hub - ${section.name}
   Version: ${section.version}
-  Installiert via Section Hub App
+  Installed via Section Hub App
 {% endcomment %}
 
 <style>
@@ -65,7 +65,7 @@ ${section.cssContent}
 
 ${section.liquidContent}`;
 
-    // Asset erstellen via REST API (fetch)
+    // Create asset via REST API (fetch)
     const shop = session.shop;
     const accessToken = session.accessToken;
     
@@ -91,13 +91,13 @@ ${section.liquidContent}`;
       console.error("Asset upload error:", errorData);
       return Response.json({ 
         success: false, 
-        error: "Fehler beim Hochladen der Section" 
+        error: "Error uploading section to theme" 
       }, { status: 500 });
     }
 
     return Response.json({ 
       success: true, 
-      message: `${section.name} wurde erfolgreich installiert!`,
+      message: `${section.name} was successfully installed!`,
       sectionFileName,
       themeName: mainTheme.name,
     });
@@ -106,7 +106,7 @@ ${section.liquidContent}`;
     console.error("Install section error:", error);
     return Response.json({ 
       success: false, 
-      error: "Ein Fehler ist aufgetreten" 
+      error: "An error occurred" 
     }, { status: 500 });
   }
 };

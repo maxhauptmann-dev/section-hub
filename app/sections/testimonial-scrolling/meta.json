@@ -1,7 +1,7 @@
 {
   "id": "testimonial-scrolling",
   "name": "Testimonial Scrolling Images",
-  "description": "Endlos scrollende Testimonial-Bilder mit anpassbarer Größe, Form (rund/eckig/abgerundet) und Überschrift. Automatisches Marquee mit Hover-Pause.",
+  "description": "Infinitely scrolling testimonial images with customizable size, shape (round/square/rounded), and heading. Auto marquee with hover pause.",
   "category": "Testimonials",
   "version": "1.0.0",
   "price": {

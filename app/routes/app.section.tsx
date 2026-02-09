@@ -40,17 +40,17 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   if (actionType === "install" && sectionId) {
     const section = getSectionWithFiles(sectionId);
     if (!section) {
-      return { success: false, error: "Section nicht gefunden" };
+      return { success: false, error: "Section not found" };
     }
     
     try {
       const sectionFileName = `section-${sectionId}.liquid`;
       
-      // CSS inline einbetten
+      // Embed CSS inline
       const liquidWithStyles = `{% comment %}
   Section Hub - ${section.name}
   Version: ${section.version}
-  Installiert via Section Hub App
+  Installed via Section Hub App
 {% endcomment %}
 
 <style>
@@ -79,12 +79,12 @@ ${section.liquidContent || ""}`;
       const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
       
       if (!mainTheme) {
-        return { success: false, error: "Kein aktives Theme gefunden." };
+        return { success: false, error: "No active theme found." };
       }
       
       console.log("Selected theme:", mainTheme);
       
-      // Nutze GraphQL themeFilesUpsert API - mit gid statt nur themeId
+      // Use GraphQL themeFilesUpsert API
       console.log("Uploading section with GraphQL:", { filename: `sections/${sectionFileName}`, themeId: mainTheme.id });
 
       const fileInput = {
@@ -95,7 +95,7 @@ ${section.liquidContent || ""}`;
         },
       };
       
-      // GraphQL themeFilesUpsert braucht die komplette GID
+      // GraphQL themeFilesUpsert requires the full GID
       const themeFilesResponse = await admin.graphql(
         `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
           themeFilesUpsert(files: $files, themeId: $themeId) {
@@ -138,7 +138,7 @@ ${section.liquidContent || ""}`;
         console.error("GraphQL Error:", errorMsg);
         return { 
           success: false, 
-          error: `GraphQL Fehler: ${errorMsg}`
+          error: `GraphQL Error: ${errorMsg}`
         };
       }
       
@@ -148,7 +148,7 @@ ${section.liquidContent || ""}`;
         console.error("User Errors:", errorMsg);
         return { 
           success: false, 
-          error: `Fehler beim Erstellen der Section: ${errorMsg}`
+          error: `Error creating section: ${errorMsg}`
         };
       }
       
@@ -156,28 +156,28 @@ ${section.liquidContent || ""}`;
       if (upsertedFiles.length === 0) {
         return { 
           success: false, 
-          error: "Section konnte nicht installiert werden. Bitte versuche es später erneut."
+          error: "Section could not be installed. Please try again later."
         };
       }
       
-      console.log("Section erfolgreich installiert:", upsertedFiles[0]?.filename);
+      console.log("Section successfully installed:", upsertedFiles[0]?.filename);
       
       return { 
         success: true, 
-        message: `${section.name} wurde erfolgreich in "${mainTheme.name}" installiert!`,
+        message: `${section.name} was successfully installed in "${mainTheme.name}"!`,
         themeName: mainTheme.name,
       };
     } catch (error) {
       console.error("Install error:", error);
-      return { success: false, error: `Ein Fehler ist aufgetreten: ${error instanceof Error ? error.message : "Unbekannt"}` };
+      return { success: false, error: `An error occurred: ${error instanceof Error ? error.message : "Unknown"}` };
     }
   }
   
-  return { success: false, error: "Unbekannte Aktion" };
+  return { success: false, error: "Unknown action" };
 };
 
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
-  if (price.type === "free") return "Kostenlos";
+  if (price.type === "free") return "Free";
   return `€${price.amount}`;
 }
 
@@ -190,7 +190,7 @@ export default function SectionDetailPage() {
   const isSubmitting = navigation.state === "submitting";
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
 
-  // Zeige Ergebnis der Action
+  // Show action result
   useEffect(() => {
     if (actionData) {
       setResult(actionData);
@@ -205,18 +205,18 @@ export default function SectionDetailPage() {
     );
   };
 
-  // Falls keine Section-ID übergeben wurde, zeige Liste
+  // If no section ID was provided, show list
   if (!section) {
     return (
       <Page 
-        title="Section installieren"
-        backAction={{ content: "Zurück", onAction: () => navigate("/app/explore") }}
+        title="Install Section"
+        backAction={{ content: "Back", onAction: () => navigate("/app/explore") }}
       >
         <Layout>
           <Layout.Section>
             <Card>
               <BlockStack gap="400">
-                <Text as="h2" variant="headingMd">Wähle eine Section zum Installieren</Text>
+                <Text as="h2" variant="headingMd">Choose a section to install</Text>
                 <BlockStack gap="300">
                   {allSections.map((s) => (
                     <button
@@ -271,26 +271,26 @@ export default function SectionDetailPage() {
   return (
     <Page
       title={section.name}
-      backAction={{ content: "Zurück", onAction: () => navigate("/app/explore") }}
+      backAction={{ content: "Back", onAction: () => navigate("/app/explore") }}
       primaryAction={{
-        content: isSubmitting ? "Installiere..." : "Im Theme installieren",
+        content: isSubmitting ? "Installing..." : "Install to Theme",
         onAction: handleInstall,
         loading: isSubmitting,
       }}
     >
       <Layout>
-        {/* Erfolgs-/Fehlermeldung */}
+        {/* Success/Error message */}
         {result && (
           <Layout.Section>
             <Banner
-              title={result.success ? "Erfolgreich installiert!" : "Fehler"}
+              title={result.success ? "Successfully installed!" : "Error"}
               tone={result.success ? "success" : "critical"}
               onDismiss={() => setResult(null)}
             >
               <p>{result.success ? result.message : result.error}</p>
               {result.success && (
                 <p style={{ marginTop: 8 }}>
-                  Öffne jetzt den Theme-Editor und füge die Section zu deiner Seite hinzu.
+                  Now open the Theme Editor and add the section to your page.
                 </p>
               )}
             </Banner>
@@ -327,7 +327,7 @@ export default function SectionDetailPage() {
                 <Divider />
                 
                 <InlineStack align="space-between">
-                  <Text as="p" variant="bodySm" tone="subdued">Kategorie</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Category</Text>
                   <Badge>{section.category}</Badge>
                 </InlineStack>
                 
@@ -337,14 +337,14 @@ export default function SectionDetailPage() {
                 </InlineStack>
                 
                 <InlineStack align="space-between">
-                  <Text as="p" variant="bodySm" tone="subdued">Preis</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Price</Text>
                   <Badge tone={section.price.type === "free" ? "success" : "info"}>
                     {priceLabel(section.price)}
                   </Badge>
                 </InlineStack>
                 
                 <InlineStack align="space-between">
-                  <Text as="p" variant="bodySm" tone="subdued">Autor</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Author</Text>
                   <Text as="p" variant="bodySm">{section.author}</Text>
                 </InlineStack>
               </BlockStack>
@@ -352,7 +352,7 @@ export default function SectionDetailPage() {
 
             <Card>
               <BlockStack gap="300">
-                <Text as="h2" variant="headingMd">Beschreibung</Text>
+                <Text as="h2" variant="headingMd">Description</Text>
                 <Text as="p" variant="bodyMd">{section.description}</Text>
               </BlockStack>
             </Card>
@@ -370,31 +370,31 @@ export default function SectionDetailPage() {
 
             <Card>
               <BlockStack gap="300">
-                <Text as="h2" variant="headingMd">Kompatibilität</Text>
+                <Text as="h2" variant="headingMd">Compatibility</Text>
                 <List>
                   {section.compatibility.themes.map((theme) => (
                     <List.Item key={theme}>{theme}</List.Item>
                   ))}
                 </List>
                 {section.compatibility.os2 && (
-                  <Badge tone="success">OS 2.0 kompatibel</Badge>
+                  <Badge tone="success">OS 2.0 compatible</Badge>
                 )}
               </BlockStack>
             </Card>
           </BlockStack>
         </Layout.Section>
 
-        {/* Hauptbereich */}
+        {/* How to use */}
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">So verwendest du diese Section</Text>
+              <Text as="h2" variant="headingMd">How to use this section</Text>
               <List type="number">
-                <List.Item>Klicke auf &quot;Im Theme installieren&quot;</List.Item>
-                <List.Item>Öffne den Shopify Theme-Editor</List.Item>
-                <List.Item>Klicke auf &quot;Abschnitt hinzufügen&quot;</List.Item>
-                <List.Item>Suche nach &quot;{section.name}&quot;</List.Item>
-                <List.Item>Passe die Einstellungen nach deinen Wünschen an</List.Item>
+                <List.Item>Click &quot;Install to Theme&quot;</List.Item>
+                <List.Item>Open the Shopify Theme Editor</List.Item>
+                <List.Item>Click &quot;Add section&quot;</List.Item>
+                <List.Item>Search for &quot;{section.name}&quot;</List.Item>
+                <List.Item>Customize the settings to your liking</List.Item>
               </List>
             </BlockStack>
           </Card>

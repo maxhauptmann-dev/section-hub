@@ -7,7 +7,7 @@ export default function ThemeMigratorPage() {
         <Layout.Section>
           <Banner tone="info">
             <Text as="p" variant="bodyMd">
-              Der Theme Migrator hilft dir, deine Sections beim Theme-Wechsel zu übertragen.
+              The Theme Migrator helps you transfer your sections when switching themes.
             </Text>
           </Banner>
         </Layout.Section>
@@ -16,13 +16,13 @@ export default function ThemeMigratorPage() {
           <Card>
             <BlockStack gap="400">
               <Text as="h2" variant="headingMd">
-                Sections migrieren
+                Migrate Sections
               </Text>
               <Text as="p" variant="bodyMd">
-                Wähle dein Quell-Theme und Ziel-Theme aus, um alle installierten Sections automatisch zu übertragen.
+                Select your source theme and target theme to automatically transfer all installed sections.
               </Text>
-              <Button variant="primary" onClick={() => alert("Migration Feature kommt bald!")}>
-                Migration starten
+              <Button variant="primary" onClick={() => alert("Migration feature coming soon!")}>
+                Start Migration
               </Button>
             </BlockStack>
           </Card>
@@ -32,19 +32,19 @@ export default function ThemeMigratorPage() {
           <Card>
             <BlockStack gap="300">
               <Text as="h2" variant="headingMd">
-                So funktioniert&apos;s
+                How it works
               </Text>
               <Text as="p" variant="bodyMd">
-                1. Wähle das Theme aus, von dem du migrieren möchtest
+                1. Select the theme you want to migrate from
               </Text>
               <Text as="p" variant="bodyMd">
-                2. Wähle das Ziel-Theme aus
+                2. Select the target theme
               </Text>
               <Text as="p" variant="bodyMd">
-                3. Klicke auf &quot;Migration starten&quot;
+                3. Click &quot;Start Migration&quot;
               </Text>
               <Text as="p" variant="bodyMd">
-                4. Alle kompatiblen Sections werden automatisch übertragen
+                4. All compatible sections will be transferred automatically
               </Text>
             </BlockStack>
           </Card>

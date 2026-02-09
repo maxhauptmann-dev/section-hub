@@ -1,7 +1,7 @@
 {
   "id": "testimonial-image-review",
   "name": "Testimonial Image Review",
-  "description": "Bild-Testimonials mit Produktfoto, Sternbewertung und Kundenkommentar. Grid-Layout mit anpassbaren Spalten und Bildgrößen.",
+  "description": "Image testimonials with product photos, star ratings, and customer comments. Grid layout with adjustable columns and image sizes.",
   "category": "Testimonials",
   "version": "1.0.0",
   "price": {

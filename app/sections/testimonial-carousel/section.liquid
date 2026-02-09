@@ -1,6 +1,6 @@
 {% comment %}
   Section Hub - Testimonial Carousel
-  Modernes Testimonial-Karussell mit Autoplay und manueller Navigation.
+  Modern testimonial carousel with autoplay and manual navigation.
 {% endcomment %}
 
 {{ 'section-testimonial-carousel.css' | asset_url | stylesheet_tag }}
@@ -69,7 +69,7 @@
     </div>
 
     <div class="testimonial-carousel__nav">
-      <button class="testimonial-carousel__btn testimonial-carousel__btn--prev" aria-label="Vorheriges">
+      <button class="testimonial-carousel__btn testimonial-carousel__btn--prev" aria-label="Previous">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -79,7 +79,7 @@
           <button class="testimonial-carousel__dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Testimonial {{ forloop.index }}"></button>
         {% endfor %}
       </div>
-      <button class="testimonial-carousel__btn testimonial-carousel__btn--next" aria-label="Nächstes">
+      <button class="testimonial-carousel__btn testimonial-carousel__btn--next" aria-label="Next">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
           <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
@@ -133,40 +133,40 @@
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow Text",
-      "default": "Kundenstimmen"
+      "default": "Testimonials"
     },
     {
       "type": "text",
       "id": "heading",
-      "label": "Überschrift",
-      "default": "Was unsere Kunden sagen"
+      "label": "Heading",
+      "default": "What Our Customers Say"
     },
     {
       "type": "header",
-      "content": "Farben"
+      "content": "Colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Hintergrundfarbe",
+      "label": "Background Color",
       "default": "#0f172a"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Textfarbe",
+      "label": "Text Color",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Akzentfarbe (Sterne)",
+      "label": "Accent Color (Stars)",
       "default": "#fbbf24"
     },
     {
       "type": "color",
       "id": "card_background",
-      "label": "Karten-Hintergrund",
+      "label": "Card Background",
       "default": "#1e293b"
     },
     {
@@ -176,7 +176,7 @@
     {
       "type": "checkbox",
       "id": "autoplay",
-      "label": "Automatisch abspielen",
+      "label": "Auto-play",
       "default": true
     },
     {
@@ -186,7 +186,7 @@
       "max": 10,
       "step": 1,
       "unit": "s",
-      "label": "Autoplay Geschwindigkeit",
+      "label": "Autoplay Speed",
       "default": 5
     }
   ],
@@ -201,14 +201,14 @@
           "min": 1,
           "max": 5,
           "step": 1,
-          "label": "Bewertung",
+          "label": "Rating",
           "default": 5
         },
         {
           "type": "textarea",
           "id": "quote",
-          "label": "Zitat",
-          "default": "Absolut begeistert! Die Qualität hat meine Erwartungen übertroffen. Kann ich nur weiterempfehlen."
+          "label": "Quote",
+          "default": "Absolutely delighted! The quality exceeded my expectations. Highly recommend."
         },
         {
           "type": "text",
@@ -219,8 +219,8 @@
         {
           "type": "text",
           "id": "title",
-          "label": "Titel/Position",
-          "default": "Verifizierter Käufer"
+          "label": "Title / Position",
+          "default": "Verified Buyer"
         },
         {
           "type": "image_picker",
@@ -238,27 +238,27 @@
           "type": "testimonial",
           "settings": {
             "rating": 5,
-            "quote": "Absolut begeistert! Die Qualität hat meine Erwartungen übertroffen. Schneller Versand und top Kundenservice.",
+            "quote": "Absolutely delighted! The quality exceeded my expectations. Fast shipping and great customer service.",
             "name": "Anna M.",
-            "title": "Verifizierter Käufer"
+            "title": "Verified Buyer"
           }
         },
         {
           "type": "testimonial",
           "settings": {
             "rating": 5,
-            "quote": "Habe schon mehrfach bestellt und war jedes Mal zufrieden. Preis-Leistung stimmt einfach!",
+            "quote": "I've ordered multiple times and have been satisfied every time. Great value for money!",
             "name": "Thomas K.",
-            "title": "Stammkunde"
+            "title": "Loyal Customer"
           }
         },
         {
           "type": "testimonial",
           "settings": {
             "rating": 4,
-            "quote": "Sehr schöne Produkte und liebevolle Verpackung. Wird definitiv nicht meine letzte Bestellung sein.",
+            "quote": "Beautiful products and lovely packaging. Definitely won't be my last order.",
             "name": "Sarah L.",
-            "title": "Verifizierter Käufer"
+            "title": "Verified Buyer"
           }
         }
       ]

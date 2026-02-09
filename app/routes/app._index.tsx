@@ -26,7 +26,7 @@ import {
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
 
-  // Lade alle verfügbaren Sections aus dem Dateisystem
+  // Load all available sections from filesystem
   const availableSections = getAllSections();
 
   // Versuche echte Daten von API zu laden (wenn Server aktiv)
@@ -43,21 +43,21 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         };
       }
     } catch {
-      // API nicht erreichbar, fallback auf Mock
+      // API not reachable, fallback to mock
     }
   }
 
-  // Fallback: Mock-Daten für Entwicklung (basierend auf echten Sections)
+  // Fallback: Mock data for development (based on real sections)
   const mockInstalled: InstalledSection[] = availableSections.slice(0, 3).map((section, index) => ({
     id: section.id,
     name: section.name,
     version: section.version,
-    latestVersion: index === 1 ? "1.1.0" : section.version, // Simuliere ein Update für die 2. Section
+    latestVersion: index === 1 ? "1.1.0" : section.version, // Simulate an update for the 2nd section
     installedAt: `${25 - index}. Jan 2026`,
     category: section.category,
     previewImage: "",
     previewColor: section.previewColor,
-    hasUpdate: index === 1, // Nur die 2. Section hat ein Update
+    hasUpdate: index === 1, // Only the 2nd section has an update
     usageCount: 3 - index,
   }));
 
@@ -103,12 +103,12 @@ export default function MySectionsPage() {
           <Layout.Section>
             <Card>
               <EmptyState
-                heading="Starte mit deiner ersten Section"
-                action={{ content: "Sections entdecken", url: "/app/explore" }}
-                secondaryAction={{ content: "Bundles ansehen", url: "/app/bundles" }}
+                heading="Start with your first section"
+                action={{ content: "Explore Sections", url: "/app/explore" }}
+                secondaryAction={{ content: "View Bundles", url: "/app/bundles" }}
                 image="https://cdn.shopify.com/s/files/1/0262/4071/2726/files/emptystate-files.png"
               >
-                <p>Installiere professionelle Sections in wenigen Sekunden.</p>
+                <p>Install professional sections in seconds.</p>
               </EmptyState>
             </Card>
           </Layout.Section>
@@ -120,13 +120,13 @@ export default function MySectionsPage() {
   return (
     <Page
       title="My Sections"
-      subtitle="Verwalte deine installierten Sections"
+      subtitle="Manage your installed sections"
       primaryAction={{
-        content: "Neue Section",
+        content: "New Section",
         url: "/app/explore",
       }}
       secondaryActions={[
-        { content: "Alle updaten", disabled: stats.sectionsWithUpdates === 0 },
+        { content: "Update All", disabled: stats.sectionsWithUpdates === 0 },
       ]}
     >
       <Layout>
@@ -136,7 +136,7 @@ export default function MySectionsPage() {
             <div style={{ flex: 1 }}>
               <Card>
                 <BlockStack gap="200">
-                  <Text as="p" variant="bodySm" tone="subdued">Installiert</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Installed</Text>
                   <Text as="p" variant="headingXl">{stats.totalSections}</Text>
                   <Text as="p" variant="bodySm" tone="subdued">Sections</Text>
                 </BlockStack>
@@ -149,19 +149,19 @@ export default function MySectionsPage() {
                   <InlineStack gap="200" blockAlign="center">
                     <Text as="p" variant="headingXl">{stats.sectionsWithUpdates}</Text>
                     {stats.sectionsWithUpdates > 0 && (
-                      <Badge tone="attention">Verfügbar</Badge>
+                      <Badge tone="attention">Available</Badge>
                     )}
                   </InlineStack>
-                  <Text as="p" variant="bodySm" tone="subdued">ausstehend</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">pending</Text>
                 </BlockStack>
               </Card>
             </div>
             <div style={{ flex: 1 }}>
               <Card>
                 <BlockStack gap="200">
-                  <Text as="p" variant="bodySm" tone="subdued">Verwendung</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">Usage</Text>
                   <Text as="p" variant="headingXl">{stats.totalUsage}×</Text>
-                  <Text as="p" variant="bodySm" tone="subdued">im Theme</Text>
+                  <Text as="p" variant="bodySm" tone="subdued">in theme</Text>
                 </BlockStack>
               </Card>
             </div>
@@ -188,14 +188,14 @@ export default function MySectionsPage() {
                     </div>
                     <BlockStack gap="100">
                       <Text as="p" variant="headingSm">
-                        {stats.sectionsWithUpdates} Update{stats.sectionsWithUpdates > 1 ? "s" : ""} verfügbar
+                        {stats.sectionsWithUpdates} Update{stats.sectionsWithUpdates > 1 ? "s" : ""} available
                       </Text>
                       <Text as="p" variant="bodySm" tone="subdued">
-                        Neue Features und Bugfixes für deine Sections
+                        New features and bugfixes for your sections
                       </Text>
                     </BlockStack>
                   </InlineStack>
-                  <Button variant="primary">Alle updaten</Button>
+                  <Button variant="primary">Update All</Button>
                 </InlineStack>
               </Box>
             </Card>
@@ -205,7 +205,7 @@ export default function MySectionsPage() {
         {/* Sections Grid */}
         <Layout.Section>
           <BlockStack gap="400">
-            <Text as="h2" variant="headingMd">Installierte Sections</Text>
+            <Text as="h2" variant="headingMd">Installed Sections</Text>
             
             <div style={{ 
               display: "grid", 
@@ -241,7 +241,7 @@ export default function MySectionsPage() {
                         {section.hasUpdate ? (
                           <Badge tone="attention">Update</Badge>
                         ) : (
-                          <Badge tone="success">Aktuell</Badge>
+                          <Badge tone="success">Current</Badge>
                         )}
                       </div>
                     </div>
@@ -257,7 +257,7 @@ export default function MySectionsPage() {
                             </Text>
                           </InlineStack>
                           <Text as="span" variant="bodySm" tone="subdued">
-                            {section.usageCount}× verwendet
+                            {section.usageCount}× used
                           </Text>
                         </InlineStack>
 
@@ -265,7 +265,7 @@ export default function MySectionsPage() {
 
                         <InlineStack align="space-between" blockAlign="center">
                           <Text as="p" variant="bodySm" tone="subdued">
-                            Installiert: {section.installedAt}
+                            Installed: {section.installedAt}
                           </Text>
                         </InlineStack>
 
@@ -274,9 +274,9 @@ export default function MySectionsPage() {
                             <Button
                               fullWidth
                               icon={ExternalIcon}
-                              onClick={() => alert(`Theme Editor öffnen`)}
+                              onClick={() => alert(`Open Theme Editor`)}
                             >
-                              Anpassen
+                              Customize
                             </Button>
                           </div>
                           {section.hasUpdate && (
@@ -310,12 +310,12 @@ export default function MySectionsPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <Text as="h2" variant="headingMd">Schnellaktionen</Text>
+              <Text as="h2" variant="headingMd">Quick Actions</Text>
               <InlineStack gap="300" wrap>
-                <Button url="/app/explore">Weitere Sections</Button>
-                <Button url="/app/bundles">Bundles ansehen</Button>
-                <Button url="/app/migrator">Theme wechseln</Button>
-                <Button url="/app/help">Hilfe</Button>
+                <Button url="/app/explore">More Sections</Button>
+                <Button url="/app/bundles">View Bundles</Button>
+                <Button url="/app/migrator">Switch Theme</Button>
+                <Button url="/app/help">Help</Button>
               </InlineStack>
             </BlockStack>
           </Card>

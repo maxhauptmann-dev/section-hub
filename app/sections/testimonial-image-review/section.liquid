@@ -94,7 +94,7 @@
               <div>
                 <span class="tir__name">{{ block.settings.name }}</span>
                 {% if block.settings.verified %}
-                  <span class="tir__verified">✓ Verifiziert</span>
+                  <span class="tir__verified">✓ Verified</span>
                 {% endif %}
               </div>
             </div>
@@ -135,28 +135,28 @@
     {
       "type": "text",
       "id": "heading",
-      "label": "Überschrift",
-      "default": "Was unsere Kunden sagen"
+      "label": "Heading",
+      "default": "What Our Customers Say"
     },
     {
       "type": "text",
       "id": "subheading",
-      "label": "Unterüberschrift",
-      "default": "KUNDENSTIMMEN"
+      "label": "Subheading",
+      "default": "TESTIMONIALS"
     },
     {
       "type": "textarea",
       "id": "description",
-      "label": "Beschreibung"
+      "label": "Description"
     },
     {
       "type": "header",
-      "content": "Gesamtbewertung"
+      "content": "Overall Rating"
     },
     {
       "type": "checkbox",
       "id": "show_overall_rating",
-      "label": "Gesamtbewertung anzeigen",
+      "label": "Show Overall Rating",
       "default": true
     },
     {
@@ -165,14 +165,14 @@
       "min": 1,
       "max": 5,
       "step": 1,
-      "label": "Sterne",
+      "label": "Stars",
       "default": 5
     },
     {
       "type": "text",
       "id": "review_count",
-      "label": "Bewertungstext",
-      "default": "4.9 von 5 — 1.240+ Bewertungen"
+      "label": "Review Text",
+      "default": "4.9 out of 5 — 1,240+ reviews"
     },
     {
       "type": "header",
@@ -184,18 +184,18 @@
       "min": 1,
       "max": 4,
       "step": 1,
-      "label": "Spalten (Desktop)",
+      "label": "Columns (Desktop)",
       "default": 3
     },
     {
       "type": "select",
       "id": "image_ratio",
-      "label": "Bild-Seitenverhältnis",
+      "label": "Image Aspect Ratio",
       "options": [
-        { "value": "1 / 1",    "label": "Quadratisch (1:1)" },
-        { "value": "4 / 3",    "label": "Querformat (4:3)" },
-        { "value": "3 / 4",    "label": "Hochformat (3:4)" },
-        { "value": "16 / 9",   "label": "Breitbild (16:9)" },
+        { "value": "1 / 1",    "label": "Square (1:1)" },
+        { "value": "4 / 3",    "label": "Landscape (4:3)" },
+        { "value": "3 / 4",    "label": "Portrait (3:4)" },
+        { "value": "16 / 9",   "label": "Widescreen (16:9)" },
         { "value": "auto",     "label": "Original" }
       ],
       "default": "4 / 3"
@@ -207,7 +207,7 @@
       "max": 32,
       "step": 2,
       "unit": "px",
-      "label": "Eckenradius",
+      "label": "Border Radius",
       "default": 12
     },
     {
@@ -217,7 +217,7 @@
       "max": 32,
       "step": 2,
       "unit": "px",
-      "label": "Sterngröße",
+      "label": "Star Size",
       "default": 18
     },
     {
@@ -227,7 +227,7 @@
       "max": 56,
       "step": 2,
       "unit": "px",
-      "label": "Überschrift-Größe",
+      "label": "Heading Size",
       "default": 32
     },
     {
@@ -237,7 +237,7 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Abstand oben",
+      "label": "Padding Top",
       "default": 60
     },
     {
@@ -247,52 +247,52 @@
       "max": 100,
       "step": 4,
       "unit": "px",
-      "label": "Abstand unten",
+      "label": "Padding Bottom",
       "default": 60
     },
     {
       "type": "header",
-      "content": "Farben"
+      "content": "Colors"
     },
     {
       "type": "color",
       "id": "background_color",
-      "label": "Hintergrund",
+      "label": "Background",
       "default": "#ffffff"
     },
     {
       "type": "color",
       "id": "text_color",
-      "label": "Textfarbe",
+      "label": "Text Color",
       "default": "#1a1a1a"
     },
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Akzentfarbe (Sterne)",
+      "label": "Accent Color (Stars)",
       "default": "#00b67a"
     },
     {
       "type": "color",
       "id": "card_background",
-      "label": "Karten-Hintergrund",
+      "label": "Card Background",
       "default": "#ffffff"
     },
     {
       "type": "header",
-      "content": "Mehr laden"
+      "content": "Load More"
     },
     {
       "type": "checkbox",
       "id": "show_load_more",
-      "label": "\"Mehr laden\" Button anzeigen",
+      "label": "Show \"Load More\" Button",
       "default": false
     },
     {
       "type": "text",
       "id": "load_more_text",
-      "label": "Button-Text",
-      "default": "Mehr Bewertungen laden"
+      "label": "Button Text",
+      "default": "Load More Reviews"
     },
     {
       "type": "range",
@@ -300,7 +300,7 @@
       "min": 3,
       "max": 12,
       "step": 1,
-      "label": "Anfangs sichtbare Karten",
+      "label": "Initially Visible Cards",
       "default": 6
     }
   ],
@@ -312,12 +312,12 @@
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Produktbild / Foto"
+          "label": "Product Image / Photo"
         },
         {
           "type": "text",
           "id": "alt",
-          "label": "Alt-Text"
+          "label": "Alt Text"
         },
         {
           "type": "range",
@@ -325,19 +325,19 @@
           "min": 1,
           "max": 5,
           "step": 1,
-          "label": "Bewertung",
+          "label": "Rating",
           "default": 5
         },
         {
           "type": "text",
           "id": "title",
-          "label": "Titel / Betreff"
+          "label": "Title / Subject"
         },
         {
           "type": "textarea",
           "id": "quote",
-          "label": "Kommentar",
-          "default": "Tolles Produkt! Bin sehr zufrieden und werde definitiv wieder bestellen."
+          "label": "Comment",
+          "default": "Great product! Very satisfied and will definitely order again."
         },
         {
           "type": "text",
@@ -353,7 +353,7 @@
         {
           "type": "checkbox",
           "id": "verified",
-          "label": "Verifizierter Kauf",
+          "label": "Verified Purchase",
           "default": true
         }
       ]
@@ -365,27 +365,27 @@
       "blocks": [
         {
           "type": "review",
-          "settings": { "rating": 5, "title": "Absolut begeistert!", "quote": "Die Qualität hat meine Erwartungen übertroffen. Schneller Versand und top Kundenservice. Kann ich nur weiterempfehlen!", "name": "Lori M.", "verified": true }
+          "settings": { "rating": 5, "title": "Absolutely delighted!", "quote": "The quality exceeded my expectations. Fast shipping and great customer service. Highly recommend!", "name": "Lori M.", "verified": true }
         },
         {
           "type": "review",
-          "settings": { "rating": 5, "title": "Mega zufrieden", "quote": "Habe schon mehrfach bestellt und war jedes Mal zufrieden. Preis-Leistung stimmt einfach!", "name": "Thomas K.", "verified": true }
+          "settings": { "rating": 5, "title": "Very satisfied", "quote": "I've ordered multiple times and have been satisfied every time. Great value for money!", "name": "Thomas K.", "verified": true }
         },
         {
           "type": "review",
-          "settings": { "rating": 4, "title": "Sehr schön", "quote": "Sehr schöne Produkte und liebevolle Verpackung. Wird definitiv nicht meine letzte Bestellung sein.", "name": "Sarah L.", "verified": true }
+          "settings": { "rating": 4, "title": "Beautiful", "quote": "Beautiful products and lovely packaging. Definitely won't be my last order.", "name": "Sarah L.", "verified": true }
         },
         {
           "type": "review",
-          "settings": { "rating": 5, "title": "Perfekt!", "quote": "Genau das was ich gesucht habe. Super Qualität, schnelle Lieferung. 100% empfehlenswert.", "name": "Max P.", "verified": true }
+          "settings": { "rating": 5, "title": "Perfect!", "quote": "Exactly what I was looking for. Great quality, fast delivery. 100% recommended.", "name": "Max P.", "verified": true }
         },
         {
           "type": "review",
-          "settings": { "rating": 5, "title": "Love it!", "quote": "Bin total begeistert von der Qualität. Das Material fühlt sich luxuriös an.", "name": "Elena S.", "verified": true }
+          "settings": { "rating": 5, "title": "Love it!", "quote": "Totally delighted by the quality. The material feels luxurious.", "name": "Elena S.", "verified": true }
         },
         {
           "type": "review",
-          "settings": { "rating": 5, "title": "Toller Shop", "quote": "Sehr zufrieden mit meiner Bestellung. Die Kommunikation war super und die Lieferung kam schnell.", "name": "Jan W.", "verified": true }
+          "settings": { "rating": 5, "title": "Great shop", "quote": "Very satisfied with my order. Communication was excellent and delivery was fast.", "name": "Jan W.", "verified": true }
         }
       ]
     }

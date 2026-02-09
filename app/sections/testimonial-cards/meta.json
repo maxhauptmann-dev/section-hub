@@ -1,7 +1,7 @@
 {
   "id": "testimonial-cards",
   "name": "Testimonial Cards",
-  "description": "Trustpilot-Style Testimonial-Karten mit Sternbewertung, Gesamtbewertung und Karussell. Voll anpassbare Farben, Größen und Texte.",
+  "description": "Trustpilot-style testimonial cards with star ratings, overall score, and carousel. Fully customizable colors, sizes, and text.",
   "category": "Testimonials",
   "version": "1.0.0",
   "price": {

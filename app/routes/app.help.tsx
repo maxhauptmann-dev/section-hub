@@ -2,23 +2,23 @@ import { Page, Layout, Card, Text, BlockStack, Button, InlineStack } from "@shop
 
 export default function HelpcenterPage() {
   return (
-    <Page title="Helpcenter">
+    <Page title="Help Center">
       <Layout>
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
               <Text as="h2" variant="headingMd">
-                Wie können wir dir helfen?
+                How can we help you?
               </Text>
               <Text as="p" variant="bodyMd">
-                Finde Antworten auf häufige Fragen oder kontaktiere unser Support-Team.
+                Find answers to common questions or contact our support team.
               </Text>
               <InlineStack gap="200">
                 <Button variant="primary" onClick={() => window.open("mailto:support@sectionhub.io")}>
-                  Support kontaktieren
+                  Contact Support
                 </Button>
                 <Button onClick={() => window.open("https://docs.sectionhub.io", "_blank")}>
-                  Dokumentation
+                  Documentation
                 </Button>
               </InlineStack>
             </BlockStack>
@@ -29,19 +29,19 @@ export default function HelpcenterPage() {
           <Card>
             <BlockStack gap="300">
               <Text as="h2" variant="headingMd">
-                Häufige Fragen
+                Frequently Asked Questions
               </Text>
               <Text as="p" variant="bodyMd">
-                • Wie installiere ich eine Section?
+                • How do I install a section?
               </Text>
               <Text as="p" variant="bodyMd">
-                • Wie aktualisiere ich auf die neueste Version?
+                • How do I update to the latest version?
               </Text>
               <Text as="p" variant="bodyMd">
-                • Kann ich Sections anpassen?
+                • Can I customize sections?
               </Text>
               <Text as="p" variant="bodyMd">
-                • Was passiert wenn ich die App deinstalliere?
+                • What happens if I uninstall the app?
               </Text>
             </BlockStack>
           </Card>

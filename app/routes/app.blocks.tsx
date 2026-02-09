@@ -11,7 +11,7 @@ export default function ConversionBlocksPage() {
                 High-Converting Blocks
               </Text>
               <Text as="p" variant="bodyMd">
-                Steigere deine Conversion-Rate mit bewährten UI-Elementen.
+                Boost your conversion rate with proven UI elements.
               </Text>
               <InlineStack gap="200">
                 <Badge tone="info">Countdown Timer</Badge>

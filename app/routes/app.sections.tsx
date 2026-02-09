@@ -26,14 +26,14 @@ type SectionItem = {
   price: Price;
   tags: string[];
   updatedAt: string; // ISO
-  previewColor: string; // nur für Mock-Thumbnail
+  previewColor: string; // for mock thumbnail only
 };
 
 const CATALOG: SectionItem[] = [
   {
     id: "hero-001",
     name: "Hero — Simple",
-    description: "Überschrift, Text, Button. Sauberer Start für Landingpages.",
+    description: "Headline, text, button. Clean start for landing pages.",
     category: "Hero",
     price: { type: "free" },
     tags: ["OS2.0", "Minimal"],
@@ -43,7 +43,7 @@ const CATALOG: SectionItem[] = [
   {
     id: "faq-001",
     name: "FAQ — Accordion",
-    description: "Accordion FAQ mit Überschrift + Fragen/Antworten.",
+    description: "Accordion FAQ with headline + questions/answers.",
     category: "FAQ",
     price: { type: "one_time", amount: 19, currency: "EUR" },
     tags: ["Conversion", "Support"],
@@ -53,7 +53,7 @@ const CATALOG: SectionItem[] = [
   {
     id: "proof-001",
     name: "Social Proof — Logos",
-    description: "Logo-Leiste für Vertrauen: 'As seen in …'",
+    description: "Logo bar for trust: 'As seen in …'",
     category: "Social proof",
     price: { type: "one_time", amount: 9, currency: "EUR" },
     tags: ["Trust"],
