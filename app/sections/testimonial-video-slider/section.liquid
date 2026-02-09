@@ -47,47 +47,82 @@
     {% endif %}
 
     <div class="tv-slider__viewport">
-      <div class="tv-slider__track" id="tv-track-{{ section.id }}">
+      <div class="tv-slider__track" id="tv-track-{{ section.id }}" data-autoplay="{{ section.settings.autoplay_videos }}">
         {% for block in section.blocks %}
           <div class="tv-slider__card" {{ block.shopify_attributes }}>
             <div class="tv-slider__video-wrap">
               {% if block.settings.media_type == 'video' %}
                 {%- comment -%} Video media: Shopify hosted, YouTube, Vimeo or external URL {%- endcomment -%}
                 {% if block.settings.shopify_video != blank %}
-                  {{
-                    block.settings.shopify_video
-                    | video_tag:
-                      class: 'tv-slider__video',
-                      playsinline: true,
-                      muted: true,
-                      loop: true,
-                      controls: true,
-                      preload: 'metadata',
-                      poster: ''
-                  }}
-                  <button class="tv-slider__play" aria-label="Play">
-                    <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                      <circle cx="24" cy="24" r="23" fill="rgba(0,0,0,0.45)" stroke="#fff" stroke-width="2"/>
-                      <path d="M19 15L34 24L19 33V15Z" fill="#fff"/>
-                    </svg>
-                  </button>
+                  {% if section.settings.autoplay_videos %}
+                    {{
+                      block.settings.shopify_video
+                      | video_tag:
+                        class: 'tv-slider__video',
+                        playsinline: true,
+                        muted: true,
+                        loop: true,
+                        autoplay: true,
+                        controls: true,
+                        preload: 'auto',
+                        poster: ''
+                    }}
+                  {% else %}
+                    {{
+                      block.settings.shopify_video
+                      | video_tag:
+                        class: 'tv-slider__video',
+                        playsinline: true,
+                        muted: false,
+                        loop: true,
+                        controls: true,
+                        preload: 'metadata',
+                        poster: ''
+                    }}
+                    <button class="tv-slider__play" aria-label="Play">
+                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                        <circle cx="24" cy="24" r="23" fill="rgba(0,0,0,0.45)" stroke="#fff" stroke-width="2"/>
+                        <path d="M19 15L34 24L19 33V15Z" fill="#fff"/>
+                      </svg>
+                    </button>
+                  {% endif %}
                 {% elsif block.settings.video_url != blank %}
                   {% if block.settings.video_url.type == 'youtube' %}
-                    <iframe
-                      class="tv-slider__video"
-                      src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?controls=1&modestbranding=1&rel=0"
-                      frameborder="0"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowfullscreen
-                    ></iframe>
+                    {% if section.settings.autoplay_videos %}
+                      <iframe
+                        class="tv-slider__video"
+                        src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?controls=1&modestbranding=1&rel=0&autoplay=1&mute=1"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      ></iframe>
+                    {% else %}
+                      <iframe
+                        class="tv-slider__video"
+                        src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?controls=1&modestbranding=1&rel=0"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                      ></iframe>
+                    {% endif %}
                   {% elsif block.settings.video_url.type == 'vimeo' %}
-                    <iframe
-                      class="tv-slider__video"
-                      src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}"
-                      frameborder="0"
-                      allow="autoplay; fullscreen; picture-in-picture"
-                      allowfullscreen
-                    ></iframe>
+                    {% if section.settings.autoplay_videos %}
+                      <iframe
+                        class="tv-slider__video"
+                        src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}?autoplay=1&muted=1"
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                      ></iframe>
+                    {% else %}
+                      <iframe
+                        class="tv-slider__video"
+                        src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}"
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                      ></iframe>
+                    {% endif %}
                   {% endif %}
                 {% else %}
                   <div class="tv-slider__placeholder">
@@ -266,6 +301,13 @@
       "step": 1,
       "label": "Videos per Row (Desktop)",
       "default": 3
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_videos",
+      "label": "Autoplay Videos",
+      "info": "Videos start automatically when visible (muted). If disabled, visitors must click to play.",
+      "default": false
     },
     {
       "type": "range",
