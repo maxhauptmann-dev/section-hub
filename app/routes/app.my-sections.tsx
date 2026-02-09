@@ -3,6 +3,7 @@ import { useLoaderData, useSubmit, useNavigation, useActionData } from "react-ro
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getAllSections, getSectionWithFiles } from "../lib/sections.server";
+import type { SectionMeta } from "../lib/sections.server";
 import {
   Page,
   Layout,
@@ -15,7 +16,178 @@ import {
   Box,
   Modal,
   Banner,
+  Icon,
 } from "@shopify/polaris";
+import { ChevronLeftIcon, ChevronRightIcon } from "@shopify/polaris-icons";
+
+function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
+  if (price.type === "free") return "Free";
+  return `€${price.amount}`;
+}
+
+// Preview Image Slider Component
+function PreviewSlider({ 
+  section,
+  showPriceBadge = true,
+}: { 
+  section: SectionMeta;
+  showPriceBadge?: boolean;
+}) {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const previews = section.previews || [];
+  const hasPreviews = previews.length > 0;
+  const hasMultiple = previews.length > 1;
+
+  const goNext = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((i) => (i + 1) % previews.length);
+  };
+
+  const goPrev = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setCurrentIndex((i) => (i - 1 + previews.length) % previews.length);
+  };
+
+  return (
+    <div 
+      style={{
+        position: "relative",
+        height: 140,
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+        overflow: "hidden",
+        background: section.previewColor || "#6366f1",
+      }}
+    >
+      {/* Image or Fallback */}
+      {hasPreviews ? (
+        <img
+          src={previews[currentIndex].src}
+          alt={previews[currentIndex].alt}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            transition: "opacity 0.3s ease",
+          }}
+        />
+      ) : (
+        <div 
+          style={{
+            width: "100%",
+            height: "100%",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text as="p" variant="headingMd">
+            <span style={{ color: "white" }}>{section.name}</span>
+          </Text>
+        </div>
+      )}
+
+      {/* Price Badge */}
+      {showPriceBadge && (
+        <div style={{ position: "absolute", top: 12, right: 12 }}>
+          <Badge tone={section.price.type === "free" ? "success" : "info"}>
+            {priceLabel(section.price)}
+          </Badge>
+        </div>
+      )}
+
+      {/* Variant Label */}
+      {hasPreviews && previews[currentIndex].label && (
+        <div style={{ 
+          position: "absolute", 
+          bottom: 12, 
+          left: 12,
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          padding: "4px 8px",
+          borderRadius: 4,
+          fontSize: 12,
+        }}>
+          {previews[currentIndex].label}
+        </div>
+      )}
+
+      {/* Navigation Arrows */}
+      {hasMultiple && (
+        <>
+          <button
+            onClick={goPrev}
+            style={{
+              position: "absolute",
+              left: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.9)",
+              border: "none",
+              borderRadius: "50%",
+              width: 28,
+              height: 28,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            aria-label="Previous preview"
+          >
+            <Icon source={ChevronLeftIcon} />
+          </button>
+          <button
+            onClick={goNext}
+            style={{
+              position: "absolute",
+              right: 8,
+              top: "50%",
+              transform: "translateY(-50%)",
+              background: "rgba(255,255,255,0.9)",
+              border: "none",
+              borderRadius: "50%",
+              width: 28,
+              height: 28,
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+            }}
+            aria-label="Next preview"
+          >
+            <Icon source={ChevronRightIcon} />
+          </button>
+        </>
+      )}
+
+      {/* Dots Indicator */}
+      {hasMultiple && (
+        <div style={{
+          position: "absolute",
+          bottom: 12,
+          right: 12,
+          display: "flex",
+          gap: 4,
+        }}>
+          {previews.map((_, i) => (
+            <div
+              key={i}
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: "50%",
+                background: i === currentIndex ? "white" : "rgba(255,255,255,0.5)",
+                transition: "background 0.2s",
+              }}
+            />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin } = await authenticate.admin(request);
@@ -353,21 +525,7 @@ export default function MySectionsPage() {
                 >
                   {installedSections.map((section) => (
                     <Card key={section.id} padding="0">
-                      <div
-                        style={{
-                          background: section.previewColor || "#6366f1",
-                          height: 120,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderTopLeftRadius: 12,
-                          borderTopRightRadius: 12,
-                        }}
-                      >
-                        <Text as="p" variant="headingSm">
-                          <span style={{ color: "white" }}>{section.name}</span>
-                        </Text>
-                      </div>
+                      <PreviewSlider section={section} showPriceBadge={false} />
 
                       <Box padding="400">
                         <BlockStack gap="200">
@@ -433,31 +591,7 @@ export default function MySectionsPage() {
                 >
                   {availableSections.map((section) => (
                     <Card key={section.id} padding="0">
-                      <div
-                        style={{
-                          background: section.previewColor || "#6366f1",
-                          height: 120,
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          borderTopLeftRadius: 12,
-                          borderTopRightRadius: 12,
-                          position: "relative",
-                        }}
-                      >
-                        <div style={{ position: "absolute", top: 12, right: 12 }}>
-                          <Badge
-                            tone={section.price.type === "free" ? "success" : "info"}
-                          >
-                            {section.price.type === "free"
-                              ? "Free"
-                              : `€${section.price.amount}`}
-                          </Badge>
-                        </div>
-                        <Text as="p" variant="headingSm">
-                          <span style={{ color: "white" }}>{section.name}</span>
-                        </Text>
-                      </div>
+                      <PreviewSlider section={section} showPriceBadge={true} />
 
                       <Box padding="400">
                         <BlockStack gap="200">
