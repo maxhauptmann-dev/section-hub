@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useLoaderData } from "react-router";
+import { useState, useEffect } from "react";
+import { useLoaderData, useSubmit, useNavigation, useActionData } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getAllSections } from "../lib/sections.server";
@@ -14,95 +14,204 @@ import {
   Button,
   Box,
   Modal,
-  TextField,
+  Banner,
 } from "@shopify/polaris";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { admin } = await authenticate.admin(request);
   const allSections = getAllSections();
-  
-  // Mock: In real app, fetch from database which sections are installed
-  // For now, return all sections as "available to install" and a mock list of installed ones
-  const installedSectionIds = ["testimonial-carousel", "hero-minimal"];
+
+  // Query the active theme to find which sections are actually installed
+  let installedSectionIds: string[] = [];
+
+  try {
+    // Get the main theme
+    const themesResponse = await admin.graphql(`
+      query {
+        themes(first: 10) {
+          nodes {
+            id
+            name
+            role
+          }
+        }
+      }
+    `);
+    const themesData = await themesResponse.json();
+    const themes = themesData.data?.themes?.nodes || [];
+    const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+    if (mainTheme) {
+      // Build list of expected filenames for all our sections
+      const expectedFilenames = allSections.map(s => `sections/section-${s.id}.liquid`);
+
+      // Query theme files matching our section filenames
+      const filesResponse = await admin.graphql(
+        `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
+          theme(id: $themeId) {
+            files(first: 250, filenames: $filenames) {
+              nodes {
+                filename
+              }
+            }
+          }
+        }`,
+        { variables: { themeId: mainTheme.id, filenames: expectedFilenames } }
+      );
+      const filesData = await filesResponse.json();
+      const themeFiles = filesData.data?.theme?.files?.nodes || [];
+
+      // Extract section IDs from filenames like "sections/section-hero-minimal.liquid"
+      installedSectionIds = themeFiles
+        .map((f: { filename: string }) => {
+          const match = f.filename.match(/^sections\/section-(.+)\.liquid$/);
+          return match ? match[1] : null;
+        })
+        .filter(Boolean) as string[];
+    }
+  } catch (error) {
+    console.error("Error fetching installed sections:", error);
+  }
+
   const installedSections = allSections.filter(s => installedSectionIds.includes(s.id));
-  
-  return { allSections, installedSections };
+
+  return { allSections, installedSections, installedSectionIds };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  await authenticate.admin(request);
-  
-  if (request.method === "POST") {
-    const formData = await request.formData();
-    const action = formData.get("action");
-    const sectionId = formData.get("sectionId");
-    
-    if (action === "install") {
-      console.log(`Installing section: ${sectionId}`);
-      return { success: true, action: "installed", sectionId };
-    } else if (action === "uninstall") {
-      console.log(`Uninstalling section: ${sectionId}`);
-      return { success: true, action: "uninstalled", sectionId };
+  const { admin } = await authenticate.admin(request);
+
+  const formData = await request.formData();
+  const actionType = formData.get("action") as string;
+  const sectionId = formData.get("sectionId") as string;
+
+  if (!sectionId) {
+    return { success: false, error: "Section ID fehlt" };
+  }
+
+  if (actionType === "uninstall") {
+    try {
+      // Get the main theme
+      const themesResponse = await admin.graphql(`
+        query {
+          themes(first: 10) {
+            nodes {
+              id
+              name
+              role
+            }
+          }
+        }
+      `);
+      const themesData = await themesResponse.json();
+      const themes = themesData.data?.themes?.nodes || [];
+      const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+      if (!mainTheme) {
+        return { success: false, error: "Kein aktives Theme gefunden." };
+      }
+
+      const filename = `sections/section-${sectionId}.liquid`;
+
+      // Delete the section file from the theme
+      const deleteResponse = await admin.graphql(
+        `mutation ThemeFilesDelete($themeId: ID!, $files: [String!]!) {
+          themeFilesDelete(themeId: $themeId, files: $files) {
+            deletedThemeFiles {
+              filename
+            }
+            userErrors {
+              field
+              message
+            }
+          }
+        }`,
+        {
+          variables: {
+            themeId: mainTheme.id,
+            files: [filename],
+          },
+        }
+      );
+
+      const deleteData = await deleteResponse.json() as any;
+      console.log("themeFilesDelete response:", JSON.stringify(deleteData, null, 2));
+
+      if (deleteData.errors) {
+        const errorMsg = deleteData.errors[0]?.message || JSON.stringify(deleteData.errors);
+        return { success: false, error: `GraphQL Fehler: ${errorMsg}` };
+      }
+
+      const userErrors = deleteData.data?.themeFilesDelete?.userErrors || [];
+      if (userErrors.length > 0) {
+        const errorMsg = userErrors.map((e: { field?: string[]; message: string }) =>
+          `${(e.field || []).join(".")}: ${e.message}`
+        ).join(", ");
+        return { success: false, error: `Fehler: ${errorMsg}` };
+      }
+
+      return {
+        success: true,
+        message: `Section "${sectionId}" wurde erfolgreich aus "${mainTheme.name}" entfernt.`,
+      };
+    } catch (error) {
+      console.error("Uninstall error:", error);
+      return {
+        success: false,
+        error: `Fehler beim Entfernen: ${error instanceof Error ? error.message : "Unbekannt"}`,
+      };
     }
   }
-  
-  return { error: "Invalid request" };
+
+  return { success: false, error: "Unbekannte Aktion" };
 };
 
 export default function MySectionsPage() {
   const { allSections, installedSections } = useLoaderData<typeof loader>();
   const [showUninstallModal, setShowUninstallModal] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const submit = useSubmit();
+  const navigation = useNavigation();
+  const actionData = useActionData<typeof action>();
+  const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
+
+  const isSubmitting = navigation.state === "submitting";
+
+  useEffect(() => {
+    if (actionData) {
+      setResult(actionData as { success?: boolean; message?: string; error?: string });
+      setShowUninstallModal(null);
+    }
+  }, [actionData]);
 
   const availableSections = allSections.filter(
     (s) => !installedSections.some((installed) => installed.id === s.id)
   );
 
-  const handleInstall = async (sectionId: string) => {
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append("action", "install");
-    formData.append("sectionId", sectionId);
-    
-    try {
-      const response = await fetch(window.location.href, {
-        method: "POST",
-        body: formData,
-      });
-      
-      if (response.ok) {
-        // Reload page to update lists
-        window.location.reload();
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const sectionToRemove = installedSections.find(s => s.id === showUninstallModal);
 
-  const handleUninstall = async (sectionId: string) => {
-    setIsLoading(true);
-    const formData = new FormData();
-    formData.append("action", "uninstall");
-    formData.append("sectionId", sectionId);
-    
-    try {
-      const response = await fetch(window.location.href, {
-        method: "POST",
-        body: formData,
-      });
-      
-      if (response.ok) {
-        setShowUninstallModal(null);
-        window.location.reload();
-      }
-    } finally {
-      setIsLoading(false);
-    }
+  const handleUninstall = (sectionId: string) => {
+    submit(
+      { action: "uninstall", sectionId },
+      { method: "post" }
+    );
   };
 
   return (
     <Page title="My Sections">
       <Layout>
+        {/* Success/Error Banner */}
+        {result && (
+          <Layout.Section>
+            <Banner
+              title={result.success ? "Erfolgreich!" : "Fehler"}
+              tone={result.success ? "success" : "critical"}
+              onDismiss={() => setResult(null)}
+            >
+              <p>{result.success ? result.message : result.error}</p>
+            </Banner>
+          </Layout.Section>
+        )}
+
         {/* Installed Sections */}
         <Layout.Section>
           <Card>
@@ -255,8 +364,7 @@ export default function MySectionsPage() {
                             variant="primary"
                             size="slim"
                             fullWidth
-                            onClick={() => handleInstall(section.id)}
-                            loading={isLoading}
+                            url={`/app/section?id=${section.id}`}
                           >
                             + Installieren
                           </Button>
@@ -272,15 +380,16 @@ export default function MySectionsPage() {
       </Layout>
 
       {/* Uninstall Confirmation Modal */}
-      {showUninstallModal && (
+      {showUninstallModal && sectionToRemove && (
         <Modal
           open={true}
           onClose={() => setShowUninstallModal(null)}
-          title="Section entfernen?"
+          title={`"${sectionToRemove.name}" entfernen?`}
           primaryAction={{
-            content: "Ja, entfernen",
+            content: isSubmitting ? "Wird entfernt..." : "Ja, entfernen",
+            destructive: true,
             onAction: () => handleUninstall(showUninstallModal),
-            loading: isLoading,
+            loading: isSubmitting,
           }}
           secondaryActions={[
             {
@@ -291,12 +400,12 @@ export default function MySectionsPage() {
         >
           <Modal.Section>
             <BlockStack gap="200">
-              <Text as="p" variant="bodySm">
-                Bist du sicher, dass du diese Section aus deinem Theme entfernen möchtest?
+              <Text as="p" variant="bodyMd">
+                Die Section <strong>{sectionToRemove.name}</strong> wird aus deinem aktiven Theme entfernt.
               </Text>
-              <Text as="p" variant="bodySm" tone="subdued">
-                Diese Aktion kann nicht rückgängig gemacht werden. Alle auf dieser Section
-                basierten Anpassungen in deinem Theme werden gelöscht.
+              <Text as="p" variant="bodySm" tone="caution">
+                ⚠️ Wenn du die Section auf einer Seite verwendest, wird sie dort ebenfalls entfernt.
+                Du kannst sie jederzeit wieder installieren.
               </Text>
             </BlockStack>
           </Modal.Section>
