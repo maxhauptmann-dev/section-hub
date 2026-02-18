@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { useLoaderData, useNavigate, useActionData, useSubmit, useNavigation } from "react-router";
 import { authenticate } from "../shopify.server";
@@ -14,7 +14,12 @@ import {
   Divider,
   Banner,
   List,
+  Button,
+  Box,
+  Icon,
+  Spinner,
 } from "@shopify/polaris";
+import { ExternalIcon, ViewIcon, PlayIcon } from "@shopify/polaris-icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   await authenticate.admin(request);
@@ -189,6 +194,21 @@ export default function SectionDetailPage() {
   const actionData = useActionData<typeof action>();
   const isSubmitting = navigation.state === "submitting";
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
+  const [tryLoading, setTryLoading] = useState(false);
+  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [tryResult, setTryResult] = useState<{
+    success?: boolean;
+    message?: string;
+    error?: string;
+    editorUrl?: string;
+    themeName?: string;
+    expiresAt?: string;
+    trialDays?: number;
+  } | null>(null);
+  const [autoTriggered, setAutoTriggered] = useState(false);
+
+  // Demo store URL – replace with your actual demo store URL
+  const DEMO_STORE_URL = "https://section-hub-demo.myshopify.com";
 
   // Show action result
   useEffect(() => {
@@ -197,13 +217,87 @@ export default function SectionDetailPage() {
     }
   }, [actionData]);
 
-  const handleInstall = () => {
+  const handleInstall = async () => {
     if (!section) return;
-    submit(
-      { sectionId: section.id, action: "install" },
-      { method: "post" }
-    );
+    
+    try {
+      const formData = new FormData();
+      formData.append("sectionId", section.id);
+      formData.append("action", "install");
+
+      const response = await fetch("/app/api/install-section", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      // Handle purchase requirement
+      if (data.purchaseRequired && data.confirmationUrl) {
+        // Redirect to Shopify confirmation URL
+        window.top!.location.href = data.confirmationUrl;
+        return;
+      }
+
+      // Regular install response
+      setResult(data);
+    } catch (error) {
+      setResult({
+        success: false,
+        error: error instanceof Error ? error.message : "Installation failed",
+      });
+    }
   };
+
+  const handleTrySection = useCallback(async () => {
+    if (!section) return;
+    setTryLoading(true);
+    setTryResult(null);
+
+    try {
+      const formData = new FormData();
+      formData.append("sectionId", section.id);
+
+      const response = await fetch("/app/api/try-section", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+      setTryResult(data);
+
+      // Auto-open the Theme Editor in a new tab
+      if (data.success && data.editorUrl) {
+        window.open(data.editorUrl, "_blank");
+      }
+    } catch (err) {
+      setTryResult({
+        success: false,
+        error: `Request failed: ${err instanceof Error ? err.message : "Unknown error"}`,
+      });
+    } finally {
+      setTryLoading(false);
+    }
+  }, [section]);
+
+  // Auto-trigger "Try Section" if ?try=true is in the URL
+  useEffect(() => {
+    if (section && !autoTriggered) {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("try") === "true") {
+        setAutoTriggered(true);
+        handleTrySection();
+      }
+      // Check for successful purchase redirect
+      if (params.get("purchased") && params.get("install") === "true") {
+        setPurchaseSuccess(true);
+        setResult({
+          success: true,
+          message: "Section purchased successfully! You can now install it to your theme.",
+        });
+      }
+    }
+  }, [section, autoTriggered, handleTrySection]);
 
   // If no section ID was provided, show list
   if (!section) {
@@ -277,9 +371,22 @@ export default function SectionDetailPage() {
         onAction: handleInstall,
         loading: isSubmitting,
       }}
+      secondaryActions={[
+        {
+          content: "Try Section",
+          onAction: handleTrySection,
+          loading: tryLoading,
+          icon: PlayIcon,
+        },
+        {
+          content: "Demo Store",
+          onAction: () => window.open(DEMO_STORE_URL, "_blank"),
+          icon: ExternalIcon,
+        },
+      ]}
     >
       <Layout>
-        {/* Success/Error message */}
+        {/* Install Success/Error message */}
         {result && (
           <Layout.Section>
             <Banner
@@ -292,6 +399,44 @@ export default function SectionDetailPage() {
                 <p style={{ marginTop: 8 }}>
                   Now open the Theme Editor and add the section to your page.
                 </p>
+              )}
+            </Banner>
+          </Layout.Section>
+        )}
+
+        {/* Try Section Success/Error message */}
+        {tryResult && (
+          <Layout.Section>
+            <Banner
+              title={tryResult.success ? "Preview ready!" : "Error"}
+              tone={tryResult.success ? "info" : "critical"}
+              onDismiss={() => setTryResult(null)}
+            >
+              {tryResult.success ? (
+                <BlockStack gap="200">
+                  <p>{tryResult.message}</p>
+                  <p style={{ fontSize: 13, color: "#6b7280" }}>
+                    Theme: <strong>{tryResult.themeName}</strong> (unpublished – won&apos;t affect your live store)
+                  </p>
+                  {tryResult.expiresAt && (
+                    <p style={{ fontSize: 13, color: "#6b7280" }}>
+                      ⏱️ Trial period: <strong>{tryResult.trialDays} days</strong> until {new Date(tryResult.expiresAt).toLocaleDateString()}
+                    </p>
+                  )}
+                  {tryResult.editorUrl && (
+                    <div style={{ marginTop: 8 }}>
+                      <Button
+                        variant="primary"
+                        icon={ExternalIcon}
+                        onClick={() => window.open(tryResult.editorUrl, "_blank")}
+                      >
+                        Open Theme Editor
+                      </Button>
+                    </div>
+                  )}
+                </BlockStack>
+              ) : (
+                <p>{tryResult.error}</p>
               )}
             </Banner>
           </Layout.Section>
@@ -315,6 +460,59 @@ export default function SectionDetailPage() {
                 </Text>
               </div>
             </BlockStack>
+          </Card>
+        </Layout.Section>
+
+        {/* Try Before You Buy Card */}
+        <Layout.Section>
+          <Card>
+            <div style={{
+              background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
+              borderRadius: 12,
+              padding: 24,
+            }}>
+              <BlockStack gap="400">
+                <InlineStack gap="200" blockAlign="center">
+                  <div style={{
+                    background: "#0ea5e9",
+                    borderRadius: "50%",
+                    width: 36,
+                    height: 36,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                    <Icon source={ViewIcon} tone="base" />
+                  </div>
+                  <BlockStack gap="100">
+                    <Text as="h2" variant="headingMd">Try before you buy</Text>
+                    <Text as="p" variant="bodySm" tone="subdued">
+                      Test this section in your Theme Editor without affecting your live store
+                    </Text>
+                  </BlockStack>
+                </InlineStack>
+                <InlineStack gap="300">
+                  <Button
+                    variant="primary"
+                    icon={PlayIcon}
+                    onClick={handleTrySection}
+                    loading={tryLoading}
+                  >
+                    {tryLoading ? "Preparing preview…" : "Try Section ✨"}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    icon={ExternalIcon}
+                    onClick={() => window.open(DEMO_STORE_URL, "_blank")}
+                  >
+                    Demo Store
+                  </Button>
+                </InlineStack>
+                <Text as="p" variant="bodySm" tone="subdued">
+                  ℹ️ Creates a hidden preview theme – your live store stays untouched.
+                </Text>
+              </BlockStack>
+            </div>
           </Card>
         </Layout.Section>
 
@@ -390,11 +588,11 @@ export default function SectionDetailPage() {
             <BlockStack gap="400">
               <Text as="h2" variant="headingMd">How to use this section</Text>
               <List type="number">
-                <List.Item>Click &quot;Install to Theme&quot;</List.Item>
-                <List.Item>Open the Shopify Theme Editor</List.Item>
-                <List.Item>Click &quot;Add section&quot;</List.Item>
-                <List.Item>Search for &quot;{section.name}&quot;</List.Item>
+                <List.Item>Click &quot;Try Section&quot; to test it first, or &quot;Install to Theme&quot; to add it directly</List.Item>
+                <List.Item>The section will appear in the Shopify Theme Editor</List.Item>
+                <List.Item>Click &quot;Add section&quot; and search for &quot;{section.name}&quot;</List.Item>
                 <List.Item>Customize the settings to your liking</List.Item>
+                <List.Item>If you tested it, install it to your live theme when ready</List.Item>
               </List>
             </BlockStack>
           </Card>

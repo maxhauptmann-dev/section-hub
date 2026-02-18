@@ -32,3 +32,55 @@ model Session {
   refreshToken        String?
   refreshTokenExpires DateTime?
 }
+
+model SectionPreview {
+  id              String    @id @default(cuid())
+  shop            String
+  sectionId       String
+  themeId         String    // GID of the preview theme
+  themeName       String
+  sectionFileName String
+  createdAt       DateTime  @default(now())
+  expiresAt       DateTime  // When the preview should be removed
+  removed         Boolean   @default(false)
+  removedAt       DateTime?
+
+  @@unique([shop, sectionId])
+  @@index([expiresAt])
+  @@index([removed])
+}
+
+model AiSection {
+  id              String    @id @default(cuid())
+  shop            String
+  name            String
+  slug            String
+  prompt          String
+  style           String
+  colorScheme     String
+  model           String
+  liquidCode      String
+  sectionType     String
+  tokensUsed      Int       @default(0)
+  installed       Boolean   @default(false)
+  installedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@unique([shop, slug])
+  @@index([shop])
+}
+
+model SectionPurchase {
+  id              String    @id @default(cuid())
+  shop            String
+  sectionHandle   String
+  appPurchaseId   String    @unique
+  amount          Float
+  currency        String    @default("EUR")
+  status          String    @default("PENDING")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([shop])
+  @@index([sectionHandle])
+}
