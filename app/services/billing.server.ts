@@ -151,16 +151,22 @@ export async function getAppPurchaseStatus(
  * Check if a section has been purchased for a shop
  */
 export async function hasPurchasedSection(shop: string, sectionHandle: string) {
-  const purchase = await prisma.sectionPurchase.findFirst({
-    where: {
-      shop,
-      sectionHandle,
-      status: {
-        in: ["COMPLETED", "PURCHASED", "ACTIVE", "ACCEPTED"],
+  try {
+    const purchase = await prisma.sectionPurchase.findFirst({
+      where: {
+        shop,
+        sectionHandle,
+        status: {
+          in: ["COMPLETED", "PURCHASED", "ACTIVE", "ACCEPTED"],
+        },
       },
-    },
-  });
-  return !!purchase;
+    });
+    return !!purchase;
+  } catch (error) {
+    console.error("Error checking purchased section:", error);
+    // Fallback: assume not purchased on error
+    return false;
+  }
 }
 
 /**
