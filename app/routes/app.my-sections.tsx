@@ -3,6 +3,8 @@ import { useLoaderData, useSubmit, useNavigation, useActionData } from "react-ro
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getAllSections, getSectionWithFiles } from "../lib/sections.server";
+import prisma from "../db.server";
+import { sanitizeShopifySchema } from "../lib/sanitize-schema";
 import type { SectionMeta } from "../lib/sections.server";
 import {
   Page,
@@ -190,11 +192,18 @@ function PreviewSlider({
 }
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
   const allSections = getAllSections();
+
+  // Load AI-generated purchased sections for this shop
+  const aiSections = await prisma.aiSection.findMany({
+    where: { shop: session.shop, installed: true },
+    orderBy: { createdAt: "desc" },
+  });
 
   // Query the active theme to find which sections are actually installed
   let installedSectionIds: string[] = [];
+  let installedAiSlugs: string[] = [];
 
   try {
     // Get the main theme
@@ -209,13 +218,23 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         }
       }
     `);
-    const themesData = await themesResponse.json();
+    
+    if (!themesResponse.ok) {
+      console.error("GraphQL request failed:", themesResponse.status);
+      throw new Error(`GraphQL request failed with status ${themesResponse.status}`);
+    }
+    
+    const themesData = await themesResponse.json() as any;
     const themes = themesData.data?.themes?.nodes || [];
     const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
 
     if (mainTheme) {
       // Build list of expected filenames for all our sections
       const expectedFilenames = allSections.map(s => `sections/section-${s.id}.liquid`);
+
+      // Also check AI section filenames
+      const aiFilenames = aiSections.map((ai: any) => `sections/section-ai-${ai.slug}.liquid`);
+      const allFilenames = [...expectedFilenames, ...aiFilenames];
 
       // Query theme files matching our section filenames
       const filesResponse = await admin.graphql(
@@ -228,9 +247,14 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             }
           }
         }`,
-        { variables: { themeId: mainTheme.id, filenames: expectedFilenames } }
+        { variables: { themeId: mainTheme.id, filenames: allFilenames } }
       );
-      const filesData = await filesResponse.json();
+      
+      if (!filesResponse.ok) {
+        throw new Error(`Files GraphQL request failed`);
+      }
+      
+      const filesData = await filesResponse.json() as any;
       const themeFiles = filesData.data?.theme?.files?.nodes || [];
 
       // Extract section IDs from filenames like "sections/section-hero-minimal.liquid"
@@ -240,18 +264,28 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
           return match ? match[1] : null;
         })
         .filter(Boolean) as string[];
+
+      // Check which AI sections are installed on the theme
+      const aiInstalledSlugs = themeFiles
+        .map((f: { filename: string }) => {
+          const match = f.filename.match(/^sections\/section-ai-(.+)\.liquid$/);
+          return match ? match[1] : null;
+        })
+        .filter(Boolean) as string[];
+      installedAiSlugs = aiInstalledSlugs;
     }
   } catch (error) {
-    console.error("Error fetching installed sections:", error);
+    console.error("Error fetching installed sections (non-fatal):", error);
+    // Don't throw - just continue with empty installedSectionIds
   }
 
   const installedSections = allSections.filter(s => installedSectionIds.includes(s.id));
 
-  return { allSections, installedSections, installedSectionIds };
+  return { allSections, installedSections, installedSectionIds, aiSections, installedAiSlugs };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
 
   const formData = await request.formData();
   const actionType = formData.get("action") as string;
@@ -442,11 +476,191 @@ ${section.liquidContent || ""}`;
     }
   }
 
+  // ─── INSTALL AI SECTION TO THEME ───
+  if (actionType === "installAiSection") {
+    try {
+      const aiSection = await prisma.aiSection.findFirst({
+        where: { id: sectionId, shop: session.shop },
+      });
+
+      if (!aiSection) {
+        return { success: false, error: "AI Section nicht gefunden." };
+      }
+
+      // Sanitize the liquid code before uploading
+      const sanitizedCode = sanitizeShopifySchema(aiSection.liquidCode);
+
+      // Get main theme
+      const themesResponse = await admin.graphql(`
+        query { themes(first: 10) { nodes { id name role } } }
+      `);
+      const themesData = await themesResponse.json() as any;
+      const themes = themesData.data?.themes?.nodes || [];
+      const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+      if (!mainTheme) {
+        return { success: false, error: "Kein aktives Theme gefunden." };
+      }
+
+      const filename = `sections/section-ai-${aiSection.slug}.liquid`;
+      const fileInput = {
+        filename,
+        body: { type: "TEXT", value: sanitizedCode },
+      };
+
+      const themeFilesResponse = await admin.graphql(
+        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
+          themeFilesUpsert(files: $files, themeId: $themeId) {
+            upsertedThemeFiles { filename }
+            userErrors { field message }
+            job { id }
+          }
+        }`,
+        { variables: { files: [fileInput], themeId: mainTheme.id } }
+      );
+
+      const themeFilesData = (await themeFilesResponse.json()) as any;
+
+      if (themeFilesData.errors) {
+        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
+        return { success: false, error: `GraphQL Error: ${errorMsg}` };
+      }
+
+      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
+      if (userErrors.length > 0) {
+        const errorMsg = userErrors
+          .map((e: { field?: string[]; message: string }) => `${(e.field || []).join(".")}: ${e.message}`)
+          .join(", ");
+        return { success: false, error: `Fehler beim Installieren: ${errorMsg}` };
+      }
+
+      const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
+      if (upsertedFiles.length === 0) {
+        return { success: false, error: "Section konnte nicht installiert werden. Bitte versuche es später erneut." };
+      }
+
+      return {
+        success: true,
+        message: `"${aiSection.name}" wurde erfolgreich in "${mainTheme.name}" installiert!`,
+      };
+    } catch (error) {
+      console.error("Install AI section error:", error);
+      return {
+        success: false,
+        error: `Fehler beim Installieren: ${error instanceof Error ? error.message : "Unknown"}`,
+      };
+    }
+  }
+
+  // ─── REMOVE AI SECTION FROM THEME (without deleting from DB) ───
+  if (actionType === "removeAiSection") {
+    try {
+      const aiSection = await prisma.aiSection.findFirst({
+        where: { id: sectionId, shop: session.shop },
+      });
+
+      if (!aiSection) {
+        return { success: false, error: "AI Section nicht gefunden." };
+      }
+
+      const themesResponse = await admin.graphql(`
+        query { themes(first: 10) { nodes { id name role } } }
+      `);
+      const themesData = await themesResponse.json() as any;
+      const themes = themesData.data?.themes?.nodes || [];
+      const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+      if (!mainTheme) {
+        return { success: false, error: "Kein aktives Theme gefunden." };
+      }
+
+      const filename = `sections/section-ai-${aiSection.slug}.liquid`;
+      await admin.graphql(
+        `mutation ThemeFilesDelete($themeId: ID!, $files: [String!]!) {
+          themeFilesDelete(themeId: $themeId, files: $files) {
+            deletedThemeFiles { filename }
+            userErrors { field message }
+          }
+        }`,
+        { variables: { themeId: mainTheme.id, files: [filename] } }
+      );
+
+      return {
+        success: true,
+        message: `"${aiSection.name}" wurde aus "${mainTheme.name}" entfernt.`,
+      };
+    } catch (error) {
+      console.error("Remove AI section error:", error);
+      return {
+        success: false,
+        error: `Fehler beim Entfernen: ${error instanceof Error ? error.message : "Unknown"}`,
+      };
+    }
+  }
+
+  // ─── DELETE AI SECTION ───
+  if (actionType === "deleteAiSection") {
+    try {
+      // Find the AI section
+      const aiSection = await prisma.aiSection.findFirst({
+        where: { id: sectionId, shop: session.shop },
+      });
+
+      if (!aiSection) {
+        return { success: false, error: "AI Section nicht gefunden." };
+      }
+
+      // Try to remove from theme if installed
+      try {
+        const themesResponse = await admin.graphql(`
+          query { themes(first: 10) { nodes { id name role } } }
+        `);
+        const themesData = await themesResponse.json() as any;
+        const themes = themesData.data?.themes?.nodes || [];
+        const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
+
+        if (mainTheme) {
+          const filename = `sections/section-ai-${aiSection.slug}.liquid`;
+          await admin.graphql(
+            `mutation ThemeFilesDelete($themeId: ID!, $files: [String!]!) {
+              themeFilesDelete(themeId: $themeId, files: $files) {
+                deletedThemeFiles { filename }
+                userErrors { field message }
+              }
+            }`,
+            { variables: { themeId: mainTheme.id, files: [filename] } }
+          );
+        }
+      } catch (themeErr) {
+        console.error("Error removing AI section from theme (non-fatal):", themeErr);
+      }
+
+      // Delete preview records
+      await prisma.sectionPreview.deleteMany({
+        where: { shop: session.shop, sectionId: `ai-${aiSection.slug}` },
+      });
+
+      // Delete the AI section from DB
+      await prisma.aiSection.delete({ where: { id: aiSection.id } });
+
+      return {
+        success: true,
+        message: `AI Section "${aiSection.name}" wurde gelöscht.`,
+      };
+    } catch (error) {
+      console.error("Delete AI section error:", error);
+      return {
+        success: false,
+        error: `Fehler beim Löschen: ${error instanceof Error ? error.message : "Unknown"}`,
+      };
+    }
+  }
+
   return { success: false, error: "Unknown action" };
 };
 
 export default function MySectionsPage() {
-  const { allSections, installedSections } = useLoaderData<typeof loader>();
+  const { allSections, installedSections, aiSections, installedAiSlugs } = useLoaderData<typeof loader>();
   const [showUninstallModal, setShowUninstallModal] = useState<string | null>(null);
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -580,6 +794,138 @@ export default function MySectionsPage() {
         </Layout.Section>
 
         {/* Available Sections */}
+        <Layout.Section>
+          <Card>
+            <BlockStack gap="400">
+              <div>
+                <Text as="h2" variant="headingLg">
+                  🤖 AI-Generated Sections ({(aiSections as any[]).length})
+                </Text>
+                <Text as="p" variant="bodySm" tone="subdued">
+                  Sections die du mit Section AI erstellt und gekauft hast.
+                </Text>
+              </div>
+
+              {(aiSections as any[]).length === 0 ? (
+                <Text as="p" variant="bodySm" tone="subdued">
+                  Noch keine AI-Sections gekauft. Erstelle deine erste mit Section AI!
+                </Text>
+              ) : (
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
+                    gap: 16,
+                  }}
+                >
+                  {(aiSections as any[]).map((ai: any) => (
+                    <Card key={ai.id} padding="0">
+                      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+                        <div
+                          style={{
+                            height: 140,
+                            borderTopLeftRadius: 12,
+                            borderTopRightRadius: 12,
+                            overflow: "hidden",
+                            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            position: "relative",
+                          }}
+                        >
+                          <span style={{ fontSize: 48 }}>🤖</span>
+                          <div style={{ position: "absolute", top: 12, right: 12 }}>
+                            <Badge tone={(installedAiSlugs as string[]).includes(ai.slug) ? "success" : "info"}>
+                              {(installedAiSlugs as string[]).includes(ai.slug) ? "✓ Im Theme" : "Gespeichert"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <Box padding="400">
+                          <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 160 }}>
+                            <Text as="h3" variant="headingSm">
+                              {ai.name}
+                            </Text>
+                            <div style={{ marginTop: 8, marginBottom: 8, minHeight: 40, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
+                              <Text as="p" variant="bodySm" tone="subdued">
+                                {ai.prompt}
+                              </Text>
+                            </div>
+                            <div style={{ marginTop: "auto" }}>
+                              <InlineStack gap="100" wrap>
+                                <Badge tone="info">{ai.sectionType}</Badge>
+                                <Badge>{ai.style}</Badge>
+                                <Badge>{ai.model}</Badge>
+                              </InlineStack>
+                              <div style={{ marginTop: 8 }}>
+                                <Text as="p" variant="bodySm" tone="subdued">
+                                  {`Erstellt: ${new Date(ai.createdAt).toLocaleDateString("de-DE")}`}
+                                </Text>
+                              </div>
+                              <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
+                                <div style={{ flex: 1 }}>
+                                  {(installedAiSlugs as string[]).includes(ai.slug) ? (
+                                    <Button
+                                      variant="primary"
+                                      tone="critical"
+                                      size="slim"
+                                      fullWidth
+                                      loading={isSubmitting}
+                                      onClick={() => {
+                                        const formData = new FormData();
+                                        formData.set("action", "removeAiSection");
+                                        formData.set("sectionId", ai.id);
+                                        submit(formData, { method: "post" });
+                                      }}
+                                    >
+                                      Aus Theme entfernen
+                                    </Button>
+                                  ) : (
+                                    <Button
+                                      variant="primary"
+                                      size="slim"
+                                      fullWidth
+                                      loading={isSubmitting}
+                                      onClick={() => {
+                                        const formData = new FormData();
+                                        formData.set("action", "installAiSection");
+                                        formData.set("sectionId", ai.id);
+                                        submit(formData, { method: "post" });
+                                      }}
+                                    >
+                                      In Theme installieren
+                                    </Button>
+                                  )}
+                                </div>
+                                <Button
+                                  variant="plain"
+                                  tone="critical"
+                                  size="slim"
+                                  onClick={() => {
+                                    if (confirm(`"${ai.name}" wirklich löschen? Die Section wird aus deinem Theme und aus My Sections entfernt.`)) {
+                                      const formData = new FormData();
+                                      formData.set("action", "deleteAiSection");
+                                      formData.set("sectionId", ai.id);
+                                      submit(formData, { method: "post" });
+                                    }
+                                  }}
+                                >
+                                  🗑️ Löschen
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </Box>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+            </BlockStack>
+          </Card>
+        </Layout.Section>
+
+        {/* Available Store Sections */}
         <Layout.Section>
           <Card>
             <BlockStack gap="400">

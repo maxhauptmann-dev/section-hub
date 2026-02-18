@@ -37,11 +37,11 @@ export default function App() {
         <s-app-nav>
           <s-link href="/app/my-sections">My Sections</s-link>
           <s-link href="/app/explore">Explore Sections</s-link>
+          <s-link href="/app/section-ai">Section AI 🤖</s-link>
           <s-link href="/app/bundles">Bundle &amp; Save</s-link>
           <s-link href="/app/blocks">Conversion Blocks</s-link>
           <s-link href="/app/help">Help Center</s-link>
           <s-link href="/app/inspiration">Section Inspiration</s-link>
-          <s-link href="/app/migrator">Theme Migrator</s-link>
           <s-link href="/app/suggest">Suggest Idea 💡</s-link>
         </s-app-nav>
         <Outlet />

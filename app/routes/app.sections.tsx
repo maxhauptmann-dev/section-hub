@@ -22,7 +22,7 @@ type SectionItem = {
   id: string;
   name: string;
   description: string;
-  category: "Hero" | "FAQ" | "Social proof" | "Conversion" | "Footer" | "Testimonials";
+  category: "Hero" | "FAQ" | "Social proof" | "Conversion" | "Footer" | "Testimonials" | "Product Discovery";
   price: Price;
   tags: string[];
   updatedAt: string; // ISO
@@ -59,6 +59,16 @@ const CATALOG: SectionItem[] = [
     tags: ["Trust"],
     updatedAt: "2026-01-20",
     previewColor: "#fee2e2",
+  },
+  {
+    id: "shop-the-look",
+    name: "Shop the Look",
+    description: "Showcase products in context with hero image and flexible product placement. Products can be positioned on or beside the main image with customizable layouts.",
+    category: "Product Discovery",
+    price: { type: "one_time", amount: 12, currency: "EUR" },
+    tags: ["OS2.0", "Product Grid", "Visual Commerce", "Responsive", "Flexible"],
+    updatedAt: "2026-02-12",
+    previewColor: "#1a1a2e",
   },
 ];
 
@@ -137,6 +147,7 @@ export default function SectionsPage() {
                     { label: "Testimonials", value: "Testimonials" },
                     { label: "Conversion", value: "Conversion" },
                     { label: "Footer", value: "Footer" },
+                    { label: "Product Discovery", value: "Product Discovery" },
                   ]}
                   value={category}
                   onChange={(v) => setCategory(v as "All" | SectionItem["category"])}

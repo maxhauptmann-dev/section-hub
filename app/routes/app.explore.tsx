@@ -26,15 +26,76 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 const CATEGORIES = [
-  { id: "all", label: "All", icon: "✨" },
-  { id: "free", label: "Free", icon: "🎁" },
-  { id: "Hero", label: "Hero", icon: "🎯" },
-  { id: "FAQ", label: "FAQ", icon: "❓" },
-  { id: "Testimonials", label: "Testimonials", icon: "💬" },
-  { id: "Trust", label: "Trust", icon: "🛡️" },
-  { id: "CTA", label: "CTA", icon: "🚀" },
-  { id: "Social Proof", label: "Social Proof", icon: "⭐" },
+  { id: "all", label: "All", icon: "✨", color: "#6366f1", textColor: "#fff" },
+  { id: "popular", label: "Most Popular", icon: "🔥", color: "#ef4444", textColor: "#fff" },
+  { id: "newest", label: "Newest", icon: "🆕", color: "#10b981", textColor: "#fff" },
+  { id: "free", label: "Free", icon: "🎁", color: "#8b5cf6", textColor: "#fff" },
+  { id: "header", label: "Header", icon: "📞", color: "#3b82f6", textColor: "#fff" },
+  { id: "hero", label: "Hero", icon: "🎯", color: "#f59e0b", textColor: "#fff" },
+  { id: "scrolling", label: "Scrolling", icon: "📜", color: "#06b6d4", textColor: "#fff" },
+  { id: "video", label: "Video", icon: "🎬", color: "#ec4899", textColor: "#fff" },
+  { id: "images", label: "Image Gallery", icon: "🖼️", color: "#14b8a6", textColor: "#fff" },
+  { id: "counter", label: "Counter", icon: "🔢", color: "#84cc16", textColor: "#fff" },
+  { id: "slider", label: "Slider", icon: "🎞️", color: "#f43f5e", textColor: "#fff" },
+  { id: "collection", label: "Collection", icon: "🛍️", color: "#a855f7", textColor: "#fff" },
+  { id: "featured collection", label: "Featured Collection", icon: "🌟", color: "#eab308", textColor: "#000" },
+  { id: "upsell", label: "Upsell", icon: "💡", color: "#22c55e", textColor: "#fff" },
+  { id: "FAQ", label: "FAQ", icon: "❓", color: "#0ea5e9", textColor: "#fff" },
+  { id: "Testimonials", label: "Testimonials", icon: "💬", color: "#8b5cf6", textColor: "#fff" },
+  { id: "Trust", label: "Trust", icon: "🛡️", color: "#059669", textColor: "#fff" },
+  { id: "CTA", label: "CTA", icon: "🚀", color: "#dc2626", textColor: "#fff" },
+  { id: "Social Proof", label: "Social Proof", icon: "⭐", color: "#f59e0b", textColor: "#fff" },
+  { id: "Product Discovery", label: "Shop the Look", icon: "👗", color: "#ec4899", textColor: "#fff" },
+  { id: "Footer", label: "Footer", icon: "📞", color: "#64748b", textColor: "#fff" },
 ];
+
+// Custom Category Badge Component
+function CategoryBadge({ 
+  category, 
+  isActive, 
+  onClick 
+}: { 
+  category: typeof CATEGORIES[0]; 
+  isActive: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      style={{
+        display: "inline-flex",
+        alignItems: "center",
+        gap: 6,
+        padding: "8px 14px",
+        borderRadius: 20,
+        border: isActive ? `2px solid ${category.color}` : "2px solid #e5e7eb",
+        background: isActive ? category.color : "#fff",
+        color: isActive ? category.textColor : "#374151",
+        fontSize: 14,
+        fontWeight: isActive ? 600 : 500,
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        whiteSpace: "nowrap",
+        boxShadow: isActive ? `0 2px 8px ${category.color}40` : "none",
+      }}
+      onMouseEnter={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.background = "#f9fafb";
+          e.currentTarget.style.borderColor = category.color;
+        }
+      }}
+      onMouseLeave={(e) => {
+        if (!isActive) {
+          e.currentTarget.style.background = "#fff";
+          e.currentTarget.style.borderColor = "#e5e7eb";
+        }
+      }}
+    >
+      <span style={{ fontSize: 16 }}>{category.icon}</span>
+      <span>{category.label}</span>
+    </button>
+  );
+}
 
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
   if (price.type === "free") return "Free";
@@ -215,6 +276,7 @@ export default function ExploreSectionsPage() {
   const navigate = useNavigate();
   const [query, setQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const [scrollContainerRef, setScrollContainerRef] = useState<HTMLDivElement | null>(null);
 
   const filteredSections = useMemo(() => {
     let list = [...sections];
@@ -238,11 +300,29 @@ export default function ExploreSectionsPage() {
     return list;
   }, [sections, query, selectedCategory]);
 
+  const scrollLeft = () => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollBy({ left: -300, behavior: "smooth" });
+    }
+  };
+
+  const scrollRight = () => {
+    if (scrollContainerRef) {
+      scrollContainerRef.scrollBy({ left: 300, behavior: "smooth" });
+    }
+  };
+
   return (
-    <Page
-      title="Explore Sections"
-      subtitle="Discover professional sections for your store"
-    >
+    <>
+      <style>{`
+        .category-scroll-container::-webkit-scrollbar {
+          display: none;
+        }
+      `}</style>
+      <Page
+        title="Explore Sections"
+        subtitle="Discover professional sections for your store"
+      >
       <Layout>
         {/* Hero Banner */}
         <Layout.Section>
@@ -282,18 +362,66 @@ export default function ExploreSectionsPage() {
                 clearButton
                 onClearButtonClick={() => setQuery("")}
               />
-              <InlineStack gap="200" wrap>
-                {CATEGORIES.map((cat) => (
-                  <Button
-                    key={cat.id}
-                    variant={selectedCategory === cat.id ? "primary" : "secondary"}
-                    size="slim"
-                    onClick={() => setSelectedCategory(cat.id)}
-                  >
-                    {cat.icon} {cat.label}
-                  </Button>
-                ))}
-              </InlineStack>
+              <div style={{ position: "relative", display: "flex", alignItems: "center", gap: "8px" }}>
+                <button
+                  onClick={scrollLeft}
+                  style={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    width: "32px",
+                    height: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                  aria-label="Scroll left"
+                >
+                  ←
+                </button>
+                <div
+                  ref={setScrollContainerRef}
+                  className="category-scroll-container"
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    overflowX: "auto",
+                    scrollBehavior: "smooth",
+                    scrollbarWidth: "none",
+                    msOverflowStyle: "none",
+                    flex: 1,
+                  }}
+                >
+                  {CATEGORIES.map((cat) => (
+                    <CategoryBadge
+                      key={cat.id}
+                      category={cat}
+                      isActive={selectedCategory === cat.id}
+                      onClick={() => setSelectedCategory(cat.id)}
+                    />
+                  ))}
+                </div>
+                <button
+                  onClick={scrollRight}
+                  style={{
+                    background: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "8px",
+                    width: "32px",
+                    height: "32px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    flexShrink: 0,
+                  }}
+                  aria-label="Scroll right"
+                >
+                  →
+                </button>
+              </div>
             </BlockStack>
           </Card>
         </Layout.Section>
@@ -371,14 +499,25 @@ export default function ExploreSectionsPage() {
                               ))}
                             </InlineStack>
                             <div style={{ marginTop: 12 }}>
-                              <Button 
-                                variant="primary" 
-                                size="slim" 
-                                fullWidth
-                                onClick={() => navigate(`/app/section?id=${section.id}`)}
-                              >
-                                View Details
-                              </Button>
+                              <InlineStack gap="200">
+                                <div style={{ flex: 1 }}>
+                                  <Button 
+                                    variant="primary" 
+                                    size="slim" 
+                                    fullWidth
+                                    onClick={() => navigate(`/app/section?id=${section.id}`)}
+                                  >
+                                    View Details
+                                  </Button>
+                                </div>
+                                <Button
+                                  variant="secondary"
+                                  size="slim"
+                                  onClick={() => navigate(`/app/section?id=${section.id}&try=true`)}
+                                >
+                                  Try ✨
+                                </Button>
+                              </InlineStack>
                             </div>
                           </div>
                         </div>
@@ -392,5 +531,6 @@ export default function ExploreSectionsPage() {
         </Layout.Section>
       </Layout>
     </Page>
+    </>
   );
 }
