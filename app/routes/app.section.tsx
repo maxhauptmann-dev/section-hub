@@ -266,6 +266,9 @@ export default function SectionDetailPage() {
 
       const data = await response.json();
 
+      // Log response für debugging
+      console.log("Test Purchase Response:", { status: response.status, data });
+
       // Handle purchase requirement
       if (data.purchaseRequired && data.confirmationUrl) {
         setResult({
@@ -276,6 +279,15 @@ export default function SectionDetailPage() {
         setTimeout(() => {
           window.top!.location.href = data.confirmationUrl;
         }, 3000);
+        return;
+      }
+
+      // Error aus API
+      if (data.error) {
+        setResult({
+          success: false,
+          error: `API Error: ${data.error}`,
+        });
         return;
       }
 

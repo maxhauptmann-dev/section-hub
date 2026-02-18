@@ -49,6 +49,8 @@ export async function createOneTimePurchase(
 
   const json = await res.json();
 
+  console.log("appPurchaseOneTimeCreate Response:", JSON.stringify(json, null, 2));
+
   if (json?.data?.appPurchaseOneTimeCreate?.userErrors?.length > 0) {
     const errors = json.data.appPurchaseOneTimeCreate.userErrors
       .map((e: { message: string }) => e.message)
@@ -58,6 +60,31 @@ export async function createOneTimePurchase(
 
   const ap = json.data?.appPurchaseOneTimeCreate?.appPurchaseOneTime;
   if (!ap) {
+    // Fallback für Test/Dev Umgebung: Erstelle einen Mock-Purchase
+    if (process.env.NODE_ENV === "development") {
+      console.warn("No purchase response from Shopify - creating mock for development");
+      const mockId = `gid://shopify/AppPurchaseOneTime/${Math.random().toString(36).substring(7)}`;
+      const mockUrl = `https://${shop}/admin/apps/${process.env.SHOPIFY_API_KEY}/purchase-confirmation?id=${mockId}`;
+
+      // Store mock purchase in database
+      await prisma.sectionPurchase.create({
+        data: {
+          shop,
+          sectionHandle: name,
+          appPurchaseId: mockId,
+          amount,
+          currency,
+          status: "PENDING",
+        },
+      });
+
+      return {
+        id: mockId,
+        confirmationUrl: mockUrl,
+        status: "PENDING",
+      };
+    }
+
     throw new Error("No purchase response received from Shopify");
   }
 
