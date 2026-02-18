@@ -206,6 +206,7 @@ export default function SectionDetailPage() {
     trialDays?: number;
   } | null>(null);
   const [autoTriggered, setAutoTriggered] = useState(false);
+  const [testPurchaseLoading, setTestPurchaseLoading] = useState(false);
 
   // Demo store URL – replace with your actual demo store URL
   const DEMO_STORE_URL = "https://section-hub-demo.myshopify.com";
@@ -246,6 +247,50 @@ export default function SectionDetailPage() {
         success: false,
         error: error instanceof Error ? error.message : "Installation failed",
       });
+    }
+  };
+
+  const handleTestPurchase = async () => {
+    if (!section) return;
+    setTestPurchaseLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("sectionId", section.id);
+      formData.append("action", "install");
+
+      const response = await fetch("/app/api/install-section", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      // Handle purchase requirement
+      if (data.purchaseRequired && data.confirmationUrl) {
+        setResult({
+          success: true,
+          message: `✅ Test erfolgreich! Purchase initiiert für "${section.name}" (${data.appPurchaseId})`,
+        });
+        // Redirect nach 3 Sekunden zum echten Checkout
+        setTimeout(() => {
+          window.top!.location.href = data.confirmationUrl;
+        }, 3000);
+        return;
+      }
+
+      // Falls keine Purchase erforderlich (kostenlose Section)
+      setResult({
+        success: false,
+        error: `Diese Section ist kostenlos (${priceLabel(section.price)}). Test nicht möglich.`,
+      });
+    } catch (error) {
+      setResult({
+        success: false,
+        error: `Test fehlgeschlagen: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
+      });
+    } finally {
+      setTestPurchaseLoading(false);
     }
   };
 
@@ -377,6 +422,11 @@ export default function SectionDetailPage() {
           onAction: handleTrySection,
           loading: tryLoading,
           icon: PlayIcon,
+        },
+        {
+          content: "🧪 Test Purchase",
+          onAction: handleTestPurchase,
+          loading: testPurchaseLoading,
         },
         {
           content: "Demo Store",
