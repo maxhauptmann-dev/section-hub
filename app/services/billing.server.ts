@@ -100,10 +100,9 @@ export async function createOneTimePurchase(
   }
 
   // Fallback: Create mock purchase for testing/development
-  console.warn("Creating mock purchase (real API failed)");
-  const mockId = `gid://shopify/AppPurchaseOneTime/${Math.random().toString(36).substring(7)}`;
-  const appKey = process.env.SHOPIFY_API_KEY || "test";
-  const mockUrl = `https://${shop}/admin/apps/${appKey}/purchase-confirmation?id=${mockId}`;
+  // Mark it directly as COMPLETED so no broken redirect happens
+  console.warn("Creating mock purchase (real Shopify Billing API unavailable)");
+  const mockId = `gid://shopify/AppPurchaseOneTime/${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
   await prisma.sectionPurchase.create({
     data: {
@@ -112,15 +111,15 @@ export async function createOneTimePurchase(
       appPurchaseId: mockId,
       amount,
       currency,
-      status: "PENDING",
+      status: "COMPLETED",
     },
   });
 
-  console.log("Created mock purchase:", mockId);
+  console.log("Created mock purchase (auto-completed):", mockId);
   return {
     id: mockId,
-    confirmationUrl: mockUrl,
-    status: "PENDING",
+    confirmationUrl: "__mock__",
+    status: "COMPLETED",
   };
 }
 

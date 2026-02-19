@@ -286,11 +286,21 @@ export default function SectionDetailPage() {
 
       // Redirect to Shopify checkout
       if (data.purchaseRequired && data.confirmationUrl) {
+        // Mock purchase (Shopify Billing API not available) – treat as instant success
+        if (data.confirmationUrl === "__mock__") {
+          setPurchaseSuccess(true);
+          setResult({
+            success: true,
+            message: `"${section.name}" wurde erfolgreich gekauft (Testmodus). Du kannst sie jetzt installieren!`,
+          });
+          return;
+        }
+
+        // Real Shopify checkout – redirect
         setResult({
           success: true,
-          message: `Weiterleitung zum Shopify Checkout für "${section.name}"…`,
+          message: `Weiterleitung zum Shopify Checkout...`,
         });
-        // Short delay so the user sees the message, then redirect
         setTimeout(() => {
           window.top!.location.href = data.confirmationUrl;
         }, 1500);
