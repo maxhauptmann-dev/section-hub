@@ -1,0 +1,29 @@
+{
+  "id": "featured-collection-tabs",
+  "name": "Featured Collection (Tabs) #6",
+  "description": "Display multiple collections in a tabbed interface with horizontal product slider. Features customizable tabs, product cards with vendor, price, and details, navigation arrows, and responsive design.",
+  "category": "featured collection",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": ["OS2.0", "Collection", "Tabs", "Product Slider", "Responsive", "Customizable"],
+  "author": "Section Hub",
+  "previewColor": "#f97316",
+  "previews": [
+    { "src": "/previews/featured-collection/first.png", "alt": "Featured Collection Tabs - first", "label": "First" },
+    { "src": "/previews/featured-collection/apparel.png", "alt": "Featured Collection Tabs - Apparel", "label": "Apparel" },
+    { "src": "/previews/featured-collection/drinks.png", "alt": "Featured Collection Tabs - Drinks", "label": "Drinks" }
+  ],  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "featured-collection-tabs.liquid",
+    "css": "featured-collection-tabs.css"
+  },
+  "createdAt": "2026-02-12",
+  "updatedAt": "2026-02-12"
+}
