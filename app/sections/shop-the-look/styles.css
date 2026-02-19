@@ -1,0 +1,266 @@
+/* ============================================
+   Section Hub – Shop the Look v2.0
+   ============================================ */
+
+/* ---------- Section wrapper ---------- */
+.stl-section {
+  margin: var(--stl-mt) var(--stl-ms) var(--stl-mb);
+  padding: var(--stl-pt) var(--stl-ps) var(--stl-pb);
+  background: var(--stl-bg);
+  border: var(--stl-border-w) solid var(--stl-border-c);
+  border-radius: var(--stl-round);
+  overflow: visible;
+}
+.stl-section.stl-full-width {
+  margin-left: 0;
+  margin-right: 0;
+  border-radius: 0;
+}
+.stl-wrapper {
+  max-width: var(--stl-content-w);
+  margin: 0 auto;
+}
+
+/* ---------- Heading ---------- */
+.stl-heading {
+  font-family: var(--stl-heading-font, inherit);
+  font-size: var(--stl-heading-size);
+  line-height: var(--stl-heading-lh);
+  color: var(--stl-heading-color);
+  text-align: var(--stl-heading-align);
+  margin: 0 0 var(--stl-heading-mb) 0;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+/* ---------- Body grid (3-column: left / image / right) ---------- */
+.stl-body {
+  display: grid;
+  grid-template-columns: 1fr 2fr 1fr;
+  gap: 0;
+  align-items: center;
+  padding: var(--stl-body-vp) 0;
+  position: relative;
+}
+
+/* ---------- Side columns ---------- */
+.stl-side {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  height: 100%;
+  position: relative;
+  z-index: 2;
+}
+.stl-side--left {
+  align-items: flex-end;
+}
+.stl-side--right {
+  align-items: flex-start;
+}
+
+/* ---------- Product item ---------- */
+.stl-item {
+  position: relative;
+  transform: translate(var(--item-x, 0), var(--item-y, 0));
+  max-width: 200px;
+  transition: transform 0.3s ease;
+}
+.stl-item__link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+.stl-item__img-wrap {
+  background: #fff;
+  border-radius: var(--stl-item-img-round);
+  border: var(--stl-item-img-bw) solid var(--stl-item-img-bc);
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+.stl-item__link:hover .stl-item__img-wrap {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+.stl-item__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--stl-item-img-ar);
+  object-fit: cover;
+}
+
+/* Hover effects */
+.stl-hover--zoom .stl-item__img {
+  transition: transform 0.4s ease;
+}
+.stl-hover--zoom:hover .stl-item__img {
+  transform: scale(1.08);
+}
+.stl-hover--lift {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.stl-hover--lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
+}
+.stl-hover--fade .stl-item__img {
+  transition: opacity 0.3s ease;
+}
+.stl-hover--fade:hover .stl-item__img {
+  opacity: 0.8;
+}
+
+/* Item text */
+.stl-item__info {
+  display: flex;
+  flex-direction: column;
+  align-items: var(--stl-content-halign);
+  text-align: var(--stl-content-talign);
+  padding: 8px 2px 0;
+}
+.stl-item__title {
+  font-family: var(--stl-title-font, inherit);
+  font-size: var(--stl-title-size);
+  line-height: var(--stl-title-lh);
+  color: var(--stl-title-color);
+  margin: 0;
+  font-weight: 400;
+}
+.stl-item__price {
+  font-family: var(--stl-price-font, inherit);
+  font-size: var(--stl-price-size);
+  line-height: var(--stl-price-lh);
+  color: var(--stl-price-color);
+  margin: var(--stl-price-mt) 0 0 0;
+}
+.stl-item__price-compare {
+  color: var(--stl-price-orig-color);
+}
+.stl-item__price-compare s {
+  text-decoration: line-through;
+}
+
+/* ---------- Centre image ---------- */
+.stl-center {
+  position: relative;
+  z-index: 1;
+}
+.stl-center__img-wrap {
+  position: relative;
+  overflow: visible;
+  border-radius: var(--stl-img-round);
+  border: var(--stl-img-border-w) solid var(--stl-img-border-c);
+}
+.stl-center__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--stl-img-ar);
+  object-fit: cover;
+  border-radius: var(--stl-img-round);
+}
+
+/* ---------- Hotspot dots ---------- */
+.stl-hotspot {
+  position: absolute;
+  z-index: 5;
+  transform: translate(-50%, -50%);
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.stl-hotspot__dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.9);
+  border: 2px solid rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.18);
+  position: relative;
+  z-index: 2;
+  transition: transform 0.25s ease, background 0.25s ease;
+}
+.stl-hotspot:hover .stl-hotspot__dot {
+  transform: scale(1.25);
+  background: #fff;
+}
+.stl-hotspot__ping {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  animation: stl-ping 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+  pointer-events: none;
+}
+@keyframes stl-ping {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  75%, 100% {
+    transform: scale(2.2);
+    opacity: 0;
+  }
+}
+
+/* Placeholder (SVG fallback) */
+.stl-placeholder {
+  width: 100%;
+  height: auto;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media (max-width: 749px) {
+  .stl-section {
+    margin-left: var(--stl-ms-m);
+    margin-right: var(--stl-ms-m);
+    padding-left: var(--stl-ps-m);
+    padding-right: var(--stl-ps-m);
+  }
+  .stl-heading {
+    font-size: var(--stl-heading-size-m);
+    text-align: var(--stl-heading-align-m);
+    margin-bottom: var(--stl-heading-mb-m);
+  }
+  .stl-body {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: var(--stl-body-vp-m) 0;
+  }
+  /* Stack: image first, then left, then right */
+  .stl-center {
+    order: -1;
+  }
+  .stl-side {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+  }
+  .stl-side--left,
+  .stl-side--right {
+    align-items: center;
+  }
+  .stl-item {
+    max-width: 45%;
+    transform: none !important;
+  }
+  .stl-center__img {
+    aspect-ratio: var(--stl-img-ar-m);
+  }
+  .stl-item__img {
+    aspect-ratio: var(--stl-item-img-ar-m);
+  }
+}
+
+@media (min-width: 750px) and (max-width: 999px) {
+  .stl-item {
+    max-width: 160px;
+  }
+}

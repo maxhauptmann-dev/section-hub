@@ -1,0 +1,958 @@
+{% comment %}
+  Section Hub – Shop the Look v2.0
+  Freely position products around a lifestyle hero image.
+  Each product block has independent X / Y positioning.
+{% endcomment %}
+
+{%- liquid
+  assign heading        = section.settings.heading
+  assign use_custom_font = section.settings.use_custom_font
+  assign heading_font   = section.settings.heading_font_family
+  assign heading_size   = section.settings.heading_size
+  assign heading_size_m = section.settings.heading_size_mobile
+  assign heading_lh     = section.settings.heading_line_height
+  assign heading_mb     = section.settings.heading_margin_bottom
+  assign heading_mb_m   = section.settings.heading_margin_bottom_mobile
+  assign heading_align  = section.settings.heading_text_align
+  assign heading_align_m = section.settings.heading_text_align_mobile
+  assign heading_color  = section.settings.heading_color
+
+  assign body_vp        = section.settings.body_vertical_padding
+  assign body_vp_m      = section.settings.body_vertical_padding_mobile
+
+  assign img            = section.settings.image
+  assign img_round      = section.settings.image_roundness
+  assign img_border_w   = section.settings.image_border_thickness
+  assign img_aspect     = section.settings.image_aspect_ratio
+  assign img_aspect_m   = section.settings.image_aspect_ratio_mobile
+  assign img_border_c   = section.settings.image_border_color
+
+  assign content_halign = section.settings.content_horizontal_align
+
+  assign use_title_font = section.settings.use_custom_font_title
+  assign title_font     = section.settings.item_title_font_family
+  assign title_size     = section.settings.item_title_size
+  assign title_lh       = section.settings.item_title_line_height
+  assign title_color    = section.settings.item_title_color
+
+  assign use_price_font = section.settings.use_custom_font_price
+  assign price_font     = section.settings.item_price_font_family
+  assign price_size     = section.settings.item_price_size
+  assign price_lh       = section.settings.item_price_line_height
+  assign price_mt       = section.settings.item_price_margin_top
+  assign price_color    = section.settings.item_price_color
+  assign price_orig_c   = section.settings.item_price_original_color
+
+  assign item_img_round = section.settings.item_image_roundness
+  assign item_img_bw    = section.settings.item_image_border_thickness
+  assign item_img_aspect = section.settings.item_image_aspect_ratio
+  assign item_img_aspect_m = section.settings.item_image_aspect_ratio_mobile
+  assign item_img_hover = section.settings.item_image_hover_effect
+  assign item_img_bc    = section.settings.item_image_border_color
+
+  assign bg_color       = section.settings.section_bg
+  assign bg_gradient    = section.settings.section_bg_gradient
+  assign border_color   = section.settings.border_color
+  assign border_thick   = section.settings.border_thickness
+  assign full_width     = section.settings.full_width
+  assign content_width  = section.settings.content_width
+  assign sec_round      = section.settings.section_roundness
+  assign lazy           = section.settings.lazy_load
+
+  assign margin_top     = section.settings.margin_top
+  assign margin_bottom  = section.settings.margin_bottom
+  assign margin_sides   = section.settings.margin_sides
+  assign margin_sides_m = section.settings.margin_sides_mobile
+  assign padding_top    = section.settings.padding_top
+  assign padding_bottom = section.settings.padding_bottom
+  assign padding_sides  = section.settings.padding_sides
+  assign padding_sides_m = section.settings.padding_sides_mobile
+
+  assign custom_css     = section.settings.custom_css
+-%}
+
+{%- comment -%} Aspect-ratio helper {%- endcomment -%}
+{%- liquid
+  case img_aspect
+    when 'square'
+      assign ar = '1/1'
+    when 'portrait'
+      assign ar = '3/4'
+    when 'landscape'
+      assign ar = '4/3'
+    when 'wide'
+      assign ar = '16/9'
+    when 'circle'
+      assign ar = '1/1'
+    when 'oval'
+      assign ar = '3/4'
+    else
+      assign ar = 'auto'
+  endcase
+
+  case img_aspect_m
+    when 'square'
+      assign ar_m = '1/1'
+    when 'portrait'
+      assign ar_m = '3/4'
+    when 'landscape'
+      assign ar_m = '4/3'
+    when 'wide'
+      assign ar_m = '16/9'
+    when 'circle'
+      assign ar_m = '1/1'
+    when 'oval'
+      assign ar_m = '3/4'
+    else
+      assign ar_m = 'auto'
+  endcase
+
+  case item_img_aspect
+    when 'square'
+      assign iar = '1/1'
+    when 'portrait'
+      assign iar = '3/4'
+    when 'landscape'
+      assign iar = '4/3'
+    else
+      assign iar = 'auto'
+  endcase
+
+  case item_img_aspect_m
+    when 'square'
+      assign iar_m = '1/1'
+    when 'portrait'
+      assign iar_m = '3/4'
+    when 'landscape'
+      assign iar_m = '4/3'
+    else
+      assign iar_m = 'auto'
+  endcase
+-%}
+
+{%- if use_custom_font -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ heading_font | replace: ' ', '+' }}&display=swap" rel="stylesheet">
+{%- endif -%}
+{%- if use_title_font -%}
+  <link href="https://fonts.googleapis.com/css2?family={{ title_font | replace: ' ', '+' }}&display=swap" rel="stylesheet">
+{%- endif -%}
+{%- if use_price_font -%}
+  <link href="https://fonts.googleapis.com/css2?family={{ price_font | replace: ' ', '+' }}&display=swap" rel="stylesheet">
+{%- endif -%}
+
+<style>
+  #stl-{{ section.id }} {
+    --stl-heading-color: {{ heading_color }};
+    --stl-heading-size: {{ heading_size }}px;
+    --stl-heading-size-m: {{ heading_size_m }}px;
+    --stl-heading-lh: {{ heading_lh }};
+    --stl-heading-mb: {{ heading_mb }}px;
+    --stl-heading-mb-m: {{ heading_mb_m }}px;
+    --stl-heading-align: {{ heading_align }};
+    --stl-heading-align-m: {{ heading_align_m }};
+    {% if use_custom_font %}--stl-heading-font: '{{ heading_font }}', serif;{% endif %}
+
+    --stl-body-vp: {{ body_vp }}px;
+    --stl-body-vp-m: {{ body_vp_m }}px;
+
+    --stl-img-round: {% if img_aspect == 'circle' %}50%{% elsif img_aspect == 'oval' %}50%{% else %}{{ img_round }}px{% endif %};
+    --stl-img-border-w: {{ img_border_w }}px;
+    --stl-img-border-c: {{ img_border_c }};
+    --stl-img-ar: {{ ar }};
+    --stl-img-ar-m: {{ ar_m }};
+
+    --stl-title-color: {{ title_color }};
+    --stl-title-size: {{ title_size }}px;
+    --stl-title-lh: {{ title_lh }};
+    {% if use_title_font %}--stl-title-font: '{{ title_font }}', sans-serif;{% endif %}
+
+    --stl-price-color: {{ price_color }};
+    --stl-price-orig-color: {{ price_orig_c }};
+    --stl-price-size: {{ price_size }}px;
+    --stl-price-lh: {{ price_lh }};
+    --stl-price-mt: {{ price_mt }}px;
+    {% if use_price_font %}--stl-price-font: '{{ price_font }}', sans-serif;{% endif %}
+
+    --stl-item-img-round: {{ item_img_round }}px;
+    --stl-item-img-bw: {{ item_img_bw }}px;
+    --stl-item-img-bc: {{ item_img_bc }};
+    --stl-item-img-ar: {{ iar }};
+    --stl-item-img-ar-m: {{ iar_m }};
+
+    --stl-content-halign: {% if content_halign == 'center' %}center{% elsif content_halign == 'right' %}flex-end{% else %}flex-start{% endif %};
+    --stl-content-talign: {{ content_halign }};
+
+    --stl-bg: {% if bg_gradient != blank %}{{ bg_gradient }}{% else %}{{ bg_color }}{% endif %};
+    --stl-border-c: {{ border_color }};
+    --stl-border-w: {{ border_thick }}px;
+    --stl-round: {{ sec_round }}px;
+    --stl-content-w: {{ content_width }}px;
+
+    --stl-mt: {{ margin_top }}px;
+    --stl-mb: {{ margin_bottom }}px;
+    --stl-ms: {{ margin_sides }}px;
+    --stl-ms-m: {{ margin_sides_m }}px;
+    --stl-pt: {{ padding_top }}px;
+    --stl-pb: {{ padding_bottom }}px;
+    --stl-ps: {{ padding_sides }}px;
+    --stl-ps-m: {{ padding_sides_m }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="stl-{{ section.id }}" class="stl-section{% if full_width %} stl-full-width{% endif %}">
+  <div class="stl-wrapper">
+    {%- if heading != blank -%}
+      <h2 class="stl-heading">{{ heading }}</h2>
+    {%- endif -%}
+
+    <div class="stl-body">
+      {%- comment -%} Left products {%- endcomment -%}
+      <div class="stl-side stl-side--left">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'product' and block.settings.position == 'left' -%}
+            {%- assign p = block.settings.product -%}
+            {%- if p != blank -%}
+              <div class="stl-item" {{ block.shopify_attributes }}
+                style="--item-x:{{ block.settings.offset_x }}%;--item-y:{{ block.settings.offset_y }}%;">
+                <a href="{{ p.url }}" class="stl-item__link">
+                  <div class="stl-item__img-wrap{% if item_img_hover != 'none' %} stl-hover--{{ item_img_hover }}{% endif %}">
+                    {%- if p.featured_image != blank -%}
+                      <img
+                        src="{{ p.featured_image | image_url: width: 400 }}"
+                        alt="{{ p.featured_image.alt | escape }}"
+                        width="400"
+                        height="{{ 400 | divided_by: p.featured_image.aspect_ratio | round }}"
+                        class="stl-item__img"
+                        {% if lazy %}loading="lazy"{% endif %}
+                      >
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'stl-item__img stl-placeholder' }}
+                    {%- endif -%}
+                  </div>
+                  <div class="stl-item__info">
+                    <p class="stl-item__title">{{ p.title }}</p>
+                    <p class="stl-item__price">
+                      {%- if p.compare_at_price > p.price -%}
+                        <span class="stl-item__price-current">{{ p.price | money }}</span>
+                        <span class="stl-item__price-compare"> - <s>{{ p.compare_at_price | money }}</s></span>
+                      {%- else -%}
+                        {{ p.price | money }}
+                      {%- endif -%}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Centre image {%- endcomment -%}
+      <div class="stl-center">
+        <div class="stl-center__img-wrap">
+          {%- if img != blank -%}
+            <img
+              src="{{ img | image_url: width: 900 }}"
+              alt="{{ img.alt | default: heading | escape }}"
+              width="900"
+              height="{{ 900 | divided_by: img.aspect_ratio | round }}"
+              class="stl-center__img"
+              {% if lazy %}loading="lazy"{% endif %}
+            >
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'stl-center__img stl-placeholder' }}
+          {%- endif -%}
+
+          {%- comment -%} Hotspot dots {%- endcomment -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'hotspot' -%}
+              {%- assign hp = block.settings.product -%}
+              <a {% if hp != blank %}href="{{ hp.url }}"{% endif %}
+                 class="stl-hotspot"
+                 {{ block.shopify_attributes }}
+                 style="left:{{ block.settings.dot_x }}%;top:{{ block.settings.dot_y }}%;"
+                 title="{% if hp != blank %}{{ hp.title | escape }}{% endif %}">
+                <span class="stl-hotspot__dot"></span>
+                <span class="stl-hotspot__ping"></span>
+              </a>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      </div>
+
+      {%- comment -%} Right products {%- endcomment -%}
+      <div class="stl-side stl-side--right">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'product' and block.settings.position == 'right' -%}
+            {%- assign p = block.settings.product -%}
+            {%- if p != blank -%}
+              <div class="stl-item" {{ block.shopify_attributes }}
+                style="--item-x:{{ block.settings.offset_x }}%;--item-y:{{ block.settings.offset_y }}%;">
+                <a href="{{ p.url }}" class="stl-item__link">
+                  <div class="stl-item__img-wrap{% if item_img_hover != 'none' %} stl-hover--{{ item_img_hover }}{% endif %}">
+                    {%- if p.featured_image != blank -%}
+                      <img
+                        src="{{ p.featured_image | image_url: width: 400 }}"
+                        alt="{{ p.featured_image.alt | escape }}"
+                        width="400"
+                        height="{{ 400 | divided_by: p.featured_image.aspect_ratio | round }}"
+                        class="stl-item__img"
+                        {% if lazy %}loading="lazy"{% endif %}
+                      >
+                    {%- else -%}
+                      {{ 'product-2' | placeholder_svg_tag: 'stl-item__img stl-placeholder' }}
+                    {%- endif -%}
+                  </div>
+                  <div class="stl-item__info">
+                    <p class="stl-item__title">{{ p.title }}</p>
+                    <p class="stl-item__price">
+                      {%- if p.compare_at_price > p.price -%}
+                        <span class="stl-item__price-current">{{ p.price | money }}</span>
+                        <span class="stl-item__price-compare"> - <s>{{ p.compare_at_price | money }}</s></span>
+                      {%- else -%}
+                        {{ p.price | money }}
+                      {%- endif -%}
+                    </p>
+                  </div>
+                </a>
+              </div>
+            {%- endif -%}
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Shop the Look",
+  "tag": "section",
+  "class": "stl-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "SHOP THE LOOK—"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font",
+      "label": "Use Custom Font",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "heading_font_family",
+      "label": "Heading Font Family",
+      "default": "Josefin Sans"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 16,
+      "max": 120,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size - Mobile",
+      "min": 16,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading Line Height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.05,
+      "default": 1.1
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom",
+      "label": "Heading Margin Bottom",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "heading_margin_bottom_mobile",
+      "label": "Heading Margin Bottom - Mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading Text Align",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align_mobile",
+      "label": "Heading Text Align - Mobile",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Body Settings"
+    },
+    {
+      "type": "range",
+      "id": "body_vertical_padding",
+      "label": "Body Vertical Padding",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "body_vertical_padding_mobile",
+      "label": "Body Vertical Padding - Mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Image Settings"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_roundness",
+      "label": "Image Roundness",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "image_border_thickness",
+      "label": "Image Border Thickness",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto (original)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" },
+        { "value": "circle", "label": "Circle" },
+        { "value": "oval", "label": "Oval" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio_mobile",
+      "label": "Image Aspect Ratio - Mobile",
+      "options": [
+        { "value": "auto", "label": "Auto (original)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" },
+        { "value": "circle", "label": "Circle" },
+        { "value": "oval", "label": "Oval" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "Item Content Settings"
+    },
+    {
+      "type": "select",
+      "id": "content_horizontal_align",
+      "label": "Content Horizontal Align",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Item Title Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font_title",
+      "label": "Use Custom Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "item_title_font_family",
+      "label": "Item Title Font Family",
+      "default": "Josefin Sans"
+    },
+    {
+      "type": "range",
+      "id": "item_title_size",
+      "label": "Item Title Size",
+      "min": 10,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "item_title_line_height",
+      "label": "Item Title Line Height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.05,
+      "default": 1.3
+    },
+    {
+      "type": "header",
+      "content": "Item Price Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font_price",
+      "label": "Use Custom Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "item_price_font_family",
+      "label": "Item Price Font Family",
+      "default": "Josefin Sans"
+    },
+    {
+      "type": "range",
+      "id": "item_price_size",
+      "label": "Item Price Size",
+      "min": 10,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "item_price_line_height",
+      "label": "Item Price Line Height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.05,
+      "default": 1.3
+    },
+    {
+      "type": "range",
+      "id": "item_price_margin_top",
+      "label": "Item Price Margin Top",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Item Image Settings"
+    },
+    {
+      "type": "range",
+      "id": "item_image_roundness",
+      "label": "Item Image Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "item_image_border_thickness",
+      "label": "Item Image Border Thickness",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "item_image_aspect_ratio",
+      "label": "Item Image Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto (original)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "item_image_aspect_ratio_mobile",
+      "label": "Item Image Aspect Ratio - Mobile",
+      "options": [
+        { "value": "auto", "label": "Auto (original)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "item_image_hover_effect",
+      "label": "Item Image Hover Effect",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "zoom", "label": "Zoom" },
+        { "value": "lift", "label": "Lift" },
+        { "value": "fade", "label": "Fade" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Item Colors"
+    },
+    {
+      "type": "color",
+      "id": "item_title_color",
+      "label": "Item Title Color",
+      "default": "#3C3C3C"
+    },
+    {
+      "type": "color",
+      "id": "item_price_color",
+      "label": "Item Price Color",
+      "default": "#3C3C3C"
+    },
+    {
+      "type": "color",
+      "id": "item_price_original_color",
+      "label": "Item Price Original Color",
+      "default": "#3C3C3C"
+    },
+    {
+      "type": "color",
+      "id": "item_image_border_color",
+      "label": "Item Image Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Section Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#3C3C3C"
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Image Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color_background",
+      "id": "section_bg_gradient",
+      "label": "Section background gradient"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Section margin (outside)"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides",
+      "label": "Margin sides",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides_mobile",
+      "label": "Margin sides mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section padding (inside)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Padding sides",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Padding sides mobile",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Section content width",
+      "min": 600,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy load",
+      "info": "Lazy load images for speed optimisation",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "select",
+          "id": "position",
+          "label": "Side",
+          "options": [
+            { "value": "left", "label": "Left" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "range",
+          "id": "offset_x",
+          "label": "Horizontal offset",
+          "info": "0 % = flush with image, 100 % = far edge",
+          "min": -50,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 0
+        },
+        {
+          "type": "range",
+          "id": "offset_y",
+          "label": "Vertical offset",
+          "info": "0 % = top-aligned, 100 % = bottom-aligned",
+          "min": -20,
+          "max": 120,
+          "step": 1,
+          "unit": "%",
+          "default": 0
+        }
+      ]
+    },
+    {
+      "type": "hotspot",
+      "name": "Hotspot Dot",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Linked product"
+        },
+        {
+          "type": "range",
+          "id": "dot_x",
+          "label": "Horizontal position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        },
+        {
+          "type": "range",
+          "id": "dot_y",
+          "label": "Vertical position",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "%",
+          "default": 50
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop the Look",
+      "blocks": [
+        { "type": "product", "settings": { "position": "left", "offset_x": 0, "offset_y": 0 } },
+        { "type": "product", "settings": { "position": "right", "offset_x": 0, "offset_y": 0 } },
+        { "type": "product", "settings": { "position": "left", "offset_x": 0, "offset_y": 55 } },
+        { "type": "product", "settings": { "position": "right", "offset_x": 0, "offset_y": 55 } },
+        { "type": "hotspot", "settings": { "dot_x": 50, "dot_y": 50 } }
+      ]
+    }
+  ]
+}
+{% endschema %}
