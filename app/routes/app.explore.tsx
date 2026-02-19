@@ -510,6 +510,15 @@ export default function ExploreSectionsPage() {
                                     View Details
                                   </Button>
                                 </div>
+                                {section.price.type === "one_time" && (section.price.amount || 0) > 0 && (
+                                  <Button
+                                    variant="tertiary"
+                                    size="slim"
+                                    onClick={() => navigate(`/app/section?id=${section.id}`)}
+                                  >
+                                    {`Buy €${section.price.amount}`}
+                                  </Button>
+                                )}
                                 <Button
                                   variant="secondary"
                                   size="slim"

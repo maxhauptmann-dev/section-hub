@@ -1,12 +1,15 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getSectionWithFiles } from "../lib/sections.server";
-import { createOneTimePurchase, hasPurchasedSection } from "../services/billing.server";
 
 /**
  * API Route: Install section to theme
  * POST /app/api/install-section
  * Body: { sectionId: string }
+ * 
+ * NOTE: This route always installs – no purchase check.
+ * The "Install to Theme (Dev)" button uses this for development/testing.
+ * The purchase flow is handled separately via /app/api/purchase-section.
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
@@ -27,38 +30,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const shop = session.shop;
   const accessToken = session.accessToken || "";
-
-  // Check if section has a price and if it has been purchased
-  const sectionPrice = section.price?.amount || 0;
-  if (sectionPrice > 0) {
-    const purchased = await hasPurchasedSection(shop, sectionId);
-    if (!purchased) {
-      // Trigger one-time purchase
-      try {
-        const returnUrl = `${process.env.SHOPIFY_APP_URL || "http://localhost:3000"}/app/billing/complete?shop=${encodeURIComponent(shop)}&section=${encodeURIComponent(sectionId)}`;
-        const purchase = await createOneTimePurchase(
-          shop,
-          accessToken,
-          `${section.name} - Section Hub`,
-          sectionPrice,
-          section.price?.currency || "EUR",
-          returnUrl
-        );
-        return Response.json({
-          success: false,
-          purchaseRequired: true,
-          confirmationUrl: purchase.confirmationUrl,
-          appPurchaseId: purchase.id,
-        });
-      } catch (error) {
-        console.error("Purchase creation error:", error);
-        return Response.json({
-          success: false,
-          error: "Failed to initiate purchase",
-        }, { status: 500 });
-      }
-    }
-  }
 
   try {
     // 1. Fetch all themes and find the main theme

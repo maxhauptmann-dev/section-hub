@@ -3,6 +3,7 @@ import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { useLoaderData, useNavigate, useActionData, useSubmit, useNavigation } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getSectionWithFiles, getAllSections } from "../lib/sections.server";
+import { hasPurchasedSection } from "../services/billing.server";
 import {
   Page,
   Layout,
@@ -22,17 +23,24 @@ import {
 import { ExternalIcon, ViewIcon, PlayIcon } from "@shopify/polaris-icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  await authenticate.admin(request);
+  const { session } = await authenticate.admin(request);
   
   const url = new URL(request.url);
   const sectionId = url.searchParams.get("id");
   
   if (!sectionId) {
-    return { section: null, allSections: getAllSections() };
+    return { section: null, allSections: getAllSections(), isPurchased: false };
   }
   
   const section = getSectionWithFiles(sectionId);
-  return { section, allSections: getAllSections() };
+  
+  // Check if this section has been purchased by this shop
+  let isPurchased = false;
+  if (section && section.price?.type === "one_time" && (section.price?.amount || 0) > 0) {
+    isPurchased = await hasPurchasedSection(session.shop, sectionId);
+  }
+  
+  return { section, allSections: getAllSections(), isPurchased };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -187,7 +195,7 @@ function priceLabel(price: { type: string; amount?: number; currency?: string })
 }
 
 export default function SectionDetailPage() {
-  const { section, allSections } = useLoaderData<typeof loader>();
+  const { section, allSections, isPurchased } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -195,7 +203,8 @@ export default function SectionDetailPage() {
   const isSubmitting = navigation.state === "submitting";
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
   const [tryLoading, setTryLoading] = useState(false);
-  const [purchaseSuccess, setPurchaseSuccess] = useState(false);
+  const [purchaseSuccess, setPurchaseSuccess] = useState(isPurchased);
+  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [tryResult, setTryResult] = useState<{
     success?: boolean;
     message?: string;
@@ -206,7 +215,6 @@ export default function SectionDetailPage() {
     trialDays?: number;
   } | null>(null);
   const [autoTriggered, setAutoTriggered] = useState(false);
-  const [testPurchaseLoading, setTestPurchaseLoading] = useState(false);
 
   // Demo store URL – replace with your actual demo store URL
   const DEMO_STORE_URL = "https://section-hub-demo.myshopify.com";
@@ -250,59 +258,57 @@ export default function SectionDetailPage() {
     }
   };
 
-  const handleTestPurchase = async () => {
+  const handlePurchase = async () => {
     if (!section) return;
-    setTestPurchaseLoading(true);
+    setPurchaseLoading(true);
 
     try {
       const formData = new FormData();
       formData.append("sectionId", section.id);
-      formData.append("action", "install");
 
-      const response = await fetch("/app/api/install-section", {
+      const response = await fetch("/app/api/purchase-section", {
         method: "POST",
         body: formData,
       });
 
       const data = await response.json();
+      console.log("Purchase Response:", { status: response.status, data });
 
-      // Log response für debugging
-      console.log("Test Purchase Response:", { status: response.status, data });
+      // Already purchased
+      if (data.alreadyPurchased) {
+        setPurchaseSuccess(true);
+        setResult({
+          success: true,
+          message: `"${section.name}" wurde bereits gekauft. Du kannst sie jetzt installieren!`,
+        });
+        return;
+      }
 
-      // Handle purchase requirement
+      // Redirect to Shopify checkout
       if (data.purchaseRequired && data.confirmationUrl) {
         setResult({
           success: true,
-          message: `✅ Test erfolgreich! Purchase initiiert für "${section.name}" (${data.appPurchaseId})`,
+          message: `Weiterleitung zum Shopify Checkout für "${section.name}"…`,
         });
-        // Redirect nach 3 Sekunden zum echten Checkout
+        // Short delay so the user sees the message, then redirect
         setTimeout(() => {
           window.top!.location.href = data.confirmationUrl;
-        }, 3000);
+        }, 1500);
         return;
       }
 
-      // Error aus API
+      // Error from API
       if (data.error) {
-        setResult({
-          success: false,
-          error: `API Error: ${data.error}`,
-        });
+        setResult({ success: false, error: data.error });
         return;
       }
-
-      // Falls keine Purchase erforderlich (kostenlose Section)
-      setResult({
-        success: false,
-        error: `Diese Section ist kostenlos (${priceLabel(section.price)}). Test nicht möglich.`,
-      });
     } catch (error) {
       setResult({
         success: false,
-        error: `Test fehlgeschlagen: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
+        error: `Kauf fehlgeschlagen: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
       });
     } finally {
-      setTestPurchaseLoading(false);
+      setPurchaseLoading(false);
     }
   };
 
@@ -346,11 +352,25 @@ export default function SectionDetailPage() {
         handleTrySection();
       }
       // Check for successful purchase redirect
-      if (params.get("purchased") && params.get("install") === "true") {
+      if (params.get("purchased") === "true" && params.get("install") === "true") {
         setPurchaseSuccess(true);
         setResult({
           success: true,
-          message: "Section purchased successfully! You can now install it to your theme.",
+          message: `"${section.name}" wurde erfolgreich gekauft! Du kannst die Section jetzt installieren.`,
+        });
+      }
+      // Check for declined purchase
+      if (params.get("purchase") === "declined") {
+        setResult({
+          success: false,
+          error: "Der Kauf wurde abgelehnt oder abgebrochen.",
+        });
+      }
+      // Check for purchase error
+      if (params.get("purchase") === "error") {
+        setResult({
+          success: false,
+          error: "Beim Verifizieren des Kaufs ist ein Fehler aufgetreten. Bitte versuche es erneut.",
         });
       }
     }
@@ -424,21 +444,24 @@ export default function SectionDetailPage() {
       title={section.name}
       backAction={{ content: "Back", onAction: () => navigate("/app/explore") }}
       primaryAction={{
-        content: isSubmitting ? "Installing..." : "Install to Theme",
+        content: isSubmitting ? "Installing..." : "Install to Theme (Dev)",
         onAction: handleInstall,
         loading: isSubmitting,
       }}
       secondaryActions={[
+        // Purchase button – only show for paid sections that aren't purchased yet
+        ...((section.price?.type === "one_time" && (section.price?.amount || 0) > 0 && !purchaseSuccess)
+          ? [{
+              content: `Buy – €${section.price.amount}`,
+              onAction: handlePurchase,
+              loading: purchaseLoading,
+            }]
+          : []),
         {
           content: "Try Section",
           onAction: handleTrySection,
           loading: tryLoading,
           icon: PlayIcon,
-        },
-        {
-          content: "🧪 Test Purchase",
-          onAction: handleTestPurchase,
-          loading: testPurchaseLoading,
         },
         {
           content: "Demo Store",
@@ -578,6 +601,74 @@ export default function SectionDetailPage() {
           </Card>
         </Layout.Section>
 
+        {/* Purchase Card – only for paid sections */}
+        {section.price?.type === "one_time" && (section.price?.amount || 0) > 0 && (
+          <Layout.Section>
+            <Card>
+              <div style={{
+                background: purchaseSuccess
+                  ? "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)"
+                  : "linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)",
+                borderRadius: 12,
+                padding: 24,
+              }}>
+                <BlockStack gap="400">
+                  <InlineStack gap="200" blockAlign="center">
+                    <div style={{
+                      background: purchaseSuccess ? "#22c55e" : "#f59e0b",
+                      borderRadius: "50%",
+                      width: 36,
+                      height: 36,
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: 18,
+                    }}>
+                      {purchaseSuccess ? "✅" : "🛒"}
+                    </div>
+                    <BlockStack gap="100">
+                      <Text as="h2" variant="headingMd">
+                        {purchaseSuccess ? "Section gekauft!" : `Section kaufen – €${section.price.amount}`}
+                      </Text>
+                      <Text as="p" variant="bodySm" tone="subdued">
+                        {purchaseSuccess
+                          ? "Du besitzt diese Section. Klicke auf \"Install to Theme\" um sie zu installieren."
+                          : "Einmalzahlung • Lifetime Updates • Shopify Billing (Testmodus)"}
+                      </Text>
+                    </BlockStack>
+                  </InlineStack>
+                  {!purchaseSuccess && (
+                    <InlineStack gap="300">
+                      <Button
+                        variant="primary"
+                        onClick={handlePurchase}
+                        loading={purchaseLoading}
+                      >
+                        {purchaseLoading ? "Weiterleitung…" : `Jetzt kaufen – €${section.price.amount}`}
+                      </Button>
+                      <Text as="p" variant="bodySm" tone="subdued">
+                        🔒 Sichere Zahlung über Shopify
+                      </Text>
+                    </InlineStack>
+                  )}
+                  {purchaseSuccess && (
+                    <InlineStack gap="300">
+                      <Button
+                        variant="primary"
+                        onClick={handleInstall}
+                        loading={isSubmitting}
+                      >
+                        Jetzt installieren
+                      </Button>
+                      <Badge tone="success">Gekauft</Badge>
+                    </InlineStack>
+                  )}
+                </BlockStack>
+              </div>
+            </Card>
+          </Layout.Section>
+        )}
+
         {/* Details */}
         <Layout.Section variant="oneThird">
           <BlockStack gap="400">
@@ -598,9 +689,12 @@ export default function SectionDetailPage() {
                 
                 <InlineStack align="space-between">
                   <Text as="p" variant="bodySm" tone="subdued">Price</Text>
-                  <Badge tone={section.price.type === "free" ? "success" : "info"}>
-                    {priceLabel(section.price)}
-                  </Badge>
+                  <InlineStack gap="200">
+                    <Badge tone={section.price.type === "free" ? "success" : "info"}>
+                      {priceLabel(section.price)}
+                    </Badge>
+                    {purchaseSuccess && <Badge tone="success">Gekauft</Badge>}
+                  </InlineStack>
                 </InlineStack>
                 
                 <InlineStack align="space-between">
