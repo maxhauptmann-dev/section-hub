@@ -1,0 +1,127 @@
+{% comment %}
+  Section Hub - Feature List Block
+  Green-checkmark bullet list of product features
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-features {
+  margin: 8px 0;
+  list-style: none;
+  padding: 0;
+}
+
+.sh-features__item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 4px 0;
+  font-size: {{ block.settings.font_size }}px;
+  color: {{ block.settings.text_color }};
+  line-height: 1.4;
+}
+
+.sh-features__check {
+  flex-shrink: 0;
+  width: {{ block.settings.icon_size }}px;
+  height: {{ block.settings.icon_size }}px;
+  margin-top: 2px;
+}
+
+.sh-features__check svg {
+  width: 100%;
+  height: 100%;
+}
+</style>
+
+<ul class="sh-features">
+  {% assign features = block.settings.features | split: '|' %}
+  {% for feature in features %}
+    {% assign trimmed = feature | strip %}
+    {% if trimmed != blank %}
+      <li class="sh-features__item">
+        <span class="sh-features__check">
+          {% if block.settings.icon_style == 'circle' %}
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="12" fill="{{ block.settings.icon_color }}"/>
+              <path d="M7 12.5l3 3 7-7" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% else %}
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M5 13l4 4L19 7" stroke="{{ block.settings.icon_color }}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          {% endif %}
+        </span>
+        <span>{{ trimmed }}</span>
+      </li>
+    {% endif %}
+  {% endfor %}
+</ul>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Feature List",
+  "target": "section",
+  "settings": [
+    {
+      "type": "textarea",
+      "id": "features",
+      "label": "Features (separated by |)",
+      "default": "100% Organic Materials|Free Shipping Worldwide|30-Day Money-Back Guarantee|Premium Quality Craftsmanship|Eco-Friendly Packaging"
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon Style",
+      "default": "circle",
+      "options": [
+        { "value": "circle", "label": "Circle Checkmark" },
+        { "value": "simple", "label": "Simple Checkmark" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Checkmark Color",
+      "default": "#22c55e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 14,
+      "max": 24,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

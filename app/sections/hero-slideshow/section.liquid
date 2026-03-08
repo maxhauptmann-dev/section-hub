@@ -1,0 +1,913 @@
+{% comment %}
+  Section Hub – Hero Slideshow
+  Fullscreen hero slider with autoplay, thumbnail navigation
+  and animated progress border around the active thumbnail.
+{% endcomment %}
+
+{%- liquid
+  assign autoplay      = section.settings.autoplay
+  assign speed         = section.settings.autoplay_speed
+  assign transition    = section.settings.transition_duration
+  assign height        = section.settings.section_height
+  assign height_m      = section.settings.section_height_mobile
+  assign overlay_op    = section.settings.overlay_opacity
+  assign lazy          = section.settings.lazy_load
+
+  assign thumb_width   = section.settings.thumb_width
+  assign thumb_height  = section.settings.thumb_height
+  assign thumb_gap     = section.settings.thumb_gap
+  assign thumb_round   = section.settings.thumb_roundness
+  assign thumb_bw      = section.settings.thumb_border_width
+  assign thumb_bc      = section.settings.thumb_border_color
+  assign thumb_offset  = section.settings.thumb_offset
+  assign progress_c    = section.settings.progress_color
+  assign progress_w    = section.settings.progress_width
+
+  assign content_pad   = section.settings.content_padding
+  assign content_vx    = section.settings.content_align_x
+  assign content_vy    = section.settings.content_align_y
+
+  assign heading_fs    = section.settings.heading_font_size
+  assign heading_fsm   = section.settings.heading_font_size_mobile
+  assign heading_fw    = section.settings.heading_font_weight
+  assign heading_ls    = section.settings.heading_letter_spacing
+  assign heading_tt    = section.settings.heading_text_transform
+  assign heading_lh    = section.settings.heading_line_height
+  assign heading_c     = section.settings.heading_color
+
+  assign sub_fs        = section.settings.sub_font_size
+  assign sub_fsm       = section.settings.sub_font_size_mobile
+  assign sub_fw        = section.settings.sub_font_weight
+  assign sub_c         = section.settings.sub_color
+
+  assign btn_fs        = section.settings.button_font_size
+  assign btn_fsm       = section.settings.button_font_size_mobile
+  assign btn_round     = section.settings.button_roundness
+  assign btn_py        = section.settings.button_padding_y
+  assign btn_px        = section.settings.button_padding_x
+  assign btn_tc        = section.settings.btn_text_color
+  assign btn_th        = section.settings.btn_text_hover
+  assign btn_bg        = section.settings.btn_bg_color
+  assign btn_bgh       = section.settings.btn_bg_hover
+
+  assign margin_top    = section.settings.margin_top
+  assign margin_bottom = section.settings.margin_bottom
+  assign margin_sides_m = section.settings.margin_sides_mobile
+  assign sec_round     = section.settings.section_roundness
+  assign sec_width     = section.settings.section_width
+
+  assign custom_css    = section.settings.custom_css
+  assign total_slides  = section.blocks.size
+-%}
+
+<style>
+  #hss-{{ section.id }} {
+    --hss-height: {{ height }}vh;
+    --hss-height-m: {{ height_m }}vh;
+    --hss-overlay: {{ overlay_op | divided_by: 100.0 }};
+    --hss-transition: {{ transition }}s;
+    --hss-speed: {{ speed }}s;
+
+    --hss-thumb-w: {{ thumb_width }}px;
+    --hss-thumb-h: {{ thumb_height }}px;
+    --hss-thumb-gap: {{ thumb_gap }}px;
+    --hss-thumb-round: {{ thumb_round }}px;
+    --hss-thumb-bw: {{ thumb_bw }}px;
+    --hss-thumb-bc: {{ thumb_bc }};
+    --hss-thumb-offset: {{ thumb_offset }}px;
+    --hss-progress-c: {{ progress_c }};
+    --hss-progress-w: {{ progress_w }}px;
+
+    --hss-content-pad: {{ content_pad }}px;
+    --hss-content-vx: {{ content_vx }};
+    --hss-content-vy: {{ content_vy }};
+
+    --hss-heading-fs: {{ heading_fs }}px;
+    --hss-heading-fsm: {{ heading_fsm }}px;
+    --hss-heading-fw: {{ heading_fw }};
+    --hss-heading-ls: {{ heading_ls | divided_by: 100.0 }}em;
+    --hss-heading-tt: {{ heading_tt }};
+    --hss-heading-lh: {{ heading_lh | divided_by: 100.0 }};
+    --hss-heading-c: {{ heading_c }};
+
+    --hss-sub-fs: {{ sub_fs }}px;
+    --hss-sub-fsm: {{ sub_fsm }}px;
+    --hss-sub-fw: {{ sub_fw }};
+    --hss-sub-c: {{ sub_c }};
+
+    --hss-btn-fs: {{ btn_fs }}px;
+    --hss-btn-fsm: {{ btn_fsm }}px;
+    --hss-btn-r: {{ btn_round }}px;
+    --hss-btn-py: {{ btn_py }}px;
+    --hss-btn-px: {{ btn_px }}px;
+    --hss-btn-tc: {{ btn_tc }};
+    --hss-btn-th: {{ btn_th }};
+    --hss-btn-bg: {{ btn_bg }};
+    --hss-btn-bgh: {{ btn_bgh }};
+
+    --hss-mt: {{ margin_top }}px;
+    --hss-mb: {{ margin_bottom }}px;
+    --hss-ms-m: {{ margin_sides_m }}rem;
+    --hss-round: {{ sec_round }}px;
+
+    {% if sec_width == 'page' %}
+      --hss-max-w: 1200px;
+    {% elsif sec_width == 'custom' %}
+      --hss-max-w: {{ section.settings.section_custom_width }}px;
+    {% else %}
+      --hss-max-w: 100%;
+    {% endif %}
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<div id="hss-{{ section.id }}"
+     class="hss-wrap"
+     data-hss-autoplay="{{ autoplay }}"
+     data-hss-speed="{{ speed }}"
+     data-hss-total="{{ total_slides }}">
+
+  {%- comment -%} ── Slides ── {%- endcomment -%}
+  <div class="hss-slides">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'slide' -%}
+        {%- assign img   = block.settings.image -%}
+        {%- assign img_m = block.settings.image_mobile -%}
+
+        <div class="hss-slide{% if forloop.first %} hss-slide--active{% endif %}"
+             data-hss-index="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Background image – desktop {%- endcomment -%}
+          {%- if img != blank -%}
+            <img
+              src="{{ img | image_url: width: 1920 }}"
+              alt="{{ img.alt | default: block.settings.heading | default: 'Slide' }}"
+              class="hss-slide__img hss-slide__img--desk"
+              style="object-position: {{ block.settings.image_position | default: 'center center' }};"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            >
+          {%- endif -%}
+
+          {%- comment -%} Background image – mobile {%- endcomment -%}
+          {%- if img_m != blank -%}
+            <img
+              src="{{ img_m | image_url: width: 800 }}"
+              alt="{{ img_m.alt | default: 'Slide' }}"
+              class="hss-slide__img hss-slide__img--mobile"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            >
+          {%- elsif img != blank -%}
+            <img
+              src="{{ img | image_url: width: 800 }}"
+              alt="{{ img.alt | default: 'Slide' }}"
+              class="hss-slide__img hss-slide__img--mobile"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            >
+          {%- endif -%}
+
+          {%- comment -%} Overlay {%- endcomment -%}
+          <div class="hss-slide__overlay"></div>
+
+          {%- comment -%} Optional content overlay {%- endcomment -%}
+          {%- if block.settings.heading != blank or block.settings.subheading != blank or block.settings.button_text != blank -%}
+            <div class="hss-content">
+              {%- if block.settings.subheading != blank -%}
+                <p class="hss-content__sub">{{ block.settings.subheading }}</p>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h2 class="hss-content__heading">{{ block.settings.heading }}</h2>
+              {%- endif -%}
+              {%- if block.settings.button_text != blank -%}
+                <a href="{{ block.settings.button_link | default: '#' }}"
+                   class="hss-content__btn hss-content__btn--{{ section.settings.button_style | default: 'solid' }}"
+                   {% if block.settings.button_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                  {{ block.settings.button_text }}
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} ── Thumbnails (bottom-right) ── {%- endcomment -%}
+  {%- if total_slides > 1 -%}
+  <div class="hss-thumbs">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'slide' -%}
+        {%- assign thumb = block.settings.image_thumb | default: block.settings.image -%}
+        <button class="hss-thumb{% if forloop.first %} hss-thumb--active{% endif %}"
+                data-hss-thumb="{{ forloop.index0 }}"
+                aria-label="Slide {{ forloop.index }}">
+          {%- comment -%} SVG progress border {%- endcomment -%}
+          {%- assign svg_w = thumb_width | times: 1 -%}
+          {%- assign svg_h = thumb_height | times: 1 -%}
+          {%- assign svg_perim = svg_w | plus: svg_h | times: 2 -%}
+          <svg class="hss-thumb__progress" viewBox="0 0 {{ svg_w }} {{ svg_h }}" fill="none" preserveAspectRatio="none">
+            <rect x="{{ progress_w }}" y="{{ progress_w }}"
+                  width="{{ svg_w | minus: progress_w | minus: progress_w }}"
+                  height="{{ svg_h | minus: progress_w | minus: progress_w }}"
+                  rx="{{ thumb_round }}"
+                  ry="{{ thumb_round }}"
+                  stroke="var(--hss-progress-c)"
+                  stroke-width="{{ progress_w }}"
+                  stroke-dasharray="{{ svg_perim }}"
+                  stroke-dashoffset="{{ svg_perim }}"
+                  class="hss-thumb__track"
+                  data-hss-perim="{{ svg_perim }}"/>
+          </svg>
+          {%- if thumb != blank -%}
+            <img src="{{ thumb | image_url: width: 200 }}" alt="Thumb {{ forloop.index }}" class="hss-thumb__img" loading="lazy">
+          {%- else -%}
+            <span class="hss-thumb__placeholder">{{ forloop.index }}</span>
+          {%- endif -%}
+        </button>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+  {%- endif -%}
+
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('hss-{{ section.id }}');
+  if(!root) return;
+
+  var slides   = root.querySelectorAll('.hss-slide');
+  var thumbs   = root.querySelectorAll('.hss-thumb');
+  var tracks   = root.querySelectorAll('.hss-thumb__track');
+  var total    = slides.length;
+  if(total < 1) return;
+
+  var current  = 0;
+  var autoplay = root.getAttribute('data-hss-autoplay') === 'true';
+  var speed    = (parseInt(root.getAttribute('data-hss-speed')) || 5) * 1000;
+  var timer    = null;
+
+  function getPerim(idx){
+    return tracks[idx] ? (tracks[idx].getAttribute('data-hss-perim') || '384') : '384';
+  }
+
+  function resetTrack(idx){
+    if(!tracks[idx]) return;
+    tracks[idx].style.transition = 'none';
+    tracks[idx].style.strokeDashoffset = getPerim(idx);
+  }
+
+  function animateTrack(idx){
+    if(!tracks[idx]) return;
+    void tracks[idx].offsetWidth;
+    tracks[idx].style.transition = 'stroke-dashoffset ' + speed + 'ms linear';
+    tracks[idx].style.strokeDashoffset = '0';
+  }
+
+  /* Re-trigger text animations on slide change */
+  function retriggerContent(slide){
+    var els = slide.querySelectorAll('.hss-content__sub, .hss-content__heading, .hss-content__btn');
+    els.forEach(function(el){
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+
+  function goTo(index){
+    index = ((index % total) + total) % total;
+
+    /* Old slide */
+    slides[current].classList.remove('hss-slide--active');
+    thumbs[current].classList.remove('hss-thumb--active');
+    resetTrack(current);
+
+    current = index;
+
+    /* New slide */
+    slides[current].classList.add('hss-slide--active');
+    thumbs[current].classList.add('hss-thumb--active');
+    retriggerContent(slides[current]);
+
+    if(autoplay) animateTrack(current);
+  }
+
+  /* Thumb clicks */
+  thumbs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var idx = parseInt(btn.getAttribute('data-hss-thumb'));
+      stopAuto();
+      goTo(idx);
+      startAuto();
+    });
+  });
+
+  /* Autoplay */
+  function startAuto(){
+    if(!autoplay || total < 2) return;
+    stopAuto();
+    animateTrack(current);
+    timer = setInterval(function(){
+      goTo(current + 1);
+    }, speed);
+  }
+
+  function stopAuto(){
+    if(timer) clearInterval(timer);
+    timer = null;
+  }
+
+  /* Touch swipe */
+  var touchX = 0;
+  root.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, { passive: true });
+  root.addEventListener('touchend', function(e){
+    var diff = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(diff) > 50){
+      stopAuto();
+      goTo(diff < 0 ? current + 1 : current - 1);
+      startAuto();
+    }
+  }, { passive: true });
+
+  /* Keyboard */
+  root.setAttribute('tabindex', '0');
+  root.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft' || e.key === 'ArrowUp'){
+      stopAuto(); goTo(current - 1); startAuto();
+    }
+    if(e.key === 'ArrowRight' || e.key === 'ArrowDown'){
+      stopAuto(); goTo(current + 1); startAuto();
+    }
+  });
+
+  /* Pause on hover (optional UX nicety) */
+  root.addEventListener('mouseenter', function(){ stopAuto(); });
+  root.addEventListener('mouseleave', function(){ startAuto(); });
+
+  /* Init */
+  startAuto();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Hero Slideshow",
+  "tag": "section",
+  "class": "hss-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-play",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Auto-play speed",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "transition_duration",
+      "label": "Transition duration",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "s",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "section_height_mobile",
+      "label": "Section height – mobile",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "page", "label": "Page width (1200px)" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "section_custom_width",
+      "label": "Custom width",
+      "min": 800,
+      "max": 1800,
+      "step": 10,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Content position"
+    },
+    {
+      "type": "select",
+      "id": "content_align_x",
+      "label": "Horizontal",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Right" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "content_align_y",
+      "label": "Vertical",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "flex-end", "label": "Bottom" }
+      ],
+      "default": "flex-end"
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "Thumbnails"
+    },
+    {
+      "type": "range",
+      "id": "thumb_width",
+      "label": "Thumbnail width",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "thumb_height",
+      "label": "Thumbnail height",
+      "min": 40,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "thumb_gap",
+      "label": "Thumbnail gap",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "thumb_roundness",
+      "label": "Thumbnail roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "thumb_border_width",
+      "label": "Thumbnail border",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "thumb_border_color",
+      "label": "Thumbnail border color",
+      "default": "rgba(255,255,255,0.3)"
+    },
+    {
+      "type": "range",
+      "id": "thumb_offset",
+      "label": "Thumbnail offset from edge",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Progress border"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "progress_width",
+      "label": "Progress border width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Heading typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Font size",
+      "min": 24,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 20,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": -1
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Line height",
+      "min": 80,
+      "max": 160,
+      "step": 5,
+      "unit": "%",
+      "default": 110
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Subheading typography"
+    },
+    {
+      "type": "range",
+      "id": "sub_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sub_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "sub_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "sub_color",
+      "label": "Subheading color",
+      "default": "rgba(255,255,255,0.8)"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button roundness",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "button_padding_y",
+      "label": "Button padding – vertical",
+      "min": 8,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "button_padding_x",
+      "label": "Button padding – horizontal",
+      "min": 16,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover",
+      "label": "Button text – hover",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Button background – hover",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides_mobile",
+      "label": "Margin sides – mobile",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "rem",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy-load images",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image – mobile (optional)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_thumb",
+          "label": "Thumbnail (optional)",
+          "info": "Falls leer wird das Hauptbild verwendet"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image focus",
+          "options": [
+            { "value": "center center", "label": "Center" },
+            { "value": "center top", "label": "Top" },
+            { "value": "center bottom", "label": "Bottom" },
+            { "value": "left center", "label": "Left" },
+            { "value": "right center", "label": "Right" }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "header",
+          "content": "Content (optional)"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Slideshow",
+      "category": "Hero",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}

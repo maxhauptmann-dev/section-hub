@@ -1,0 +1,723 @@
+{% comment %}
+  Section Hub – Header Modern v1.0
+  Two-row nav (main + sub-menu), dropdown with product images, emoji/icon prefixes.
+{% endcomment %}
+
+{%- liquid
+  assign logo          = section.settings.logo
+  assign logo_mobile   = section.settings.logo_mobile
+  assign logo_width    = section.settings.logo_width
+  assign logo_width_m  = section.settings.logo_width_mobile
+  assign use_shop_name = section.settings.use_shop_name
+  assign shop_color    = section.settings.shop_name_color
+  assign shop_size     = section.settings.shop_name_size
+
+  assign menu          = section.settings.menu
+  assign sub_menu      = section.settings.sub_menu
+  assign link_color    = section.settings.link_color
+  assign link_hover    = section.settings.link_hover_color
+  assign link_size     = section.settings.link_font_size
+  assign link_weight   = section.settings.link_weight
+  assign link_gap      = section.settings.link_gap
+  assign sub_link_size = section.settings.sub_link_size
+  assign sub_link_color= section.settings.sub_link_color
+
+  assign show_search   = section.settings.show_search
+  assign show_account  = section.settings.show_account
+  assign show_cart     = section.settings.show_cart
+  assign icon_color    = section.settings.icon_color
+
+  assign show_cta      = section.settings.show_cta
+  assign cta_text      = section.settings.cta_text
+  assign cta_link      = section.settings.cta_link
+  assign cta_bg        = section.settings.cta_bg
+  assign cta_color     = section.settings.cta_color
+  assign cta_round     = section.settings.cta_roundness
+
+  assign bg_color      = section.settings.bg_color
+  assign row2_bg       = section.settings.row2_bg
+  assign dd_bg         = section.settings.dropdown_bg
+  assign dd_link_color = section.settings.dropdown_link_color
+  assign dd_hover      = section.settings.dropdown_link_hover
+  assign dd_round      = section.settings.dropdown_roundness
+
+  assign scroll_mode   = section.settings.scroll_behavior
+  assign content_width = section.settings.content_width
+  assign padding_y     = section.settings.padding_y
+  assign padding_x     = section.settings.padding_x
+  assign lazy          = section.settings.lazy_load
+  assign custom_css    = section.settings.custom_css
+-%}
+
+<style>
+  #shm-{{ section.id }} {
+    --shm-logo-w: {{ logo_width }}px;
+    --shm-logo-w-m: {{ logo_width_m }}px;
+    --shm-shop-size: {{ shop_size }}px;
+    --shm-shop-color: {{ shop_color }};
+    --shm-link-color: {{ link_color }};
+    --shm-link-hover: {{ link_hover }};
+    --shm-link-size: {{ link_size }}px;
+    --shm-link-weight: {{ link_weight }};
+    --shm-link-gap: {{ link_gap }}px;
+    --shm-sub-link-size: {{ sub_link_size }}px;
+    --shm-sub-link-color: {{ sub_link_color }};
+    --shm-icon-color: {{ icon_color }};
+    --shm-cta-bg: {{ cta_bg }};
+    --shm-cta-color: {{ cta_color }};
+    --shm-cta-round: {{ cta_round }}px;
+    --shm-bg: {{ bg_color }};
+    --shm-row2-bg: {{ row2_bg }};
+    --shm-content-w: {{ content_width }}px;
+    --shm-py: {{ padding_y }}px;
+    --shm-px: {{ padding_x }}px;
+    --shm-dd-bg: {{ dd_bg }};
+    --shm-dd-link: {{ dd_link_color }};
+    --shm-dd-hover: {{ dd_hover }};
+    --shm-dd-round: {{ dd_round }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<header id="shm-{{ section.id }}" class="shm-header" data-shm-scroll="{{ scroll_mode }}" data-shm-header>
+
+  {%- comment -%} Row 1: Logo + main nav + icons {%- endcomment -%}
+  <div class="shm-row1">
+    <div class="shm-row1__inner">
+
+      <div class="shm-logo">
+        <a href="/" class="shm-logo__link">
+          {%- if use_shop_name or logo == blank -%}
+            <span class="shm-logo__text">{{ shop.name }}</span>
+          {%- else -%}
+            <picture>
+              {%- if logo_mobile != blank -%}
+                <source media="(max-width: 749px)" srcset="{{ logo_mobile | image_url: width: 400 }}">
+              {%- endif -%}
+              <img src="{{ logo | image_url: width: 600 }}" alt="{{ shop.name }}" class="shm-logo__img" width="{{ logo_width }}" {% if lazy %}loading="lazy"{% endif %}>
+            </picture>
+          {%- endif -%}
+        </a>
+      </div>
+
+      <nav class="shm-nav" aria-label="Main navigation">
+        {%- if menu != blank -%}
+          {%- assign nav_menu = linklists[menu] -%}
+          {%- if nav_menu -%}
+            <ul class="shm-nav__list">
+              {%- for link in nav_menu.links -%}
+                {%- assign link_has_mega = false -%}
+                {%- assign link_title_down = link.title | downcase | strip -%}
+                {%- for block in section.blocks -%}
+                  {%- assign block_title_down = block.settings.menu_title | downcase | strip -%}
+                  {%- if block.type == 'mega_menu' and block_title_down == link_title_down and block_title_down != '' -%}
+                    {%- assign link_has_mega = true -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- assign has_dropdown = false -%}
+                {%- if link.links.size > 0 or link_has_mega -%}
+                  {%- assign has_dropdown = true -%}
+                {%- endif -%}
+                <li class="shm-nav__item{% if has_dropdown %} shm-nav__item--dd{% endif %}">
+                  <a href="{{ link.url }}" class="shm-nav__link{% if link.active %} shm-nav__link--active{% endif %}">
+                    {{ link.title }}
+                    {%- if has_dropdown -%}
+                      <svg class="shm-nav__chev" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {%- endif -%}
+                  </a>
+                  {%- if has_dropdown -%}
+                    <div class="shm-dd">
+                      <div class="shm-dd__inner">
+                        {%- if link_has_mega -%}
+                          <div class="shm-mega">
+                            {%- for block in section.blocks -%}
+                              {%- assign block_title_down2 = block.settings.menu_title | downcase | strip -%}
+                              {%- if block.type == 'mega_menu' and block_title_down2 == link_title_down and block_title_down2 != '' -%}
+                                <div class="shm-mega__col" {{ block.shopify_attributes }}>
+                                  {%- if block.settings.column_heading != blank -%}
+                                    <p class="shm-mega__heading">
+                                      {%- if block.settings.heading_emoji != blank -%}{{ block.settings.heading_emoji }} {%- endif -%}
+                                      {{ block.settings.column_heading }}
+                                    </p>
+                                  {%- endif -%}
+                                  {%- if block.settings.submenu != blank -%}
+                                    {%- assign submenu = linklists[block.settings.submenu] -%}
+                                    {%- if submenu -%}
+                                      <ul class="shm-mega__list">
+                                        {%- for sublink in submenu.links -%}
+                                          <li><a href="{{ sublink.url }}" class="shm-mega__link">{{ sublink.title }}</a></li>
+                                        {%- endfor -%}
+                                      </ul>
+                                    {%- endif -%}
+                                  {%- endif -%}
+                                  {%- if block.settings.product_ref != blank -%}
+                                    {%- assign fp = block.settings.product_ref -%}
+                                    <a href="{{ fp.url }}" class="shm-mega__product">
+                                      {%- if fp.featured_image != blank -%}
+                                        <img src="{{ fp.featured_image | image_url: width: 200 }}" alt="{{ fp.title }}" class="shm-mega__product-img" {% if lazy %}loading="lazy"{% endif %}>
+                                      {%- endif -%}
+                                      <span class="shm-mega__product-title">{{ fp.title }}</span>
+                                      <span class="shm-mega__product-price">{{ fp.price | money }}</span>
+                                    </a>
+                                  {%- endif -%}
+                                  {%- if block.settings.promo_image != blank -%}
+                                    <a href="{{ block.settings.promo_link | default: '#' }}" class="shm-mega__promo">
+                                      <img src="{{ block.settings.promo_image | image_url: width: 300 }}" alt="" class="shm-mega__promo-img" {% if lazy %}loading="lazy"{% endif %}>
+                                    </a>
+                                  {%- endif -%}
+                                </div>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          </div>
+                        {%- else -%}
+                          <ul class="shm-dd__list">
+                            {%- for sublink in link.links -%}
+                              <li><a href="{{ sublink.url }}" class="shm-dd__link">{{ sublink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+        {%- endif -%}
+      </nav>
+
+      <div class="shm-actions">
+        {%- if show_search -%}
+          <a href="/search" class="shm-icon" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if show_account -%}
+          <a href="/account" class="shm-icon" aria-label="Account">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if show_cart -%}
+          <a href="/cart" class="shm-icon" aria-label="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <span class="shm-cart-badge">{{ cart.item_count }}</span>
+          </a>
+        {%- endif -%}
+        {%- if show_cta -%}
+          <a href="{{ cta_link }}" class="shm-cta">{{ cta_text }}</a>
+        {%- endif -%}
+        <button class="shm-burger" aria-label="Menu" data-shm-burger>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  {%- comment -%} Row 2: Sub-menu with emoji prefixes {%- endcomment -%}
+  {%- if sub_menu != blank -%}
+    {%- assign sub_nav = linklists[sub_menu] -%}
+    {%- if sub_nav -%}
+      <div class="shm-row2">
+        <div class="shm-row2__inner">
+          <ul class="shm-sub__list">
+            {%- for link in sub_nav.links -%}
+              <li class="shm-sub__item">
+                <a href="{{ link.url }}" class="shm-sub__link">{{ link.title }}</a>
+              </li>
+            {%- endfor -%}
+          </ul>
+        </div>
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+</header>
+
+{%- comment -%} Drawer {%- endcomment -%}
+<div class="shm-drawer" data-shm-drawer id="shm-drawer-{{ section.id }}">
+  <div class="shm-drawer__overlay" data-shm-drawer-close></div>
+  <div class="shm-drawer__panel">
+    <div class="shm-drawer__top">
+      {%- if use_shop_name or logo == blank -%}
+        <span class="shm-logo__text">{{ shop.name }}</span>
+      {%- elsif logo_mobile != blank -%}
+        <img src="{{ logo_mobile | image_url: width: 300 }}" alt="{{ shop.name }}" class="shm-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- else -%}
+        <img src="{{ logo | image_url: width: 300 }}" alt="{{ shop.name }}" class="shm-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- endif -%}
+      <button class="shm-drawer__close" aria-label="Close" data-shm-drawer-close>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="shm-drawer__nav">
+      {%- if menu != blank -%}
+        {%- assign nav_menu = linklists[menu] -%}
+        {%- if nav_menu -%}
+          {%- for link in nav_menu.links -%}
+            <div class="shm-drawer__group">
+              {%- if link.links.size > 0 -%}
+                <button class="shm-drawer__toggle" data-shm-toggle>
+                  {{ link.title }}
+                  <svg class="shm-drawer__arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <div class="shm-drawer__sub" data-shm-sub>
+                  {%- for sublink in link.links -%}
+                    <a href="{{ sublink.url }}" class="shm-drawer__sublink">{{ sublink.title }}</a>
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                <a href="{{ link.url }}" class="shm-drawer__link">{{ link.title }}</a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endif -%}
+      {%- if sub_menu != blank -%}
+        {%- assign sub_nav = linklists[sub_menu] -%}
+        {%- if sub_nav -%}
+          <div class="shm-drawer__sep"></div>
+          {%- for link in sub_nav.links -%}
+            <a href="{{ link.url }}" class="shm-drawer__link shm-drawer__link--sub">{{ link.title }}</a>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endif -%}
+    </nav>
+    <div class="shm-drawer__footer">
+      {%- if show_search -%}<a href="/search" class="shm-drawer__flink">Search</a>{%- endif -%}
+      {%- if show_account -%}<a href="/account" class="shm-drawer__flink">Account</a>{%- endif -%}
+      {%- if show_cta -%}
+        <a href="{{ cta_link }}" class="shm-cta shm-drawer__cta">{{ cta_text }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var header = document.getElementById('shm-{{ section.id }}');
+  if(!header) return;
+  var mode = header.getAttribute('data-shm-scroll');
+
+  /* ── Drawer ── */
+  var burger = header.querySelector('[data-shm-burger]');
+  var drawer = document.getElementById('shm-drawer-{{ section.id }}');
+  if(drawer){
+    var closers = drawer.querySelectorAll('[data-shm-drawer-close]');
+    var toggles = drawer.querySelectorAll('[data-shm-toggle]');
+    if(burger) burger.addEventListener('click', function(){ drawer.classList.add('shm-drawer--open'); document.body.style.overflow='hidden'; });
+    closers.forEach(function(c){ c.addEventListener('click', function(){ drawer.classList.remove('shm-drawer--open'); document.body.style.overflow=''; }); });
+    toggles.forEach(function(t){
+      t.addEventListener('click', function(){
+        var sub = t.nextElementSibling;
+        var open = sub.classList.toggle('shm-drawer__sub--open');
+        t.classList.toggle('shm-drawer__toggle--open', open);
+      });
+    });
+  }
+
+  /* ── Scroll behavior ── */
+  if(mode === 'default' || !mode) {
+    /* Clean up any fixed positioning */
+    header.style.position = '';
+    header.style.top = '';
+    header.style.left = '';
+    header.style.width = '';
+    header.style.zIndex = '';
+    header.style.transform = '';
+    header.style.transition = '';
+    return;
+  }
+
+  if(mode === 'sticky'){
+    header.style.position = 'fixed';
+    header.style.top      = '0';
+    header.style.left     = '0';
+    header.style.width    = '100%';
+    header.style.zIndex   = '1000';
+  }
+
+  if(mode === 'scroll-up'){
+    header.style.position   = 'fixed';
+    header.style.top        = '0';
+    header.style.left       = '0';
+    header.style.width      = '100%';
+    header.style.zIndex     = '1000';
+    header.style.transition = 'transform 0.3s ease';
+    var lastY = 0;
+    window.addEventListener('scroll', function(){
+      var y = window.scrollY;
+      header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+      lastY = y;
+    }, { passive: true });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Header – Modern",
+  "tag": "section",
+  "class": "shm-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Logo – Mobile"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Logo Width – Mobile",
+      "min": 30,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "checkbox",
+      "id": "use_shop_name",
+      "label": "Use Shop Name",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Shop Name Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Shop Name Size",
+      "min": 14,
+      "max": 42,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "header",
+      "content": "Navigation – Row 1"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Main Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "link_font_size",
+      "label": "Link Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "link_weight",
+      "label": "Link Weight",
+      "min": 400,
+      "max": 700,
+      "step": 100,
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "link_gap",
+      "label": "Link Gap",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link Hover",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Navigation – Row 2"
+    },
+    {
+      "type": "link_list",
+      "id": "sub_menu",
+      "label": "Sub-Menu",
+      "info": "Displayed as a secondary row below the main nav. Add emoji prefixes to link titles in Shopify for icon labels."
+    },
+    {
+      "type": "range",
+      "id": "sub_link_size",
+      "label": "Sub-Link Size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "sub_link_color",
+      "label": "Sub-Link Color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "row2_bg",
+      "label": "Row 2 Background",
+      "default": "#f9fafb"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA Link"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg",
+      "label": "CTA Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "CTA Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_roundness",
+      "label": "CTA Roundness",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Row 1 Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Dropdown"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg",
+      "label": "Dropdown Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_color",
+      "label": "Dropdown Link Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_hover",
+      "label": "Dropdown Link Hover",
+      "default": "#6366f1"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_roundness",
+      "label": "Dropdown Roundness",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "scroll_behavior",
+      "label": "Scroll Behavior",
+      "options": [
+        { "value": "default", "label": "Default (stays at top)" },
+        { "value": "sticky", "label": "Always Sticky" },
+        { "value": "scroll-up", "label": "Show on Scroll Up" }
+      ],
+      "default": "sticky"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width",
+      "min": 800,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Padding Vertical",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Padding Horizontal",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy Load Images",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Parent Menu Title"
+        },
+        {
+          "type": "text",
+          "id": "column_heading",
+          "label": "Column Heading"
+        },
+        {
+          "type": "text",
+          "id": "heading_emoji",
+          "label": "Heading Emoji / Icon",
+          "info": "Emoji before column heading, e.g. 🔥"
+        },
+        {
+          "type": "link_list",
+          "id": "submenu",
+          "label": "Submenu"
+        },
+        {
+          "type": "product",
+          "id": "product_ref",
+          "label": "Featured Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promo Image"
+        },
+        {
+          "type": "url",
+          "id": "promo_link",
+          "label": "Promo Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header – Modern",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

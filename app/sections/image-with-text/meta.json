@@ -1,0 +1,64 @@
+{
+  "id": "image-with-text",
+  "name": "Image with Text",
+  "description": "Side-by-side image and text section with reversible layout, customizable image ratio, overlay, buttons, and responsive stacking. Ideal for features, about sections, or promotions.",
+  "category": "Free",
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": [
+    "OS2.0",
+    "Image",
+    "Text",
+    "Free",
+    "Responsive",
+    "Flexible"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/image-with-text/default.webp",
+      "alt": "Image with Text - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-22",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added vertical alignment option for text",
+        "Improved image loading with blur placeholder",
+        "Fixed layout shift on slow connections"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-22",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

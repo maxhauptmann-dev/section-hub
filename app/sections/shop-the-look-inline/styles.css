@@ -1,0 +1,325 @@
+/* ============================================
+   Section Hub – Shop the Look – Inline Labels v1.0
+   Hero-ready lifestyle image with floating product label cards.
+   ============================================ */
+
+/* ---- Section wrapper ---- */
+.stli-section {
+  margin: var(--stli-mt) 0 var(--stli-mb);
+  padding: var(--stli-pt) var(--stli-ps) var(--stli-pb);
+  background: var(--stli-bg);
+  border-radius: var(--stli-sec-round);
+}
+.stli-section.stli-full-width {
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0;
+}
+.stli-wrapper {
+  max-width: var(--stli-content-w);
+  margin: 0 auto;
+}
+
+/* ---- Canvas (image + labels) ---- */
+.stli-canvas {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--stli-img-round);
+  border: var(--stli-img-border) solid var(--stli-img-border-c);
+}
+
+/* ---- Image ---- */
+.stli-image-wrap {
+  display: block;
+  width: 100%;
+  height: var(--stli-img-h, 700px);
+  overflow: hidden;
+}
+.stli-hero .stli-image-wrap {
+  height: 100vh;
+}
+.stli-image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--stli-img-fit, cover);
+  object-position: center;
+}
+.stli-placeholder {
+  width: 100%;
+  height: var(--stli-img-h, 700px);
+}
+
+/* ---- Dark overlay ---- */
+.stli-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--stli-overlay-c, #000);
+  opacity: var(--stli-overlay-op, 0.2);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---- Text overlay on image ---- */
+.stli-text-overlay {
+  position: absolute;
+  z-index: 3;
+  padding: 32px 40px;
+  max-width: 600px;
+}
+.stli-text-overlay--top-left    { top: 0; left: 0; }
+.stli-text-overlay--top-center  { top: 0; left: 50%; transform: translateX(-50%); text-align: center; }
+.stli-text-overlay--top-right   { top: 0; right: 0; text-align: right; }
+.stli-text-overlay--center      { top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; }
+.stli-text-overlay--bottom-left { bottom: 0; left: 0; }
+.stli-text-overlay--bottom-center { bottom: 0; left: 50%; transform: translateX(-50%); text-align: center; }
+.stli-text-overlay--bottom-right { bottom: 0; right: 0; text-align: right; }
+
+/* ---- Heading & subheading ---- */
+.stli-heading {
+  font-family: var(--stli-heading-font);
+  font-size: var(--stli-heading-size);
+  line-height: var(--stli-heading-lh);
+  color: var(--stli-heading-color);
+  text-align: var(--stli-heading-align);
+  margin: 0;
+  font-weight: 700;
+}
+.stli-subheading {
+  font-size: var(--stli-sub-size);
+  color: var(--stli-sub-color);
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+.stli-below-heading {
+  padding: 20px 0 0;
+}
+
+/* ---- Product Label ---- */
+.stli-label {
+  position: absolute;
+  z-index: 10;
+  /* anchor at the dot center */
+  display: flex;
+  align-items: center;
+  gap: 0;
+  /* transform so the dot is at the x/y point */
+  transform: translate(0, -50%);
+  pointer-events: none;
+}
+/* Direction: right = dot left, card right */
+.stli-label--right {
+  flex-direction: row;
+  left: var(--label-x);
+}
+/* Direction: left = dot right, card left */
+.stli-label--left {
+  flex-direction: row-reverse;
+  /* anchor right edge at the x position */
+}
+
+/* ---- Dot ---- */
+.stli-dot {
+  flex-shrink: 0;
+  position: relative;
+  width: var(--stli-dot-size, 10px);
+  height: var(--stli-dot-size, 10px);
+  pointer-events: auto;
+  z-index: 2;
+}
+.stli-dot__inner {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--stli-dot-bg, #fff);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+}
+.stli-dot__ping {
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.6);
+  animation: stli-ping 2s cubic-bezier(0,0,0.2,1) infinite;
+  pointer-events: none;
+}
+@keyframes stli-ping {
+  0%   { transform: scale(0.8); opacity: 1; }
+  75%, 100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ---- Connector line ---- */
+.stli-connector {
+  flex-shrink: 0;
+  width: 24px;
+  height: var(--stli-connector-w, 1px);
+  background: var(--stli-connector-c, rgba(255,255,255,0.6));
+}
+
+/* ---- Label card ---- */
+.stli-label__card {
+  pointer-events: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--stli-label-gap, 10px);
+  padding: 6px 14px 6px 6px;
+  background: var(--stli-label-bg, rgba(255,255,255,0.88));
+  border-radius: var(--stli-label-round, 50px);
+  text-decoration: none;
+  color: inherit;
+  white-space: nowrap;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}
+.stli-label__card--blur {
+  backdrop-filter: blur(var(--stli-label-blur, 8px));
+  -webkit-backdrop-filter: blur(var(--stli-label-blur, 8px));
+}
+.stli-label__card--shadow {
+  box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+}
+.stli-label__card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 28px rgba(0,0,0,0.22);
+}
+
+/* Left-direction card: padding flips */
+.stli-label--left .stli-label__card {
+  flex-direction: row-reverse;
+  padding: 6px 6px 6px 14px;
+}
+
+/* ---- Label product image ---- */
+.stli-label__img-wrap {
+  flex-shrink: 0;
+  width: var(--stli-label-img-size, 52px);
+  height: var(--stli-label-img-size, 52px);
+  border-radius: var(--stli-label-img-round, 50px);
+  overflow: hidden;
+  background: #f0f0f0;
+}
+.stli-label__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: var(--stli-label-img-fit, cover);
+}
+
+/* ---- Label text ---- */
+.stli-label__info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding-right: 4px;
+}
+.stli-label--left .stli-label__info {
+  padding-right: 0;
+  padding-left: 4px;
+  text-align: right;
+}
+.stli-label__cat {
+  font-family: var(--stli-label-font, inherit);
+  font-size: var(--stli-cat-size, 10px);
+  color: var(--stli-cat-color, #888);
+  margin: 0;
+  line-height: 1.2;
+  letter-spacing: 0.04em;
+}
+.stli-label__cat--upper {
+  text-transform: uppercase;
+}
+.stli-label__name {
+  font-family: var(--stli-label-font, inherit);
+  font-size: var(--stli-name-size, 13px);
+  color: var(--stli-name-color, #1a1a1a);
+  font-weight: var(--stli-name-weight, 600);
+  margin: 0;
+  line-height: 1.3;
+}
+.stli-label__price {
+  font-size: var(--stli-price-size, 12px);
+  color: var(--stli-price-color, #1a1a1a);
+  margin: 2px 0 0;
+  font-weight: 600;
+}
+
+/* ---- Mobile bar ---- */
+.stli-mobile-bar {
+  display: none;
+}
+.stli-mobile-card {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  padding: 8px 10px;
+  border-radius: 10px;
+  background: var(--stli-label-bg, rgba(255,255,255,0.95));
+  box-shadow: 0 1px 6px rgba(0,0,0,0.08);
+  min-width: 180px;
+  flex-shrink: 0;
+}
+.stli-mobile-card__img-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+.stli-mobile-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.stli-mobile-card__cat {
+  font-size: 10px;
+  color: var(--stli-cat-color, #888);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+  line-height: 1.2;
+}
+.stli-mobile-card__name {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--stli-name-color, #1a1a1a);
+  margin: 2px 0 0;
+}
+.stli-mobile-card__price {
+  font-size: 12px;
+  color: var(--stli-price-color, #1a1a1a);
+  margin: 2px 0 0;
+}
+
+/* ============ Responsive ============ */
+@media (max-width: 749px) {
+  .stli-section {
+    padding-left: var(--stli-ps-m);
+    padding-right: var(--stli-ps-m);
+  }
+  .stli-heading {
+    font-size: var(--stli-heading-size-m);
+  }
+  /* Image: use mobile height */
+  .stli-image-wrap {
+    height: var(--stli-img-h-m, 500px);
+  }
+  .stli-hero .stli-image-wrap {
+    height: 100svh;
+  }
+  /* Hide all floating labels on mobile */
+  .stli-label { display: none; }
+  /* Show horizontal scroll product bar */
+  .stli-mobile-bar {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding: 14px 0 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+  .stli-mobile-bar::-webkit-scrollbar { display: none; }
+}

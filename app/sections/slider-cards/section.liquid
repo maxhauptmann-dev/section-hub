@@ -1,0 +1,993 @@
+{% comment %}
+  Section Hub – SS Slider #16  v1.0
+  Card-based slider with fullscreen background, floating preview cards,
+  text overlay, arrow navigation and extensive customisation.
+{% endcomment %}
+
+{%- liquid
+  assign height        = section.settings.height
+  assign height_m      = section.settings.height_mobile
+  assign img_round     = section.settings.image_roundness
+
+  assign heading_fs    = section.settings.heading_font_size
+  assign heading_fs_m  = section.settings.heading_font_size_mobile
+  assign heading_fw    = section.settings.heading_font_weight
+  assign heading_ls    = section.settings.heading_letter_spacing
+  assign heading_tt    = section.settings.heading_text_transform
+  assign use_heading_font = section.settings.heading_custom_font
+
+  assign text_fs       = section.settings.text_font_size
+  assign text_fs_m     = section.settings.text_font_size_mobile
+  assign text_fw       = section.settings.text_font_weight
+  assign text_ls       = section.settings.text_letter_spacing
+  assign text_tt       = section.settings.text_text_transform
+  assign use_text_font = section.settings.text_custom_font
+
+  assign btn_label     = section.settings.button_label
+  assign btn_new_tab   = section.settings.button_new_tab
+  assign btn_style     = section.settings.button_style
+  assign btn_fs        = section.settings.button_font_size
+  assign btn_fs_m      = section.settings.button_font_size_mobile
+  assign btn_round     = section.settings.button_roundness
+
+  assign arrow_size    = section.settings.arrow_size
+  assign arrow_size_m  = section.settings.arrow_size_mobile
+  assign arrow_icon    = section.settings.arrow_icon_size
+  assign arrow_icon_m  = section.settings.arrow_icon_size_mobile
+  assign arrow_round   = section.settings.arrow_roundness
+  assign arrow_border  = section.settings.arrow_border_thickness
+  assign arrow_hover   = section.settings.arrow_hover_effect
+
+  assign slide_heading_c  = section.settings.slide_heading_color
+  assign slide_text_c     = section.settings.slide_text_color
+  assign overlay_c        = section.settings.overlay_color
+  assign overlay_op       = section.settings.overlay_opacity
+
+  assign btn_tc   = section.settings.btn_text_color
+  assign btn_th   = section.settings.btn_text_hover
+  assign btn_bg   = section.settings.btn_bg_color
+  assign btn_bgh  = section.settings.btn_bg_hover
+
+  assign arr_ic   = section.settings.arrow_icon_color
+  assign arr_ih   = section.settings.arrow_icon_hover
+  assign arr_bg   = section.settings.arrow_bg_color
+  assign arr_bgh  = section.settings.arrow_bg_hover
+  assign arr_bc   = section.settings.arrow_border_color
+  assign arr_bch  = section.settings.arrow_border_hover
+
+  assign bg_style = section.settings.bg_style
+  assign bg_color = section.settings.bg_color
+  assign bg_grad1 = section.settings.bg_gradient_from
+  assign bg_grad2 = section.settings.bg_gradient_to
+  assign sec_border_c = section.settings.section_border_color
+
+  assign margin_top    = section.settings.margin_top
+  assign margin_bottom = section.settings.margin_bottom
+  assign margin_sides  = section.settings.margin_sides
+  assign margin_sides_m = section.settings.margin_sides_mobile
+  assign pad_top       = section.settings.padding_top
+  assign pad_bottom    = section.settings.padding_bottom
+  assign pad_sides     = section.settings.padding_sides
+  assign pad_sides_m   = section.settings.padding_sides_mobile
+
+  assign sec_width     = section.settings.section_width
+  assign sec_border    = section.settings.section_border_thickness
+  assign sec_round     = section.settings.section_roundness
+  assign lazy          = section.settings.lazy_load
+
+  assign custom_css    = section.settings.custom_css
+
+  assign total_slides  = section.blocks.size
+-%}
+
+<style>
+  #s16-{{ section.id }} {
+    --s16-h: {{ height }}px;
+    --s16-hm: {{ height_m }}px;
+    --s16-img-r: {{ img_round }}px;
+
+    --s16-heading-fs: {{ heading_fs }}px;
+    --s16-heading-fsm: {{ heading_fs_m }}px;
+    --s16-heading-fw: {{ heading_fw }};
+    --s16-heading-ls: {{ heading_ls }}em;
+    --s16-heading-tt: {{ heading_tt }};
+
+    --s16-text-fs: {{ text_fs }}px;
+    --s16-text-fsm: {{ text_fs_m }}px;
+    --s16-text-fw: {{ text_fw }};
+    --s16-text-ls: {{ text_ls }}em;
+    --s16-text-tt: {{ text_tt }};
+
+    --s16-btn-fs: {{ btn_fs }}px;
+    --s16-btn-fsm: {{ btn_fs_m }}px;
+    --s16-btn-round: {{ btn_round }}px;
+
+    --s16-arr-size: {{ arrow_size }}px;
+    --s16-arr-sizem: {{ arrow_size_m }}px;
+    --s16-arr-icon: {{ arrow_icon }}px;
+    --s16-arr-iconm: {{ arrow_icon_m }}px;
+    --s16-arr-round: {{ arrow_round }}px;
+    --s16-arr-bw: {{ arrow_border }}px;
+
+    --s16-heading-c: {{ slide_heading_c }};
+    --s16-text-c: {{ slide_text_c }};
+    --s16-overlay-c: {{ overlay_c }};
+    --s16-overlay-op: {{ overlay_op | divided_by: 100.0 }};
+
+    --s16-btn-tc: {{ btn_tc }};
+    --s16-btn-th: {{ btn_th }};
+    --s16-btn-bg: {{ btn_bg }};
+    --s16-btn-bgh: {{ btn_bgh }};
+
+    --s16-arr-ic: {{ arr_ic }};
+    --s16-arr-ih: {{ arr_ih }};
+    --s16-arr-bg: {{ arr_bg }};
+    --s16-arr-bgh: {{ arr_bgh }};
+    --s16-arr-bc: {{ arr_bc }};
+    --s16-arr-bch: {{ arr_bch }};
+
+    {% if bg_style == 'gradient' %}
+      --s16-bg: linear-gradient(135deg, {{ bg_grad1 }}, {{ bg_grad2 }});
+    {% else %}
+      --s16-bg: {{ bg_color }};
+    {% endif %}
+    --s16-sec-bc: {{ sec_border_c }};
+
+    --s16-mt: {{ margin_top }}px;
+    --s16-mb: {{ margin_bottom }}px;
+    --s16-ms: {{ margin_sides }}rem;
+    --s16-msm: {{ margin_sides_m }}rem;
+    --s16-pt: {{ pad_top }}px;
+    --s16-pb: {{ pad_bottom }}px;
+    --s16-ps: {{ pad_sides }}rem;
+    --s16-psm: {{ pad_sides_m }}rem;
+
+    --s16-sec-bw: {{ sec_border }}px;
+    --s16-sec-r: {{ sec_round }}px;
+
+    {% if sec_width == 'page' %}
+      --s16-max-w: 1200px;
+    {% elsif sec_width == 'custom' %}
+      --s16-max-w: {{ section.settings.section_custom_width }}px;
+    {% else %}
+      --s16-max-w: 100%;
+    {% endif %}
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<div id="s16-{{ section.id }}" class="s16-wrap" data-s16-total="{{ total_slides }}">
+
+  {%- comment -%} ── Background layer (active slide image, blurred) ── {%- endcomment -%}
+  <div class="s16-bg-layer">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'slide' and block.settings.image != blank -%}
+        <img
+          src="{{ block.settings.image | image_url: width: 1920 }}"
+          alt=""
+          class="s16-bg-img{% if forloop.first %} s16-bg-img--active{% endif %}"
+          data-s16-bg="{{ forloop.index0 }}"
+          {% if lazy and forloop.first == false %}loading="lazy"{% endif %}
+          aria-hidden="true"
+        >
+      {%- endif -%}
+    {%- endfor -%}
+    <div class="s16-bg-overlay"></div>
+  </div>
+
+  {%- comment -%} ── Inner container ── {%- endcomment -%}
+  <div class="s16-inner">
+
+    {%- comment -%} ── Text content (from active slide) ── {%- endcomment -%}
+    <div class="s16-content">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'slide' -%}
+          <div class="s16-content__item{% if forloop.first %} s16-content__item--active{% endif %}"
+               data-s16-content="{{ forloop.index0 }}"
+               {{ block.shopify_attributes }}>
+            {%- if block.settings.heading != blank -%}
+              <h2 class="s16-content__heading">{{ block.settings.heading }}</h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="s16-content__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+            {%- if btn_label != blank -%}
+              <a href="{{ block.settings.link | default: '#' }}"
+                 class="s16-btn s16-btn--{{ btn_style }}"
+                 {% if btn_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                {{ btn_label }}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} ── Cards strip (right side) — only other slides, not the active one ── {%- endcomment -%}
+    {%- if total_slides > 1 -%}
+    <div class="s16-cards">
+      <div class="s16-cards__track">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'slide' -%}
+            <button class="s16-card{% if forloop.first %} s16-card--hidden{% endif %}"
+                    data-s16-card="{{ forloop.index0 }}"
+                    aria-label="Slide {{ forloop.index }}">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 400 }}"
+                  alt="{{ block.settings.image.alt | default: block.settings.heading | default: 'Slide' }}"
+                  class="s16-card__img"
+                  {% if lazy %}loading="lazy"{% endif %}
+                >
+              {%- else -%}
+                <span class="s16-card__placeholder">{{ forloop.index }}</span>
+              {%- endif -%}
+            </button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- endif -%}
+
+    {%- comment -%} ── Arrows ── {%- endcomment -%}
+    {%- if total_slides > 1 -%}
+    <div class="s16-arrows">
+      <button class="s16-arrow s16-arrow--prev" aria-label="Previous slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <button class="s16-arrow s16-arrow--next" aria-label="Next slide">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 6 15 12 9 18"/>
+        </svg>
+      </button>
+    </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('s16-{{ section.id }}');
+  if(!root) return;
+
+  var bgImgs   = root.querySelectorAll('.s16-bg-img');
+  var contents = root.querySelectorAll('.s16-content__item');
+  var cards    = root.querySelectorAll('.s16-card');
+  var prevBtn  = root.querySelector('.s16-arrow--prev');
+  var nextBtn  = root.querySelector('.s16-arrow--next');
+  var total    = parseInt(root.getAttribute('data-s16-total')) || 0;
+  if(total < 1) return;
+
+  var current = 0;
+  var animating = false;
+
+  /* Update which cards are visible — hide the active slide's card, show the rest */
+  function updateCards(){
+    cards.forEach(function(card){
+      var idx = parseInt(card.getAttribute('data-s16-card'));
+      if(idx === current){
+        card.classList.add('s16-card--hidden');
+        card.classList.remove('s16-card--enter');
+      } else {
+        var wasHidden = card.classList.contains('s16-card--hidden');
+        card.classList.remove('s16-card--hidden');
+        /* Re-trigger slide-in animation when a card reappears */
+        if(wasHidden){
+          card.classList.remove('s16-card--enter');
+          void card.offsetWidth; /* force reflow */
+          card.classList.add('s16-card--enter');
+        }
+      }
+    });
+  }
+
+  function goTo(idx){
+    idx = ((idx % total) + total) % total;
+    if(idx === current || animating) return;
+    animating = true;
+
+    /* Background – crossfade */
+    if(bgImgs[current]) bgImgs[current].classList.remove('s16-bg-img--active');
+    if(bgImgs[idx])     bgImgs[idx].classList.add('s16-bg-img--active');
+
+    /* Content – exit old, then enter new */
+    var oldContent = contents[current];
+    var newContent = contents[idx];
+
+    if(oldContent){
+      oldContent.classList.remove('s16-content__item--active');
+      oldContent.classList.add('s16-content__item--exit');
+    }
+
+    setTimeout(function(){
+      if(oldContent) oldContent.classList.remove('s16-content__item--exit');
+      if(newContent) newContent.classList.add('s16-content__item--active');
+
+      current = idx;
+
+      /* Cards: hide the one that is now the background, show the rest */
+      updateCards();
+      animating = false;
+    }, 300);
+  }
+
+  /* Arrows */
+  if(prevBtn) prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+  if(nextBtn) nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+
+  /* Card clicks — clicking a card makes it the active background */
+  cards.forEach(function(card){
+    card.addEventListener('click', function(){
+      goTo(parseInt(card.getAttribute('data-s16-card')));
+    });
+  });
+
+  /* Touch swipe on background */
+  var touchX = 0;
+  root.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, { passive: true });
+  root.addEventListener('touchend', function(e){
+    var diff = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(diff) > 50) goTo(diff < 0 ? current + 1 : current - 1);
+  }, { passive: true });
+
+  /* Keyboard */
+  root.setAttribute('tabindex', '0');
+  root.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft') goTo(current - 1);
+    if(e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  /* Init: hide card 0 (since slide 0 is the background on load) */
+  updateCards();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Slider #16",
+  "tag": "section",
+  "class": "s16-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height",
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height - mobile",
+      "min": 300,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 560
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Font size",
+      "min": 18,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Font size - mobile",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" }
+      ],
+      "default": "700",
+      "info": "Shown when Advanced settings is on"
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 20,
+      "step": 1,
+      "unit": "em",
+      "default": 0,
+      "info": "In 0.01em units. Shown when Advanced settings is on"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none",
+      "info": "Shown when Advanced settings is on"
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "text_font_size_mobile",
+      "label": "Font size - mobile",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "text_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" }
+      ],
+      "default": "400",
+      "info": "Shown when Advanced settings is on"
+    },
+    {
+      "type": "range",
+      "id": "text_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": 0,
+      "info": "In 0.01em units. Shown when Advanced settings is on"
+    },
+    {
+      "type": "select",
+      "id": "text_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "lowercase", "label": "lowercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none",
+      "info": "Shown when Advanced settings is on"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop now",
+      "info": "Leave the label blank to hide the button."
+    },
+    {
+      "type": "checkbox",
+      "id": "button_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style",
+      "options": [
+        { "value": "outline",     "label": "Outline" },
+        { "value": "non-outline", "label": "Non-outline" }
+      ],
+      "default": "non-outline"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Font size - mobile",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Arrows"
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Size",
+      "min": 30,
+      "max": 70,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "arrow_size_mobile",
+      "label": "Size - mobile",
+      "min": 30,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "arrow_icon_size",
+      "label": "Icon size",
+      "min": 6,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "arrow_icon_size_mobile",
+      "label": "Icon size - mobile",
+      "min": 6,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "arrow_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "arrow_border_thickness",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "select",
+      "id": "arrow_hover_effect",
+      "label": "Hover effect",
+      "options": [
+        { "value": "color",  "label": "Change color" },
+        { "value": "scale",  "label": "Scale" },
+        { "value": "none",   "label": "None" }
+      ],
+      "default": "color"
+    },
+    {
+      "type": "header",
+      "content": "Slide colors"
+    },
+    {
+      "type": "color",
+      "id": "slide_heading_color",
+      "label": "Heading",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "slide_text_color",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover",
+      "label": "Text hover",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Background hover",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Arrow colors"
+    },
+    {
+      "type": "color",
+      "id": "arrow_icon_color",
+      "label": "Icon",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "arrow_icon_hover",
+      "label": "Icon hover",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg_hover",
+      "label": "Background hover",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_hover",
+      "label": "Border hover",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Section colors"
+    },
+    {
+      "type": "select",
+      "id": "bg_style",
+      "label": "Background style",
+      "options": [
+        { "value": "solid",    "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "bg_gradient_from",
+      "label": "Gradient from",
+      "default": "#FFFFFF",
+      "info": "Only visible when style is Gradient"
+    },
+    {
+      "type": "color",
+      "id": "bg_gradient_to",
+      "label": "Gradient to",
+      "default": "#f0f0f0",
+      "info": "Only visible when style is Gradient"
+    },
+    {
+      "type": "color",
+      "id": "section_border_color",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Section margin (outside)"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides",
+      "label": "Sides",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "rem",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides_mobile",
+      "label": "Sides - mobile",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "rem",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section padding (inside)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Sides",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "unit": "rem",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Sides - mobile",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page",   "label": "Page" },
+        { "value": "full",   "label": "Full" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "page"
+    },
+    {
+      "type": "range",
+      "id": "section_custom_width",
+      "label": "Custom width",
+      "min": 600,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1200,
+      "info": "Only visible when width is Custom"
+    },
+    {
+      "type": "range",
+      "id": "section_border_thickness",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy load",
+      "default": true,
+      "info": "Lazy load images for speed optimisation"
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Slide heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Tell your story"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Slider #16",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}

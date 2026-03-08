@@ -1,102 +1,140 @@
-.testimonial-carousel {
-  background-color: var(--tc-bg);
-  color: var(--tc-text);
-  padding: 5rem 2rem;
+/* ===== Testimonial Carousel v2.0 — Section Hub ===== */
+
+/* ── Section wrapper ── */
+.tcar {
+  background: var(--tcar-bg);
+  color: var(--tcar-text);
+  padding: var(--tcar-padding-top) 2rem var(--tcar-padding-bottom);
   overflow: hidden;
 }
 
-.testimonial-carousel__container {
-  max-width: 900px;
+.tcar__container {
+  max-width: var(--tcar-max-width);
   margin: 0 auto;
 }
 
-.testimonial-carousel__header {
-  text-align: center;
-  margin-bottom: 3rem;
+/* ── Header ── */
+.tcar__header {
+  margin-bottom: 2.5rem;
 }
 
-.testimonial-carousel__eyebrow {
+.tcar__eyebrow {
   display: inline-block;
-  font-size: 0.875rem;
+  font-size: var(--tcar-eyebrow-size);
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
-  color: var(--tc-accent);
-  margin-bottom: 0.75rem;
+  color: var(--tcar-accent);
+  margin-bottom: 0.5rem;
 }
 
-.testimonial-carousel__heading {
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 700;
+.tcar__heading {
+  font-size: var(--tcar-heading-size);
+  font-weight: 800;
   margin: 0;
+  line-height: 1.15;
   letter-spacing: -0.02em;
 }
 
-.testimonial-carousel__track {
+.tcar__subheading {
+  font-size: calc(var(--tcar-quote-size) * 0.9);
+  margin: 0.75rem 0 0;
+  opacity: 0.65;
+  line-height: 1.5;
+}
+
+/* ── Carousel viewport & track ── */
+.tcar__viewport {
+  overflow: hidden;
+}
+
+.tcar__track {
   display: flex;
+  gap: var(--tcar-gap);
   transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.testimonial-carousel__card {
-  flex: 0 0 100%;
-  padding: 2.5rem;
-  background: var(--tc-card-bg);
-  border-radius: 16px;
-  text-align: center;
-}
-
-.testimonial-carousel__stars {
+/* ── Card ── */
+.tcar__card {
+  flex: 0 0 calc((100% - (var(--tcar-per-view) - 1) * var(--tcar-gap)) / var(--tcar-per-view));
+  background: var(--tcar-card-bg);
+  border: var(--tcar-card-border-width) solid var(--tcar-card-border);
+  border-radius: var(--tcar-card-radius);
+  padding: var(--tcar-card-padding);
   display: flex;
-  justify-content: center;
-  gap: 0.25rem;
-  margin-bottom: 1.5rem;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease;
 }
 
-.testimonial-carousel__quote {
-  font-size: 1.25rem;
+.tcar__card:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* ── Stars ── */
+.tcar__stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 1rem;
+}
+
+.tcar__star {
+  width: var(--tcar-star-size);
+  height: var(--tcar-star-size);
+}
+
+/* ── Title ── */
+.tcar__title {
+  font-size: calc(var(--tcar-quote-size) * 1.05);
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+/* ── Quote ── */
+.tcar__quote {
+  font-size: var(--tcar-quote-size);
   line-height: 1.7;
-  margin: 0 0 2rem 0;
-  font-style: italic;
+  margin: 0;
+  flex: 1;
   opacity: 0.9;
+  font-style: italic;
 }
 
-.testimonial-carousel__author {
+/* ── Author ── */
+.tcar__author {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 1rem;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
 }
 
-.testimonial-carousel__avatar,
-.testimonial-carousel__avatar-placeholder {
-  width: 48px;
-  height: 48px;
+.tcar__avatar {
+  width: var(--tcar-avatar-size);
+  height: var(--tcar-avatar-size);
   border-radius: 50%;
   object-fit: cover;
+  flex-shrink: 0;
 }
 
-.testimonial-carousel__avatar-placeholder {
-  background: var(--tc-accent);
-  color: var(--tc-bg);
+.tcar__author-info {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 700;
-  font-size: 1.25rem;
-  text-transform: uppercase;
+  flex-direction: column;
+  gap: 0.15rem;
 }
 
-.testimonial-carousel__name {
+.tcar__name {
   font-weight: 600;
-  font-size: 1rem;
+  font-size: var(--tcar-name-size);
 }
 
-.testimonial-carousel__title {
-  font-size: 0.875rem;
-  opacity: 0.6;
+.tcar__subtitle {
+  font-size: calc(var(--tcar-name-size) * 0.85);
+  opacity: 0.55;
 }
 
-.testimonial-carousel__nav {
+/* ── Navigation ── */
+.tcar__nav {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -104,46 +142,72 @@
   margin-top: 2rem;
 }
 
-.testimonial-carousel__btn {
-  width: 44px;
-  height: 44px;
+.tcar__btn {
+  width: var(--tcar-nav-size);
+  height: var(--tcar-nav-size);
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(128, 128, 128, 0.25);
   background: transparent;
-  color: var(--tc-text);
+  color: var(--tcar-text);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition: all 0.2s ease;
+  padding: 0;
 }
 
-.testimonial-carousel__btn:hover {
-  background: var(--tc-accent);
-  border-color: var(--tc-accent);
-  color: var(--tc-bg);
+.tcar__btn svg {
+  width: calc(var(--tcar-nav-size) * 0.5);
+  height: calc(var(--tcar-nav-size) * 0.5);
 }
 
-.testimonial-carousel__dots {
+.tcar__btn:hover {
+  background: var(--tcar-accent);
+  border-color: var(--tcar-accent);
+  color: var(--tcar-bg);
+}
+
+.tcar__dots {
   display: flex;
   gap: 0.5rem;
 }
 
-.testimonial-carousel__dot {
-  width: 10px;
-  height: 10px;
+.tcar__dot {
+  width: var(--tcar-dot-size);
+  height: var(--tcar-dot-size);
   border-radius: 50%;
   border: none;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(128, 128, 128, 0.35);
   cursor: pointer;
+  padding: 0;
   transition: all 0.2s ease;
 }
 
-.testimonial-carousel__dot.active {
-  background: var(--tc-accent);
-  transform: scale(1.2);
+.tcar__dot.active {
+  background: var(--tcar-accent);
+  transform: scale(1.25);
 }
 
-.testimonial-carousel__dot:hover:not(.active) {
-  background: rgba(255, 255, 255, 0.5);
+.tcar__dot:hover:not(.active) {
+  background: rgba(128, 128, 128, 0.55);
+}
+
+/* ── Responsive ── */
+@media (max-width: 999px) {
+  .tcar {
+    --tcar-per-view: clamp(1, var(--tcar-per-view), 2) !important;
+  }
+}
+
+@media (max-width: 749px) {
+  .tcar {
+    --tcar-per-view: 1 !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .tcar__heading {
+    font-size: calc(var(--tcar-heading-size) * 0.7);
+  }
 }

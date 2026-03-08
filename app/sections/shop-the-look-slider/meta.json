@@ -1,0 +1,72 @@
+{
+  "id": "shop-the-look-slider",
+  "name": "Shop the Look – Slider",
+  "description": "Large lifestyle image paired with a product slider carousel. Navigate through products with arrow buttons and dot indicators. Supports desktop/mobile image swapping, customizable slide aspect ratios, arrow and dot styling, and fully adjustable typography for titles and prices.",
+  "category": "Product Discovery",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 14,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Carousel",
+    "Visual Commerce",
+    "Responsive",
+    "Product Grid"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/shop-the-look-slider/default.webp",
+      "alt": "Shop the Look Slider – Default Light",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/shop-the-look-slider/dark.svg",
+      "alt": "Shop the Look Slider – Dark Mode",
+      "label": "Dark"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-19",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added slide transition speed setting",
+        "Improved dot indicator active state",
+        "Fixed slider reset on window resize"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-19",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

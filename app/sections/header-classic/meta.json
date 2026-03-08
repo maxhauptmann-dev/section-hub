@@ -1,0 +1,58 @@
+{
+  "id": "header-classic",
+  "name": "Header – Classic",
+  "description": "A timeless, elegant classic header section.",
+  "category": "Header",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Classic"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/header-classic/default.webp",
+      "alt": "Header Classic",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-15",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added dropdown menu shadow customization",
+        "Improved keyboard navigation for menu items",
+        "Fixed logo alignment on scroll"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-15",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

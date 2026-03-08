@@ -1,0 +1,73 @@
+{
+  "id": "header-glass",
+  "name": "Header – Glass",
+  "description": "Modern header with frosted glass (liquid glass) effect, mega menu dropdowns, customizable logo/shop name, search/account/cart icons, CTA button, and sticky/scroll-up behavior. Desktop multi-column dropdown with mobile slide-in drawer. Full Shopify menu integration.",
+  "category": "Header",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Navigation",
+    "Mega Menu",
+    "Glass",
+    "Sticky",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/header-glass/default.webp",
+      "alt": "Header Glass – Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/header-glass/menue.webp",
+      "alt": "Header Glass – Menu Open",
+      "label": "Menu Open"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-20",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added blur intensity customization",
+        "Improved glass effect on dark backgrounds",
+        "Fixed sticky header flicker on fast scroll"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-20",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

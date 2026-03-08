@@ -1,0 +1,273 @@
+{% comment %}
+  Section Hub - Video Carousel Block
+  Showcase products with a horizontal scrolling video carousel (real video support)
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-video-carousel {
+  margin: 12px 0;
+}
+
+.sh-video-carousel__title {
+  font-size: {{ block.settings.title_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.text_color }};
+  margin-bottom: 10px;
+}
+
+.sh-video-carousel__track {
+  display: flex;
+  gap: {{ block.settings.gap }}px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.sh-video-carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.sh-video-carousel__item {
+  flex: 0 0 {{ block.settings.item_width }}px;
+  scroll-snap-align: start;
+  position: relative;
+  border-radius: {{ block.settings.border_radius }}px;
+  overflow: hidden;
+  background: {{ block.settings.bg_color }};
+  cursor: pointer;
+  aspect-ratio: 9 / 16;
+}
+
+.sh-video-carousel__video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sh-video-carousel__play {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(0,0,0,0.55);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.sh-video-carousel__play svg {
+  width: 14px;
+  height: 14px;
+  margin-left: 2px;
+}
+
+.sh-video-carousel__dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 10px;
+}
+
+.sh-video-carousel__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: {{ block.settings.text_color }};
+  opacity: 0.25;
+}
+
+.sh-video-carousel__dot--active {
+  opacity: 1;
+}
+</style>
+
+<div class="sh-video-carousel">
+  {% if block.settings.title != blank %}
+    <div class="sh-video-carousel__title">{{ block.settings.title }}</div>
+  {% endif %}
+
+  <div class="sh-video-carousel__track" id="sh-vc-track-{{ block.id }}">
+    {% for i in (1..4) %}
+      {% assign video_key = 'video_' | append: i %}
+      {% assign video = block.settings[video_key] %}
+      {% if video != blank %}
+        <div class="sh-video-carousel__item" data-index="{{ forloop.index0 }}">
+          <video
+            class="sh-video-carousel__video"
+            src="{{ video.sources[1].url | default: video.sources[0].url }}"
+            poster="{{ video.preview_image | image_url: width: 400 }}"
+            playsinline
+            loop
+            muted
+            preload="none"
+          ></video>
+          <div class="sh-video-carousel__play sh-vc-play-btn">
+            <svg viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="sh-video-carousel__dots" id="sh-vc-dots-{{ block.id }}">
+    {% for i in (1..4) %}
+      {% assign video_key = 'video_' | append: i %}
+      {% if block.settings[video_key] != blank %}
+        <span class="sh-video-carousel__dot{% if forloop.first %} sh-video-carousel__dot--active{% endif %}"></span>
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+(function() {
+  var track = document.getElementById('sh-vc-track-{{ block.id }}');
+  if (!track) return;
+
+  var items = track.querySelectorAll('.sh-video-carousel__item');
+  var dots = document.querySelectorAll('#sh-vc-dots-{{ block.id }} .sh-video-carousel__dot');
+
+  // Click to play/pause
+  items.forEach(function(item) {
+    item.addEventListener('click', function() {
+      var video = item.querySelector('video');
+      var btn = item.querySelector('.sh-vc-play-btn');
+      if (!video) return;
+      if (video.paused) {
+        // Pause all others
+        track.querySelectorAll('video').forEach(function(v) {
+          v.pause();
+          var b = v.parentElement.querySelector('.sh-vc-play-btn');
+          if (b) b.style.opacity = '1';
+        });
+        video.play();
+        if (btn) btn.style.opacity = '0';
+      } else {
+        video.pause();
+        if (btn) btn.style.opacity = '1';
+      }
+    });
+  });
+
+  // Update dots on scroll
+  track.addEventListener('scroll', function() {
+    var idx = Math.round(track.scrollLeft / (items[0] ? items[0].offsetWidth + {{ block.settings.gap }} : 1));
+    dots.forEach(function(d, i) {
+      d.classList.toggle('sh-video-carousel__dot--active', i === idx);
+    });
+  });
+})();
+</script>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Video Carousel",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "See it in action"
+    },
+    {
+      "type": "header",
+      "content": "Videos"
+    },
+    {
+      "type": "video",
+      "id": "video_1",
+      "label": "Video 1"
+    },
+    {
+      "type": "video",
+      "id": "video_2",
+      "label": "Video 2"
+    },
+    {
+      "type": "video",
+      "id": "video_3",
+      "label": "Video 3"
+    },
+    {
+      "type": "video",
+      "id": "video_4",
+      "label": "Video 4"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Video Background",
+      "default": "#f3f3f3"
+    },
+    {
+      "type": "range",
+      "id": "item_width",
+      "label": "Video Width",
+      "min": 80,
+      "max": 160,
+      "step": 10,
+      "default": 110,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,347 @@
+/* ============================================
+   Section Hub – Header Announce v1.0
+   ============================================ */
+
+/* Fix Editor preview gap - Shopify adds designMode class in editor */
+html.designMode [id^="shopify-section-"].sha-root,
+html.designMode [id^="shopify-section-"].sha-root ~ * {
+  margin-top: 0 !important;
+}
+
+/* --- Announcement Bar --- */
+.sha-announce {
+  background: var(--sha-ann-bg);
+  color: var(--sha-ann-color);
+  text-align: center;
+  padding: 8px 16px;
+  font-size: var(--sha-ann-size);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+.sha-announce__link {
+  color: inherit;
+  text-decoration: none;
+}
+.sha-announce__link:hover { text-decoration: underline; }
+.sha-announce__text { margin: 0; }
+
+/* --- Root --- */
+.sha-root { position: relative; z-index: 999; }
+.sha-header {
+  background: var(--sha-bg);
+  border-bottom: 1px solid rgba(0,0,0,0.06);
+}
+.sha-inner {
+  max-width: var(--sha-content-w);
+  margin: 0 auto;
+  padding: var(--sha-py) var(--sha-px);
+}
+.sha-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+/* --- Logo --- */
+.sha-logo { flex-shrink: 0; }
+.sha-logo__link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.sha-logo__img {
+  width: var(--sha-logo-w);
+  height: auto;
+  display: block;
+}
+.sha-logo__text {
+  font-size: var(--sha-shop-size);
+  font-weight: 700;
+  color: var(--sha-shop-color);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* --- Nav --- */
+.sha-nav {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+.sha-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sha-link-gap);
+}
+.sha-nav__item { position: relative; }
+.sha-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--sha-link-size);
+  font-weight: var(--sha-link-weight);
+  color: var(--sha-link-color);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.sha-nav__link:hover,
+.sha-nav__link--active { color: var(--sha-link-hover); }
+.sha-nav__chev { transition: transform 0.2s; }
+.sha-nav__item--dd:hover .sha-nav__chev { transform: rotate(180deg); }
+
+/* --- Dropdown --- */
+.sha-dd {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(8px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s, transform 0.25s;
+  pointer-events: none;
+  z-index: 1000;
+  padding-top: 10px;
+}
+.sha-nav__item--dd:hover .sha-dd {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+.sha-dd__inner {
+  background: var(--sha-dd-bg);
+  border-radius: var(--sha-dd-round);
+  padding: 16px;
+  min-width: 200px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+  border: 1px solid rgba(0,0,0,0.06);
+}
+.sha-dd__list { list-style: none; margin: 0; padding: 0; }
+.sha-dd__link {
+  display: block;
+  padding: 7px 10px;
+  color: var(--sha-dd-link);
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: color 0.15s, background 0.15s;
+}
+.sha-dd__link:hover {
+  color: var(--sha-dd-hover);
+  background: rgba(0,0,0,0.03);
+}
+
+/* --- Mega --- */
+.sha-mega { display: flex; gap: 32px; }
+/* When mega menu is inside dropdown, auto-expand the dropdown width */
+.sha-dd__inner:has(.sha-mega) { min-width: max-content; }
+.sha-mega__col { min-width: 150px; }
+.sha-mega__heading {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--sha-dd-link);
+  margin: 0 0 10px;
+  opacity: 0.55;
+}
+.sha-mega__list { list-style: none; margin: 0; padding: 0; }
+.sha-mega__link {
+  display: block;
+  padding: 5px 0;
+  color: var(--sha-dd-link);
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.15s;
+}
+.sha-mega__link:hover { color: var(--sha-dd-hover); }
+.sha-mega__promo {
+  display: block;
+  margin-top: 12px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.sha-mega__promo-img { width: 100%; height: auto; display: block; }
+
+/* --- Actions --- */
+.sha-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+.sha-actions__icon {
+  color: var(--sha-icon-color);
+  display: flex;
+  align-items: center;
+  position: relative;
+  transition: opacity 0.2s;
+}
+.sha-actions__icon:hover { opacity: 0.7; }
+.sha-cart-badge {
+  position: absolute;
+  top: -5px; right: -7px;
+  background: var(--sha-cta-bg, #a3e635);
+  color: #1a1a1a;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- CTA (Neon) --- */
+.sha-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--sha-cta-bg);
+  color: var(--sha-cta-color);
+  border-radius: var(--sha-cta-round);
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.3s;
+  white-space: nowrap;
+  border: none;
+}
+.sha-cta:hover {
+  opacity: 0.92;
+  transform: translateY(-1px);
+}
+
+/* --- Burger --- */
+.sha-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.sha-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--sha-icon-color);
+  border-radius: 2px;
+}
+
+/* --- Drawer --- */
+.sha-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  visibility: hidden;
+}
+.sha-drawer--open { pointer-events: auto; visibility: visible; }
+.sha-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.sha-drawer--open .sha-drawer__overlay { opacity: 1; }
+.sha-drawer__panel {
+  position: absolute;
+  top: 0; right: 0;
+  width: min(85vw, 380px);
+  height: 100%;
+  background: #fff;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.sha-drawer--open .sha-drawer__panel { transform: translateX(0); }
+.sha-drawer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.sha-drawer__logo { height: auto; display: block; }
+.sha-drawer__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+}
+.sha-drawer__announce {
+  background: var(--sha-ann-bg);
+  color: var(--sha-ann-color);
+  text-align: center;
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.sha-drawer__nav { flex: 1; padding: 8px 0; }
+.sha-drawer__group { border-bottom: 1px solid #f3f4f6; }
+.sha-drawer__link,
+.sha-drawer__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.sha-drawer__arrow { transition: transform 0.2s; }
+.sha-drawer__toggle--open .sha-drawer__arrow { transform: rotate(180deg); }
+.sha-drawer__sub { display: none; padding: 0 20px 10px; }
+.sha-drawer__sub--open { display: block; }
+.sha-drawer__sublink {
+  display: block;
+  padding: 8px 12px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 6px;
+}
+.sha-drawer__sublink:hover { background: #f9fafb; }
+.sha-drawer__footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.sha-drawer__flink {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+}
+.sha-drawer__cta {
+  text-align: center;
+  justify-content: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 749px) {
+  .sha-nav { display: none; }
+  .sha-burger { display: flex; }
+  .sha-cta:not(.sha-drawer__cta) { display: none; }
+  .sha-logo__img { width: var(--sha-logo-w-m); }
+}

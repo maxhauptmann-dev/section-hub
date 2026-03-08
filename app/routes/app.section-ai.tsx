@@ -1,5 +1,5 @@
 import { useState, useCallback, useEffect } from "react";
-import { useLoaderData, useSubmit, useActionData, useNavigation } from "react-router";
+import { useLoaderData, useSubmit, useActionData, useNavigation, useNavigate } from "react-router";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import OpenAI from "openai";
@@ -27,10 +27,8 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   // Available AI models
   const availableModels = [
-    { label: "GPT-4o (Neuestes & Bestes Modell)", value: "gpt-4o" },
+    { label: "GPT-4o (Bestes Modell – empfohlen)", value: "gpt-4o" },
     { label: "GPT-4o mini (Schnell & Günstig)", value: "gpt-4o-mini" },
-    { label: "GPT-4 Turbo (Groß & Leistungsstark)", value: "gpt-4-turbo" },
-    { label: "GPT-4 (Original, sehr gut)", value: "gpt-4" },
   ];
 
   const defaultModel = process.env.OPENAI_MODEL || "gpt-4o";
@@ -155,88 +153,226 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     try {
       const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 
-      const systemPrompt = `You are an expert Shopify theme developer. You generate production-ready Shopify Liquid sections with embedded CSS.
+      const systemPrompt = `You are a world-class Shopify theme developer. You generate production-ready Shopify Liquid sections.
 
-RULES:
-1. Return ONLY valid Shopify Liquid code. No markdown, no explanation, no code fences.
-2. The section MUST include a {% schema %} block at the end with valid JSON.
-3. Use {%- style -%} ... {%- endstyle -%} for CSS, embedded in the Liquid file.
-4. All styles must be responsive (mobile-first, use media queries).
-5. Use section.settings for ALL customizable values (colors, text, padding, etc.).
-6. The schema MUST include a "presets" array so it appears in the Theme Editor.
-7. Use semantic HTML (section, article, h2, p, etc.).
-8. The schema JSON must be 100% valid — no trailing commas, no comments.
-9. Make the section visually appealing with the "${style}" style and "${colorScheme}" color scheme.
-10. Include smooth CSS transitions and hover effects where appropriate.
-11. Use clamp() for responsive font sizes.
-12. Every setting must have an "id", "type", "label", and "default" value.
-13. Supported schema setting types: text, textarea, richtext, url, color, image_picker, range, select, checkbox, number, header, paragraph, video_url. Do NOT use unsupported types.
-14. For range settings: min, max, step, default must be valid numbers. The default must equal min + N*step for some integer N >= 0.
-15. CRITICAL: These types MUST NOT have a "default" property: url, image_picker, video_url, product, collection, page, blog, article, link_list, font_picker, html. Only remove the default key, keep all other properties.
-16. CRITICAL: Setting attributes are TYPE-SPECIFIC. Only these combinations are valid:
+OUTPUT FORMAT:
+- Return ONLY the raw Shopify Liquid code. No markdown fences, no explanations, no comments outside the code.
+- The file structure must be: HTML/Liquid → <style> CSS </style> → <script> JS </script> (if needed) → {% schema %} JSON {% endschema %}
+
+ARCHITECTURE RULES:
+1. Use <style> tags for CSS (NOT {%- style -%}). Scope all CSS with a unique class prefix like ".section-ai-${slug}".
+2. Use CSS custom properties (variables) on the root section element and reference section.settings to set them.
+3. Mobile-first responsive design with min-width media queries.
+4. Use clamp() for font sizes (e.g. clamp(1.25rem, 2.5vw, 2rem)).
+5. Use semantic HTML: <section>, <h2>, <p>, <article>, <figure>, etc.
+6. Add smooth CSS transitions (0.3s ease) on interactive elements.
+7. If the section needs interactivity (carousel, accordion, tabs), include a <script> block with vanilla JS.
+
+SCHEMA RULES (CRITICAL — the schema JSON must be 100% valid):
+8. The {% schema %} block MUST be the LAST thing in the file, at top level, never nested.
+9. The schema JSON must have NO trailing commas, NO comments.
+10. Include a "presets" array so the section appears in the Theme Editor's "Add section" menu.
+11. Every setting needs: "type", "id", "label", and "default" (except types listed in rule 13).
+12. Supported setting types: text, textarea, richtext, inline_richtext, url, color, color_background, image_picker, range, select, radio, checkbox, number, header, paragraph, video_url, product, collection.
+13. These types MUST NOT have "default": url, image_picker, video_url, product, collection, page, blog, article, link_list, font_picker, html.
+14. Setting attributes are TYPE-SPECIFIC — only use valid attributes:
     - text/textarea: type, id, label, default, info, placeholder
-    - richtext/inline_richtext: type, id, label, default, info
+    - richtext: type, id, label, default, info (default must be wrapped in <p> tags)
     - number: type, id, label, default, info, placeholder
-    - range: type, id, label, default, info, min, max, step, unit
-    - select/radio: type, id, label, default, info, options
-    - checkbox: type, id, label, default, info
-    - color/color_background/color_scheme: type, id, label, default, info
-    - image_picker/url/product/collection/page/blog/article/link_list/html: type, id, label, info
-    - video_url: type, id, label, info, accept, placeholder
-    - header: type, content, info
-    - paragraph: type, content
-    Do NOT use "min", "max", "step", "unit" on anything other than "range". Do NOT use "placeholder" on color, checkbox, select, or resource types. Do NOT add "settings", "blocks", "name", "description", "required" or any other keys inside a setting object.
-17. Section class should be "section-ai-${slug}".
-18. Name in schema should be "${sectionName}".
-19. CRITICAL: The {% schema %} block MUST be at the TOP LEVEL of the file — NEVER nested inside {% style %}, {% comment %}, {% if %}, {% for %}, or any other Liquid tag. The schema tag must be the very last thing in the file, after all HTML and style blocks are properly closed.`;
+    - range: type, id, label, default, info, min, max, step, unit (default = min + N*step)
+    - select/radio: type, id, label, default, info, options (options = [{value, label}])
+    - checkbox: type, id, label, default, info (default = true/false)
+    - color: type, id, label, default, info
+    - image_picker/url/product/collection: type, id, label, info
+    - header: type, content (no id, no label, no default)
+    - paragraph: type, content (no id, no label, no default)
+15. For "range": min, max, step must be numbers. default must be min + N*step for integer N ≥ 0.
+16. Do NOT add "required", "settings", "blocks", "name", "description", or other invalid keys inside a setting object.
 
-      const userPrompt = `Generate a Shopify Liquid section based on this description:
+DESIGN RULES:
+17. Section class: "section-ai-${slug}". Schema name: "${sectionName}".
+18. Group settings logically with "header" type separators (Content, Colors, Layout, etc.).
+19. Include customizable padding (top/bottom), background color, text color, and accent color at minimum.
+20. Use image_picker for images, product/collection for Shopify resources.
+21. If the section has repeating items (FAQ items, team members, testimonials), use blocks.
 
-"${prompt}"
+EXAMPLE of a well-structured section:
 
-Style: ${style}
+\`\`\`
+<section class="section-ai-example" style="
+  --bg: {{ section.settings.background_color }};
+  --text: {{ section.settings.text_color }};
+  --accent: {{ section.settings.accent_color }};
+  --pt: {{ section.settings.padding_top }}px;
+  --pb: {{ section.settings.padding_bottom }}px;
+">
+  <div class="section-ai-example__container">
+    {% if section.settings.heading != blank %}
+      <h2 class="section-ai-example__heading">{{ section.settings.heading }}</h2>
+    {% endif %}
+    <div class="section-ai-example__grid">
+      {% for block in section.blocks %}
+        <article class="section-ai-example__item" {{ block.shopify_attributes }}>
+          <h3>{{ block.settings.title }}</h3>
+          <p>{{ block.settings.text }}</p>
+        </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<style>
+.section-ai-example {
+  background: var(--bg);
+  color: var(--text);
+  padding: var(--pt) 0 var(--pb);
+}
+.section-ai-example__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+.section-ai-example__heading {
+  text-align: center;
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  margin-bottom: 40px;
+}
+.section-ai-example__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+}
+.section-ai-example__item {
+  padding: 24px;
+  border-radius: 8px;
+  background: rgba(0,0,0,0.03);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.section-ai-example__item:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+}
+@media (max-width: 640px) {
+  .section-ai-example__grid {
+    grid-template-columns: 1fr;
+  }
+}
+</style>
+
+{% schema %}
+{
+  "name": "Example Section",
+  "tag": "section",
+  "class": "section-ai-example-root",
+  "settings": [
+    { "type": "header", "content": "Content" },
+    { "type": "text", "id": "heading", "label": "Heading", "default": "Our Features" },
+    { "type": "header", "content": "Colors" },
+    { "type": "color", "id": "background_color", "label": "Background", "default": "#ffffff" },
+    { "type": "color", "id": "text_color", "label": "Text Color", "default": "#1a1a1a" },
+    { "type": "color", "id": "accent_color", "label": "Accent", "default": "#6366f1" },
+    { "type": "header", "content": "Layout" },
+    { "type": "range", "id": "padding_top", "label": "Padding Top", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 60 },
+    { "type": "range", "id": "padding_bottom", "label": "Padding Bottom", "min": 0, "max": 100, "step": 4, "unit": "px", "default": 60 }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        { "type": "text", "id": "title", "label": "Title", "default": "Feature" },
+        { "type": "textarea", "id": "text", "label": "Description", "default": "Describe this feature." }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Example Section",
+      "blocks": [
+        { "type": "item" },
+        { "type": "item" },
+        { "type": "item" }
+      ]
+    }
+  ]
+}
+{% endschema %}
+\`\`\`
+
+Follow this exact structure. Do NOT deviate.`;
+
+      const userPrompt = `Generate a Shopify Liquid section:
+
+Name: "${sectionName}"
+Description: "${prompt}"
+Visual Style: ${style}
 Color Scheme: ${colorScheme}
-Section Type: ${sectionType}
 
-Requirements:
-- Production-ready, beautiful, modern code
-- Fully responsive with mobile breakpoints
-- All text, colors, and spacing customizable via Theme Editor settings
-- Include presets for Theme Editor
-- CSS embedded with {%- style -%} tags
-- Smooth animations and transitions
-- Accessible (proper ARIA attributes, semantic HTML)`;
+Make it production-ready, visually stunning, fully responsive, and accessible. All text, colors, spacing, and layout must be customizable via the Shopify Theme Editor settings.`;
 
-      const completion = await openai.chat.completions.create({
-        model,
-        max_tokens: 4000,
-        temperature: 0.7,
-        messages: [
+      // ─── Try generation with retry on failure ───
+      let generatedLiquid = "";
+      let tokensUsed = 0;
+      let lastError = "";
+
+      for (let attempt = 1; attempt <= 2; attempt++) {
+        const messages: { role: "system" | "user" | "assistant"; content: string }[] = [
           { role: "system", content: systemPrompt },
-          { role: "user", content: userPrompt }
-        ],
-      });
+          { role: "user", content: userPrompt },
+        ];
 
-      let generatedLiquid = completion.choices[0]?.message?.content || "";
-      
-      // Clean up response — remove markdown code fences if present
-      generatedLiquid = generatedLiquid
-        .replace(/^```(?:liquid|html)?\s*\n?/gm, "")
-        .replace(/\n?```\s*$/gm, "")
-        .trim();
+        // On retry, add context about what went wrong
+        if (attempt === 2 && lastError) {
+          messages.push(
+            { role: "assistant", content: generatedLiquid },
+            { role: "user", content: `The previous output had this error: "${lastError}". Please fix it and return the complete corrected Liquid code. Remember: no markdown fences, valid JSON schema, {% schema %} at the end.` },
+          );
+        }
 
-      // Validate the response contains schema
-      if (!generatedLiquid.includes("{% schema %}")) {
-        return {
-          error: "AI hat ungültigen Code generiert (Schema fehlt). Bitte versuche es nochmal.",
-          generatedSection: null,
-        };
+        const completion = await openai.chat.completions.create({
+          model,
+          max_tokens: 8000,
+          temperature: attempt === 1 ? 0.35 : 0.2,
+          messages,
+        });
+
+        generatedLiquid = completion.choices[0]?.message?.content || "";
+        tokensUsed += (completion.usage?.prompt_tokens || 0) + (completion.usage?.completion_tokens || 0);
+
+        // Clean up response — remove markdown code fences if present
+        generatedLiquid = generatedLiquid
+          .replace(/^```(?:liquid|html|json)?\s*\n?/gm, "")
+          .replace(/\n?```\s*$/gm, "")
+          .trim();
+
+        // Validate: must contain schema
+        if (!generatedLiquid.includes("{% schema %}")) {
+          lastError = "{% schema %} block is missing";
+          if (attempt < 2) continue;
+          return {
+            error: "AI hat ungültigen Code generiert (Schema fehlt nach 2 Versuchen). Bitte versuche es nochmal mit einer anderen Beschreibung.",
+            generatedSection: null,
+          };
+        }
+
+        // Validate: schema JSON must parse
+        const schemaMatch = generatedLiquid.match(/\{%[-\s]*schema\s*[-]?%\}([\s\S]*?)\{%[-\s]*endschema\s*[-]?%\}/);
+        if (schemaMatch) {
+          try {
+            JSON.parse(schemaMatch[1]);
+          } catch (jsonErr: any) {
+            lastError = `Invalid JSON in schema: ${jsonErr.message}`;
+            if (attempt < 2) continue;
+            // Don't fail — sanitizeShopifySchema may fix it
+          }
+        }
+
+        // Passed validation
+        break;
       }
 
-      // ─── Sanitize Shopify schema to fix common AI mistakes ───
+      // ─── Sanitize Shopify schema to fix remaining AI mistakes ───
       generatedLiquid = sanitizeShopifySchema(generatedLiquid);
-
-      const tokensUsed = (completion.usage?.prompt_tokens || 0) + (completion.usage?.completion_tokens || 0);
 
       // Save to database
       const aiSection = await prisma.aiSection.create({
@@ -274,14 +410,14 @@ Requirements:
         },
       };
     } catch (err: any) {
-      console.error("Anthropic Error:", err);
+      console.error("OpenAI Error:", err);
       const errorMessage = err?.message || "Unknown error";
       
       if (errorMessage.includes("insufficient_quota") || errorMessage.includes("credit_balance_exhausted")) {
-        return { error: "Anthropic API quota exceeded. Bitte Billing prüfen.", generatedSection: null };
+        return { error: "OpenAI API Quota aufgebraucht. Bitte Billing prüfen.", generatedSection: null };
       }
       if (errorMessage.includes("invalid_api_key")) {
-        return { error: "Ungültiger Anthropic API Key. Bitte Konfiguration prüfen.", generatedSection: null };
+        return { error: "Ungültiger OpenAI API Key. Bitte Konfiguration prüfen.", generatedSection: null };
       }
       
       return {
@@ -906,6 +1042,7 @@ export default function SectionAIPage() {
   const { examplePrompts, availableModels, defaultModel, existingAiSections, demoThemeId, demoThemeName } = useLoaderData<typeof loader>() || {} as any;
   const actionData = useActionData<typeof action>();
   const submit = useSubmit();
+  const navigate = useNavigate();
   const navigation = useNavigation();
   const isSubmitting = navigation.state === "submitting";
 
@@ -990,7 +1127,7 @@ export default function SectionAIPage() {
     <Page
       title="Section AI"
       subtitle="Generate custom Shopify sections with AI"
-      backAction={{ url: "/app" }}
+      backAction={{ onAction: () => navigate("/app") }}
     >
       <BlockStack gap="600">
         {/* Intro Banner */}

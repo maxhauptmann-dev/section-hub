@@ -1,0 +1,75 @@
+{
+  "id": "featured-collection-tabs",
+  "name": "Featured Collection (Tabs) #6",
+  "description": "Display multiple collections in a tabbed interface with horizontal product slider. Features customizable tabs, product cards with vendor, price, and details, navigation arrows, and responsive design.",
+  "category": "featured collection",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Tabs",
+    "Product Slider",
+    "Responsive",
+    "Customizable"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/featured-collection/first.webp",
+      "alt": "Featured Collection Tabs - first",
+      "label": "First"
+    },
+    {
+      "src": "/previews/featured-collection/apparel.webp",
+      "alt": "Featured Collection Tabs - Apparel",
+      "label": "Apparel"
+    },
+    {
+      "src": "/previews/featured-collection/drinks.webp",
+      "alt": "Featured Collection Tabs - Drinks",
+      "label": "Drinks"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "featured-collection-tabs.liquid",
+    "css": "featured-collection-tabs.css"
+  },
+  "createdAt": "2026-02-12",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added active tab indicator animation",
+        "Improved product card hover effect",
+        "Fixed tab switching flicker on Safari"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-12",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+{
+  "id": "slideshow-product",
+  "name": "SS - Slideshow",
+  "description": "Premium fullscreen slideshow with product integration. Features: auto-play with animated progress border around thumbnails, fullscreen hero images with mobile variants, product overlay with title/vendor/price/button, customizable timing and transitions.",
+  "category": [
+    "Slideshow",
+    "Hero"
+  ],
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 14,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slideshow",
+    "Hero",
+    "Product",
+    "Carousel",
+    "Fullscreen",
+    "Auto-play",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f0f0f0",
+  "previews": [
+    {
+      "src": "/previews/slideshow-product/default.webp",
+      "alt": "Slideshow – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-26",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Fullscreen hero slideshow with auto-play",
+    "Animated progress border around active thumbnail",
+    "Product integration per slide (title, vendor, price, button)",
+    "Desktop and mobile image variants",
+    "Custom thumbnail images",
+    "Configurable auto-play speed and transition duration",
+    "Full color customization for product overlay and buttons",
+    "Section height, overlay, and padding controls",
+    "Responsive design with touch swipe support"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added product overlay position setting",
+        "Improved auto-play pause on interaction",
+        "Fixed thumbnail progress animation timing"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-26",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

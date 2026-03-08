@@ -51,9 +51,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   // Create One-Time Charge via authenticated admin.graphql()
   try {
+    // Clean up any old PENDING records for this section
+    await prisma.sectionPurchase.deleteMany({
+      where: { shop, sectionHandle: sectionId, status: "PENDING" },
+    });
+
     const appUrl =
-      process.env.SHOPIFY_APP_URL || "https://shopify-quiet-night-395.fly.dev";
-    const returnUrl = `${appUrl}/app/billing/complete?section=${encodeURIComponent(sectionId)}`;
+      process.env.SHOPIFY_APP_URL || "https://section-hub-app.fly.dev";
+    const returnUrl = `${appUrl}/app/billing/complete?shop=${encodeURIComponent(shop)}&section=${encodeURIComponent(sectionId)}`;
 
     const response = await admin.graphql(
       `#graphql
@@ -128,47 +133,18 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       });
     }
 
-    // No confirmation URL received – create mock purchase for testing
-    console.warn("No confirmationUrl from Shopify – creating mock purchase");
-    const mockId = `mock_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    await prisma.sectionPurchase.create({
-      data: {
-        shop,
-        sectionHandle: sectionId,
-        appPurchaseId: mockId,
-        amount: sectionPrice,
-        currency: section.price?.currency || "EUR",
-        status: "COMPLETED",
-      },
-    });
-
-    return Response.json({
-      success: true,
-      purchaseRequired: true,
-      confirmationUrl: "__mock__",
-      appPurchaseId: mockId,
-    });
+    // No confirmation URL received – should not happen
+    console.error("No confirmationUrl from Shopify");
+    return Response.json(
+      { success: false, error: "Could not create charge. Please try again." },
+      { status: 500 },
+    );
   } catch (error) {
     console.error("Purchase creation error:", error);
-
-    // Fallback: mock purchase so testing still works
-    const mockId = `mock_err_${Date.now()}`;
-    await prisma.sectionPurchase.create({
-      data: {
-        shop,
-        sectionHandle: sectionId,
-        appPurchaseId: mockId,
-        amount: sectionPrice,
-        currency: section.price?.currency || "EUR",
-        status: "COMPLETED",
-      },
-    });
-
-    return Response.json({
-      success: true,
-      purchaseRequired: true,
-      confirmationUrl: "__mock__",
-      appPurchaseId: mockId,
-    });
+    // DO NOT create mock records — just report the error
+    return Response.json(
+      { success: false, error: "Something went wrong. Please try again." },
+      { status: 500 },
+    );
   }
 };

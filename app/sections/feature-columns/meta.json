@@ -1,0 +1,63 @@
+{
+  "id": "feature-columns",
+  "name": "Feature Columns",
+  "description": "Highlight your key features or services with flexible icon columns. Supports custom images, built-in icons, multiple layouts, and full styling controls.",
+  "category": "Free",
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": [
+    "OS2.0",
+    "Features",
+    "Free",
+    "Responsive",
+    "Minimal"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/feature-columns/default.webp",
+      "alt": "Feature Columns - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-22",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added icon color customization",
+        "Improved column spacing on tablet breakpoint",
+        "Fixed heading alignment in 4-column layout"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-22",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {% comment %}
-  Section Hub – Testimonial Scrolling Images
-  Infinite marquee scroll of testimonial images / screenshots.
-  Fully customisable size, shape (round / square / rounded), speed, direction.
+  Section Hub – Testimonial Scrolling Cards
+  Infinite marquee scroll of testimonial cards with image/video, star rating,
+  comment text and author name. Like Testimonial #12 but scrolling.
 {% endcomment %}
 
 {{ 'section-testimonial-scrolling.css' | asset_url | stylesheet_tag }}
@@ -17,7 +17,8 @@
   --ts-bg: {{ section.settings.background_color }};
   --ts-text: {{ section.settings.text_color }};
   --ts-accent: {{ section.settings.accent_color }};
-  --ts-img-width: {{ section.settings.image_width }}px;
+  --ts-card-bg: {{ section.settings.card_background }};
+  --ts-card-width: {{ section.settings.card_width }}px;
   --ts-img-height: {{ section.settings.image_height }}px;
   --ts-gap: {{ section.settings.gap }}px;
   --ts-speed: {{ section.settings.scroll_speed }}s;
@@ -26,6 +27,7 @@
   --ts-padding-top: {{ section.settings.padding_top }}px;
   --ts-padding-bottom: {{ section.settings.padding_bottom }}px;
   --ts-rows: {{ section.settings.rows }};
+  --ts-card-border: {{ section.settings.card_border_color }};
 ">
   <div class="ts-scroll__container">
     {% if section.settings.heading != blank %}
@@ -42,41 +44,162 @@
 
     {%- comment -%} Marquee rows {%- endcomment -%}
     {% for row in (1..section.settings.rows) %}
-      <div class="ts-scroll__marquee {% if row == 2 %}ts-scroll__marquee--reverse{% endif %}">
+      <div class="ts-scroll__marquee {% if row == 2 %}ts-scroll__marquee--reverse{% endif %}" aria-hidden="{% if row > 1 %}true{% else %}false{% endif %}">
         <div class="ts-scroll__track">
-          {%- comment -%} Duplicate blocks for seamless loop {%- endcomment -%}
-          {% for pass in (1..2) %}
-            {% for block in section.blocks %}
-              <div class="ts-scroll__item {{ shape_class }}" {{ block.shopify_attributes }}>
-                {% if block.settings.image != blank %}
-                  <img
-                    src="{{ block.settings.image | image_url: width: 600 }}"
-                    alt="{{ block.settings.alt | default: block.settings.name }}"
-                    class="ts-scroll__img"
-                    loading="lazy"
-                    width="{{ section.settings.image_width }}"
-                    height="{{ section.settings.image_height }}"
-                  >
-                {% else %}
-                  <div class="ts-scroll__placeholder">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="rgba(0,0,0,0.2)" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+          {%- comment -%} First set: real blocks with editor attributes {%- endcomment -%}
+          {% for block in section.blocks %}
+              <div class="ts-scroll__card {% unless block.settings.video != blank or block.settings.video_url != blank or block.settings.image != blank %}ts-scroll__card--no-media{% endunless %}" {{ block.shopify_attributes }}>
+                {%- comment -%} Media: Image or Video (optional) {%- endcomment -%}
+                {% if block.settings.video != blank or block.settings.video_url != blank or block.settings.image != blank %}
+                  <div class="ts-scroll__media {{ shape_class }}">
+                    {% if block.settings.video != blank %}
+                      <div class="ts-scroll__video-wrap">
+                        {{ block.settings.video | video_tag: autoplay: false, controls: false, muted: true, loop: true, class: 'ts-scroll__video' }}
+                        <button class="ts-scroll__play-btn" aria-label="Play video" onclick="var v=this.parentElement.querySelector('video');if(v.paused){v.play();this.classList.add('playing');}else{v.pause();this.classList.remove('playing');}">
+                          <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)"/>
+                            <polygon points="19,15 35,24 19,33" fill="#fff"/>
+                          </svg>
+                        </button>
+                      </div>
+                    {% elsif block.settings.video_url != blank %}
+                      <div class="ts-scroll__video-wrap">
+                        {% if block.settings.video_url.type == 'youtube' %}
+                          <iframe
+                            src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?autoplay=0&mute=1&controls=1"
+                            class="ts-scroll__iframe"
+                            allow="autoplay; encrypted-media"
+                            allowfullscreen
+                            loading="lazy"
+                          ></iframe>
+                        {% elsif block.settings.video_url.type == 'vimeo' %}
+                          <iframe
+                            src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}?autoplay=0&muted=1"
+                            class="ts-scroll__iframe"
+                            allow="autoplay; encrypted-media"
+                            allowfullscreen
+                            loading="lazy"
+                          ></iframe>
+                        {% endif %}
+                      </div>
+                    {% elsif block.settings.image != blank %}
+                      <img
+                        src="{{ block.settings.image | image_url: width: 800 }}"
+                        alt="{{ block.settings.alt | default: block.settings.author_name | default: 'Testimonial' }}"
+                        class="ts-scroll__img"
+                        loading="lazy"
+                        width="{{ section.settings.card_width }}"
+                        height="{{ section.settings.image_height }}"
+                      >
+                    {% endif %}
                   </div>
                 {% endif %}
 
-                {% if section.settings.show_overlay and block.settings.name != blank %}
-                  <div class="ts-scroll__overlay">
-                    {% if block.settings.rating > 0 %}
-                      <div class="ts-scroll__overlay-stars">
-                        {% for i in (1..5) %}
-                          {% if i <= block.settings.rating %}
-                            <svg class="ts-star-sm" viewBox="0 0 24 24" fill="var(--ts-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
-                          {% endif %}
-                        {% endfor %}
+                {%- comment -%} Card body: stars, comment, author with profile image {%- endcomment -%}
+                <div class="ts-scroll__body">
+                  {% if block.settings.rating > 0 %}
+                    <div class="ts-scroll__stars">
+                      {% for i in (1..5) %}
+                        <svg class="ts-star {% if i <= block.settings.rating %}ts-star--filled{% else %}ts-star--empty{% endif %}" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                        </svg>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+
+                  {% if block.settings.comment != blank %}
+                    <p class="ts-scroll__comment">{{ block.settings.comment }}</p>
+                  {% endif %}
+
+                  {% if block.settings.author_name != blank or block.settings.profile_image != blank %}
+                    <div class="ts-scroll__author-row">
+                      {% if block.settings.profile_image != blank %}
+                        <img
+                          src="{{ block.settings.profile_image | image_url: width: 80 }}"
+                          alt="{{ block.settings.author_name | default: 'Profile' }}"
+                          class="ts-scroll__avatar"
+                          loading="lazy"
+                          width="36"
+                          height="36"
+                        >
+                      {% endif %}
+                      {% if block.settings.author_name != blank %}
+                        <span class="ts-scroll__author">{{ block.settings.author_name }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            {% endfor %}
+
+          {%- comment -%} Clone sets 2–4 for seamless infinite loop with few cards {%- endcomment -%}
+          {% for clone in (1..3) %}
+            {% for block in section.blocks %}
+              <div class="ts-scroll__card ts-scroll__card--clone {% unless block.settings.video != blank or block.settings.video_url != blank or block.settings.image != blank %}ts-scroll__card--no-media{% endunless %}">
+                {% if block.settings.video != blank or block.settings.video_url != blank or block.settings.image != blank %}
+                  <div class="ts-scroll__media {{ shape_class }}">
+                    {% if block.settings.video != blank %}
+                      <div class="ts-scroll__video-wrap">
+                        {{ block.settings.video | video_tag: autoplay: false, controls: false, muted: true, loop: true, class: 'ts-scroll__video' }}
+                        <button class="ts-scroll__play-btn" aria-label="Play video" onclick="var v=this.parentElement.querySelector('video');if(v.paused){v.play();this.classList.add('playing');}else{v.pause();this.classList.remove('playing');}">
+                          <svg width="40" height="40" viewBox="0 0 48 48" fill="none">
+                            <circle cx="24" cy="24" r="24" fill="rgba(0,0,0,0.45)"/>
+                            <polygon points="19,15 35,24 19,33" fill="#fff"/>
+                          </svg>
+                        </button>
                       </div>
+                    {% elsif block.settings.video_url != blank %}
+                      <div class="ts-scroll__video-wrap">
+                        {% if block.settings.video_url.type == 'youtube' %}
+                          <iframe src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?autoplay=0&mute=1&controls=1" class="ts-scroll__iframe" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
+                        {% elsif block.settings.video_url.type == 'vimeo' %}
+                          <iframe src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}?autoplay=0&muted=1" class="ts-scroll__iframe" allow="autoplay; encrypted-media" allowfullscreen loading="lazy"></iframe>
+                        {% endif %}
+                      </div>
+                    {% elsif block.settings.image != blank %}
+                      <img
+                        src="{{ block.settings.image | image_url: width: 800 }}"
+                        alt="{{ block.settings.alt | default: block.settings.author_name | default: 'Testimonial' }}"
+                        class="ts-scroll__img"
+                        loading="lazy"
+                        width="{{ section.settings.card_width }}"
+                        height="{{ section.settings.image_height }}"
+                      >
                     {% endif %}
-                    <span class="ts-scroll__overlay-name">{{ block.settings.name }}</span>
                   </div>
                 {% endif %}
+
+                <div class="ts-scroll__body">
+                  {% if block.settings.rating > 0 %}
+                    <div class="ts-scroll__stars">
+                      {% for i in (1..5) %}
+                        <svg class="ts-star {% if i <= block.settings.rating %}ts-star--filled{% else %}ts-star--empty{% endif %}" viewBox="0 0 24 24">
+                          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/>
+                        </svg>
+                      {% endfor %}
+                    </div>
+                  {% endif %}
+                  {% if block.settings.comment != blank %}
+                    <p class="ts-scroll__comment">{{ block.settings.comment }}</p>
+                  {% endif %}
+                  {% if block.settings.author_name != blank or block.settings.profile_image != blank %}
+                    <div class="ts-scroll__author-row">
+                      {% if block.settings.profile_image != blank %}
+                        <img
+                          src="{{ block.settings.profile_image | image_url: width: 80 }}"
+                          alt="{{ block.settings.author_name | default: 'Profile' }}"
+                          class="ts-scroll__avatar"
+                          loading="lazy"
+                          width="36"
+                          height="36"
+                        >
+                      {% endif %}
+                      {% if block.settings.author_name != blank %}
+                        <span class="ts-scroll__author">{{ block.settings.author_name }}</span>
+                      {% endif %}
+                    </div>
+                  {% endif %}
+                </div>
               </div>
             {% endfor %}
           {% endfor %}
@@ -112,16 +235,16 @@
     },
     {
       "type": "header",
-      "content": "Image Settings"
+      "content": "Card Settings"
     },
     {
       "type": "range",
-      "id": "image_width",
-      "min": 100,
+      "id": "card_width",
+      "min": 160,
       "max": 400,
       "step": 10,
       "unit": "px",
-      "label": "Image Width",
+      "label": "Card Width",
       "default": 220
     },
     {
@@ -131,8 +254,8 @@
       "max": 500,
       "step": 10,
       "unit": "px",
-      "label": "Image Height",
-      "default": 280
+      "label": "Image / Video Height",
+      "default": 260
     },
     {
       "type": "select",
@@ -152,8 +275,8 @@
       "max": 50,
       "step": 2,
       "unit": "px",
-      "label": "Border Radius (Rounded only)",
-      "default": 16
+      "label": "Border Radius",
+      "default": 12
     },
     {
       "type": "range",
@@ -162,14 +285,8 @@
       "max": 48,
       "step": 4,
       "unit": "px",
-      "label": "Gap Between Images",
+      "label": "Gap Between Cards",
       "default": 16
-    },
-    {
-      "type": "checkbox",
-      "id": "show_overlay",
-      "label": "Show Overlay with Name / Stars",
-      "default": true
     },
     {
       "type": "header",
@@ -182,17 +299,17 @@
       "max": 3,
       "step": 1,
       "label": "Number of Rows",
-      "default": 2
+      "default": 1
     },
     {
       "type": "range",
       "id": "scroll_speed",
       "min": 10,
-      "max": 60,
+      "max": 120,
       "step": 5,
       "unit": "s",
-      "label": "Scroll Speed",
-      "default": 30
+      "label": "Scroll Speed (higher = slower)",
+      "default": 50
     },
     {
       "type": "range",
@@ -231,8 +348,20 @@
     {
       "type": "color",
       "id": "background_color",
-      "label": "Background",
+      "label": "Section Background",
+      "default": "#f5f0eb"
+    },
+    {
+      "type": "color",
+      "id": "card_background",
+      "label": "Card Background",
       "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card Border",
+      "default": "#e5e5e5"
     },
     {
       "type": "color",
@@ -243,19 +372,34 @@
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color (Stars)",
-      "default": "#00b67a"
+      "label": "Star Color",
+      "default": "#1a1a1a"
     }
   ],
   "blocks": [
     {
-      "type": "image_testimonial",
-      "name": "Image",
+      "type": "testimonial",
+      "name": "Testimonial",
       "settings": [
+        {
+          "type": "header",
+          "content": "Media"
+        },
         {
           "type": "image_picker",
           "id": "image",
-          "label": "Image / Screenshot"
+          "label": "Image"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Video (Shopify hosted)"
+        },
+        {
+          "type": "video_url",
+          "id": "video_url",
+          "label": "Video URL (YouTube/Vimeo)",
+          "accept": ["youtube", "vimeo"]
         },
         {
           "type": "text",
@@ -263,9 +407,8 @@
           "label": "Alt Text"
         },
         {
-          "type": "text",
-          "id": "name",
-          "label": "Name / Source"
+          "type": "header",
+          "content": "Review"
         },
         {
           "type": "range",
@@ -273,8 +416,25 @@
           "min": 0,
           "max": 5,
           "step": 1,
-          "label": "Rating (0 = none)",
+          "label": "Star Rating (0 = hidden)",
           "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "comment",
+          "label": "Comment / Review Text",
+          "default": "Amazing product, I love it!"
+        },
+        {
+          "type": "text",
+          "id": "author_name",
+          "label": "Author / Username",
+          "default": "@customer"
+        },
+        {
+          "type": "image_picker",
+          "id": "profile_image",
+          "label": "Profile Image"
         }
       ]
     }
@@ -283,12 +443,12 @@
     {
       "name": "Scrolling Testimonials",
       "blocks": [
-        { "type": "image_testimonial", "settings": { "name": "@customer_1", "rating": 5 } },
-        { "type": "image_testimonial", "settings": { "name": "@customer_2", "rating": 5 } },
-        { "type": "image_testimonial", "settings": { "name": "@customer_3", "rating": 4 } },
-        { "type": "image_testimonial", "settings": { "name": "@customer_4", "rating": 5 } },
-        { "type": "image_testimonial", "settings": { "name": "@customer_5", "rating": 5 } },
-        { "type": "image_testimonial", "settings": { "name": "@customer_6", "rating": 4 } }
+        { "type": "testimonial", "settings": { "author_name": "@light__mcqueen", "rating": 5, "comment": "All my friends want them too now, at least I was the first one to get them..!" } },
+        { "type": "testimonial", "settings": { "author_name": "@decwithpatty", "rating": 5, "comment": "I use it every day early in the morning and on our dining table, it is so convenient and cool" } },
+        { "type": "testimonial", "settings": { "author_name": "@traceyy", "rating": 5, "comment": "the perfect candle replacement, obsessed with our lamps!" } },
+        { "type": "testimonial", "settings": { "author_name": "@kidzworld", "rating": 4, "comment": "Our kids love these everywhere, even when doing their homework!" } },
+        { "type": "testimonial", "settings": { "author_name": "@homebylisa", "rating": 5, "comment": "Gorgeous quality and so versatile. Highly recommend!" } },
+        { "type": "testimonial", "settings": { "author_name": "@modernliving", "rating": 5, "comment": "Shipped fast, looks even better in person." } }
       ]
     }
   ]

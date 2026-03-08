@@ -1,0 +1,405 @@
+{% comment %}
+  Section Hub – Scrolling Text
+  Bold infinite-loop marquee text bar. Editorial branding style.
+{% endcomment %}
+
+{%- liquid
+  assign speed       = section.settings.speed
+  assign direction   = section.settings.direction
+  assign pause       = section.settings.pause_on_hover
+  assign fade_edges  = section.settings.fade_edges
+  assign fade_w      = section.settings.fade_width
+  assign sep_style   = section.settings.separator_style
+  assign sep_symbol  = section.settings.separator_symbol
+  assign sep_dot     = section.settings.separator_dot_size
+  assign sep_gap     = section.settings.separator_gap
+  assign sep_c       = section.settings.separator_color
+  assign sep_opacity = section.settings.separator_opacity
+  assign text_style  = section.settings.text_style
+
+  assign fs          = section.settings.font_size
+  assign fsm         = section.settings.font_size_mobile
+  assign fw          = section.settings.font_weight
+  assign ls          = section.settings.letter_spacing
+  assign tt          = section.settings.text_transform
+  assign fi          = section.settings.font_italic
+  assign text_c      = section.settings.text_color
+  assign stroke_w    = section.settings.stroke_width
+
+  assign bg_color    = section.settings.bg_color
+  assign pad_y       = section.settings.padding_y
+  assign margin_top  = section.settings.margin_top
+  assign margin_bot  = section.settings.margin_bottom
+-%}
+
+<style>
+  #st-{{ section.id }} {
+    --st-speed: {{ speed }}s;
+    --st-direction: {% if direction == 'right' %}reverse{% else %}normal{% endif %};
+    --st-hover-state: {% if pause %}paused{% else %}running{% endif %};
+
+    --st-fs: {{ fs }}px;
+    --st-fsm: {{ fsm }}px;
+    --st-fw: {{ fw }};
+    --st-ls: {{ ls | divided_by: 100.0 }}em;
+    --st-tt: {{ tt }};
+    --st-fi: {% if fi %}italic{% else %}normal{% endif %};
+    --st-text-c: {{ text_c }};
+    --st-stroke-w: {{ stroke_w }}px;
+
+    --st-sep-gap: {{ sep_gap }}px;
+    --st-sep-c: {{ sep_c }};
+    --st-sep-fs: {{ fs | times: 0.6 }}px;
+    --st-sep-dot: {{ sep_dot }}px;
+    --st-sep-o: {{ sep_opacity | divided_by: 100.0 }};
+
+    --st-fade-w: {{ fade_w }}px;
+
+    --st-bg: {{ bg_color }};
+    --st-py: {{ pad_y }}px;
+    --st-mt: {{ margin_top }}px;
+    --st-mb: {{ margin_bot }}px;
+  }
+</style>
+
+<section id="st-{{ section.id }}" class="st-wrap{% if fade_edges %} st-wrap--fade{% endif %}">
+  <div class="st-track">
+
+    {%- for copy in (1..3) -%}
+      <div class="st-content" {% if copy > 1 %}aria-hidden="true"{% endif %}>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'text_item' -%}
+
+            {%- liquid
+              assign item_text = block.settings.text | default: 'Your text here'
+              assign item_link = block.settings.link
+            -%}
+
+            {% if item_link != blank %}
+              <a href="{{ item_link }}" class="st-item" {{ block.shopify_attributes }}>
+                <span class="st-item__text{% if text_style == 'stroke' %} st-item__text--stroke{% endif %}">{{ item_text }}</span>
+              </a>
+            {% else %}
+              <span class="st-item" {{ block.shopify_attributes }}>
+                <span class="st-item__text{% if text_style == 'stroke' %} st-item__text--stroke{% endif %}">{{ item_text }}</span>
+              </span>
+            {% endif %}
+
+            {%- unless forloop.last -%}
+              {%- case sep_style -%}
+                {%- when 'dot' -%}
+                  <span class="st-sep st-sep--dot" aria-hidden="true"></span>
+                {%- when 'dash' -%}
+                  <span class="st-sep st-sep--dash" aria-hidden="true"></span>
+                {%- when 'symbol' -%}
+                  <span class="st-sep st-sep--icon" aria-hidden="true">{{ sep_symbol }}</span>
+                {%- when 'none' -%}
+                  <span class="st-sep" aria-hidden="true"></span>
+              {%- endcase -%}
+            {%- endunless -%}
+
+          {%- endif -%}
+        {%- endfor -%}
+
+        {%- comment -%} Separator after last item to connect with next copy {%- endcomment -%}
+        {%- case sep_style -%}
+          {%- when 'dot' -%}
+            <span class="st-sep st-sep--dot" aria-hidden="true"></span>
+          {%- when 'dash' -%}
+            <span class="st-sep st-sep--dash" aria-hidden="true"></span>
+          {%- when 'symbol' -%}
+            <span class="st-sep st-sep--icon" aria-hidden="true">{{ sep_symbol }}</span>
+          {%- when 'none' -%}
+            <span class="st-sep" aria-hidden="true"></span>
+        {%- endcase -%}
+
+      </div>
+    {%- endfor -%}
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Scrolling Text",
+  "tag": "div",
+  "class": "st-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll speed",
+      "info": "Seconds for one full loop. Lower = faster.",
+      "min": 5,
+      "max": 60,
+      "step": 1,
+      "unit": "s",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size",
+      "min": 16,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 14,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "900"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 20,
+      "step": 1,
+      "unit": "em",
+      "default": -1
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "checkbox",
+      "id": "font_italic",
+      "label": "Italic",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "text_style",
+      "label": "Text style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "stroke", "label": "Outline / Stroke" }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Stroke width",
+      "info": "Only applies to outline style",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Separator"
+    },
+    {
+      "type": "select",
+      "id": "separator_style",
+      "label": "Separator between items",
+      "options": [
+        { "value": "none", "label": "Space only" },
+        { "value": "dot", "label": "Dot" },
+        { "value": "dash", "label": "Dash" },
+        { "value": "symbol", "label": "Custom symbol" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "separator_symbol",
+      "label": "Custom separator",
+      "info": "e.g. × · ★ | ✦",
+      "default": "×"
+    },
+    {
+      "type": "range",
+      "id": "separator_dot_size",
+      "label": "Dot / dash size",
+      "min": 4,
+      "max": 14,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "separator_gap",
+      "label": "Separator spacing",
+      "min": 12,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "separator_opacity",
+      "label": "Separator opacity",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Fade edges"
+    },
+    {
+      "type": "checkbox",
+      "id": "fade_edges",
+      "label": "Fade out edges",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "fade_width",
+      "label": "Fade width",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "text_item",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Your text here"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Scrolling Text",
+      "category": "Scrolling",
+      "blocks": [
+        { "type": "text_item", "settings": { "text": "fritz-kola x rktbns" } },
+        { "type": "text_item", "settings": { "text": "fritz-kola x rktbns" } },
+        { "type": "text_item", "settings": { "text": "fritz-kola x rktbns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

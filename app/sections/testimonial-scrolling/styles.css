@@ -1,4 +1,4 @@
-/* ===== Testimonial Scrolling Images — Section Hub ===== */
+/* ===== Testimonial Scrolling Cards — Section Hub ===== */
 
 .ts-scroll {
   background: var(--ts-bg);
@@ -7,9 +7,11 @@
   overflow: hidden;
 }
 
-.ts-scroll__container { max-width: 100%; }
+.ts-scroll__container {
+  max-width: 100%;
+}
 
-/* Header */
+/* ── Header ── */
 .ts-scroll__header {
   text-align: center;
   margin-bottom: 2.5rem;
@@ -40,19 +42,22 @@
   margin: 0;
 }
 
-/* Marquee */
+/* ── Marquee ── */
 .ts-scroll__marquee {
   overflow: hidden;
   margin-bottom: var(--ts-gap);
 }
 
-.ts-scroll__marquee:last-of-type { margin-bottom: 0; }
+.ts-scroll__marquee:last-of-type {
+  margin-bottom: 0;
+}
 
 .ts-scroll__track {
   display: flex;
   gap: var(--ts-gap);
   width: max-content;
   animation: ts-marquee var(--ts-speed) linear infinite;
+  will-change: transform;
 }
 
 .ts-scroll__marquee--reverse .ts-scroll__track {
@@ -65,23 +70,49 @@
 
 @keyframes ts-marquee {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-25%); }
 }
 
-/* Items */
-.ts-scroll__item {
-  position: relative;
+/* ── Card ── */
+.ts-scroll__card {
   flex-shrink: 0;
-  width: var(--ts-img-width);
+  width: var(--ts-card-width);
+  background: var(--ts-card-bg);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--ts-border-radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.ts-scroll__card:hover {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
+}
+
+/* ── Media (image / video) ── */
+.ts-scroll__media {
+  position: relative;
+  width: 100%;
   height: var(--ts-img-height);
   overflow: hidden;
   background: #f0f0f0;
+  flex-shrink: 0;
 }
 
-/* Shapes */
-.ts-shape--rounded { border-radius: var(--ts-border-radius); }
-.ts-shape--circle  { border-radius: 50%; }
-.ts-shape--square  { border-radius: 0; }
+.ts-scroll__media.ts-shape--rounded {
+  border-radius: var(--ts-border-radius) var(--ts-border-radius) 0 0;
+}
+.ts-scroll__media.ts-shape--circle {
+  border-radius: 50%;
+  margin: 12px auto 0;
+  width: calc(var(--ts-card-width) - 24px);
+  height: calc(var(--ts-card-width) - 24px);
+}
+.ts-scroll__media.ts-shape--square {
+  border-radius: 0;
+}
 
 .ts-scroll__img {
   width: 100%;
@@ -91,7 +122,7 @@
   transition: transform 0.4s ease;
 }
 
-.ts-scroll__item:hover .ts-scroll__img {
+.ts-scroll__card:hover .ts-scroll__img {
   transform: scale(1.05);
 }
 
@@ -104,30 +135,140 @@
   background: #e5e5e5;
 }
 
-/* Overlay */
-.ts-scroll__overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 0.6rem 0.75rem;
-  background: linear-gradient(transparent, rgba(0,0,0,0.6));
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  color: #fff;
-  opacity: 0;
-  transition: opacity 0.3s;
+/* ── Video ── */
+.ts-scroll__video-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
 }
 
-.ts-scroll__item:hover .ts-scroll__overlay { opacity: 1; }
+.ts-scroll__video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
 
-.ts-scroll__overlay-stars { display: flex; gap: 1px; }
-.ts-star-sm { width: 14px; height: 14px; }
-.ts-scroll__overlay-name { font-size: 0.75rem; font-weight: 600; }
+.ts-scroll__iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
 
-/* Responsive */
-@media (max-width: 600px) {
-  .ts-scroll { --ts-img-width: 150px !important; --ts-img-height: 200px !important; }
-  .ts-scroll__heading { font-size: clamp(1.4rem, 5vw, 2rem); }
+.ts-scroll__play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 2;
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.ts-scroll__play-btn:hover {
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.ts-scroll__play-btn.playing {
+  opacity: 0;
+}
+
+.ts-scroll__play-btn.playing:hover {
+  opacity: 0.7;
+}
+
+/* ── Card body ── */
+.ts-scroll__body {
+  padding: 14px 16px 18px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  flex-grow: 1;
+}
+
+/* Stars */
+.ts-scroll__stars {
+  display: flex;
+  gap: 2px;
+  justify-content: center;
+}
+
+.ts-star {
+  width: 16px;
+  height: 16px;
+}
+
+.ts-star--filled {
+  fill: var(--ts-accent);
+}
+
+.ts-star--empty {
+  fill: none;
+  stroke: var(--ts-accent);
+  stroke-width: 1.5;
+}
+
+/* Comment text */
+.ts-scroll__comment {
+  font-size: 0.85rem;
+  line-height: 1.45;
+  margin: 0;
+  opacity: 0.8;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Author name */
+.ts-scroll__author {
+  font-size: 0.8rem;
+  font-weight: 700;
+  opacity: 0.6;
+}
+
+/* Author row: avatar + name */
+.ts-scroll__author-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: auto;
+  width: 100%;
+  justify-content: center;
+}
+
+.ts-scroll__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* Card without media — no image/video area */
+.ts-scroll__card--no-media .ts-scroll__body {
+  padding-top: 20px;
+}
+
+/* ── Responsive ── */
+@media (max-width: 749px) {
+  .ts-scroll {
+    --ts-card-width: 180px !important;
+    --ts-img-height: 200px !important;
+  }
+  .ts-scroll__heading {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+  }
+  .ts-scroll__body {
+    padding: 10px 12px 14px;
+  }
+  .ts-scroll__comment {
+    font-size: 0.8rem;
+    -webkit-line-clamp: 3;
+  }
 }

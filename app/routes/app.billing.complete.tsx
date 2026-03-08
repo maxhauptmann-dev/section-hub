@@ -1,91 +1,114 @@
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
-import { authenticate } from "../shopify.server";
-import {
-  getAppPurchaseStatus,
-  markPurchaseCompleted,
-  getPurchaseByAppId,
-} from "../services/billing.server";
+import { getAppPurchaseStatus } from "../services/billing.server";
 import prisma from "../db.server";
 
 /**
  * Billing callback route – Shopify redirects here after the merchant
  * approves (or declines) a one-time charge.
  *
- * URL: /app/billing/complete?shop=<shop>&section=<sectionId>&charge_id=<gid>
+ * Shopify redirects the browser directly (outside the iframe), so
+ * authenticate.admin() would fail. Instead we load the offline session
+ * from the DB using the ?shop= param Shopify appends to the returnUrl.
+ *
+ * Single section: /app/billing/complete?shop=<shop>&section=<id>&charge_id=<n>
+ * Bundle:         /app/billing/complete?shop=<shop>&bundle=<id1,id2,...>&charge_id=<n>
  */
 export const loader = async ({ request }: LoaderFunctionArgs) => {
-  const { session } = await authenticate.admin(request);
   const url = new URL(request.url);
 
-  const shop = session.shop;
+  const shopParam = url.searchParams.get("shop") || "";
   const sectionId = url.searchParams.get("section") || "";
-  const chargeIdParam = url.searchParams.get("charge_id") || "";
+  const bundleParam = url.searchParams.get("bundle") || "";
+  const chargeId = url.searchParams.get("charge_id") || "";
 
-  if (!sectionId) {
-    // No section – just go back to explore
-    return redirect("/app/explore");
+  const isBundle = !!bundleParam;
+  const sectionIds = isBundle
+    ? bundleParam.split(",").map((s: string) => s.trim()).filter(Boolean)
+    : sectionId
+      ? [sectionId]
+      : [];
+
+  if (!shopParam || sectionIds.length === 0) {
+    return redirect("/auth/login");
   }
 
-  // Try to find the purchase record for this shop + section
-  const purchaseRecord = await prisma.sectionPurchase.findFirst({
+  // Load the offline session for this shop from our DB
+  const session = await prisma.session.findFirst({
+    where: { shop: shopParam, isOnline: false },
+    orderBy: { expires: "desc" },
+  });
+
+  if (!session?.accessToken) {
+    console.warn(`No offline session found for shop=${shopParam}`);
+    return redirect("/auth/login");
+  }
+
+  const shop = session.shop;
+  const accessToken = session.accessToken;
+
+  // Find PENDING purchase records for these section handles
+  const pendingRecords = await prisma.sectionPurchase.findMany({
     where: {
       shop,
-      sectionHandle: {
-        contains: sectionId,
-      },
+      sectionHandle: { in: sectionIds },
       status: "PENDING",
     },
     orderBy: { createdAt: "desc" },
   });
 
-  if (!purchaseRecord) {
-    console.warn(
-      `No pending purchase found for shop=${shop} section=${sectionId}`,
-    );
+  if (pendingRecords.length === 0) {
+    console.warn(`No pending purchases for shop=${shop} sections=${sectionIds.join(",")}`);
+    if (isBundle) return redirect("/app/bundles?purchase=already_done");
     return redirect(`/app/section?id=${sectionId}&purchase=not_found`);
   }
 
-  // Verify the charge status via Shopify API
-  const accessToken = session.accessToken || "";
+  const appPurchaseId = pendingRecords[0].appPurchaseId;
+
   try {
-    const purchaseStatus = await getAppPurchaseStatus(
-      shop,
-      accessToken,
-      purchaseRecord.appPurchaseId,
-    );
+    // Build the full GID — Shopify sends numeric charge_id, we may have stored the full GID
+    const gid = appPurchaseId.startsWith("gid://")
+      ? appPurchaseId
+      : `gid://shopify/AppPurchaseOneTime/${chargeId || appPurchaseId}`;
 
+    const purchaseStatus = await getAppPurchaseStatus(shop, accessToken, gid);
     const status = purchaseStatus?.status;
-    console.log(
-      `Purchase status for ${purchaseRecord.appPurchaseId}: ${status}`,
-    );
+    console.log(`Purchase status for ${gid}: ${status}`);
 
-    // Shopify returns ACTIVE for approved one-time charges
-    if (
-      status === "ACTIVE" ||
-      status === "ACCEPTED" ||
-      status === "PURCHASED"
-    ) {
-      await markPurchaseCompleted(purchaseRecord.appPurchaseId);
-      return redirect(
-        `/app/section?id=${sectionId}&purchased=true&install=true`,
-      );
+    if (status === "ACTIVE" || status === "ACCEPTED" || status === "PURCHASED") {
+      await prisma.sectionPurchase.updateMany({
+        where: { appPurchaseId, status: "PENDING" },
+        data: { status: "COMPLETED" },
+      });
+      console.log(`Marked ${pendingRecords.length} purchase(s) COMPLETED for ${appPurchaseId}`);
+
+      // Redirect back into the Shopify Admin embedded app
+      // The shop handle is the subdomain part (e.g. "sections-test-2021" from "sections-test-2021.myshopify.com")
+      const shopHandle = shop.replace(".myshopify.com", "");
+      const clientId = process.env.SHOPIFY_API_KEY || "fdaa930bde855ab7d9821c6c51375169";
+
+      const finalUrl = isBundle
+        ? `https://admin.shopify.com/store/${shopHandle}/apps/${clientId}/app/bundles?purchased=true`
+        : `https://admin.shopify.com/store/${shopHandle}/apps/${clientId}/app/section?id=${sectionId}&purchased=true`;
+
+      console.log(`Redirecting to: ${finalUrl}`);
+      return redirect(finalUrl);
     }
 
-    // Charge was declined or is still pending
     if (status === "DECLINED" || status === "EXPIRED") {
-      // Clean up the pending record
-      await prisma.sectionPurchase.update({
-        where: { id: purchaseRecord.id },
+      await prisma.sectionPurchase.updateMany({
+        where: { appPurchaseId, status: "PENDING" },
         data: { status: "DECLINED" },
       });
+      if (isBundle) return redirect("/app/bundles?purchase=declined");
       return redirect(`/app/section?id=${sectionId}&purchase=declined`);
     }
 
-    // Still pending – shouldn't normally happen after redirect
+    if (isBundle) return redirect("/app/bundles?purchase=pending");
     return redirect(`/app/section?id=${sectionId}&purchase=pending`);
   } catch (error) {
     console.error("Error verifying purchase:", error);
+    if (isBundle) return redirect("/app/bundles?purchase=error");
     return redirect(`/app/section?id=${sectionId}&purchase=error`);
   }
 };

@@ -1,0 +1,68 @@
+{
+  "id": "product-slider",
+  "name": "Product Slider",
+  "description": "Scrollable product carousel with hover image swap. Supports collection or individual product selection, 'New' badges, navigation arrows, and responsive design. Inspired by premium fashion stores.",
+  "category": "featured collection",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Collection",
+    "Hover",
+    "Product Carousel",
+    "Responsive",
+    "Badge"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/product-slider/product-slider.webp",
+      "alt": "Hover Product-Slider",
+      "label": "Hover Product-Slider"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-21",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added \"New\" badge color customization",
+        "Improved hover image swap transition",
+        "Fixed arrow navigation at carousel edges"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-21",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

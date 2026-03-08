@@ -1,0 +1,186 @@
+/* ── Collection Circles ── prefix: cc- ── */
+
+.cc-wrap {
+  background: var(--cc-bg);
+  padding: var(--cc-pt) var(--cc-ps) var(--cc-pb);
+  margin-top: var(--cc-mt);
+  margin-bottom: var(--cc-mb);
+}
+
+.cc-inner {
+  max-width: var(--cc-max-w);
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.cc-header {
+  text-align: center;
+  margin-bottom: var(--cc-header-gap);
+}
+
+.cc-header__title {
+  font-size: var(--cc-title-fs);
+  font-weight: var(--cc-title-fw);
+  letter-spacing: var(--cc-title-ls);
+  text-transform: var(--cc-title-tt);
+  color: var(--cc-title-c);
+  margin: 0;
+  line-height: 1.2;
+}
+
+.cc-header__sub {
+  font-size: var(--cc-title-sub-fs);
+  color: var(--cc-title-sub-c);
+  margin: 8px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Track – horizontal scroll ── */
+.cc-track {
+  display: flex;
+  gap: var(--cc-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 var(--cc-track-pad);
+}
+
+.cc-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Flex-wrap mode (optional) ── */
+.cc-wrap[data-cc-layout="wrap"] .cc-track {
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-x: visible;
+  scroll-snap-type: none;
+}
+
+/* ── Single item ── */
+.cc-item {
+  flex: 0 0 auto;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cc-label-gap);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* ── Circle ── */
+.cc-circle {
+  width: var(--cc-size);
+  height: var(--cc-size);
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  border: var(--cc-border-w) solid var(--cc-border-c);
+  background: var(--cc-circle-bg);
+  flex-shrink: 0;
+  transition: transform .35s ease, box-shadow .35s ease;
+}
+
+.cc-item:hover .cc-circle {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 var(--cc-hover-ring) var(--cc-hover-ring-c);
+}
+
+.cc-circle__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--cc-img-pos, center center);
+  transition: transform .5s ease;
+}
+
+.cc-item:hover .cc-circle__img {
+  transform: scale(1.08);
+}
+
+/* placeholder */
+.cc-circle__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255,255,255,.25);
+}
+
+.cc-circle__placeholder svg {
+  width: 36%;
+  height: 36%;
+}
+
+/* ── Label ── */
+.cc-label {
+  font-size: var(--cc-label-fs);
+  font-weight: var(--cc-label-fw);
+  letter-spacing: var(--cc-label-ls);
+  text-transform: var(--cc-label-tt);
+  color: var(--cc-label-c);
+  line-height: 1.3;
+  text-align: center;
+  max-width: calc(var(--cc-size) + 20px);
+  word-wrap: break-word;
+}
+
+.cc-sublabel {
+  font-size: var(--cc-sublabel-fs);
+  color: var(--cc-sublabel-c);
+  line-height: 1.4;
+  text-align: center;
+  margin-top: 2px;
+}
+
+/* ── Fade-in animation ── */
+.cc-item {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: ccFadeIn .5s ease forwards;
+}
+@keyframes ccFadeIn {
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cc-item:nth-child(1) { animation-delay: 0s; }
+.cc-item:nth-child(2) { animation-delay: .06s; }
+.cc-item:nth-child(3) { animation-delay: .12s; }
+.cc-item:nth-child(4) { animation-delay: .18s; }
+.cc-item:nth-child(5) { animation-delay: .24s; }
+.cc-item:nth-child(6) { animation-delay: .30s; }
+.cc-item:nth-child(7) { animation-delay: .36s; }
+.cc-item:nth-child(8) { animation-delay: .42s; }
+.cc-item:nth-child(9) { animation-delay: .48s; }
+.cc-item:nth-child(10) { animation-delay: .54s; }
+.cc-item:nth-child(11) { animation-delay: .60s; }
+.cc-item:nth-child(12) { animation-delay: .66s; }
+
+/* ── Mobile ── */
+@media (max-width: 749px) {
+  .cc-wrap {
+    padding: var(--cc-pt) var(--cc-ps-m) var(--cc-pb);
+  }
+
+  .cc-circle {
+    width: var(--cc-size-m);
+    height: var(--cc-size-m);
+  }
+
+  .cc-label {
+    font-size: var(--cc-label-fsm);
+    max-width: calc(var(--cc-size-m) + 16px);
+  }
+
+  .cc-track {
+    gap: var(--cc-gap-m);
+    padding: 0 var(--cc-track-pad-m);
+  }
+
+  .cc-header__title {
+    font-size: var(--cc-title-fsm);
+  }
+}

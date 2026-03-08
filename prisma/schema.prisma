@@ -10,7 +10,7 @@ generator client {
 // See https://www.prisma.io/docs/orm/reference/prisma-schema-reference#string for more information
 datasource db {
   provider = "sqlite"
-  url      = "file:dev.sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Session {
@@ -73,8 +73,8 @@ model AiSection {
 model SectionPurchase {
   id              String    @id @default(cuid())
   shop            String
-  sectionHandle   String
-  appPurchaseId   String    @unique
+  sectionHandle   String    // single section ID or comma-separated IDs for bundles
+  appPurchaseId   String
   amount          Float
   currency        String    @default("EUR")
   status          String    @default("PENDING")
@@ -83,4 +83,55 @@ model SectionPurchase {
 
   @@index([shop])
   @@index([sectionHandle])
+  @@index([appPurchaseId])
+}
+
+model Subscription {
+  id               String    @id @default(cuid())
+  shop             String    @unique
+  plan             String    @default("free") // "free" | "premium"
+  chargeId         String?   // Shopify recurring charge ID
+  status           String    @default("active") // "active" | "cancelling" | "cancelled" | "expired"
+  activatedAt      DateTime  @default(now())
+  cancelledAt      DateTime?
+  currentPeriodEnd DateTime? // End of billing period – blocks stay active until this date
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([shop])
+}
+
+model SectionInstallation {
+  id               String    @id @default(cuid())
+  shop             String
+  sectionHandle    String    // section ID e.g. "hero-banner"
+  installedVersion String    // version at time of install e.g. "1.0.0"
+  themeId          String?   // GID of the theme it's installed on
+  installedAt      DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([shop, sectionHandle])
+  @@index([shop])
+}
+
+model StoreAnalysis {
+  id               String    @id @default(cuid())
+  shop             String    @unique
+  storeScore       Int       @default(0)
+  activeCount      Int       @default(0)
+  totalTypes       Int       @default(14)
+  missingCritical  String    @default("[]") // JSON array of {key, label, icon}
+  missingHigh      String    @default("[]") // JSON array of {key, label, icon}
+  // Extended fields for detailed analyzer view
+  mainThemeName    String    @default("Unknown")
+  totalThemeSections Int     @default(0)
+  sectionHubInstalled Int    @default(0)
+  activeSectionsCount Int    @default(0)
+  results          String    @default("[]") // JSON array of full Result objects
+  pageMap          String    @default("{}") // JSON object {page: [sections]}
+  analyzedAt       DateTime  @default(now())
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([shop])
 }

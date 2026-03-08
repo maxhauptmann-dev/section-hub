@@ -1,0 +1,509 @@
+{% comment %}
+  Section Hub - Smart Upsell Carousel Block
+  Dynamic product recommendation carousel with one-click add-to-cart
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-smart-upsell {
+  margin: 12px 0;
+}
+
+.sh-smart-upsell__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.sh-smart-upsell__title {
+  font-size: {{ block.settings.title_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.text_color }};
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sh-smart-upsell__nav {
+  display: flex;
+  gap: 6px;
+}
+
+.sh-smart-upsell__nav-btn {
+  width: 30px;
+  height: 30px;
+  border: 1px solid {{ block.settings.border_color }};
+  background: {{ block.settings.bg_color }};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  color: {{ block.settings.text_color }};
+  transition: all 0.15s ease;
+}
+
+.sh-smart-upsell__nav-btn:hover {
+  background: {{ block.settings.accent_color }};
+  color: #fff;
+  border-color: {{ block.settings.accent_color }};
+}
+
+.sh-smart-upsell__track {
+  display: flex;
+  gap: {{ block.settings.gap }}px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: 4px;
+}
+
+.sh-smart-upsell__track::-webkit-scrollbar {
+  display: none;
+}
+
+.sh-smart-upsell__card {
+  flex: 0 0 {{ block.settings.card_width }}px;
+  scroll-snap-align: start;
+  background: {{ block.settings.card_bg }};
+  border: 1px solid {{ block.settings.border_color }};
+  border-radius: {{ block.settings.border_radius }}px;
+  overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.sh-smart-upsell__card:hover {
+  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  transform: translateY(-2px);
+}
+
+.sh-smart-upsell__img-wrap {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.sh-smart-upsell__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.sh-smart-upsell__img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #9ca3af;
+}
+
+.sh-smart-upsell__tag {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: {{ block.settings.accent_color }};
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sh-smart-upsell__body {
+  padding: 10px 12px 12px;
+}
+
+.sh-smart-upsell__name {
+  font-size: {{ block.settings.font_size }}px;
+  font-weight: 600;
+  color: {{ block.settings.text_color }};
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+}
+
+.sh-smart-upsell__price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.sh-smart-upsell__price {
+  font-size: {{ block.settings.font_size | plus: 2 }}px;
+  font-weight: 800;
+  color: {{ block.settings.accent_color }};
+}
+
+.sh-smart-upsell__compare-price {
+  font-size: {{ block.settings.font_size | minus: 1 }}px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.4;
+  text-decoration: line-through;
+}
+
+.sh-smart-upsell__add-btn {
+  width: 100%;
+  padding: 8px 0;
+  border: none;
+  border-radius: {{ block.settings.button_radius }}px;
+  background: {{ block.settings.button_bg }};
+  color: {{ block.settings.button_text }};
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.sh-smart-upsell__add-btn:hover {
+  opacity: 0.9;
+}
+</style>
+
+<div class="sh-smart-upsell">
+  <div class="sh-smart-upsell__header">
+    <div class="sh-smart-upsell__title">
+      {{ block.settings.icon }} {{ block.settings.title }}
+    </div>
+    <div class="sh-smart-upsell__nav">
+      <button class="sh-smart-upsell__nav-btn" data-sh-upsell-prev aria-label="Previous">‹</button>
+      <button class="sh-smart-upsell__nav-btn" data-sh-upsell-next aria-label="Next">›</button>
+    </div>
+  </div>
+
+  <div class="sh-smart-upsell__track" data-sh-upsell-track>
+    {% for i in (1..4) %}
+      {%- assign name_id = 'product_' | append: i | append: '_name' -%}
+      {%- assign price_id = 'product_' | append: i | append: '_price' -%}
+      {%- assign tag_id = 'product_' | append: i | append: '_tag' -%}
+      {%- assign image_id = 'product_' | append: i | append: '_image' -%}
+
+      {%- assign name_val = block.settings[name_id] -%}
+      {%- assign price_val = block.settings[price_id] -%}
+      {%- assign tag_val = block.settings[tag_id] -%}
+      {%- assign image_val = block.settings[image_id] -%}
+
+      {%- if name_val != blank -%}
+      <div class="sh-smart-upsell__card">
+        <div class="sh-smart-upsell__img-wrap">
+          {% if image_val != blank %}
+            <img class="sh-smart-upsell__img" src="{{ image_val | image_url: width: 400 }}" alt="{{ name_val }}" loading="lazy" width="400" height="400">
+          {% else %}
+            <div class="sh-smart-upsell__img-placeholder">🛍️</div>
+          {% endif %}
+          {% if tag_val != blank %}
+            <span class="sh-smart-upsell__tag">{{ tag_val }}</span>
+          {% endif %}
+        </div>
+        <div class="sh-smart-upsell__body">
+          <div class="sh-smart-upsell__name">{{ name_val }}</div>
+          <div class="sh-smart-upsell__price-row">
+            <span class="sh-smart-upsell__price">{{ price_val }}</span>
+            {%- if i == 1 or i == 2 -%}
+              {%- assign compare_id = 'product_' | append: i | append: '_compare_price' -%}
+              {%- assign compare_val = block.settings[compare_id] -%}
+              {% if compare_val != blank %}
+                <span class="sh-smart-upsell__compare-price">{{ compare_val }}</span>
+              {% endif %}
+            {%- endif -%}
+          </div>
+          <button class="sh-smart-upsell__add-btn" type="button">{{ block.settings.button_label }}</button>
+        </div>
+      </div>
+      {%- endif -%}
+    {% endfor %}
+  </div>
+</div>
+
+<script>
+(function() {
+  var container = document.currentScript.previousElementSibling;
+  while (container && !container.classList.contains('sh-smart-upsell')) {
+    container = container.previousElementSibling;
+  }
+  if (!container) return;
+
+  var track = container.querySelector('[data-sh-upsell-track]');
+  var prev = container.querySelector('[data-sh-upsell-prev]');
+  var next = container.querySelector('[data-sh-upsell-next]');
+  if (!track) return;
+
+  var scrollAmount = parseInt('{{ block.settings.card_width }}') + parseInt('{{ block.settings.gap }}');
+
+  if (prev) prev.addEventListener('click', function() {
+    track.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+  });
+  if (next) next.addEventListener('click', function() {
+    track.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+  });
+})();
+</script>
+
+{% else %}
+<!-- SectionIQ Premium required -->
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "SH - Smart Upsell",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "You might also like"
+    },
+    {
+      "type": "text",
+      "id": "icon",
+      "label": "Title Icon",
+      "default": "🛍️"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Product 1"
+    },
+    {
+      "type": "text",
+      "id": "product_1_name",
+      "label": "Name",
+      "default": "Wireless Earbuds Pro"
+    },
+    {
+      "type": "text",
+      "id": "product_1_price",
+      "label": "Price",
+      "default": "€49.95"
+    },
+    {
+      "type": "text",
+      "id": "product_1_compare_price",
+      "label": "Compare Price",
+      "default": "€69.95"
+    },
+    {
+      "type": "text",
+      "id": "product_1_tag",
+      "label": "Tag",
+      "default": "Bestseller"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_1_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Product 2"
+    },
+    {
+      "type": "text",
+      "id": "product_2_name",
+      "label": "Name",
+      "default": "Leather Phone Case"
+    },
+    {
+      "type": "text",
+      "id": "product_2_price",
+      "label": "Price",
+      "default": "€24.95"
+    },
+    {
+      "type": "text",
+      "id": "product_2_compare_price",
+      "label": "Compare Price"
+    },
+    {
+      "type": "text",
+      "id": "product_2_tag",
+      "label": "Tag",
+      "default": "New"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_2_image",
+      "label": "Image"
+    },
+    {
+      "type": "header",
+      "content": "Products 3 & 4"
+    },
+    {
+      "type": "text",
+      "id": "product_3_name",
+      "label": "Product 3 Name",
+      "default": "Charging Dock"
+    },
+    {
+      "type": "text",
+      "id": "product_3_price",
+      "label": "Product 3 Price",
+      "default": "€34.95"
+    },
+    {
+      "type": "text",
+      "id": "product_3_tag",
+      "label": "Product 3 Tag",
+      "default": "Sale"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_3_image",
+      "label": "Product 3 Image"
+    },
+    {
+      "type": "text",
+      "id": "product_4_name",
+      "label": "Product 4 Name",
+      "default": "Screen Protector"
+    },
+    {
+      "type": "text",
+      "id": "product_4_price",
+      "label": "Product 4 Price",
+      "default": "€9.95"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_4_image",
+      "label": "Product 4 Image"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card Width",
+      "min": 120,
+      "max": 220,
+      "step": 10,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap Between Cards",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / Price Color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_text",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button Border Radius",
+      "min": 0,
+      "max": 12,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 16,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Size",
+      "min": 14,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

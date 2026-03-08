@@ -1,0 +1,66 @@
+{
+  "id": "scrolling-announcement",
+  "name": "Announcement Bar",
+  "description": "Animated scrolling marquee banner for promotions, announcements, or branding. Customizable speed, direction, colors, and text blocks. Eye-catching and lightweight.",
+  "category": [
+    "Free",
+    "Scrolling"
+  ],
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": [
+    "OS2.0",
+    "Announcement",
+    "Free",
+    "Responsive",
+    "Animated"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scrolling-announcement/default.webp",
+      "alt": "Scrolling Announcement - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-22",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added pause on hover option",
+        "Improved animation performance with will-change",
+        "Fixed text gap in seamless loop"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-22",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

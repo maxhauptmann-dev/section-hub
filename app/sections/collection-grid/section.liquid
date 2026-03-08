@@ -1,0 +1,587 @@
+{% comment %}
+  Section Hub – Collection Grid
+  Flexible 2–4 collection grid with lifestyle images,
+  text overlay, optional button, and fully adjustable sizing.
+{% endcomment %}
+
+{{ 'styles.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign cols = section.settings.columns
+  assign text_pos = section.settings.text_position
+  assign btn_style = section.settings.button_style
+  assign show_btn = section.settings.show_button
+  assign show_subtitle = section.settings.show_subtitle
+  assign show_scrim = section.settings.show_scrim
+  assign mobile_layout = section.settings.mobile_layout
+-%}
+
+<div
+  class="sh-cg"
+  style="
+    --sh-cg-pt: {{ section.settings.padding_top }}px;
+    --sh-cg-pb: {{ section.settings.padding_bottom }}px;
+    --sh-cg-mt: {{ section.settings.margin_top }}px;
+    --sh-cg-mb: {{ section.settings.margin_bottom }}px;
+    --sh-cg-px: {{ section.settings.side_padding }}rem;
+    --sh-cg-px-mobile: {{ section.settings.side_padding_mobile }}rem;
+    --sh-cg-section-bg: {{ section.settings.section_bg }};
+    --sh-cg-gap: {{ section.settings.gap }}px;
+    --sh-cg-radius: {{ section.settings.card_radius }}px;
+    --sh-cg-ratio: {% if section.settings.image_ratio == 'portrait' %}3/4{% elsif section.settings.image_ratio == 'tall' %}2/3{% elsif section.settings.image_ratio == 'square' %}1/1{% elsif section.settings.image_ratio == 'landscape' %}4/3{% elsif section.settings.image_ratio == 'wide' %}16/9{% else %}3/4{% endif %};
+    --sh-cg-heading-size: {{ section.settings.heading_size }}px;
+    --sh-cg-heading-size-mobile: {{ section.settings.heading_size_mobile }}px;
+    --sh-cg-heading-color: {{ section.settings.heading_color }};
+    --sh-cg-subheading-color: {{ section.settings.subheading_color }};
+    --sh-cg-align: {{ section.settings.heading_align }};
+    --sh-cg-header-gap: {{ section.settings.header_gap }}px;
+    --sh-cg-title-size: {{ section.settings.title_size }}px;
+    --sh-cg-title-size-mobile: {{ section.settings.title_size_mobile }}px;
+    --sh-cg-title-transform: {{ section.settings.title_transform }};
+    --sh-cg-subtitle-size: {{ section.settings.subtitle_size }}px;
+    --sh-cg-text-color: {{ section.settings.text_color }};
+    --sh-cg-overlay-padding: {{ section.settings.overlay_padding }}px;
+    --sh-cg-scrim-color: {{ section.settings.scrim_color }};
+    --sh-cg-scrim-opacity: {% if show_scrim %}1{% else %}0{% endif %};
+    --sh-cg-btn-bg: {{ section.settings.button_bg }};
+    --sh-cg-btn-color: {{ section.settings.button_color }};
+    --sh-cg-btn-size: {{ section.settings.button_size }}px;
+    --sh-cg-btn-radius: {{ section.settings.button_radius }}px;
+    --sh-cg-btn-py: {{ section.settings.button_padding_y }}px;
+    --sh-cg-btn-px: {{ section.settings.button_padding_x }}px;
+    {%- if cols == 2 -%}
+      --sh-cg-col1: {{ section.settings.col1_width }}fr;
+      --sh-cg-col2: {{ section.settings.col2_width }}fr;
+    {%- endif -%}
+    --sh-cg-mobile-cols: {% if mobile_layout == '1col' %}1fr{% elsif mobile_layout == '2col' %}repeat(2, 1fr){% else %}1fr{% endif %};
+  "
+>
+  {%- if section.settings.heading != blank -%}
+    <div class="sh-cg__header">
+      <h2 class="sh-cg__heading">{{ section.settings.heading }}</h2>
+      {%- if section.settings.subheading != blank -%}
+        <p class="sh-cg__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="sh-cg__grid sh-cg__grid--{{ cols }}">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'collection_card' -%}
+        {%- assign col = block.settings.collection -%}
+        {%- assign col_obj = collections[col] -%}
+        {%- assign card_title = block.settings.title -%}
+        {%- assign card_subtitle = block.settings.subtitle -%}
+        {%- assign card_btn = block.settings.button_text -%}
+        {%- assign card_image = block.settings.image -%}
+
+        {%- if card_title == blank and col_obj != blank -%}
+          {%- assign card_title = col_obj.title -%}
+        {%- endif -%}
+
+        {%- assign link_url = "#" -%}
+        {%- if col_obj != blank -%}
+          {%- assign link_url = col_obj.url -%}
+        {%- endif -%}
+
+        <a class="sh-cg__card" href="{{ link_url }}" {{ block.shopify_attributes }}>
+          <div class="sh-cg__image-wrap">
+            {%- if card_image != blank -%}
+              <img
+                class="sh-cg__img"
+                src="{{ card_image | image_url: width: 1200 }}"
+                alt="{{ card_title | escape }}"
+                loading="lazy"
+                width="1200"
+                height="1600"
+              >
+            {%- elsif col_obj != blank and col_obj.image != blank -%}
+              <img
+                class="sh-cg__img"
+                src="{{ col_obj.image | image_url: width: 1200 }}"
+                alt="{{ col_obj.title | escape }}"
+                loading="lazy"
+                width="1200"
+                height="1600"
+              >
+            {%- else -%}
+              <div class="sh-cg__placeholder">
+                {{ 'collection-1' | placeholder_svg_tag }}
+              </div>
+            {%- endif -%}
+
+            <div class="sh-cg__overlay sh-cg__overlay--{{ text_pos }}">
+              {%- if show_subtitle and card_subtitle != blank -%}
+                <span class="sh-cg__subtitle">{{ card_subtitle }}</span>
+              {%- endif -%}
+
+              {%- if card_title != blank -%}
+                <h3 class="sh-cg__title">{{ card_title }}</h3>
+              {%- endif -%}
+
+              {%- if show_btn and card_btn != blank -%}
+                <span class="sh-cg__btn sh-cg__btn--{{ btn_style }}">{{ card_btn }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "SH – Collection Grid",
+  "tag": "section",
+  "class": "sh-collection-grid-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2 columns" },
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (2:3)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "mobile_layout",
+      "label": "Mobile layout",
+      "options": [
+        { "value": "1col", "label": "1 column (stacked)" },
+        { "value": "2col", "label": "2 columns" }
+      ],
+      "default": "1col"
+    },
+    {
+      "type": "header",
+      "content": "Column widths (2-col)"
+    },
+    {
+      "type": "range",
+      "id": "col1_width",
+      "label": "Left column weight",
+      "info": "Only for 2-column layout. E.g. 1 + 1 = equal, 2 + 1 = left larger",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "col2_width",
+      "label": "Right column weight",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size – desktop",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size – mobile",
+      "min": 16,
+      "max": 36,
+      "step": 1,
+      "default": 22,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_gap",
+      "label": "Space below heading",
+      "min": 0,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Overlay text"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_subtitle",
+      "label": "Show subtitle",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_button",
+      "label": "Show button",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scrim",
+      "label": "Show dark gradient overlay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title size – desktop",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title size – mobile",
+      "min": 14,
+      "max": 36,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "title_transform",
+      "label": "Title text transform",
+      "options": [
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "none", "label": "Normal" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "overlay_padding",
+      "label": "Overlay padding",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button font size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_y",
+      "label": "Button padding vertical",
+      "min": 6,
+      "max": 18,
+      "step": 1,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_x",
+      "label": "Button padding horizontal",
+      "min": 12,
+      "max": 40,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Overlay text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "scrim_color",
+      "label": "Gradient scrim color",
+      "default": "#000000",
+      "info": "Color of the dark gradient behind text"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Card border color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "side_padding",
+      "label": "Side padding – desktop",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "default": 2,
+      "unit": "rem"
+    },
+    {
+      "type": "range",
+      "id": "side_padding_mobile",
+      "label": "Side padding – mobile",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "default": 1,
+      "unit": "rem"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Overrides the collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "info": "Small text above the title"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text",
+          "default": "Shop Now"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Collection Grid",
+      "blocks": [
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Sweaters"
+          }
+        },
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Jeans"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

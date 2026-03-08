@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="440" viewBox="0 0 800 440">
+  <defs><filter id="sh"><feDropShadow dx="0" dy="2" stdDeviation="5" flood-color="#00000015"/></filter></defs>
+  <rect width="800" height="440" fill="#faf8f5"/>
+  <text x="30" y="36" font-family="system-ui" font-size="18" font-weight="700" fill="#1a1a1a">Shop the Look</text>
+  <!-- Left: lifestyle image -->
+  <rect x="24" y="56" width="380" height="360" rx="8" fill="#d4c9b8"/>
+  <ellipse cx="214" cy="200" rx="55" ry="70" fill="#c4a882"/>
+  <path d="M160 268 Q148 320 155 416 L275 416 Q282 320 270 268Z" fill="#a89880" opacity="0.8"/>
+  <rect x="24" y="360" width="380" height="56" rx="0" fill="#c8b89a" opacity="0.4"/>
+  <!-- Right: slider product card -->
+  <rect x="430" y="56" width="340" height="290" rx="8" fill="white" filter="url(#sh)"/>
+  <rect x="442" y="68" width="316" height="210" rx="4" fill="#e8ddd0"/>
+  <rect x="485" y="100" width="100" height="12" rx="2" fill="#c9bfad"/>
+  <rect x="480" y="130" width="110" height="80" rx="4" fill="#b5a08c"/>
+  <!-- Product name + price -->
+  <text x="600" y="308" text-anchor="middle" font-family="system-ui" font-size="14" font-weight="600" fill="#1a1a1a">SUNSET THROW RUG</text>
+  <text x="600" y="328" text-anchor="middle" font-family="system-ui" font-size="13" fill="#555">$125.00</text>
+  <!-- Arrows -->
+  <circle cx="445" cy="195" r="16" fill="white" filter="url(#sh)"/>
+  <path d="M449 189 L443 195 L449 201" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+  <circle cx="755" cy="195" r="16" fill="white" filter="url(#sh)"/>
+  <path d="M751 189 L757 195 L751 201" fill="none" stroke="#1a1a1a" stroke-width="2"/>
+  <!-- Dots -->
+  <circle cx="586" cy="362" r="5" fill="#1a1a1a"/>
+  <circle cx="600" cy="362" r="5" fill="#ccc"/>
+  <circle cx="614" cy="362" r="5" fill="#ccc"/>
+  <circle cx="628" cy="362" r="5" fill="#ccc"/>
+</svg>

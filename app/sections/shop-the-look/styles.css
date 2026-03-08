@@ -87,7 +87,7 @@
   width: 100%;
   height: auto;
   aspect-ratio: var(--stl-item-img-ar);
-  object-fit: cover;
+  object-fit: var(--stl-item-img-fit, cover);
 }
 
 /* Hover effects */
@@ -157,7 +157,7 @@
   width: 100%;
   height: auto;
   aspect-ratio: var(--stl-img-ar);
-  object-fit: cover;
+  object-fit: var(--stl-img-fit, cover);
   border-radius: var(--stl-img-round);
 }
 

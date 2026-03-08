@@ -1,0 +1,278 @@
+/* ═══════════════════════════════════════════
+   Newsletter Popup – Section Hub
+   ═══════════════════════════════════════════ */
+
+/* Overlay */
+.nlp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--nlp-overlay-bg, rgba(0,0,0,0.5));
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  padding: 16px;
+}
+.nlp-overlay--visible {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* Modal */
+.nlp-modal {
+  position: relative;
+  display: flex;
+  width: 100%;
+  max-width: var(--nlp-max-width, 820px);
+  max-height: 90vh;
+  background: var(--nlp-modal-bg, #ffffff);
+  border-radius: var(--nlp-modal-radius, 12px);
+  overflow: hidden;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+  transform: translateY(20px) scale(0.97);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.nlp-overlay--visible .nlp-modal {
+  transform: translateY(0) scale(1);
+}
+
+/* Close */
+.nlp-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 10;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: var(--nlp-close-bg, rgba(0,0,0,0.06));
+  color: var(--nlp-close-color, #333);
+  font-size: 20px;
+  line-height: 1;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.nlp-close:hover {
+  background: rgba(0,0,0,0.12);
+}
+
+/* Form Panel (Left) */
+.nlp-form-panel {
+  flex: 1;
+  padding: 48px 40px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+/* Image Panel (Right) */
+.nlp-image-panel {
+  flex: 1;
+  min-height: 300px;
+  position: relative;
+  overflow: hidden;
+}
+.nlp-image-panel img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.nlp-image-panel--empty {
+  background: var(--nlp-accent, #cc0000);
+}
+
+/* Logo */
+.nlp-logo {
+  margin-bottom: 20px;
+}
+.nlp-logo img {
+  max-height: 44px;
+  width: auto;
+}
+
+/* Typography */
+.nlp-title {
+  font-family: var(--nlp-heading-font, inherit);
+  font-size: var(--nlp-title-size, 2em);
+  font-weight: 800;
+  color: var(--nlp-heading-color, #111);
+  line-height: 1.15;
+  margin: 0 0 12px;
+}
+.nlp-subtitle {
+  font-size: var(--nlp-subtitle-size, 0.95em);
+  color: var(--nlp-text-color, #555);
+  line-height: 1.5;
+  margin: 0 0 24px;
+}
+
+/* Form */
+.nlp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.nlp-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1.5px solid var(--nlp-input-border, #ddd);
+  border-radius: var(--nlp-input-radius, 4px);
+  background: var(--nlp-input-bg, #fff);
+  color: var(--nlp-text-color, #333);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.nlp-input:focus {
+  border-color: var(--nlp-accent, #cc0000);
+}
+.nlp-input::placeholder {
+  color: var(--nlp-placeholder-color, #999);
+}
+
+/* Submit Button */
+.nlp-submit-btn {
+  width: 100%;
+  padding: 16px 24px;
+  border: none;
+  border-radius: var(--nlp-btn-radius, 4px);
+  background: var(--nlp-btn-bg, #cc0000);
+  color: var(--nlp-btn-text, #fff);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.nlp-submit-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+.nlp-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Terms / footer text */
+.nlp-terms {
+  font-size: 11px;
+  color: var(--nlp-text-color, #999);
+  text-align: center;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+/* No thanks link */
+.nlp-no-thanks {
+  background: none;
+  border: none;
+  color: var(--nlp-text-color, #999);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 12px;
+  padding: 0;
+  align-self: center;
+}
+.nlp-no-thanks:hover {
+  opacity: 0.7;
+}
+
+/* Success State */
+.nlp-success {
+  display: none;
+  text-align: center;
+  padding: 20px 0;
+}
+.nlp-success--visible {
+  display: block;
+}
+.nlp-success-emoji {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+.nlp-success-title {
+  font-size: 1.5em;
+  font-weight: 800;
+  color: var(--nlp-heading-color, #111);
+  margin: 0 0 8px;
+}
+.nlp-success-message {
+  font-size: 0.95em;
+  color: var(--nlp-text-color, #555);
+  line-height: 1.5;
+  margin: 0;
+}
+.nlp-discount-code {
+  display: inline-block;
+  margin: 16px 0 8px;
+  padding: 14px 32px;
+  background: var(--nlp-accent, #cc0000);
+  color: #fff;
+  font-size: 1.3em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  border-radius: var(--nlp-btn-radius, 4px);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.nlp-discount-code:hover {
+  transform: scale(1.03);
+}
+.nlp-copy-hint {
+  font-size: 12px;
+  color: var(--nlp-text-color, #999);
+  margin: 4px 0 12px;
+  opacity: 0.7;
+}
+.nlp-copy-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--nlp-close-bg, rgba(0,0,0,0.06));
+  border: 1.5px solid var(--nlp-input-border, #ddd);
+  border-radius: var(--nlp-btn-radius, 4px);
+  color: var(--nlp-heading-color, #333);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.nlp-copy-btn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 680px) {
+  .nlp-modal {
+    flex-direction: column-reverse;
+    max-width: 100%;
+  }
+  .nlp-image-panel {
+    max-height: 200px;
+    min-height: 160px;
+  }
+  .nlp-form-panel {
+    padding: 32px 24px;
+  }
+  .nlp-title {
+    font-size: 1.5em;
+  }
+  .nlp-close {
+    top: 8px;
+    right: 8px;
+    background: rgba(255,255,255,0.8);
+    color: #333;
+  }
+}

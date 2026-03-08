@@ -1,0 +1,702 @@
+{% comment %}
+  Section Hub – Hero Split
+  Bold split-layout hero with a text card on the left    --hs-heading-ls: {{ heading_ls | divided_by: 100.0 }}em;
+
+    --hs-sub-fs: {{ sub_fs }}px;
+    --hs-sub-fsm: {{ sub_fsm }}px;
+    --hs-sub-fw: {{ sub_fw }};
+    --hs-sub-ls: {{ sub_ls | divided_by: 100.0 }}em; large
+  image on the right. The image overlaps the card for editorial depth.
+{% endcomment %}
+
+{%- liquid
+  assign img           = section.settings.image
+  assign heading       = section.settings.heading
+  assign subheading    = section.settings.subheading
+  assign btn_text      = section.settings.button_text
+  assign btn_link      = section.settings.button_link
+  assign btn_style     = section.settings.button_style
+  assign btn_new_tab   = section.settings.button_new_tab
+  assign lazy          = section.settings.lazy_load
+  assign heading_tag   = section.settings.heading_tag
+
+  assign height        = section.settings.height
+  assign height_m      = section.settings.height_mobile
+  assign text_width    = section.settings.text_width
+
+  assign bg_color      = section.settings.bg_color
+  assign card_bg       = section.settings.card_bg
+  assign card_text     = section.settings.card_text
+  assign card_round    = section.settings.card_roundness
+  assign card_py       = section.settings.card_padding_y
+  assign card_px       = section.settings.card_padding_x
+  assign card_py_m     = section.settings.card_padding_y_mobile
+  assign card_px_m     = section.settings.card_padding_x_mobile
+  assign card_my       = section.settings.card_margin_y
+  assign card_ml       = section.settings.card_margin_left
+
+  assign img_overlap   = section.settings.image_overlap
+  assign img_pos       = section.settings.image_position
+
+  assign heading_fs    = section.settings.heading_font_size
+  assign heading_fsm   = section.settings.heading_font_size_mobile
+  assign heading_fw    = section.settings.heading_font_weight
+  assign heading_ls    = section.settings.heading_letter_spacing
+  assign heading_tt    = section.settings.heading_text_transform
+  assign heading_lh    = section.settings.heading_line_height
+  assign heading_c     = section.settings.heading_color
+
+  assign sub_fs        = section.settings.sub_font_size
+  assign sub_fsm       = section.settings.sub_font_size_mobile
+  assign sub_fw        = section.settings.sub_font_weight
+  assign sub_ls        = section.settings.sub_letter_spacing
+  assign sub_tt        = section.settings.sub_text_transform
+  assign sub_c         = section.settings.sub_color
+
+  assign btn_fs        = section.settings.button_font_size
+  assign btn_fsm       = section.settings.button_font_size_mobile
+  assign btn_round     = section.settings.button_roundness
+  assign btn_py        = section.settings.button_padding_y
+  assign btn_px        = section.settings.button_padding_x
+  assign btn_tc        = section.settings.btn_text_color
+  assign btn_th        = section.settings.btn_text_hover
+  assign btn_bg        = section.settings.btn_bg_color
+  assign btn_bgh       = section.settings.btn_bg_hover
+
+  assign margin_top    = section.settings.margin_top
+  assign margin_bottom = section.settings.margin_bottom
+  assign sec_round     = section.settings.section_roundness
+  assign sec_width     = section.settings.section_width
+
+  assign custom_css    = section.settings.custom_css
+-%}
+
+<style>
+  #hs-{{ section.id }} {
+    --hs-h: {{ height }}px;
+    --hs-hm: {{ height_m }}px;
+    --hs-text-width: {{ text_width }}%;
+
+    --hs-bg: {{ bg_color }};
+    --hs-card-bg: {{ card_bg }};
+    --hs-card-text: {{ card_text }};
+    --hs-card-r: {{ card_round }}px;
+    --hs-card-py: {{ card_py }}px;
+    --hs-card-px: {{ card_px }}px;
+    --hs-card-py-m: {{ card_py_m }}px;
+    --hs-card-px-m: {{ card_px_m }}px;
+    --hs-card-my: {{ card_my }}px;
+    --hs-card-ml: {{ card_ml }}px;
+
+    --hs-img-overlap: -{{ img_overlap }}px;
+    --hs-img-pos: {{ img_pos }};
+
+    --hs-heading-fs: {{ heading_fs }}px;
+    --hs-heading-fsm: {{ heading_fsm }}px;
+    --hs-heading-fw: {{ heading_fw }};
+    --hs-heading-ls: {{ heading_ls | divided_by: 100.0 }}em;
+    --hs-heading-tt: {{ heading_tt }};
+    --hs-heading-lh: {{ heading_lh | divided_by: 100.0 }};
+    --hs-heading-c: {{ heading_c }};
+
+    --hs-sub-fs: {{ sub_fs }}px;
+    --hs-sub-fsm: {{ sub_fsm }}px;
+    --hs-sub-fw: {{ sub_fw }};
+    --hs-sub-ls: {{ sub_ls | divided_by: 100.0 }}em;
+    --hs-sub-tt: {{ sub_tt }};
+    --hs-sub-c: {{ sub_c }};
+
+    --hs-btn-fs: {{ btn_fs }}px;
+    --hs-btn-fsm: {{ btn_fsm }}px;
+    --hs-btn-r: {{ btn_round }}px;
+    --hs-btn-py: {{ btn_py }}px;
+    --hs-btn-px: {{ btn_px }}px;
+    --hs-btn-tc: {{ btn_tc }};
+    --hs-btn-th: {{ btn_th }};
+    --hs-btn-bg: {{ btn_bg }};
+    --hs-btn-bgh: {{ btn_bgh }};
+
+    --hs-mt: {{ margin_top }}px;
+    --hs-mb: {{ margin_bottom }}px;
+    --hs-sec-r: {{ sec_round }}px;
+
+    {% if sec_width == 'page' %}
+      --hs-max-w: 1200px;
+    {% elsif sec_width == 'narrow' %}
+      --hs-max-w: 1000px;
+    {% elsif sec_width == 'custom' %}
+      --hs-max-w: {{ section.settings.section_custom_width }}px;
+    {% else %}
+      --hs-max-w: 100%;
+    {% endif %}
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="hs-{{ section.id }}" class="hs-wrap">
+  <div class="hs-inner">
+
+    {%- comment -%} ── Text card (left) ── {%- endcomment -%}
+    <div class="hs-card">
+      {%- if subheading != blank -%}
+        <p class="hs-subheading">{{ subheading }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <{{ heading_tag }} class="hs-heading">{{ heading }}</{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if btn_text != blank -%}
+        <a href="{{ btn_link | default: '#' }}"
+           class="hs-btn hs-btn--{{ btn_style }}"
+           {% if btn_new_tab %}target="_blank" rel="noopener"{% endif %}>
+          {{ btn_text }}
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Image (right) ── {%- endcomment -%}
+    <div class="hs-media">
+      {%- if img != blank -%}
+        <img
+          class="hs-media__img"
+          src="{{ img | image_url: width: 1600 }}"
+          alt="{{ img.alt | escape }}"
+          width="{{ img.width }}"
+          height="{{ img.height }}"
+          {% if lazy %}loading="lazy"{% else %}loading="eager"{% endif %}
+        >
+      {%- else -%}
+        <div class="hs-media__placeholder">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21 15 16 10 5 21"/>
+          </svg>
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "Hero Split",
+  "tag": "div",
+  "class": "hs-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image focus",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "range",
+      "id": "image_overlap",
+      "label": "Image overlap onto card",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "premium spirits for your home bar."
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "the art of mixology."
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p", "label": "P" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "jetzt shoppen."
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_new_tab",
+      "label": "Open in new tab",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Section height",
+      "min": 400,
+      "max": 900,
+      "step": 10,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Image height – mobile",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 350
+    },
+    {
+      "type": "range",
+      "id": "text_width",
+      "label": "Text card width",
+      "info": "Percentage of section width",
+      "min": 30,
+      "max": 60,
+      "step": 1,
+      "unit": "%",
+      "default": 42
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "page", "label": "Page width (1200px)" },
+        { "value": "narrow", "label": "Narrow (1000px)" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "section_custom_width",
+      "label": "Custom width",
+      "min": 800,
+      "max": 1800,
+      "step": 10,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Card styling"
+    },
+    {
+      "type": "range",
+      "id": "card_roundness",
+      "label": "Card roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "card_padding_y",
+      "label": "Card padding – vertical",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "card_padding_x",
+      "label": "Card padding – horizontal",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "card_padding_y_mobile",
+      "label": "Card padding vertical – mobile",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "card_padding_x_mobile",
+      "label": "Card padding horizontal – mobile",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "card_margin_y",
+      "label": "Card vertical offset",
+      "info": "Space above and below the card within the section",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "card_margin_left",
+      "label": "Card left offset",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Heading typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Font size",
+      "min": 24,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 20,
+      "max": 64,
+      "step": 1,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "900"
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": -2
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Line height",
+      "min": 80,
+      "max": 160,
+      "step": 5,
+      "unit": "%",
+      "default": 100,
+      "info": "As a percentage, e.g. 100 = 1.0"
+    },
+    {
+      "type": "header",
+      "content": "Subheading typography"
+    },
+    {
+      "type": "range",
+      "id": "sub_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "sub_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 11,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "sub_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "range",
+      "id": "sub_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "sub_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "header",
+      "content": "Button typography"
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "button_padding_y",
+      "label": "Button padding – vertical",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "button_padding_x",
+      "label": "Button padding – horizontal",
+      "min": 16,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_text",
+      "label": "Card text",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "sub_color",
+      "label": "Subheading color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover",
+      "label": "Button text – hover",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Button background – hover",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy-load image",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Hero Split",
+      "category": "Hero"
+    }
+  ]
+}
+{% endschema %}

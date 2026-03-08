@@ -1,0 +1,841 @@
+{% comment %}
+  Section Hub – Header Full
+  Three-layer header: top bar, main navigation, trust bar.
+  Each layer is independently toggleable.
+{% endcomment %}
+
+{%- liquid
+  comment -- Top bar
+  endcomment
+  assign show_topbar    = section.settings.show_topbar
+  assign top_text       = section.settings.topbar_text
+  assign top_link       = section.settings.topbar_link
+  assign top_bg         = section.settings.topbar_bg
+  assign top_c          = section.settings.topbar_color
+  assign top_fs         = section.settings.topbar_font_size
+  assign top_fw         = section.settings.topbar_font_weight
+  assign top_ls         = section.settings.topbar_letter_spacing
+  assign top_py         = section.settings.topbar_padding_y
+  assign top_px         = section.settings.topbar_padding_x
+
+  comment -- Logo
+  endcomment
+  assign logo           = section.settings.logo
+  assign logo_w         = section.settings.logo_width
+  assign use_text_logo  = section.settings.use_text_logo
+  assign text_logo      = section.settings.text_logo
+  assign logo_fs        = section.settings.text_logo_font_size
+  assign logo_fw        = section.settings.text_logo_font_weight
+  assign logo_ls        = section.settings.text_logo_letter_spacing
+  assign logo_tt        = section.settings.text_logo_text_transform
+
+  comment -- Navigation
+  endcomment
+  assign menu           = section.settings.menu
+  assign nav_c          = section.settings.nav_color
+  assign nav_hover      = section.settings.nav_hover_color
+  assign nav_fs         = section.settings.nav_font_size
+  assign nav_fw         = section.settings.nav_font_weight
+  assign nav_ls         = section.settings.nav_letter_spacing
+  assign nav_tt         = section.settings.nav_text_transform
+  assign nav_gap        = section.settings.nav_gap
+
+  comment -- Icons
+  endcomment
+  assign show_search    = section.settings.show_search
+  assign show_account   = section.settings.show_account
+  assign show_cart      = section.settings.show_cart
+  assign show_lang      = section.settings.show_language
+  assign icon_c         = section.settings.icon_color
+  assign icon_size      = section.settings.icon_size
+  assign icon_gap       = section.settings.icon_gap
+
+  comment -- Dropdown
+  endcomment
+  assign dd_bg          = section.settings.dropdown_bg
+  assign dd_link_c      = section.settings.dropdown_link_color
+  assign dd_hover_bg    = section.settings.dropdown_hover_bg
+  assign dd_hover_c     = section.settings.dropdown_hover_color
+  assign dd_round       = section.settings.dropdown_roundness
+
+  comment -- Main header
+  endcomment
+  assign bg_color       = section.settings.bg_color
+  assign border_c       = section.settings.border_color
+  assign border_w       = section.settings.border_width
+  assign header_py      = section.settings.padding_y
+  assign header_px      = section.settings.padding_x
+  assign max_w          = section.settings.content_width
+  assign cart_badge_bg  = section.settings.cart_badge_bg
+  assign cart_badge_c   = section.settings.cart_badge_color
+
+  comment -- Trust bar
+  endcomment
+  assign show_trustbar  = section.settings.show_trustbar
+  assign trust_bg       = section.settings.trustbar_bg
+  assign trust_c        = section.settings.trustbar_color
+  assign trust_fs       = section.settings.trustbar_font_size
+  assign trust_star_c   = section.settings.trustbar_star_color
+  assign trust_py       = section.settings.trustbar_padding_y
+  assign trust_border_c = section.settings.trustbar_border_color
+  assign trust_border_w = section.settings.trustbar_border_width
+
+  assign sticky         = section.settings.sticky_header
+  assign custom_css     = section.settings.custom_css
+-%}
+
+<style>
+  #hf-{{ section.id }} {
+    --hf-top-bg: {{ top_bg }};
+    --hf-top-c: {{ top_c }};
+    --hf-top-fs: {{ top_fs }}px;
+    --hf-top-fw: {{ top_fw }};
+    --hf-top-ls: {{ top_ls | divided_by: 100.0 }}em;
+    --hf-top-py: {{ top_py }}px;
+    --hf-top-px: {{ top_px }}rem;
+
+    --hf-logo-w: {{ logo_w }}px;
+    --hf-logo-fs: {{ logo_fs }}px;
+    --hf-logo-fw: {{ logo_fw }};
+    --hf-logo-ls: {{ logo_ls | divided_by: 100.0 }}em;
+    --hf-logo-tt: {{ logo_tt }};
+
+    --hf-nav-c: {{ nav_c }};
+    --hf-nav-hover: {{ nav_hover }};
+    --hf-nav-fs: {{ nav_fs }}px;
+    --hf-nav-fw: {{ nav_fw }};
+    --hf-nav-ls: {{ nav_ls | divided_by: 100.0 }}em;
+    --hf-nav-tt: {{ nav_tt }};
+    --hf-nav-gap: {{ nav_gap }}px;
+
+    --hf-icon-c: {{ icon_c }};
+    --hf-icon-size: {{ icon_size }}px;
+    --hf-icon-gap: {{ icon_gap }}px;
+
+    --hf-dd-bg: {{ dd_bg }};
+    --hf-dd-link-c: {{ dd_link_c }};
+    --hf-dd-hover-bg: {{ dd_hover_bg }};
+    --hf-dd-hover-c: {{ dd_hover_c }};
+    --hf-dd-round: {{ dd_round }}px;
+
+    --hf-bg: {{ bg_color }};
+    --hf-border-c: {{ border_c }};
+    --hf-border-w: {{ border_w }}px;
+    --hf-py: {{ header_py }}px;
+    --hf-px: {{ header_px }}rem;
+    --hf-max-w: {{ max_w }}px;
+    --hf-cart-badge-bg: {{ cart_badge_bg }};
+    --hf-cart-badge-c: {{ cart_badge_c }};
+
+    --hf-trust-bg: {{ trust_bg }};
+    --hf-trust-c: {{ trust_c }};
+    --hf-trust-fs: {{ trust_fs }}px;
+    --hf-trust-star-c: {{ trust_star_c }};
+    --hf-trust-py: {{ trust_py }}px;
+    --hf-trust-border-c: {{ trust_border_c }};
+    --hf-trust-border-w: {{ trust_border_w }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<header id="hf-{{ section.id }}" {% if sticky %}style="position: sticky; top: 0; z-index: 999;"{% endif %}>
+
+  {%- comment -%} ═══ 1. TOP BAR ═══ {%- endcomment -%}
+  {%- if show_topbar and top_text != blank -%}
+    <div class="hf-topbar">
+      {%- if top_link != blank -%}
+        <a href="{{ top_link }}">{{ top_text }}</a>
+      {%- else -%}
+        {{ top_text }}
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ═══ 2. MAIN HEADER ═══ {%- endcomment -%}
+  <div class="hf-main">
+    <div class="hf-main__inner">
+
+      {%- comment -%} Left: Navigation / Hamburger {%- endcomment -%}
+      <div>
+        <button class="hf-burger" aria-label="Menu" data-hf-open>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+
+        {%- if menu != blank -%}
+          <nav class="hf-nav" aria-label="Main navigation">
+            {%- for link in linklists[menu].links -%}
+              {%- if link.links.size > 0 -%}
+                <div class="hf-nav__item" tabindex="0" aria-expanded="false">
+                  <span>{{ link.title }}</span>
+                  <svg class="hf-nav__chevron" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><polyline points="2 4 5 7 8 4"/></svg>
+                  <div class="hf-dropdown">
+                    {%- for child in link.links -%}
+                      <a href="{{ child.url }}" class="hf-dropdown__link">{{ child.title }}</a>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              {%- else -%}
+                <a href="{{ link.url }}" class="hf-nav__item">{{ link.title }}</a>
+              {%- endif -%}
+            {%- endfor -%}
+          </nav>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Center: Logo {%- endcomment -%}
+      <a href="/" class="hf-logo">
+        {%- if use_text_logo or logo == blank -%}
+          <span class="hf-logo__text">{{ text_logo | default: shop.name }}</span>
+        {%- else -%}
+          <img
+            src="{{ logo | image_url: width: 600 }}"
+            alt="{{ logo.alt | default: shop.name }}"
+            class="hf-logo__img"
+            loading="eager"
+          >
+        {%- endif -%}
+      </a>
+
+      {%- comment -%} Right: Icons {%- endcomment -%}
+      <div class="hf-icons">
+        {%- if show_search -%}
+          <a href="/search" class="hf-icon" aria-label="Search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          </a>
+        {%- endif -%}
+
+        {%- if show_account -%}
+          <a href="/account" class="hf-icon" aria-label="Account">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {%- endif -%}
+
+        {%- if show_lang -%}
+          <div class="hf-lang">
+            <span class="hf-lang__active">DE</span>
+            <span class="hf-lang__inactive">EN</span>
+          </div>
+        {%- endif -%}
+
+        {%- if show_cart -%}
+          <a href="/cart" class="hf-icon hf-cart-wrap" aria-label="Cart">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <span class="hf-cart-count" data-hf-cart-count>{{ cart.item_count }}</span>
+          </a>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+
+  {%- comment -%} ═══ 3. TRUST BAR ═══ {%- endcomment -%}
+  {%- if show_trustbar -%}
+    <div class="hf-trustbar">
+      <div class="hf-trustbar__inner">
+        {%- for block in section.blocks -%}
+          {%- case block.type -%}
+
+            {%- when 'trust_text' -%}
+              <div class="hf-trust-item" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon != blank -%}
+                  <img src="{{ block.settings.icon | image_url: width: 40 }}" alt="" style="height: 16px; width: auto;" loading="lazy">
+                {%- endif -%}
+                <span>{{ block.settings.text }}</span>
+              </div>
+
+            {%- when 'trust_rating' -%}
+              <div class="hf-trust-item" {{ block.shopify_attributes }}>
+                <div class="hf-trust-stars">
+                  {%- assign full_stars = block.settings.rating | floor -%}
+                  {%- assign has_half = block.settings.rating | modulo: 1 -%}
+                  {%- assign next_star = full_stars | plus: 1 -%}
+                  {%- for i in (1..5) -%}
+                    {%- if i <= full_stars -%}
+                      <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    {%- elsif i == next_star and has_half > 0 -%}
+                      <svg viewBox="0 0 24 24"><defs><linearGradient id="hf-half-{{ block.id }}"><stop offset="50%" stop-color="currentColor"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><path fill="url(#hf-half-{{ block.id }})" stroke="currentColor" stroke-width="1" d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    {%- else -%}
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                    {%- endif -%}
+                  {%- endfor -%}
+                </div>
+                <span class="hf-trust-rating">{{ block.settings.rating }}</span>
+                <span class="hf-trust-count">{{ block.settings.review_text }}</span>
+              </div>
+
+          {%- endcase -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+</header>
+
+{%- comment -%} Mobile menu overlay {%- endcomment -%}
+<div class="hf-mobile-menu" id="hf-mobile-{{ section.id }}">
+  <button class="hf-mobile-menu__close" aria-label="Close" data-hf-close>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+  <nav class="hf-mobile-menu__nav">
+    {%- if menu != blank -%}
+      {%- for link in linklists[menu].links -%}
+        <a href="{{ link.url }}" class="hf-mobile-menu__link">{{ link.title }}</a>
+        {%- if link.links.size > 0 -%}
+          {%- for child in link.links -%}
+            <a href="{{ child.url }}" class="hf-mobile-menu__link" style="padding-left: 20px; font-size: 15px; opacity: .7;">{{ child.title }}</a>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </nav>
+</div>
+
+<script>
+(function(){
+  var wrap = document.getElementById('hf-{{ section.id }}');
+  if(!wrap) return;
+  var mobileMenu = document.getElementById('hf-mobile-{{ section.id }}');
+  var openBtn = wrap.querySelector('[data-hf-open]');
+  var closeBtn = mobileMenu ? mobileMenu.querySelector('[data-hf-close]') : null;
+
+  if(openBtn && mobileMenu){
+    openBtn.addEventListener('click', function(){ mobileMenu.classList.add('is-open'); document.body.style.overflow = 'hidden'; });
+  }
+  if(closeBtn && mobileMenu){
+    closeBtn.addEventListener('click', function(){ mobileMenu.classList.remove('is-open'); document.body.style.overflow = ''; });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Header Full",
+  "tag": "div",
+  "class": "hf-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "── Top Bar ──"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_topbar",
+      "label": "Show top bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "topbar_text",
+      "label": "Top bar text",
+      "default": "Free Shipping & 30 Day Free Returns"
+    },
+    {
+      "type": "url",
+      "id": "topbar_link",
+      "label": "Top bar link"
+    },
+    {
+      "type": "color",
+      "id": "topbar_bg",
+      "label": "Background",
+      "default": "#4a5d3e"
+    },
+    {
+      "type": "color",
+      "id": "topbar_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "topbar_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "select",
+      "id": "topbar_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "topbar_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 15,
+      "step": 1,
+      "unit": "em",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "topbar_padding_y",
+      "label": "Vertical padding",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "topbar_padding_x",
+      "label": "Horizontal padding",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "── Logo ──"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo width",
+      "min": 60,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 160
+    },
+    {
+      "type": "checkbox",
+      "id": "use_text_logo",
+      "label": "Use text logo instead",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "text_logo",
+      "label": "Text logo",
+      "info": "Shown if 'Use text logo' is enabled or no image uploaded"
+    },
+    {
+      "type": "range",
+      "id": "text_logo_font_size",
+      "label": "Text logo size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "text_logo_font_weight",
+      "label": "Text logo weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "text_logo_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "em",
+      "default": 10
+    },
+    {
+      "type": "select",
+      "id": "text_logo_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "── Navigation ──"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "color",
+      "id": "nav_color",
+      "label": "Link color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "nav_hover_color",
+      "label": "Link hover color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "nav_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "nav_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "range",
+      "id": "nav_letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "nav_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "nav_gap",
+      "label": "Gap between links",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "── Dropdown ──"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_color",
+      "label": "Link color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_hover_bg",
+      "label": "Hover background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_hover_color",
+      "label": "Hover text",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "── Icons ──"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show account icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show cart icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_language",
+      "label": "Show language toggle",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "icon_gap",
+      "label": "Gap between icons",
+      "min": 8,
+      "max": 28,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_bg",
+      "label": "Cart badge background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "cart_badge_color",
+      "label": "Cart badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "── Trust Bar ──"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trustbar",
+      "label": "Show trust bar",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "trustbar_bg",
+      "label": "Background",
+      "default": "#f5f5f0"
+    },
+    {
+      "type": "color",
+      "id": "trustbar_color",
+      "label": "Text color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "trustbar_font_size",
+      "label": "Font size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "trustbar_star_color",
+      "label": "Star color",
+      "default": "#f5a623"
+    },
+    {
+      "type": "range",
+      "id": "trustbar_padding_y",
+      "label": "Vertical padding",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "trustbar_border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "range",
+      "id": "trustbar_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "── Main header ──"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 2,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal padding",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "rem",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 900,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_header",
+      "label": "Sticky header",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "── Advanced ──"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "trust_text",
+      "name": "Trust Text",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free Shipping"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image"
+        }
+      ]
+    },
+    {
+      "type": "trust_rating",
+      "name": "Rating",
+      "limit": 1,
+      "settings": [
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "text",
+          "id": "review_text",
+          "label": "Review text",
+          "default": "based on 10,000+ reviews"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header Full",
+      "category": "Header",
+      "blocks": [
+        { "type": "trust_text", "settings": { "text": "2 Year Warranty" } },
+        { "type": "trust_rating", "settings": { "rating": 5, "review_text": "based on 17,093 reviews" } },
+        { "type": "trust_text", "settings": { "text": "Free Shipping & Returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

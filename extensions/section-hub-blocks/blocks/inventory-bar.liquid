@@ -1,0 +1,190 @@
+{% comment %}
+  Section Hub - Inventory Bar Block
+  Shows remaining stock with a colored progress bar
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-inventory-bar {
+  margin: 8px 0;
+}
+
+.sh-inventory-bar__text {
+  font-size: {{ block.settings.font_size }}px;
+  font-weight: 600;
+  color: {{ block.settings.text_color }};
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sh-inventory-bar__text span {
+  font-size: {{ block.settings.font_size | plus: 1 }}px;
+}
+
+.sh-inventory-bar__track {
+  width: 100%;
+  height: {{ block.settings.bar_height }}px;
+  background: {{ block.settings.track_color }};
+  border-radius: {{ block.settings.bar_height | divided_by: 2 }}px;
+  overflow: hidden;
+}
+
+.sh-inventory-bar__fill {
+  height: 100%;
+  border-radius: {{ block.settings.bar_height | divided_by: 2 }}px;
+  transition: width 0.6s ease;
+}
+</style>
+
+{% assign remaining = block.settings.remaining | times: 1 %}
+{% assign total = block.settings.total | times: 1 %}
+{% if total > 0 %}
+  {% assign pct = remaining | times: 100 | divided_by: total %}
+{% else %}
+  {% assign pct = 0 %}
+{% endif %}
+
+{% if pct > 60 %}
+  {% assign bar_color = block.settings.color_high %}
+  {% assign icon = "🟢" %}
+{% elsif pct > 25 %}
+  {% assign bar_color = block.settings.color_medium %}
+  {% assign icon = "🟡" %}
+{% else %}
+  {% assign bar_color = block.settings.color_low %}
+  {% assign icon = "🔴" %}
+{% endif %}
+
+<div class="sh-inventory-bar">
+  <div class="sh-inventory-bar__text">
+    <span>{{ icon }}</span>
+    {% if pct > 60 %}
+      {{ remaining }} {{ block.settings.in_stock_text }}
+    {% elsif pct > 25 %}
+      {{ remaining }} {{ block.settings.going_fast_text }}
+    {% else %}
+      {{ block.settings.low_stock_prefix }} {{ remaining }} {{ block.settings.low_stock_suffix }}
+    {% endif %}
+  </div>
+  <div class="sh-inventory-bar__track">
+    <div class="sh-inventory-bar__fill" style="width: {{ pct }}%; background: {{ bar_color }};"></div>
+  </div>
+</div>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Inventory Bar",
+  "target": "section",
+  "settings": [
+    {
+      "type": "range",
+      "id": "remaining",
+      "label": "Items Remaining",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 11
+    },
+    {
+      "type": "range",
+      "id": "total",
+      "label": "Total Stock",
+      "min": 1,
+      "max": 100,
+      "step": 1,
+      "default": 100
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "in_stock_text",
+      "label": "In Stock Text",
+      "default": "in stock"
+    },
+    {
+      "type": "text",
+      "id": "going_fast_text",
+      "label": "Going Fast Text",
+      "default": "remaining – going fast!"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_prefix",
+      "label": "Low Stock Prefix",
+      "default": "Only"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_suffix",
+      "label": "Low Stock Suffix",
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "track_color",
+      "label": "Track Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "color",
+      "id": "color_high",
+      "label": "Bar Color (High Stock)",
+      "default": "#22c55e"
+    },
+    {
+      "type": "color",
+      "id": "color_medium",
+      "label": "Bar Color (Medium Stock)",
+      "default": "#eab308"
+    },
+    {
+      "type": "color",
+      "id": "color_low",
+      "label": "Bar Color (Low Stock)",
+      "default": "#ef4444"
+    },
+    {
+      "type": "range",
+      "id": "bar_height",
+      "label": "Bar Height",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

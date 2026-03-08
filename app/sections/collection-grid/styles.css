@@ -1,0 +1,248 @@
+/* ══════════════════════════════════════════════════
+   Section Hub – Collection Grid
+   ══════════════════════════════════════════════════ */
+
+.sh-cg {
+  padding: var(--sh-cg-pt, 40px) var(--sh-cg-px, 2rem) var(--sh-cg-pb, 40px);
+  margin: var(--sh-cg-mt, 0) 0 var(--sh-cg-mb, 0);
+  background: var(--sh-cg-section-bg, transparent);
+}
+
+@media (max-width: 749px) {
+  .sh-cg {
+    padding-left: var(--sh-cg-px-mobile, 1rem);
+    padding-right: var(--sh-cg-px-mobile, 1rem);
+  }
+}
+
+/* ── Heading ── */
+.sh-cg__header {
+  text-align: var(--sh-cg-align, center);
+  margin-bottom: var(--sh-cg-header-gap, 24px);
+}
+
+.sh-cg__heading {
+  font-size: var(--sh-cg-heading-size, 28px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--sh-cg-heading-color, #1a1a1a);
+  margin: 0 0 4px;
+}
+
+@media (max-width: 749px) {
+  .sh-cg__heading {
+    font-size: var(--sh-cg-heading-size-mobile, 22px);
+  }
+}
+
+.sh-cg__subheading {
+  font-size: 15px;
+  color: var(--sh-cg-subheading-color, #6b7280);
+  margin: 0;
+}
+
+/* ── Grid ── */
+.sh-cg__grid {
+  display: grid;
+  gap: var(--sh-cg-gap, 16px);
+  align-items: stretch;   /* all cards in a row match the tallest one */
+}
+
+/* Grid column layouts */
+.sh-cg__grid--2 {
+  grid-template-columns: var(--sh-cg-col1, 1fr) var(--sh-cg-col2, 1fr);
+}
+
+.sh-cg__grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.sh-cg__grid--4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+
+@media (max-width: 749px) {
+  .sh-cg__grid--2 {
+    grid-template-columns: var(--sh-cg-mobile-cols, 1fr);
+  }
+  .sh-cg__grid--3 {
+    grid-template-columns: var(--sh-cg-mobile-cols, 1fr);
+  }
+  .sh-cg__grid--4 {
+    grid-template-columns: var(--sh-cg-mobile-cols, repeat(2, 1fr));
+  }
+}
+
+/* ── Card ── */
+.sh-cg__card {
+  position: relative;
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  /* stretch to fill the grid row so all cards share the same height */
+  align-self: stretch;
+}
+
+.sh-cg__card:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* ── Image wrap ──
+   Uses aspect-ratio as the *minimum* height anchor on the first card,
+   then all sibling cards stretch to match via align-items: stretch on the grid.
+   overflow + border-radius live here so the hover-scale stays clipped. */
+.sh-cg__image-wrap {
+  position: relative;
+  width: 100%;
+  /* aspect-ratio sets proportional height; object-fit:cover fills any remainder */
+  aspect-ratio: var(--sh-cg-ratio, 3/4);
+  height: 100%;          /* fills full card height when grid row is taller */
+  overflow: hidden;
+  background: #e5e7eb;
+  border-radius: var(--sh-cg-radius, 0px);
+}
+
+.sh-cg__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;  /* keep face/subject in frame on portrait crops */
+  transition: transform 0.5s ease;
+}
+
+.sh-cg__card:hover .sh-cg__img {
+  transform: scale(1.03);
+}
+
+.sh-cg__placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #d1d5db;
+}
+
+.sh-cg__placeholder svg {
+  width: 60px;
+  height: 60px;
+  opacity: 0.4;
+}
+
+/* ── Overlay ── */
+.sh-cg__overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: var(--sh-cg-overlay-padding, 24px);
+  display: flex;
+  flex-direction: column;
+  z-index: 2;
+}
+
+/* Gradient scrim behind text */
+.sh-cg__overlay::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: linear-gradient(to top, var(--sh-cg-scrim-color, rgba(0,0,0,0.45)) 0%, transparent 100%);
+  z-index: -1;
+  pointer-events: none;
+  opacity: var(--sh-cg-scrim-opacity, 1);
+}
+
+/* Position variants */
+.sh-cg__overlay--bottom-left {
+  align-items: flex-start;
+  justify-content: flex-end;
+}
+
+.sh-cg__overlay--bottom-center {
+  align-items: center;
+  justify-content: flex-end;
+  text-align: center;
+}
+
+.sh-cg__overlay--center {
+  top: 0;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.sh-cg__overlay--center::before {
+  height: 100%;
+  background: var(--sh-cg-scrim-color, rgba(0,0,0,0.35));
+}
+
+/* ── Text ── */
+.sh-cg__subtitle {
+  font-size: var(--sh-cg-subtitle-size, 12px);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--sh-cg-text-color, #fff);
+  opacity: 0.85;
+  margin-bottom: 4px;
+}
+
+.sh-cg__title {
+  font-size: var(--sh-cg-title-size, 24px);
+  font-weight: 700;
+  line-height: 1.15;
+  color: var(--sh-cg-text-color, #fff);
+  margin: 0;
+  text-transform: var(--sh-cg-title-transform, uppercase);
+}
+
+@media (max-width: 749px) {
+  .sh-cg__title {
+    font-size: var(--sh-cg-title-size-mobile, 20px);
+  }
+}
+
+/* ── Button ── */
+.sh-cg__btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: var(--sh-cg-btn-py, 10px) var(--sh-cg-btn-px, 24px);
+  font-size: var(--sh-cg-btn-size, 13px);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  border-radius: var(--sh-cg-btn-radius, 0px);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.sh-cg__btn--solid {
+  background: var(--sh-cg-btn-bg, #fff);
+  color: var(--sh-cg-btn-color, #1a1a1a);
+  border: none;
+}
+
+.sh-cg__btn--solid:hover {
+  opacity: 0.9;
+}
+
+.sh-cg__btn--outline {
+  background: transparent;
+  color: var(--sh-cg-text-color, #fff);
+  border: 1.5px solid var(--sh-cg-text-color, #fff);
+}
+
+.sh-cg__btn--outline:hover {
+  background: var(--sh-cg-text-color, #fff);
+  color: var(--sh-cg-btn-color, #1a1a1a);
+}

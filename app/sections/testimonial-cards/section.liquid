@@ -78,6 +78,16 @@
 
             {%- comment -%} Author {%- endcomment -%}
             <div class="tc-cards__author">
+              {% if block.settings.profile_image != blank %}
+                <img
+                  class="tc-cards__avatar"
+                  src="{{ block.settings.profile_image | image_url: width: 72 }}"
+                  alt="{{ block.settings.name | escape }}"
+                  width="36"
+                  height="36"
+                  loading="lazy"
+                >
+              {% endif %}
               <span class="tc-cards__name">{{ block.settings.name }}</span>
             </div>
           </div>
@@ -353,6 +363,11 @@
           "id": "name",
           "label": "Name",
           "default": "Merle W."
+        },
+        {
+          "type": "image_picker",
+          "id": "profile_image",
+          "label": "Profile Image (optional)"
         },
         {
           "type": "text",

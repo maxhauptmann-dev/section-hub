@@ -1,7 +1,7 @@
 .logo-cloud {
-  background-color: var(--lc-bg);
-  color: var(--lc-text);
-  padding: 3rem 2rem;
+  background-color: var(--lc-bg, #fff);
+  color: var(--lc-text, #6b7280);
+  padding: var(--lc-pad-v, 48px) var(--lc-pad-h, 32px);
 }
 
 .logo-cloud__container {
@@ -23,7 +23,7 @@
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
-  gap: 2rem 3rem;
+  gap: var(--lc-gap, 40px);
 }
 
 .logo-cloud__item {
@@ -35,23 +35,34 @@
 }
 
 .logo-cloud__logo {
-  height: 32px;
-  width: auto;
+  height: var(--lc-logo-h, 40px) !important;
+  min-height: var(--lc-logo-h, 40px) !important;
+  max-height: var(--lc-logo-h, 40px) !important;
+  width: auto !important;
+  max-width: 200px;
   object-fit: contain;
-  filter: grayscale(100%);
-  opacity: var(--lc-logo-opacity);
+  opacity: var(--lc-logo-opacity, 0.6);
   transition: all 0.3s ease;
+  display: block;
 }
 
-.logo-cloud__logo:hover {
+.logo-cloud__logo--gray {
+  filter: grayscale(100%);
+}
+
+.logo-cloud__logo--gray:hover {
   filter: grayscale(0%);
+  opacity: 1;
+}
+
+.logo-cloud__logo:not(.logo-cloud__logo--gray):hover {
   opacity: 1;
 }
 
 .logo-cloud__placeholder {
   font-size: 1.25rem;
   font-weight: 700;
-  opacity: var(--lc-logo-opacity);
+  opacity: var(--lc-logo-opacity, 0.6);
   padding: 0.5rem 1rem;
   border: 2px dashed currentColor;
   border-radius: 8px;
@@ -65,24 +76,18 @@
 }
 
 @keyframes logo-scroll {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
 }
 
 .logo-cloud__grid--animate:hover {
   animation-play-state: paused;
 }
 
-@media (max-width: 768px) {
-  .logo-cloud__grid {
-    gap: 1.5rem 2rem;
-  }
-  
+@media (max-width: 749px) {
   .logo-cloud__logo {
-    height: 24px;
+    height: var(--lc-logo-h-m, 28px) !important;
+    min-height: var(--lc-logo-h-m, 28px) !important;
+    max-height: var(--lc-logo-h-m, 28px) !important;
   }
 }

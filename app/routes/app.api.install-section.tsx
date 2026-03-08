@@ -1,15 +1,17 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getSectionWithFiles } from "../lib/sections.server";
+import { hasPurchasedSection } from "../services/billing.server";
+import prisma from "../db.server";
+import { checkIsPremium } from "../lib/is-premium.server";
 
 /**
  * API Route: Install section to theme
  * POST /app/api/install-section
  * Body: { sectionId: string }
- * 
- * NOTE: This route always installs – no purchase check.
- * The "Install to Theme (Dev)" button uses this for development/testing.
- * The purchase flow is handled separately via /app/api/purchase-section.
+ *
+ * Premium subscribers can install any section.
+ * Free users can only install free sections or previously purchased ones.
  */
 export const action = async ({ request }: ActionFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
@@ -30,6 +32,22 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   const shop = session.shop;
   const accessToken = session.accessToken || "";
+
+  // Check premium status
+  const { isPremium } = await checkIsPremium(shop);
+
+  // Access check: free sections are always allowed, premium users get all, otherwise check purchase
+  const isFreeSection = section.price?.type === "free";
+  if (!isFreeSection && !isPremium) {
+    const purchased = await hasPurchasedSection(shop, sectionId);
+    if (!purchased) {
+      return Response.json({
+        success: false,
+        error: "Premium subscription required to install this section.",
+        premiumRequired: true,
+      }, { status: 403 });
+    }
+  }
 
   try {
     // 1. Fetch all themes and find the main theme

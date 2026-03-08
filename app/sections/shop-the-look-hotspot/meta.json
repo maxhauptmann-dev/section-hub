@@ -1,0 +1,72 @@
+{
+  "id": "shop-the-look-hotspot",
+  "name": "Shop the Look – Hotspot",
+  "description": "Interactive hotspot-based section with clickable dots on a lifestyle image that reveal product popup cards. Supports customizable dot sizes, colors, pulse animation, popup card styling, button text, and fully responsive mobile bottom-sheet. Perfect for fashion lookbooks and room showcases.",
+  "category": "Product Discovery",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 14,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hotspot",
+    "Interactive",
+    "Popup",
+    "Visual Commerce",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/shop-the-look-hotspot/default.webp",
+      "alt": "Shop the Look Hotspot – Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/shop-the-look-hotspot/dark.svg",
+      "alt": "Shop the Look Hotspot – Dark",
+      "label": "Dark"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-19",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added popup card position preference setting",
+        "Improved mobile bottom-sheet scroll behavior",
+        "Fixed hotspot dot z-index on overlapping dots"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-19",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

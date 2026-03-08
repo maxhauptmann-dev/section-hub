@@ -1,0 +1,176 @@
+/* ============================================
+   Section Hub – Features with Image
+   ============================================ */
+
+.fwi-section {
+  padding: var(--fwi-py, 60px) var(--fwi-px, 40px);
+  background: var(--fwi-bg, #f5f3ef);
+  color: var(--fwi-text, #1a3a2a);
+  margin-top: var(--fwi-mt, 0px);
+  margin-bottom: var(--fwi-mb, 0px);
+}
+
+.fwi-container {
+  max-width: var(--fwi-max-width, 1200px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--fwi-gap, 60px);
+  align-items: center;
+}
+
+/* === Left Content === */
+.fwi-content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.fwi-heading {
+  font-size: var(--fwi-heading-size, 2.8em);
+  font-weight: 800;
+  font-style: italic;
+  line-height: 1.1;
+  margin: 0;
+  color: var(--fwi-heading-color, inherit);
+}
+
+.fwi-description {
+  font-size: var(--fwi-desc-size, 1em);
+  line-height: 1.6;
+  margin: 0;
+  opacity: 0.85;
+}
+
+/* === Feature List === */
+.fwi-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--fwi-feature-gap, 28px);
+  margin-top: 8px;
+}
+
+.fwi-feature {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.fwi-feature-icon {
+  flex-shrink: 0;
+  width: var(--fwi-icon-size, 48px);
+  height: var(--fwi-icon-size, 48px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--fwi-icon-color, #1a3a2a);
+}
+
+.fwi-feature-icon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.fwi-feature-icon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.fwi-feature-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fwi-feature-title {
+  font-size: var(--fwi-feature-title-size, 1.05em);
+  font-weight: 800;
+  margin: 0;
+}
+
+.fwi-feature-desc {
+  font-size: var(--fwi-feature-desc-size, 0.95em);
+  line-height: 1.5;
+  margin: 0;
+  opacity: 0.8;
+}
+
+/* === CTA Button === */
+.fwi-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  padding: var(--fwi-btn-py, 14px) var(--fwi-btn-px, 28px);
+  background: var(--fwi-btn-bg, #1a3a2a);
+  color: var(--fwi-btn-text, #ffffff);
+  border: none;
+  border-radius: var(--fwi-btn-radius, 50px);
+  font-size: var(--fwi-btn-size, 0.95em);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+  width: fit-content;
+}
+
+.fwi-cta:hover {
+  opacity: 0.85;
+}
+
+/* === Image === */
+.fwi-image-wrapper {
+  position: relative;
+  border-radius: var(--fwi-img-radius, 16px);
+  overflow: hidden;
+  aspect-ratio: var(--fwi-img-ratio, 4/5);
+}
+
+.fwi-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fwi-image-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #d5d0c8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 48px;
+}
+
+/* === Reversed Layout === */
+.fwi-container--reversed {
+  direction: rtl;
+}
+
+.fwi-container--reversed > * {
+  direction: ltr;
+}
+
+/* === Mobile === */
+@media (max-width: 749px) {
+  .fwi-container {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .fwi-container--reversed {
+    direction: ltr;
+  }
+
+  .fwi-image-wrapper {
+    order: var(--fwi-mobile-img-order, -1);
+    aspect-ratio: 3/2;
+  }
+
+  .fwi-heading {
+    font-size: calc(var(--fwi-heading-size, 2.8em) * 0.7);
+  }
+}

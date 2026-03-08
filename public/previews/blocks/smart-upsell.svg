@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="80" viewBox="0 0 280 80">
+  <rect width="280" height="80" rx="12" fill="#F8FAFC"/>
+  <text x="16" y="18" font-family="system-ui" font-size="11" fill="#1E293B" font-weight="700">You may also like</text>
+  <g transform="translate(16, 26)">
+    <rect width="60" height="46" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+    <rect x="4" y="4" width="52" height="22" rx="3" fill="#F1F5F9"/>
+    <text x="8" y="36" font-family="system-ui" font-size="7" fill="#374151">Premium Tee</text>
+    <text x="8" y="44" font-family="system-ui" font-size="7" fill="#374151" font-weight="700">€39</text>
+  </g>
+  <g transform="translate(82, 26)">
+    <rect width="60" height="46" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+    <rect x="4" y="4" width="52" height="22" rx="3" fill="#F1F5F9"/>
+    <text x="8" y="36" font-family="system-ui" font-size="7" fill="#374151">Sport Socks</text>
+    <text x="8" y="44" font-family="system-ui" font-size="7" fill="#374151" font-weight="700">€12</text>
+  </g>
+  <g transform="translate(148, 26)">
+    <rect width="60" height="46" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+    <rect x="4" y="4" width="52" height="22" rx="3" fill="#F1F5F9"/>
+    <text x="8" y="36" font-family="system-ui" font-size="7" fill="#374151">Cap Classic</text>
+    <text x="8" y="44" font-family="system-ui" font-size="7" fill="#374151" font-weight="700">€24</text>
+  </g>
+  <g transform="translate(214, 26)">
+    <rect width="52" height="46" rx="6" fill="white" stroke="#E2E8F0" stroke-width="1"/>
+    <rect x="4" y="4" width="44" height="22" rx="3" fill="#F1F5F9"/>
+    <text x="8" y="36" font-family="system-ui" font-size="7" fill="#374151">Watch</text>
+    <text x="8" y="44" font-family="system-ui" font-size="7" fill="#374151" font-weight="700">€89</text>
+  </g>
+</svg>

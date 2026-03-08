@@ -1,0 +1,83 @@
+{
+  "id": "newsletter-popup",
+  "name": "Newsletter Popup",
+  "description": "Elegant newsletter signup popup with image, headline, description, name & email fields. Fully customizable colors, timing triggers (delay, scroll, exit-intent), and cookie-based display control. Perfect for growing your email list and offering welcome discounts.",
+  "category": [
+    "Premium",
+    "Pop-up"
+  ],
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Popup",
+    "Newsletter",
+    "Email",
+    "Discount",
+    "Signup",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/newsletter-popup/default.webp",
+      "alt": "Newsletter Popup - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-04",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Split layout with image and form",
+    "Name and email input fields",
+    "Customizable headline, subtitle, and button text",
+    "Logo/image upload support",
+    "Trigger options: delay, scroll percentage, exit intent",
+    "Cookie-based display control",
+    "Success state with custom message",
+    "Full color customization",
+    "Responsive mobile design",
+    "Close button and overlay click to dismiss"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added exit-intent sensitivity setting",
+        "Improved popup animation on mobile",
+        "Fixed cookie duration setting not saving"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "id": "hero-split",
+  "name": "Hero Split",
+  "description": "Bold split-layout hero with a text card on the left and a large image on the right. Editorial, high-contrast design inspired by modern brand storytelling.",
+  "category": "Hero",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Split",
+    "Editorial",
+    "Bold",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#000000",
+  "previews": [
+    {
+      "src": "/previews/hero-split/default.webp",
+      "alt": "Hero Split – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-28",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Split layout with text card and image",
+    "Image overlaps the text card for depth",
+    "Subheading, heading, button",
+    "Customisable card and section colours",
+    "Full typography controls",
+    "Section margin, padding, and width controls",
+    "Responsive – stacks on mobile",
+    "Lazy loading support"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added image position customization (top/center/bottom)",
+        "Improved card shadow and depth effect",
+        "Fixed text card overlap on tablet"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-28",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

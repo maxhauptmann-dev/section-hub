@@ -1,0 +1,79 @@
+{
+  "id": "category-scroll",
+  "name": "Category Scroll",
+  "description": "Horizontal scrolling category cards with large images and bold labels. Editorial layout perfect for showcasing collections or product categories.",
+  "category": "Collection",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Category",
+    "Collection",
+    "Scroll",
+    "Cards",
+    "Editorial",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f5f5f5",
+  "previews": [
+    {
+      "src": "/previews/category-scroll/default.webp",
+      "alt": "Category Scroll – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-28",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Horizontal scrolling category cards",
+    "Flexible card width and height",
+    "Bold text label overlay per card",
+    "Optional subheading per card",
+    "Configurable gap, roundness, overlay",
+    "Snap scrolling with drag support",
+    "Touch and mouse drag scrolling",
+    "Full typography and color controls",
+    "Responsive design"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Improved scroll snap behavior on touch devices",
+        "Added lazy loading for category images",
+        "Fixed category card alignment on mobile"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-28",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,194 @@
+{% comment %}
+  Section Hub - Shipping Info Block
+  Estimated shipping date with status indicator and fast shipping badge
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-shipping {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: {{ block.settings.padding }}px 0;
+  margin: 4px 0;
+}
+
+.sh-shipping__row {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: {{ block.settings.font_size }}px;
+  color: {{ block.settings.text_color }};
+  line-height: 1.4;
+}
+
+.sh-shipping__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: {{ block.settings.dot_color }};
+  flex-shrink: 0;
+  animation: sh-shipping-pulse 2s ease-in-out infinite;
+}
+
+@keyframes sh-shipping-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.sh-shipping__label {
+  font-weight: 400;
+}
+
+.sh-shipping__date {
+  font-weight: 700;
+}
+
+.sh-shipping__flag {
+  flex-shrink: 0;
+  font-size: {{ block.settings.font_size | plus: 2 }}px;
+  line-height: 1;
+}
+
+.sh-shipping__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: {{ block.settings.badge_bg }};
+  color: {{ block.settings.badge_text }};
+  border-radius: 4px;
+  font-size: {{ block.settings.font_size | minus: 1 }}px;
+  font-weight: 600;
+  width: fit-content;
+}
+
+.sh-shipping__icon svg {
+  width: 14px;
+  height: 14px;
+  fill: {{ block.settings.badge_text }};
+}
+</style>
+
+<div class="sh-shipping">
+  {% if block.settings.order_label != blank and block.settings.ship_date != blank %}
+    <div class="sh-shipping__row">
+      <span class="sh-shipping__dot"></span>
+      <span class="sh-shipping__label">{{ block.settings.order_label }}</span>
+      <span class="sh-shipping__date">{{ block.settings.ship_date }}</span>
+    </div>
+  {% endif %}
+
+  {% if block.settings.badge_text_content != blank %}
+    <div class="sh-shipping__row">
+      {% if block.settings.flag != blank %}
+        <span class="sh-shipping__flag">{{ block.settings.flag }}</span>
+      {% endif %}
+      <span class="sh-shipping__badge">
+        <span class="sh-shipping__icon">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M20 8h-3V4H1v13h2a3 3 0 006 0h6a3 3 0 006 0h2V12l-3-4zM6 18.5A1.5 1.5 0 014.5 17 1.5 1.5 0 016 15.5 1.5 1.5 0 017.5 17 1.5 1.5 0 016 18.5zm13.5-9L21.46 12H17V9.5h2.5zM18 18.5a1.5 1.5 0 01-1.5-1.5 1.5 1.5 0 011.5-1.5 1.5 1.5 0 011.5 1.5 1.5 1.5 0 01-1.5 1.5z"/></svg>
+        </span>
+        {{ block.settings.badge_text_content }}
+      </span>
+    </div>
+  {% endif %}
+
+  {% if block.settings.extra_info != blank %}
+    <div class="sh-shipping__row">
+      <span style="opacity: 0.6;">{{ block.settings.extra_info }}</span>
+    </div>
+  {% endif %}
+</div>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Shipping Info",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "order_label",
+      "label": "Order Label",
+      "default": "Order now:"
+    },
+    {
+      "type": "text",
+      "id": "ship_date",
+      "label": "Ship Date",
+      "default": "Ships Fri, Aug 22"
+    },
+    {
+      "type": "text",
+      "id": "flag",
+      "label": "Flag Emoji",
+      "default": "🇳🇱"
+    },
+    {
+      "type": "text",
+      "id": "badge_text_content",
+      "label": "Badge Text",
+      "default": "Fast NL Shipping"
+    },
+    {
+      "type": "text",
+      "id": "extra_info",
+      "label": "Extra Info"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Status Dot Color",
+      "default": "#22c55e"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge Background",
+      "default": "#f0fdf4"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge Text Color",
+      "default": "#16a34a"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

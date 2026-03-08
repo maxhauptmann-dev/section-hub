@@ -1,0 +1,198 @@
+{% comment %}
+  Section Hub - Copy Discount Code Block
+  Displays a discount code with a click-to-copy button
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-discount {
+  margin: 8px 0;
+  padding: 12px 16px;
+  background: {{ block.settings.background_color }};
+  border: 2px dashed {{ block.settings.border_color }};
+  border-radius: {{ block.settings.border_radius }}px;
+  text-align: center;
+}
+
+.sh-discount__label {
+  font-size: {{ block.settings.font_size }}px;
+  color: {{ block.settings.text_color }};
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.sh-discount__code-wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: {{ block.settings.code_bg_color }};
+  border-radius: 6px;
+  cursor: pointer;
+  transition: opacity .15s;
+}
+.sh-discount__code-wrapper:hover {
+  opacity: 0.85;
+}
+
+.sh-discount__code {
+  font-size: {{ block.settings.code_font_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.code_text_color }};
+  letter-spacing: 1.5px;
+  font-family: monospace;
+}
+
+.sh-discount__copy {
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+}
+
+.sh-discount__toast {
+  display: none;
+  margin-top: 6px;
+  font-size: 12px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.7;
+}
+.sh-discount__toast.is-visible {
+  display: block;
+  animation: sh-discount-fade 1.6s ease forwards;
+}
+
+@keyframes sh-discount-fade {
+  0% { opacity: 1; }
+  80% { opacity: 1; }
+  100% { opacity: 0; display: none; }
+}
+</style>
+
+<div class="sh-discount" id="sh-discount-{{ block.id }}">
+  {% if block.settings.label != blank %}
+    <div class="sh-discount__label">{{ block.settings.label }}</div>
+  {% endif %}
+  <div class="sh-discount__code-wrapper" onclick="shCopyCode_{{ block.id | replace: '-', '_' }}()">
+    <span class="sh-discount__code">{{ block.settings.code }}</span>
+    <span class="sh-discount__copy">📋</span>
+  </div>
+  <div class="sh-discount__toast" id="sh-discount-toast-{{ block.id }}">{{ block.settings.copied_text }}</div>
+</div>
+
+<script>
+function shCopyCode_{{ block.id | replace: '-', '_' }}() {
+  var code = {{ block.settings.code | json }};
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(code);
+  } else {
+    var t = document.createElement('textarea');
+    t.value = code;
+    document.body.appendChild(t);
+    t.select();
+    document.execCommand('copy');
+    document.body.removeChild(t);
+  }
+  var toast = document.getElementById('sh-discount-toast-{{ block.id }}');
+  toast.classList.remove('is-visible');
+  void toast.offsetWidth;
+  toast.classList.add('is-visible');
+}
+</script>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Copy Discount Code",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label Text",
+      "default": "Get 10% off on your first purchase!"
+    },
+    {
+      "type": "text",
+      "id": "code",
+      "label": "Discount Code",
+      "default": "DISCOUNT10"
+    },
+    {
+      "type": "text",
+      "id": "copied_text",
+      "label": "Copied Message",
+      "default": "✓ Copied to clipboard!"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#fef9c3"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#713f12"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#fde047"
+    },
+    {
+      "type": "color",
+      "id": "code_bg_color",
+      "label": "Code Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "code_text_color",
+      "label": "Code Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Label Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "code_font_size",
+      "label": "Code Font Size",
+      "min": 14,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

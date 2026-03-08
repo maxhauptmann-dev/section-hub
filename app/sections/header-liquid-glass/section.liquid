@@ -1,0 +1,1335 @@
+{% comment %}
+  Section Hub – Header Liquid Glass v1.0
+  Premium frosted glass header with mega menu, customizable colors, reveal on scroll.
+  Features: Liquid glass effect, mega menu blocks, custom fonts, mobile drawer.
+{% endcomment %}
+
+{%- liquid
+  assign logo            = section.settings.logo
+  assign logo_mobile     = section.settings.logo_mobile
+  assign logo_width      = section.settings.logo_width
+  assign logo_width_m    = section.settings.logo_width_mobile
+  assign use_custom_font = section.settings.use_custom_font
+  assign shop_font       = section.settings.shop_name_font
+  assign shop_size       = section.settings.shop_name_size
+  assign shop_size_m     = section.settings.shop_name_size_mobile
+  assign shop_line_h     = section.settings.shop_name_line_height
+
+  assign mobile_menu     = section.settings.mobile_menu
+  assign mega_col_gap    = section.settings.mega_column_gap
+  assign mega_list_gap   = section.settings.mega_list_gap
+  assign mega_list_mt    = section.settings.mega_list_margin_top
+  assign mega_round      = section.settings.mega_roundness
+
+  assign menu_custom_font = section.settings.menu_use_custom_font
+  assign menu_font_size   = section.settings.menu_font_size
+  assign menu_font_size_m = section.settings.menu_font_size_mobile
+  assign menu_line_h      = section.settings.menu_line_height
+  assign show_underline   = section.settings.show_underline_hover
+
+  assign burger_size      = section.settings.burger_size
+  assign mobile_heading   = section.settings.mobile_menu_heading
+  assign mobile_h_custom  = section.settings.mobile_heading_custom_font
+  assign mobile_h_size    = section.settings.mobile_heading_font_size
+  assign mobile_h_line_h  = section.settings.mobile_heading_line_height
+
+  assign right_gap        = section.settings.right_gap
+  assign right_gap_m      = section.settings.right_gap_mobile
+  assign right_custom_f   = section.settings.right_use_custom_font
+  assign right_font_size  = section.settings.right_font_size
+  assign right_line_h     = section.settings.right_line_height
+  assign right_icon_size  = section.settings.right_icon_size
+  assign right_icon_size_m = section.settings.right_icon_size_mobile
+
+  assign show_search     = section.settings.use_search
+  assign search_text     = section.settings.search_text
+  assign search_icon_desk = section.settings.search_icon_desktop
+  assign search_to_burger = section.settings.search_to_burger
+
+  assign show_account    = section.settings.use_account
+  assign account_text    = section.settings.account_text
+  assign account_icon_desk = section.settings.account_icon_desktop
+  assign account_to_burger = section.settings.account_to_burger
+
+  assign show_cart       = section.settings.use_cart
+  assign cart_text       = section.settings.cart_text
+  assign cart_icon_desk  = section.settings.cart_icon_desktop
+
+  assign show_btn        = section.settings.use_button
+  assign btn_text        = section.settings.button_label
+  assign btn_link        = section.settings.button_link
+  assign btn_new_tab     = section.settings.button_new_tab
+  assign btn_style       = section.settings.button_style
+  assign btn_custom_style = section.settings.button_custom_styling
+  assign btn_full_mobile = section.settings.button_full_mobile
+  assign btn_custom_font = section.settings.button_custom_font
+  assign btn_font_size   = section.settings.button_font_size
+  assign btn_font_size_m = section.settings.button_font_size_mobile
+  assign btn_round       = section.settings.button_roundness
+  assign btn_border_w    = section.settings.button_border_thickness
+
+  assign use_glass       = section.settings.use_liquid_glass
+  assign glass_opacity   = section.settings.glass_opacity
+  assign glass_blur      = section.settings.glass_blur
+  assign glass_border_op = section.settings.glass_border_opacity
+
+  assign submenu_glass   = section.settings.submenu_use_glass
+  assign submenu_bg      = section.settings.submenu_bg
+
+  assign link_color      = section.settings.link_color
+  assign link_hover      = section.settings.link_hover_color
+  assign link_hover_grad = section.settings.link_hover_gradient
+  assign submenu_link    = section.settings.submenu_link_color
+  assign submenu_hover   = section.settings.submenu_link_hover
+  assign mobile_h_color  = section.settings.mobile_heading_color
+  assign mobile_divider  = section.settings.mobile_divider_color
+
+  assign shop_color      = section.settings.shop_name_color
+  assign shop_hover      = section.settings.shop_name_hover
+
+  assign right_link_color = section.settings.right_link_color
+  assign right_link_hover = section.settings.right_link_hover
+
+  assign btn_text_color  = section.settings.button_text_color
+  assign btn_text_hover  = section.settings.button_text_hover
+  assign btn_bg          = section.settings.button_bg
+  assign btn_bg_hover    = section.settings.button_bg_hover
+  assign btn_border      = section.settings.button_border_color
+  assign btn_border_hover = section.settings.button_border_hover
+  assign btn_shadow      = section.settings.button_shadow
+
+  assign bg_color        = section.settings.section_bg
+  assign border_color    = section.settings.section_border
+
+  assign margin_top      = section.settings.margin_top
+  assign margin_sides    = section.settings.margin_sides
+  assign margin_sides_m  = section.settings.margin_sides_mobile
+  assign padding_top     = section.settings.padding_top
+  assign padding_bottom  = section.settings.padding_bottom
+  assign padding_sides   = section.settings.padding_sides
+  assign padding_sides_m = section.settings.padding_sides_mobile
+
+  assign section_width   = section.settings.section_width
+  assign custom_width    = section.settings.custom_width
+  assign border_thick    = section.settings.border_thickness
+  assign section_round   = section.settings.section_roundness
+
+  assign scroll_mode     = section.settings.reveal_menu
+  assign custom_css      = section.settings.custom_css
+-%}
+
+<style>
+  #shlg-{{ section.id }} {
+    --shlg-logo-w: {{ logo_width }}px;
+    --shlg-logo-w-m: {{ logo_width_m }}px;
+    --shlg-shop-size: {{ shop_size }}px;
+    --shlg-shop-size-m: {{ shop_size_m }}px;
+    --shlg-shop-line-h: {{ shop_line_h }};
+    --shlg-shop-color: {{ shop_color }};
+    --shlg-shop-hover: {{ shop_hover }};
+
+    --shlg-mega-col-gap: {{ mega_col_gap }}px;
+    --shlg-mega-list-gap: {{ mega_list_gap }}px;
+    --shlg-mega-list-mt: {{ mega_list_mt }}px;
+    --shlg-mega-round: {{ mega_round }}px;
+
+    --shlg-menu-size: {{ menu_font_size }}px;
+    --shlg-menu-size-m: {{ menu_font_size_m }}px;
+    --shlg-menu-line-h: {{ menu_line_h }};
+
+    --shlg-burger-size: {{ burger_size }}px;
+    --shlg-mobile-h-size: {{ mobile_h_size }}px;
+    --shlg-mobile-h-line-h: {{ mobile_h_line_h }};
+
+    --shlg-right-gap: {{ right_gap }}px;
+    --shlg-right-gap-m: {{ right_gap_m }}px;
+    --shlg-right-size: {{ right_font_size }}px;
+    --shlg-right-line-h: {{ right_line_h }};
+    --shlg-right-icon: {{ right_icon_size }}px;
+    --shlg-right-icon-m: {{ right_icon_size_m }}px;
+
+    --shlg-btn-size: {{ btn_font_size }}px;
+    --shlg-btn-size-m: {{ btn_font_size_m }}px;
+    --shlg-btn-round: {{ btn_round }}px;
+    --shlg-btn-border-w: {{ btn_border_w }}px;
+
+    --shlg-glass-op: {{ glass_opacity | divided_by: 100.0 }};
+    --shlg-glass-blur: {{ glass_blur }}px;
+    --shlg-glass-border-op: {{ glass_border_op | divided_by: 100.0 }};
+
+    --shlg-link-color: {{ link_color }};
+    --shlg-link-hover: {{ link_hover }};
+    --shlg-submenu-link: {{ submenu_link }};
+    --shlg-submenu-hover: {{ submenu_hover }};
+    --shlg-submenu-bg: {{ submenu_bg }};
+    --shlg-mobile-h-color: {{ mobile_h_color }};
+    --shlg-mobile-divider: {{ mobile_divider }};
+
+    --shlg-right-link: {{ right_link_color }};
+    --shlg-right-hover: {{ right_link_hover }};
+
+    --shlg-btn-text: {{ btn_text_color }};
+    --shlg-btn-text-hover: {{ btn_text_hover }};
+    --shlg-btn-bg: {{ btn_bg }};
+    --shlg-btn-bg-hover: {{ btn_bg_hover }};
+    --shlg-btn-border: {{ btn_border }};
+    --shlg-btn-border-hover: {{ btn_border_hover }};
+    --shlg-btn-shadow: {{ btn_shadow }};
+
+    --shlg-bg: {{ bg_color }};
+    --shlg-border: {{ border_color }};
+    --shlg-border-w: {{ border_thick }}px;
+    --shlg-round: {{ section_round }}px;
+
+    --shlg-mt: {{ margin_top }}px;
+    --shlg-mx: {{ margin_sides }}px;
+    --shlg-mx-m: {{ margin_sides_m }}px;
+    --shlg-pt: {{ padding_top }}px;
+    --shlg-pb: {{ padding_bottom }}px;
+    --shlg-px: {{ padding_sides }}px;
+    --shlg-px-m: {{ padding_sides_m }}px;
+
+    {% case section_width %}
+      {% when 'page' %}
+        --shlg-width: min(1200px, 100%);
+      {% when 'full' %}
+        --shlg-width: 100%;
+      {% when 'custom' %}
+        --shlg-width: {{ custom_width }}px;
+    {% endcase %}
+  }
+  {% if use_custom_font and shop_font != blank %}
+    @import url('https://fonts.googleapis.com/css2?family={{ shop_font | replace: ' ', '+' }}:wght@400;500;600;700&display=swap');
+    #shlg-{{ section.id }} .shlg-logo__text { font-family: '{{ shop_font }}', sans-serif; }
+  {% endif %}
+  {% if link_hover_grad != blank %}
+    #shlg-{{ section.id }} .shlg-nav__link:hover {
+      background: {{ link_hover_grad }};
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+  {% endif %}
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<header id="shlg-{{ section.id }}" class="shlg-header{% if use_glass %} shlg-header--glass{% endif %}" data-shlg-scroll="{{ scroll_mode }}">
+  <div class="shlg-inner">
+    {%- comment -%} Logo / Shop Name {%- endcomment -%}
+    <a href="/" class="shlg-logo">
+      {%- if logo != blank -%}
+        <img
+          src="{{ logo | image_url: width: 400 }}"
+          alt="{{ shop.name }}"
+          class="shlg-logo__img shlg-logo__img--desk"
+          width="{{ logo_width }}"
+          height="{{ logo_width | divided_by: logo.aspect_ratio }}"
+          loading="eager"
+        >
+        {%- if logo_mobile != blank -%}
+          <img
+            src="{{ logo_mobile | image_url: width: 300 }}"
+            alt="{{ shop.name }}"
+            class="shlg-logo__img shlg-logo__img--mobile"
+            width="{{ logo_width_m }}"
+            height="{{ logo_width_m | divided_by: logo_mobile.aspect_ratio }}"
+            loading="eager"
+          >
+        {%- endif -%}
+      {%- else -%}
+        <span class="shlg-logo__text">{{ shop.name }}</span>
+      {%- endif -%}
+    </a>
+
+    {%- comment -%} Desktop Navigation {%- endcomment -%}
+    <nav class="shlg-nav">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'mega_menu' -%}
+          {%- assign mega_text = block.settings.text -%}
+          {%- assign mega_link = block.settings.link -%}
+          {%- assign mega_submenu = block.settings.submenu -%}
+          <div class="shlg-nav__item shlg-nav__item--mega" {{ block.shopify_attributes }}>
+            <a href="{{ mega_link }}" class="shlg-nav__link{% if show_underline %} shlg-nav__link--underline{% endif %}">
+              {{ mega_text }}
+              {%- if mega_submenu != blank -%}
+                <svg class="shlg-nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {%- endif -%}
+            </a>
+            {%- if mega_submenu != blank -%}
+              <div class="shlg-mega{% if submenu_glass %} shlg-mega--glass{% endif %}">
+                <div class="shlg-mega__inner">
+                  {%- for link in linklists[mega_submenu].links -%}
+                    <div class="shlg-mega__col">
+                      <span class="shlg-mega__heading">{{ link.title }}</span>
+                      {%- if link.links.size > 0 -%}
+                        <ul class="shlg-mega__list">
+                          {%- for child in link.links -%}
+                            <li><a href="{{ child.url }}" class="shlg-mega__link">{{ child.title }}</a></li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </div>
+                  {%- endfor -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </nav>
+
+    {%- comment -%} Right Side {%- endcomment -%}
+    <div class="shlg-right">
+      {%- if show_search and search_icon_desk -%}
+        <a href="/search" class="shlg-right__icon" aria-label="{{ search_text }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        </a>
+      {%- elsif show_search -%}
+        <a href="/search" class="shlg-right__link">{{ search_text }}</a>
+      {%- endif -%}
+
+      {%- if show_account and account_icon_desk -%}
+        <a href="/account" class="shlg-right__icon" aria-label="{{ account_text }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        </a>
+      {%- elsif show_account -%}
+        <a href="/account" class="shlg-right__link">{{ account_text }}</a>
+      {%- endif -%}
+
+      {%- if show_cart and cart_icon_desk -%}
+        <a href="/cart" class="shlg-right__icon shlg-right__cart" aria-label="{{ cart_text }}">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="shlg-cart__count">{{ cart.item_count }}</span>
+        </a>
+      {%- elsif show_cart -%}
+        <a href="/cart" class="shlg-right__link shlg-right__cart">{{ cart_text }} ({{ cart.item_count }})</a>
+      {%- endif -%}
+
+      {%- if show_btn -%}
+        <a href="{{ btn_link }}"{% if btn_new_tab %} target="_blank" rel="noopener"{% endif %} class="shlg-btn shlg-btn--{{ btn_style }}">
+          <span>{{ btn_text }}</span>
+          {%- if btn_style contains 'arrow' -%}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+
+      {%- comment -%} Mobile Burger {%- endcomment -%}
+      <button class="shlg-burger" data-shlg-burger aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+{%- comment -%} Mobile Drawer {%- endcomment -%}
+<div id="shlg-drawer-{{ section.id }}" class="shlg-drawer">
+  <div class="shlg-drawer__overlay" data-shlg-drawer-close></div>
+  <div class="shlg-drawer__panel">
+    <button class="shlg-drawer__close" data-shlg-drawer-close aria-label="Close">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+
+    <nav class="shlg-drawer__nav">
+      {%- if mobile_heading != blank -%}
+        <span class="shlg-drawer__heading">{{ mobile_heading }}</span>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'mega_menu' -%}
+          {%- assign mega_text = block.settings.text -%}
+          {%- assign mega_link = block.settings.link -%}
+          {%- assign mega_submenu = block.settings.submenu -%}
+          {%- if mega_submenu != blank -%}
+            <div class="shlg-drawer__group">
+              <button class="shlg-drawer__toggle" data-shlg-toggle>
+                {{ mega_text }}
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+              </button>
+              <div class="shlg-drawer__sub">
+                {%- for link in linklists[mega_submenu].links -%}
+                  <a href="{{ link.url }}" class="shlg-drawer__link">{{ link.title }}</a>
+                  {%- for child in link.links -%}
+                    <a href="{{ child.url }}" class="shlg-drawer__link shlg-drawer__link--child">{{ child.title }}</a>
+                  {%- endfor -%}
+                {%- endfor -%}
+              </div>
+            </div>
+          {%- else -%}
+            <a href="{{ mega_link }}" class="shlg-drawer__link">{{ mega_text }}</a>
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- comment -%} Mobile-only links from mobile_menu {%- endcomment -%}
+      {%- if mobile_menu != blank -%}
+        {%- for link in linklists[mobile_menu].links -%}
+          <a href="{{ link.url }}" class="shlg-drawer__link">{{ link.title }}</a>
+        {%- endfor -%}
+      {%- endif -%}
+    </nav>
+
+    <div class="shlg-drawer__footer">
+      {%- if show_search and search_to_burger -%}
+        <a href="/search" class="shlg-drawer__flink">{{ search_text }}</a>
+      {%- endif -%}
+      {%- if show_account and account_to_burger -%}
+        <a href="/account" class="shlg-drawer__flink">{{ account_text }}</a>
+      {%- endif -%}
+      {%- if show_btn and btn_full_mobile -%}
+        <a href="{{ btn_link }}" class="shlg-btn shlg-btn--{{ btn_style }} shlg-btn--full">
+          <span>{{ btn_text }}</span>
+          {%- if btn_style contains 'arrow' -%}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var header = document.getElementById('shlg-{{ section.id }}');
+  if(!header) return;
+  var mode = header.getAttribute('data-shlg-scroll');
+
+  /* ── Drawer ── */
+  var burger = header.querySelector('[data-shlg-burger]');
+  var drawer = document.getElementById('shlg-drawer-{{ section.id }}');
+  if(drawer){
+    var closers = drawer.querySelectorAll('[data-shlg-drawer-close]');
+    var toggles = drawer.querySelectorAll('[data-shlg-toggle]');
+    if(burger) burger.addEventListener('click', function(){ drawer.classList.add('shlg-drawer--open'); document.body.style.overflow='hidden'; });
+    closers.forEach(function(c){ c.addEventListener('click', function(){ drawer.classList.remove('shlg-drawer--open'); document.body.style.overflow=''; }); });
+    toggles.forEach(function(t){
+      t.addEventListener('click', function(){
+        var sub = t.nextElementSibling;
+        var open = sub.classList.toggle('shlg-drawer__sub--open');
+        t.classList.toggle('shlg-drawer__toggle--open', open);
+      });
+    });
+  }
+
+  /* ── Scroll behavior ── */
+  if(mode === 'default' || !mode) {
+    header.style.position = '';
+    header.style.top = '';
+    header.style.left = '';
+    header.style.width = '';
+    header.style.zIndex = '';
+    header.style.transform = '';
+    header.style.transition = '';
+    return;
+  }
+
+  function applySticky(){
+    if(mode === 'sticky' || mode === 'always-sticky'){
+      header.style.position = 'fixed';
+      header.style.top      = '0';
+      header.style.left     = '0';
+      header.style.width    = '100%';
+      header.style.zIndex   = '1000';
+    }
+    if(mode === 'scroll-up'){
+      header.style.position   = 'fixed';
+      header.style.top        = '0';
+      header.style.left       = '0';
+      header.style.width      = '100%';
+      header.style.zIndex     = '1000';
+      header.style.transition = 'transform 0.3s ease';
+      var lastY = 0;
+      window.addEventListener('scroll', function(){
+        var y = window.scrollY;
+        header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+        lastY = y;
+      }, { passive: true });
+    }
+  }
+
+  requestAnimationFrame(function(){ requestAnimationFrame(applySticky); });
+  document.addEventListener('DOMContentLoaded', applySticky);
+  window.addEventListener('load', applySticky);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Header Liquid Glass",
+  "tag": "section",
+  "class": "shlg-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "select",
+      "id": "reveal_menu",
+      "label": "Reveal menu",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "always-sticky", "label": "Always/sticky" },
+        { "value": "scroll-up", "label": "Show on scroll up" }
+      ],
+      "default": "always-sticky"
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "paragraph",
+      "content": "Leave blank to display shop name instead of logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Logo - mobile"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Width",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Width - mobile",
+      "min": 30,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 130
+    },
+    {
+      "type": "header",
+      "content": "Shop name"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shop_name_font",
+      "label": "Shop Name Font",
+      "default": "Playfair Display",
+      "info": "Google Fonts name"
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Font size",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size_mobile",
+      "label": "Font size - mobile",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "shop_name_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "header",
+      "content": "Menu"
+    },
+    {
+      "type": "paragraph",
+      "content": "Use blocks to create mega menu on desktop."
+    },
+    {
+      "type": "link_list",
+      "id": "mobile_menu",
+      "label": "Mobile menu"
+    },
+    {
+      "type": "header",
+      "content": "Desktop mega menu layout"
+    },
+    {
+      "type": "range",
+      "id": "mega_column_gap",
+      "label": "Column gap",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "mega_list_gap",
+      "label": "List gap",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "mega_list_margin_top",
+      "label": "List margin top",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mega_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Menu link"
+    },
+    {
+      "type": "checkbox",
+      "id": "menu_use_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size_mobile",
+      "label": "Font size - mobile",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "menu_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_underline_hover",
+      "label": "Show underline on hover",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Mobile burger menu icon"
+    },
+    {
+      "type": "range",
+      "id": "burger_size",
+      "label": "Size",
+      "min": 16,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Mobile menu heading"
+    },
+    {
+      "type": "text",
+      "id": "mobile_menu_heading",
+      "label": "Text",
+      "default": "SHOP"
+    },
+    {
+      "type": "checkbox",
+      "id": "mobile_heading_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "mobile_heading_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "header",
+      "content": "Right navigation"
+    },
+    {
+      "type": "range",
+      "id": "right_gap",
+      "label": "Gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "right_gap_mobile",
+      "label": "Gap - mobile",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Right link"
+    },
+    {
+      "type": "checkbox",
+      "id": "right_use_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "right_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "right_line_height",
+      "label": "Line height",
+      "min": 1,
+      "max": 2,
+      "step": 0.1,
+      "default": 1.4
+    },
+    {
+      "type": "header",
+      "content": "Right icon"
+    },
+    {
+      "type": "range",
+      "id": "right_icon_size",
+      "label": "Size",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "right_icon_size_mobile",
+      "label": "Size - mobile",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_search",
+      "label": "Use search",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_text",
+      "label": "Text",
+      "default": "Search"
+    },
+    {
+      "type": "checkbox",
+      "id": "search_icon_desktop",
+      "label": "Icon on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "search_to_burger",
+      "label": "Move search link to burger menu (mobile)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Account"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_account",
+      "label": "Use account link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "account_text",
+      "label": "Text",
+      "default": "Login"
+    },
+    {
+      "type": "checkbox",
+      "id": "account_icon_desktop",
+      "label": "Icon on desktop",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "account_to_burger",
+      "label": "Move account link to burger menu (mobile)",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_cart",
+      "label": "Use cart link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cart_text",
+      "label": "Text",
+      "default": "Cart"
+    },
+    {
+      "type": "checkbox",
+      "id": "cart_icon_desktop",
+      "label": "Icon on desktop",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_button",
+      "label": "Use button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Learn more"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Button link"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_new_tab",
+      "label": "Open link in new tab",
+      "default": false
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "solid-arrow", "label": "Solid & arrow" },
+        { "value": "outline-arrow", "label": "Outline & arrow" }
+      ],
+      "default": "outline-arrow"
+    },
+    {
+      "type": "checkbox",
+      "id": "button_custom_styling",
+      "label": "Use custom styling",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "button_full_mobile",
+      "label": "Full width on mobile",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "button_custom_font",
+      "label": "Use custom font",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "button_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "button_font_size_mobile",
+      "label": "Font size - mobile",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Show advanced settings"
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "button_border_thickness",
+      "label": "Border thickness",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Liquid glass effect"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_liquid_glass",
+      "label": "Use liquid glass effect",
+      "default": true,
+      "info": "Enable glassmorphism effect for a modern frosted glass look."
+    },
+    {
+      "type": "range",
+      "id": "glass_opacity",
+      "label": "Glass overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Glass blur amount",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "glass_border_opacity",
+      "label": "Glass border opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Submenu appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "submenu_use_glass",
+      "label": "Use liquid glass effect for submenu",
+      "default": true,
+      "info": "Enable glassmorphism effect for desktop mega menu dropdown."
+    },
+    {
+      "type": "color",
+      "id": "submenu_bg",
+      "label": "Submenu background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "header",
+      "content": "Menu colors"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link hover",
+      "default": "#404040"
+    },
+    {
+      "type": "color_background",
+      "id": "link_hover_gradient",
+      "label": "Link hover gradient",
+      "info": "Remove gradient to replace with solid colors"
+    },
+    {
+      "type": "color",
+      "id": "submenu_link_color",
+      "label": "Submenu link",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "submenu_link_hover",
+      "label": "Submenu link hover",
+      "default": "#404040"
+    },
+    {
+      "type": "color",
+      "id": "mobile_heading_color",
+      "label": "Mobile menu heading",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "mobile_divider_color",
+      "label": "Mobile menu divider",
+      "default": "#F0F0F0"
+    },
+    {
+      "type": "header",
+      "content": "Shop name colors"
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Text",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "shop_name_hover",
+      "label": "Text hover",
+      "default": "#404040"
+    },
+    {
+      "type": "header",
+      "content": "Right navigation colors"
+    },
+    {
+      "type": "color",
+      "id": "right_link_color",
+      "label": "Link",
+      "default": "#121212"
+    },
+    {
+      "type": "color",
+      "id": "right_link_hover",
+      "label": "Link hover",
+      "default": "#404040"
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Text",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_text_hover",
+      "label": "Text hover",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Background",
+      "default": "#2D2D2D"
+    },
+    {
+      "type": "color",
+      "id": "button_bg_hover",
+      "label": "Background hover",
+      "default": "#2D2D2D"
+    },
+    {
+      "type": "color",
+      "id": "button_border_color",
+      "label": "Border",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "button_border_hover",
+      "label": "Border hover",
+      "default": "#1A1A1A"
+    },
+    {
+      "type": "color",
+      "id": "button_shadow",
+      "label": "Shadow",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Section colors"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "section_border",
+      "label": "Border",
+      "default": "#121212"
+    },
+    {
+      "type": "header",
+      "content": "Section margin (outside)"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides",
+      "label": "Sides",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_sides_mobile",
+      "label": "Sides - mobile",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Section padding (inside)"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Sides",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Sides - mobile",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        { "value": "page", "label": "Page" },
+        { "value": "full", "label": "Full" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "custom_width",
+      "label": "Custom width",
+      "min": 600,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border thickness",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega menu",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Shop"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link",
+          "info": "The link will function if the submenu is not added."
+        },
+        {
+          "type": "link_list",
+          "id": "submenu",
+          "label": "Submenu"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Header Liquid Glass",
+      "blocks": [
+        { "type": "mega_menu", "settings": { "text": "Shop" } },
+        { "type": "mega_menu", "settings": { "text": "About" } },
+        { "type": "mega_menu", "settings": { "text": "Contact" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

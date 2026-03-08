@@ -3,22 +3,43 @@
   "name": "CTA Banner",
   "description": "Eye-catching call-to-action banner with gradient background, decorative elements, and two button options.",
   "category": "Conversion",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "price": {
-    "type": "one_time",
-    "amount": 15,
-    "currency": "EUR"
+    "type": "free"
   },
-  "tags": ["OS2.0", "Conversion", "Gradient", "Responsive"],
+  "tags": [
+    "OS2.0",
+    "Conversion",
+    "Gradient",
+    "Responsive"
+  ],
   "author": "Section Hub",
-  "previewColor": "#8b5cf6",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/cta-banner/default.svg", "alt": "CTA Banner - Gradient Style", "label": "Gradient" },
-    { "src": "/previews/cta-banner/dark.svg", "alt": "CTA Banner - Dark Mode", "label": "Dark" },
-    { "src": "/previews/cta-banner/minimal.svg", "alt": "CTA Banner - Minimal Style", "label": "Minimal" }
+    {
+      "src": "/previews/cta-banner/default.svg",
+      "alt": "CTA Banner - Gradient Style",
+      "label": "Gradient"
+    },
+    {
+      "src": "/previews/cta-banner/dark.svg",
+      "alt": "CTA Banner - Dark Mode",
+      "label": "Dark"
+    },
+    {
+      "src": "/previews/cta-banner/minimal.svg",
+      "alt": "CTA Banner - Minimal Style",
+      "label": "Minimal"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -26,5 +47,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-25",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added background image support",
+        "Improved button hover animation",
+        "Fixed text alignment on mobile"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-25",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

@@ -1,0 +1,219 @@
+/* ═══════════════════════════════════════════
+   Category Scroll  |  Section Hub
+   Horizontal scrolling category cards
+   ═══════════════════════════════════════════ */
+
+/* ── Reset ── */
+.cs-wrap *,
+.cs-wrap *::before,
+.cs-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Outer wrapper ── */
+.cs-wrap {
+  position: relative;
+  width: 100%;
+  max-width: var(--cs-max-w);
+  margin: var(--cs-mt) auto var(--cs-mb);
+  padding: var(--cs-pt) 0 var(--cs-pb);
+  background: var(--cs-bg);
+  overflow: hidden;
+}
+
+/* ── Section heading ── */
+.cs-header {
+  padding: 0 var(--cs-ps);
+  margin-bottom: var(--cs-header-gap);
+}
+
+.cs-header__title {
+  font-size: var(--cs-title-fs);
+  font-weight: var(--cs-title-fw);
+  letter-spacing: var(--cs-title-ls);
+  text-transform: var(--cs-title-tt);
+  color: var(--cs-title-c);
+  line-height: 1.2;
+}
+
+.cs-header__sub {
+  font-size: var(--cs-title-sub-fs);
+  color: var(--cs-title-sub-c);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+@media (max-width: 749px) {
+  .cs-header {
+    padding: 0 var(--cs-ps-m);
+  }
+  .cs-header__title {
+    font-size: var(--cs-title-fsm);
+  }
+}
+
+/* ── Scroll track ── */
+.cs-track {
+  display: flex;
+  gap: var(--cs-gap);
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding: 0 var(--cs-ps);
+  cursor: grab;
+}
+
+.cs-track:active {
+  cursor: grabbing;
+}
+
+.cs-track::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 749px) {
+  .cs-track {
+    padding: 0 var(--cs-ps-m);
+    gap: var(--cs-gap-m);
+  }
+}
+
+/* ── Single card ── */
+.cs-card {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--cs-card-w);
+  height: var(--cs-card-h);
+  border-radius: var(--cs-card-r);
+  overflow: hidden;
+  scroll-snap-align: start;
+  text-decoration: none;
+  display: block;
+  background: #1a1a1a;
+}
+
+.cs-card:hover .cs-card__img {
+  transform: scale(1.04);
+}
+
+.cs-card:hover .cs-card__label {
+  transform: translateY(-3px);
+}
+
+@media (max-width: 749px) {
+  .cs-card {
+    width: var(--cs-card-wm);
+    height: var(--cs-card-hm);
+  }
+}
+
+/* ── Card image ── */
+.cs-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: var(--cs-img-pos, center center);
+  display: block;
+  transition: transform .5s ease;
+}
+
+/* ── Card overlay ── */
+.cs-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--cs-overlay-bottom)) 0%,
+    rgba(0, 0, 0, 0) 50%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ── Card content ── */
+.cs-card__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+  padding: var(--cs-label-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cs-card__label {
+  font-size: var(--cs-label-fs);
+  font-weight: var(--cs-label-fw);
+  letter-spacing: var(--cs-label-ls);
+  text-transform: var(--cs-label-tt);
+  color: var(--cs-label-c);
+  line-height: 1.1;
+  transition: transform .3s ease;
+}
+
+.cs-card__sublabel {
+  font-size: var(--cs-sublabel-fs);
+  font-weight: 400;
+  color: var(--cs-sublabel-c);
+  line-height: 1.4;
+}
+
+@media (max-width: 749px) {
+  .cs-card__label {
+    font-size: var(--cs-label-fsm);
+  }
+  .cs-card__sublabel {
+    font-size: calc(var(--cs-sublabel-fs) - 1px);
+  }
+  .cs-card__content {
+    padding: calc(var(--cs-label-pad) - 8px);
+  }
+}
+
+/* ── Placeholder ── */
+.cs-card__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2a2a2a;
+  color: #555;
+}
+
+.cs-card__placeholder svg {
+  width: 48px;
+  height: 48px;
+  opacity: .4;
+}
+
+/* ── Entry animation ── */
+.cs-card {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: csFadeIn .6s ease forwards;
+}
+
+.cs-card:nth-child(1) { animation-delay: 0s; }
+.cs-card:nth-child(2) { animation-delay: .1s; }
+.cs-card:nth-child(3) { animation-delay: .2s; }
+.cs-card:nth-child(4) { animation-delay: .3s; }
+.cs-card:nth-child(5) { animation-delay: .4s; }
+.cs-card:nth-child(6) { animation-delay: .5s; }
+.cs-card:nth-child(7) { animation-delay: .6s; }
+.cs-card:nth-child(8) { animation-delay: .7s; }
+
+@keyframes csFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

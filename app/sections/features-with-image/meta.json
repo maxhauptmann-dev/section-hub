@@ -1,0 +1,66 @@
+{
+  "id": "features-with-image",
+  "name": "Features with Image",
+  "description": "Showcase your product benefits with a bold heading, descriptive text, icon-based feature list, and a large side image. Includes a CTA button. Perfect for brand storytelling and product highlights.",
+  "category": "Free",
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": [
+    "OS2.0",
+    "Features",
+    "Image",
+    "Icons",
+    "Text",
+    "CTA",
+    "Free",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/features-with-image/default.webp",
+      "alt": "Features with Image - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-02",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added image position setting (left/right)",
+        "Improved feature list spacing",
+        "Fixed image overflow on small screens"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-03-02",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

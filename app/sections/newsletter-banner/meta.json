@@ -1,0 +1,63 @@
+{
+  "id": "newsletter-banner",
+  "name": "Newsletter Banner",
+  "description": "Clean email signup banner with customizable layout, background image support, and flexible styling. Perfect for building your email list.",
+  "category": "Free",
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": [
+    "OS2.0",
+    "Newsletter",
+    "Free",
+    "Responsive",
+    "Conversion"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/newsletter-banner/default.webp",
+      "alt": "Newsletter Banner - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-22",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added success message customization",
+        "Improved form validation styling",
+        "Fixed input field border on focus"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-22",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

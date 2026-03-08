@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="60" viewBox="0 0 280 60">
+  <rect width="280" height="60" rx="12" fill="#F8FAFC"/>
+  <rect x="12" y="8" width="256" height="44" rx="10" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <g transform="translate(24, 16)">
+    <rect width="24" height="24" rx="4" fill="#EEF2FF"/>
+    <text x="12" y="16" text-anchor="middle" font-family="system-ui" font-size="10">🚚</text>
+  </g>
+  <g transform="translate(60, 16)">
+    <rect width="24" height="24" rx="4" fill="#ECFDF5"/>
+    <text x="12" y="16" text-anchor="middle" font-family="system-ui" font-size="10">🔒</text>
+  </g>
+  <g transform="translate(96, 16)">
+    <rect width="24" height="24" rx="4" fill="#FFF7ED"/>
+    <text x="12" y="16" text-anchor="middle" font-family="system-ui" font-size="10">🔄</text>
+  </g>
+  <line x1="132" y1="16" x2="132" y2="40" stroke="#E2E8F0" stroke-width="1"/>
+  <text x="144" y="26" font-family="system-ui" font-size="9" fill="#374151" font-weight="600">Product Info Area</text>
+  <text x="144" y="38" font-family="system-ui" font-size="8" fill="#94A3B8">Wrapped content block</text>
+</svg>

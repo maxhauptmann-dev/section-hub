@@ -1,0 +1,173 @@
+/* Section Hub – Feature Columns */
+
+.sh-feat {
+  background-color: var(--sh-feat-bg, #fff);
+  color: var(--sh-feat-text, #1a1a1a);
+  padding: var(--sh-feat-pad-y, 64px) var(--sh-feat-pad-x, 24px);
+}
+
+.sh-feat__container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.sh-feat__header {
+  text-align: center;
+  margin-bottom: 3rem;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.sh-feat__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sh-feat-accent, #6366f1);
+  margin-bottom: 0.5rem;
+}
+
+.sh-feat__heading {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  font-weight: 700;
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+.sh-feat__subheading {
+  font-size: 1.0625rem;
+  opacity: 0.7;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Grid ── */
+.sh-feat__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--sh-feat-cols, 3), 1fr);
+  gap: var(--sh-feat-gap, 32px);
+}
+
+@media (max-width: 749px) {
+  .sh-feat__grid {
+    grid-template-columns: repeat(var(--sh-feat-cols-m, 1), 1fr);
+  }
+}
+
+/* ── Item ── */
+.sh-feat__item {
+  display: flex;
+  flex-direction: column;
+  text-align: var(--sh-feat-align, center);
+  padding: 1.5rem;
+  gap: 0.75rem;
+}
+
+/* Bordered */
+.sh-feat--bordered .sh-feat__item {
+  border: 1px solid var(--sh-feat-border, #e5e7eb);
+  border-radius: var(--sh-feat-radius, 12px);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.sh-feat--bordered .sh-feat__item:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Filled */
+.sh-feat--filled .sh-feat__item {
+  background: var(--sh-feat-icon-bg, #f1f5f9);
+  border-radius: var(--sh-feat-radius, 12px);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.sh-feat--filled .sh-feat__item:hover {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  transform: translateY(-2px);
+}
+
+/* Center-aligned items */
+.sh-feat__item[style*="center"] .sh-feat__icon-wrap,
+.sh-feat .sh-feat__item {
+  align-items: var(--sh-feat-align, center);
+}
+
+/* ── Icon wrap ── */
+.sh-feat__icon-wrap {
+  display: flex;
+  width: 100%;
+}
+
+[style*="text-align: center"] .sh-feat__icon-wrap,
+.sh-feat__item {
+  align-items: inherit;
+}
+
+.sh-feat__icon {
+  width: calc(var(--sh-feat-icon-size, 40px) + 20px);
+  height: calc(var(--sh-feat-icon-size, 40px) + 20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sh-feat-icon-bg, #f1f5f9);
+  border-radius: 12px;
+  color: var(--sh-feat-accent, #6366f1);
+  flex-shrink: 0;
+}
+
+.sh-feat--filled .sh-feat__icon {
+  background: var(--sh-feat-bg, #fff);
+}
+
+.sh-feat__icon svg {
+  width: var(--sh-feat-icon-size, 40px);
+  height: var(--sh-feat-icon-size, 40px);
+}
+
+.sh-feat__custom-img {
+  width: var(--sh-feat-icon-size, 40px);
+  height: var(--sh-feat-icon-size, 40px);
+  object-fit: contain;
+}
+
+/* ── Title ── */
+.sh-feat__title {
+  font-size: var(--sh-feat-title-size, 18px);
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.3;
+}
+
+/* ── Description ── */
+.sh-feat__desc {
+  font-size: var(--sh-feat-desc-size, 15px);
+  margin: 0;
+  opacity: 0.7;
+  line-height: 1.6;
+}
+
+/* ── Link ── */
+.sh-feat__link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--sh-feat-accent, #6366f1);
+  text-decoration: none;
+  margin-top: 0.25rem;
+  transition: gap 0.2s ease;
+}
+
+.sh-feat__link:hover {
+  gap: 0.6rem;
+}
+
+.sh-feat__link svg {
+  flex-shrink: 0;
+}

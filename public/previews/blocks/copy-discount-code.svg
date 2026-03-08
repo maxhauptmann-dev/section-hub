@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="56" viewBox="0 0 280 56">
+  <rect width="280" height="56" rx="12" fill="#F5F3FF"/>
+  <rect x="16" y="12" width="248" height="32" rx="8" fill="white" stroke="#DDD6FE" stroke-width="1.5" stroke-dasharray="6 3"/>
+  <text x="28" y="33" font-family="monospace" font-size="15" fill="#7C3AED" font-weight="700" letter-spacing="2">SAVE20</text>
+  <rect x="184" y="16" width="72" height="24" rx="6" fill="#7C3AED"/>
+  <text x="220" y="33" text-anchor="middle" font-family="system-ui" font-size="11" fill="white" font-weight="600">Copy</text>
+</svg>

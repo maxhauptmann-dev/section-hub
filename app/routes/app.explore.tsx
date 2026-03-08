@@ -46,6 +46,8 @@ const CATEGORIES = [
   { id: "CTA", label: "CTA", icon: "🚀", color: "#dc2626", textColor: "#fff" },
   { id: "Social Proof", label: "Social Proof", icon: "⭐", color: "#f59e0b", textColor: "#fff" },
   { id: "Product Discovery", label: "Shop the Look", icon: "👗", color: "#ec4899", textColor: "#fff" },
+  { id: "Premium", label: "Premium", icon: "💎", color: "#7c3aed", textColor: "#fff" },
+  { id: "Pop-up", label: "Pop-up", icon: "🎉", color: "#e11d48", textColor: "#fff" },
   { id: "Footer", label: "Footer", icon: "📞", color: "#64748b", textColor: "#fff" },
 ];
 
@@ -141,10 +143,12 @@ function PreviewSlider({
         <img
           src={previews[currentIndex].src}
           alt={previews[currentIndex].alt}
+          loading="lazy"
+          decoding="async"
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             transition: "opacity 0.3s ease",
           }}
           onClick={onNavigate}
@@ -170,7 +174,7 @@ function PreviewSlider({
       {/* Price Badge */}
       <div style={{ position: "absolute", top: 12, right: 12 }}>
         <Badge tone={section.price.type === "free" ? "success" : "info"}>
-          {priceLabel(section.price)}
+          {section.price.type === "free" ? "Free" : "Premium"}
         </Badge>
       </div>
 
@@ -284,7 +288,10 @@ export default function ExploreSectionsPage() {
     if (selectedCategory === "free") {
       list = list.filter((s) => s.price.type === "free");
     } else if (selectedCategory !== "all") {
-      list = list.filter((s) => s.category === selectedCategory);
+      list = list.filter((s) => {
+        const cats = Array.isArray(s.category) ? s.category : [s.category];
+        return cats.some((c: string) => c.toLowerCase() === selectedCategory.toLowerCase());
+      });
     }
 
     if (query.trim()) {
@@ -339,9 +346,27 @@ export default function ExploreSectionsPage() {
                 </Text>
                 <Text as="p" variant="bodyLg">
                   <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                    One-Click Install • Lifetime Updates • OS 2.0 Ready
+                    One-Click Install • All Sections Included • OS 2.0 Ready
                   </span>
                 </Text>
+                <InlineStack gap="200" wrap>
+                  {[
+                    { icon: "✨", text: "Try before you subscribe – free 24h demo" },
+                    { icon: "�", text: "All sections with Premium – €8/mo" },
+                    { icon: "⚡", text: "Cancel anytime" },
+                  ].map((item) => (
+                    <div key={item.text} style={{
+                      background: "rgba(255,255,255,0.15)",
+                      backdropFilter: "blur(8px)",
+                      borderRadius: 8,
+                      padding: "6px 12px",
+                    }}>
+                      <Text as="span" variant="bodySm">
+                        <span style={{ color: "white" }}>{item.icon} {item.text}</span>
+                      </Text>
+                    </div>
+                  ))}
+                </InlineStack>
               </BlockStack>
             </div>
           </Card>
@@ -493,13 +518,15 @@ export default function ExploreSectionsPage() {
                           </div>
                           <div style={{ marginTop: "auto" }}>
                             <InlineStack gap="100" wrap>
-                              <Badge tone="info">{section.category}</Badge>
+                              {(Array.isArray(section.category) ? section.category : [section.category]).map((cat: string) => (
+                                <Badge key={cat} tone="info">{cat}</Badge>
+                              ))}
                               {section.tags.slice(0, 2).map((tag: string) => (
                                 <Badge key={tag}>{tag}</Badge>
                               ))}
                             </InlineStack>
                             <div style={{ marginTop: 12 }}>
-                              <InlineStack gap="200">
+                              <InlineStack gap="200" blockAlign="center">
                                 <div style={{ flex: 1 }}>
                                   <Button 
                                     variant="primary" 
@@ -510,23 +537,42 @@ export default function ExploreSectionsPage() {
                                     View Details
                                   </Button>
                                 </div>
-                                {section.price.type === "one_time" && (section.price.amount || 0) > 0 && (
-                                  <Button
-                                    variant="tertiary"
-                                    size="slim"
-                                    onClick={() => navigate(`/app/section?id=${section.id}`)}
-                                  >
-                                    {`Buy €${section.price.amount}`}
-                                  </Button>
-                                )}
-                                <Button
-                                  variant="secondary"
-                                  size="slim"
+                                <button
                                   onClick={() => navigate(`/app/section?id=${section.id}&try=true`)}
+                                  style={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 4,
+                                    padding: "6px 12px",
+                                    borderRadius: 8,
+                                    border: "2px solid #0ea5e9",
+                                    background: "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)",
+                                    color: "#0369a1",
+                                    fontSize: 13,
+                                    fontWeight: 600,
+                                    cursor: "pointer",
+                                    whiteSpace: "nowrap",
+                                    transition: "all 0.2s ease",
+                                  }}
+                                  onMouseEnter={(e) => {
+                                    e.currentTarget.style.background = "#0ea5e9";
+                                    e.currentTarget.style.color = "white";
+                                  }}
+                                  onMouseLeave={(e) => {
+                                    e.currentTarget.style.background = "linear-gradient(135deg, #e0f2fe 0%, #f0f9ff 100%)";
+                                    e.currentTarget.style.color = "#0369a1";
+                                  }}
                                 >
-                                  Try ✨
-                                </Button>
+                                  ✨ Try Free
+                                </button>
                               </InlineStack>
+                              {section.price.type !== "free" && (
+                                <div style={{ marginTop: 6, textAlign: "center" }}>
+                                  <Text as="p" variant="bodySm" tone="subdued">
+                                    Premium · Included in subscription
+                                  </Text>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

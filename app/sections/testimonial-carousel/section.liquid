@@ -1,125 +1,184 @@
 {% comment %}
-  Section Hub - Testimonial Carousel
-  Modern testimonial carousel with autoplay and manual navigation.
+  Section Hub – Testimonial Carousel v2.0
+  Fully customisable carousel with flexible layout, sizing & spacing.
 {% endcomment %}
 
 {{ 'section-testimonial-carousel.css' | asset_url | stylesheet_tag }}
 
-<section class="testimonial-carousel" style="
-  --tc-bg: {{ section.settings.background_color }};
-  --tc-text: {{ section.settings.text_color }};
-  --tc-accent: {{ section.settings.accent_color }};
-  --tc-card-bg: {{ section.settings.card_background }};
-">
-  <div class="testimonial-carousel__container">
-    {% if section.settings.heading != blank %}
-      <div class="testimonial-carousel__header">
+<section
+  class="tcar"
+  id="tcar-{{ section.id }}"
+  style="
+    --tcar-bg: {{ section.settings.background_color }};
+    --tcar-text: {{ section.settings.text_color }};
+    --tcar-accent: {{ section.settings.accent_color }};
+    --tcar-card-bg: {{ section.settings.card_background }};
+    --tcar-card-border: {{ section.settings.card_border_color }};
+    --tcar-card-radius: {{ section.settings.card_radius }}px;
+    --tcar-card-padding: {{ section.settings.card_padding }}px;
+    --tcar-gap: {{ section.settings.card_gap }}px;
+    --tcar-per-view: {{ section.settings.cards_per_view }};
+    --tcar-max-width: {{ section.settings.max_width }}px;
+    --tcar-heading-size: {{ section.settings.heading_size }}px;
+    --tcar-eyebrow-size: {{ section.settings.eyebrow_size }}px;
+    --tcar-quote-size: {{ section.settings.quote_size }}px;
+    --tcar-name-size: {{ section.settings.name_size }}px;
+    --tcar-star-size: {{ section.settings.star_size }}px;
+    --tcar-avatar-size: {{ section.settings.avatar_size }}px;
+    --tcar-padding-top: {{ section.settings.padding_top }}px;
+    --tcar-padding-bottom: {{ section.settings.padding_bottom }}px;
+    --tcar-card-border-width: {{ section.settings.card_border_width }}px;
+    --tcar-nav-size: {{ section.settings.nav_button_size }}px;
+    --tcar-dot-size: {{ section.settings.dot_size }}px;
+  "
+>
+  <div class="tcar__container">
+
+    {%- comment -%} ── Header ── {%- endcomment -%}
+    {% if section.settings.heading != blank or section.settings.eyebrow != blank %}
+      <div class="tcar__header" style="text-align:{{ section.settings.header_alignment }};">
         {% if section.settings.eyebrow != blank %}
-          <span class="testimonial-carousel__eyebrow">{{ section.settings.eyebrow }}</span>
+          <span class="tcar__eyebrow">{{ section.settings.eyebrow }}</span>
         {% endif %}
-        <h2 class="testimonial-carousel__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.heading != blank %}
+          <h2 class="tcar__heading">{{ section.settings.heading }}</h2>
+        {% endif %}
+        {% if section.settings.subheading != blank %}
+          <p class="tcar__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
       </div>
     {% endif %}
 
-    <div class="testimonial-carousel__track" id="testimonial-track-{{ section.id }}">
-      {% for block in section.blocks %}
-        <div class="testimonial-carousel__card" {{ block.shopify_attributes }}>
-          <div class="testimonial-carousel__stars">
-            {% for i in (1..5) %}
-              {% if i <= block.settings.rating %}
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="var(--tc-accent)">
-                  <path d="M10 1L12.39 6.26L18 7.27L14 11.14L14.76 17L10 14.27L5.24 17L6 11.14L2 7.27L7.61 6.26L10 1Z"/>
-                </svg>
-              {% else %}
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="var(--tc-accent)" stroke-width="1.5">
-                  <path d="M10 1L12.39 6.26L18 7.27L14 11.14L14.76 17L10 14.27L5.24 17L6 11.14L2 7.27L7.61 6.26L10 1Z"/>
-                </svg>
-              {% endif %}
-            {% endfor %}
-          </div>
-          
-          <blockquote class="testimonial-carousel__quote">
-            {{ block.settings.quote }}
-          </blockquote>
-          
-          <div class="testimonial-carousel__author">
-            {% if block.settings.avatar != blank %}
-              <img 
-                src="{{ block.settings.avatar | image_url: width: 80 }}" 
-                alt="{{ block.settings.name }}"
-                class="testimonial-carousel__avatar"
-                width="48"
-                height="48"
-                loading="lazy"
-              >
-            {% else %}
-              <div class="testimonial-carousel__avatar-placeholder">
-                {{ block.settings.name | slice: 0 }}
+    {%- comment -%} ── Carousel viewport ── {%- endcomment -%}
+    <div class="tcar__viewport">
+      <div class="tcar__track" id="tcar-track-{{ section.id }}">
+        {% for block in section.blocks %}
+          <div class="tcar__card" {{ block.shopify_attributes }} style="text-align:{{ section.settings.card_alignment }};">
+
+            {%- comment -%} Stars {%- endcomment -%}
+            {% if block.settings.rating > 0 %}
+              <div class="tcar__stars" style="justify-content:{{ section.settings.card_alignment }};">
+                {% for i in (1..5) %}
+                  {% if i <= block.settings.rating %}
+                    <svg class="tcar__star" viewBox="0 0 24 24" fill="var(--tcar-accent)"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                  {% else %}
+                    <svg class="tcar__star" viewBox="0 0 24 24" fill="none" stroke="var(--tcar-accent)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                  {% endif %}
+                {% endfor %}
               </div>
             {% endif %}
-            <div>
-              <div class="testimonial-carousel__name">{{ block.settings.name }}</div>
-              {% if block.settings.title != blank %}
-                <div class="testimonial-carousel__title">{{ block.settings.title }}</div>
+
+            {%- comment -%} Title {%- endcomment -%}
+            {% if block.settings.title != blank %}
+              <h3 class="tcar__title">{{ block.settings.title }}</h3>
+            {% endif %}
+
+            {%- comment -%} Quote {%- endcomment -%}
+            <blockquote class="tcar__quote">{{ block.settings.quote }}</blockquote>
+
+            {%- comment -%} Author row {%- endcomment -%}
+            <div class="tcar__author" style="justify-content:{{ section.settings.card_alignment }};">
+              {% if block.settings.avatar != blank %}
+                <img
+                  class="tcar__avatar"
+                  src="{{ block.settings.avatar | image_url: width: 160 }}"
+                  alt="{{ block.settings.name | escape }}"
+                  width="{{ section.settings.avatar_size }}"
+                  height="{{ section.settings.avatar_size }}"
+                  loading="lazy"
+                >
               {% endif %}
+              <div class="tcar__author-info">
+                {% if block.settings.name != blank %}
+                  <span class="tcar__name">{{ block.settings.name }}</span>
+                {% endif %}
+                {% if block.settings.subtitle != blank %}
+                  <span class="tcar__subtitle">{{ block.settings.subtitle }}</span>
+                {% endif %}
+              </div>
             </div>
           </div>
-        </div>
-      {% endfor %}
-    </div>
-
-    <div class="testimonial-carousel__nav">
-      <button class="testimonial-carousel__btn testimonial-carousel__btn--prev" aria-label="Previous">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
-      <div class="testimonial-carousel__dots" id="testimonial-dots-{{ section.id }}">
-        {% for block in section.blocks %}
-          <button class="testimonial-carousel__dot {% if forloop.first %}active{% endif %}" data-index="{{ forloop.index0 }}" aria-label="Testimonial {{ forloop.index }}"></button>
         {% endfor %}
       </div>
-      <button class="testimonial-carousel__btn testimonial-carousel__btn--next" aria-label="Next">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-          <path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </button>
     </div>
+
+    {%- comment -%} ── Navigation ── {%- endcomment -%}
+    {% if section.settings.show_navigation %}
+      <div class="tcar__nav">
+        <button class="tcar__btn tcar__btn--prev" aria-label="Previous">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        {% if section.settings.show_dots %}
+          <div class="tcar__dots" id="tcar-dots-{{ section.id }}"></div>
+        {% endif %}
+        <button class="tcar__btn tcar__btn--next" aria-label="Next">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M9 18L15 12L9 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    {% endif %}
   </div>
 </section>
 
 <script>
-(function() {
-  const section = document.querySelector('.testimonial-carousel');
-  const track = document.getElementById('testimonial-track-{{ section.id }}');
-  const dots = document.querySelectorAll('#testimonial-dots-{{ section.id }} .testimonial-carousel__dot');
-  const prevBtn = section.querySelector('.testimonial-carousel__btn--prev');
-  const nextBtn = section.querySelector('.testimonial-carousel__btn--next');
-  const cards = track.querySelectorAll('.testimonial-carousel__card');
-  
-  let current = 0;
-  const total = cards.length;
-  
-  function goTo(index) {
-    current = (index + total) % total;
-    track.style.transform = `translateX(-${current * 100}%)`;
-    dots.forEach((dot, i) => dot.classList.toggle('active', i === current));
+(function(){
+  var wrap  = document.getElementById('tcar-{{ section.id }}');
+  if(!wrap) return;
+  var track = document.getElementById('tcar-track-{{ section.id }}');
+  var cards = track.children;
+  if(!cards.length) return;
+
+  var dotsC = document.getElementById('tcar-dots-{{ section.id }}');
+  var prev  = wrap.querySelector('.tcar__btn--prev');
+  var next  = wrap.querySelector('.tcar__btn--next');
+  var current = 0;
+
+  function perView(){
+    return parseInt(getComputedStyle(wrap).getPropertyValue('--tcar-per-view')) || 1;
   }
-  
-  prevBtn.addEventListener('click', () => goTo(current - 1));
-  nextBtn.addEventListener('click', () => goTo(current + 1));
-  dots.forEach((dot) => {
-    dot.addEventListener('click', () => goTo(parseInt(dot.dataset.index)));
-  });
-  
-  // Autoplay
+  function gapPx(){
+    return parseInt(getComputedStyle(wrap).getPropertyValue('--tcar-gap')) || 0;
+  }
+  function maxIndex(){
+    return Math.max(0, cards.length - perView());
+  }
+
+  function buildDots(){
+    if(!dotsC) return;
+    dotsC.innerHTML = '';
+    for(var i = 0; i <= maxIndex(); i++){
+      var d = document.createElement('button');
+      d.className = 'tcar__dot' + (i===0?' active':'');
+      d.dataset.index = i;
+      d.setAttribute('aria-label','Page '+(i+1));
+      d.addEventListener('click', function(){ goTo(parseInt(this.dataset.index)); });
+      dotsC.appendChild(d);
+    }
+  }
+
+  function goTo(i){
+    current = Math.max(0, Math.min(i, maxIndex()));
+    var cardW = cards[0].offsetWidth + gapPx();
+    track.style.transform = 'translateX(-' + (current * cardW) + 'px)';
+    if(dotsC){
+      var dots = dotsC.querySelectorAll('.tcar__dot');
+      dots.forEach(function(d,idx){ d.classList.toggle('active', idx===current); });
+    }
+  }
+
+  if(prev) prev.addEventListener('click', function(){ goTo(current <= 0 ? maxIndex() : current - 1); });
+  if(next) next.addEventListener('click', function(){ goTo(current >= maxIndex() ? 0 : current + 1); });
+  buildDots();
+
   {% if section.settings.autoplay %}
-  let interval = setInterval(() => goTo(current + 1), {{ section.settings.autoplay_speed }}000);
-  section.addEventListener('mouseenter', () => clearInterval(interval));
-  section.addEventListener('mouseleave', () => {
-    interval = setInterval(() => goTo(current + 1), {{ section.settings.autoplay_speed }}000);
-  });
+  var iv = setInterval(function(){ goTo(current >= maxIndex() ? 0 : current + 1); }, {{ section.settings.autoplay_speed }}000);
+  wrap.addEventListener('mouseenter', function(){ clearInterval(iv); });
+  wrap.addEventListener('mouseleave', function(){ iv = setInterval(function(){ goTo(current >= maxIndex() ? 0 : current + 1); }, {{ section.settings.autoplay_speed }}000); });
   {% endif %}
+
+  var ro;
+  function onResize(){ buildDots(); goTo(Math.min(current, maxIndex())); }
+  if(window.ResizeObserver){ ro = new ResizeObserver(onResize); ro.observe(wrap); }
+  else { window.addEventListener('resize', onResize); }
 })();
 </script>
 
@@ -140,6 +199,180 @@
       "id": "heading",
       "label": "Heading",
       "default": "What Our Customers Say"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "min": 600,
+      "max": 1600,
+      "step": 50,
+      "unit": "px",
+      "label": "Max Container Width",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "cards_per_view",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Cards per View (Desktop)",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "label": "Gap between Cards",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "card_alignment",
+      "label": "Card Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Card Border Radius",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "min": 12,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "label": "Card Padding",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "card_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "Card Border Width",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Top",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Section Padding Bottom",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "min": 10,
+      "max": 22,
+      "step": 1,
+      "unit": "px",
+      "label": "Eyebrow Font Size",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "min": 20,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "label": "Heading Font Size",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "label": "Quote Font Size",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "name_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "label": "Name Font Size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "min": 14,
+      "max": 36,
+      "step": 2,
+      "unit": "px",
+      "label": "Star Size",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "avatar_size",
+      "min": 28,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Avatar Size",
+      "default": 48
     },
     {
       "type": "header",
@@ -170,6 +403,48 @@
       "default": "#1e293b"
     },
     {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card Border Color",
+      "default": "#334155"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_navigation",
+      "label": "Show Navigation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Dots",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "nav_button_size",
+      "min": 32,
+      "max": 56,
+      "step": 4,
+      "unit": "px",
+      "label": "Nav Button Size",
+      "default": 44
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "min": 6,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "label": "Dot Size",
+      "default": 10
+    },
+    {
       "type": "header",
       "content": "Autoplay"
     },
@@ -183,7 +458,7 @@
       "type": "range",
       "id": "autoplay_speed",
       "min": 3,
-      "max": 10,
+      "max": 12,
       "step": 1,
       "unit": "s",
       "label": "Autoplay Speed",
@@ -198,16 +473,21 @@
         {
           "type": "range",
           "id": "rating",
-          "min": 1,
+          "min": 0,
           "max": 5,
           "step": 1,
-          "label": "Rating",
+          "label": "Rating (0 = hidden)",
           "default": 5
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title / Subject"
         },
         {
           "type": "textarea",
           "id": "quote",
-          "label": "Quote",
+          "label": "Comment",
           "default": "Absolutely delighted! The quality exceeded my expectations. Highly recommend."
         },
         {
@@ -218,14 +498,14 @@
         },
         {
           "type": "text",
-          "id": "title",
-          "label": "Title / Position",
+          "id": "subtitle",
+          "label": "Subtitle / Position",
           "default": "Verified Buyer"
         },
         {
           "type": "image_picker",
           "id": "avatar",
-          "label": "Avatar"
+          "label": "Profile Image (optional)"
         }
       ]
     }
@@ -240,7 +520,7 @@
             "rating": 5,
             "quote": "Absolutely delighted! The quality exceeded my expectations. Fast shipping and great customer service.",
             "name": "Anna M.",
-            "title": "Verified Buyer"
+            "subtitle": "Verified Buyer"
           }
         },
         {
@@ -249,7 +529,7 @@
             "rating": 5,
             "quote": "I've ordered multiple times and have been satisfied every time. Great value for money!",
             "name": "Thomas K.",
-            "title": "Loyal Customer"
+            "subtitle": "Loyal Customer"
           }
         },
         {
@@ -258,7 +538,7 @@
             "rating": 4,
             "quote": "Beautiful products and lovely packaging. Definitely won't be my last order.",
             "name": "Sarah L.",
-            "title": "Verified Buyer"
+            "subtitle": "Verified Buyer"
           }
         }
       ]

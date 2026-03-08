@@ -1,0 +1,315 @@
+{% comment %}
+  Section Hub - Countdown Shipping Bar Block
+  "Order within X hours Y minutes for same-day shipping" with live countdown timer
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-ship-countdown {
+  margin: 12px 0;
+}
+
+.sh-ship-countdown__bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: {{ block.settings.padding }}px;
+  background: {{ block.settings.bg_color }};
+  border: 1px solid {{ block.settings.border_color }};
+  border-radius: {{ block.settings.border_radius }}px;
+  flex-wrap: wrap;
+}
+
+.sh-ship-countdown__icon {
+  font-size: 22px;
+  flex-shrink: 0;
+}
+
+.sh-ship-countdown__text {
+  flex: 1;
+  min-width: 180px;
+}
+
+.sh-ship-countdown__headline {
+  font-size: {{ block.settings.font_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.text_color }};
+  line-height: 1.3;
+}
+
+.sh-ship-countdown__sub {
+  font-size: {{ block.settings.font_size | minus: 2 }}px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.sh-ship-countdown__timer {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.sh-ship-countdown__unit {
+  text-align: center;
+  background: {{ block.settings.timer_bg }};
+  border-radius: 8px;
+  padding: 6px 10px;
+  min-width: 48px;
+}
+
+.sh-ship-countdown__unit-value {
+  font-size: 20px;
+  font-weight: 800;
+  color: {{ block.settings.accent_color }};
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sh-ship-countdown__unit-label {
+  font-size: 10px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.5;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 2px;
+}
+
+.sh-ship-countdown__sep {
+  font-size: 18px;
+  font-weight: 700;
+  color: {{ block.settings.accent_color }};
+  align-self: flex-start;
+  padding-top: 6px;
+}
+
+.sh-ship-countdown__progress {
+  width: 100%;
+  height: 4px;
+  background: {{ block.settings.border_color }};
+  border-radius: 2px;
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.sh-ship-countdown__progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, {{ block.settings.accent_color }}, {{ block.settings.accent_color_end }});
+  border-radius: 2px;
+  transition: width 1s linear;
+}
+</style>
+
+<div class="sh-ship-countdown" data-cutoff-hour="{{ block.settings.cutoff_hour }}" data-cutoff-minute="{{ block.settings.cutoff_minute }}">
+  <div class="sh-ship-countdown__bar">
+    <span class="sh-ship-countdown__icon">{{ block.settings.icon }}</span>
+    <div class="sh-ship-countdown__text">
+      <div class="sh-ship-countdown__headline">{{ block.settings.headline }}</div>
+      <div class="sh-ship-countdown__sub">{{ block.settings.subtext }}</div>
+    </div>
+    <div class="sh-ship-countdown__timer">
+      <div class="sh-ship-countdown__unit">
+        <div class="sh-ship-countdown__unit-value" data-sh-ship-hours>--</div>
+        <div class="sh-ship-countdown__unit-label">hrs</div>
+      </div>
+      <span class="sh-ship-countdown__sep">:</span>
+      <div class="sh-ship-countdown__unit">
+        <div class="sh-ship-countdown__unit-value" data-sh-ship-minutes>--</div>
+        <div class="sh-ship-countdown__unit-label">min</div>
+      </div>
+      <span class="sh-ship-countdown__sep">:</span>
+      <div class="sh-ship-countdown__unit">
+        <div class="sh-ship-countdown__unit-value" data-sh-ship-seconds>--</div>
+        <div class="sh-ship-countdown__unit-label">sec</div>
+      </div>
+    </div>
+  </div>
+  {% if block.settings.show_progress %}
+  <div class="sh-ship-countdown__progress">
+    <div class="sh-ship-countdown__progress-fill" data-sh-ship-progress style="width: 50%;"></div>
+  </div>
+  {% endif %}
+</div>
+
+<script>
+(function() {
+  var container = document.currentScript.previousElementSibling;
+  while (container && !container.classList.contains('sh-ship-countdown')) {
+    container = container.previousElementSibling;
+  }
+  if (!container) return;
+
+  var cutoffH = parseInt(container.dataset.cutoffHour) || 16;
+  var cutoffM = parseInt(container.dataset.cutoffMinute) || 0;
+
+  var hoursEl = container.querySelector('[data-sh-ship-hours]');
+  var minsEl = container.querySelector('[data-sh-ship-minutes]');
+  var secsEl = container.querySelector('[data-sh-ship-seconds]');
+  var progressEl = container.querySelector('[data-sh-ship-progress]');
+
+  function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+  function tick() {
+    var now = new Date();
+    var cutoff = new Date();
+    cutoff.setHours(cutoffH, cutoffM, 0, 0);
+
+    if (now >= cutoff) {
+      cutoff.setDate(cutoff.getDate() + 1);
+    }
+
+    var diff = cutoff - now;
+    var totalSec = Math.floor(diff / 1000);
+    var h = Math.floor(totalSec / 3600);
+    var m = Math.floor((totalSec % 3600) / 60);
+    var s = totalSec % 60;
+
+    if (hoursEl) hoursEl.textContent = pad(h);
+    if (minsEl) minsEl.textContent = pad(m);
+    if (secsEl) secsEl.textContent = pad(s);
+
+    if (progressEl) {
+      var totalWindow = cutoffH * 3600 + cutoffM * 60;
+      var elapsed = totalWindow - totalSec;
+      if (elapsed < 0) elapsed = 0;
+      var pct = Math.max(0, Math.min(100, (1 - elapsed / totalWindow) * 100));
+      progressEl.style.width = pct + '%';
+    }
+  }
+
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "SH - Countdown Shipping",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Order now for same-day shipping!"
+    },
+    {
+      "type": "text",
+      "id": "subtext",
+      "label": "Sub Text",
+      "default": "Free express delivery on orders over €50"
+    },
+    {
+      "type": "text",
+      "id": "icon",
+      "label": "Icon",
+      "default": "🚚"
+    },
+    {
+      "type": "range",
+      "id": "cutoff_hour",
+      "label": "Cutoff Hour (24h)",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "cutoff_minute",
+      "label": "Cutoff Minute",
+      "min": 0,
+      "max": 55,
+      "step": 5,
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show Progress Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / Timer Color",
+      "default": "#dc2626"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_end",
+      "label": "Progress Gradient End",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#fffbeb"
+    },
+    {
+      "type": "color",
+      "id": "timer_bg",
+      "label": "Timer Unit Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#fde68a"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

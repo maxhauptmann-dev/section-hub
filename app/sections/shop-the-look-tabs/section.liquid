@@ -1,0 +1,870 @@
+{% comment %}
+  Section Hub – Shop the Look – Tabs v1.0
+  Lifestyle image with overlay product-card panel.
+  Products grouped by tabs (configurable per block).
+{% endcomment %}
+
+{%- liquid
+  assign heading         = section.settings.heading
+  assign use_custom_font = section.settings.use_custom_font
+  assign heading_font    = section.settings.heading_font_family
+  assign heading_size    = section.settings.heading_size
+  assign heading_size_m  = section.settings.heading_size_mobile
+  assign heading_lh      = section.settings.heading_line_height
+  assign heading_color   = section.settings.heading_color
+  assign heading_align   = section.settings.heading_text_align
+
+  assign img             = section.settings.image
+  assign img_mobile      = section.settings.image_mobile
+  assign img_aspect      = section.settings.image_aspect_ratio
+  assign img_aspect_m    = section.settings.image_aspect_ratio_mobile
+  assign img_fit         = section.settings.image_fit
+  assign img_round       = section.settings.image_roundness
+  assign img_border      = section.settings.image_border_thickness
+  assign img_border_c    = section.settings.image_border_color
+
+  assign panel_position  = section.settings.panel_position
+  assign panel_bg        = section.settings.panel_bg
+  assign panel_round     = section.settings.panel_roundness
+  assign panel_width     = section.settings.panel_width
+  assign panel_shadow    = section.settings.panel_shadow
+
+  assign card_img_ratio  = section.settings.card_image_ratio
+  assign card_img_round  = section.settings.card_image_roundness
+  assign card_img_border = section.settings.card_image_border
+  assign card_bg         = section.settings.card_bg
+  assign card_round      = section.settings.card_roundness
+
+  assign use_title_font  = section.settings.use_custom_font_title
+  assign title_font      = section.settings.card_title_font_family
+  assign title_size      = section.settings.card_title_size
+  assign title_color     = section.settings.card_title_color
+  assign desc_size       = section.settings.card_desc_size
+  assign desc_color      = section.settings.card_desc_color
+  assign desc_lines      = section.settings.card_desc_lines
+  assign price_size      = section.settings.card_price_size
+  assign price_color     = section.settings.card_price_color
+  assign price_compare_c = section.settings.card_price_compare_color
+  assign price_mt        = section.settings.card_price_margin_top
+
+  assign tab_bg          = section.settings.tab_bg
+  assign tab_active_bg   = section.settings.tab_active_bg
+  assign tab_color       = section.settings.tab_color
+  assign tab_active_color = section.settings.tab_active_color
+  assign tab_round       = section.settings.tab_roundness
+  assign tab_size        = section.settings.tab_font_size
+  assign tab_padding_x   = section.settings.tab_padding_x
+  assign tab_padding_y   = section.settings.tab_padding_y
+
+  assign btn_label       = section.settings.button_label
+  assign btn_bg          = section.settings.button_bg
+  assign btn_color       = section.settings.button_color
+  assign btn_round       = section.settings.button_roundness
+
+  assign bg_color        = section.settings.section_bg
+  assign bg_gradient     = section.settings.section_bg_gradient
+  assign content_width   = section.settings.content_width
+  assign full_width      = section.settings.full_width
+  assign lazy            = section.settings.lazy_load
+  assign padding_top     = section.settings.padding_top
+  assign padding_bottom  = section.settings.padding_bottom
+  assign padding_sides   = section.settings.padding_sides
+  assign padding_sides_m = section.settings.padding_sides_mobile
+  assign margin_top      = section.settings.margin_top
+  assign margin_bottom   = section.settings.margin_bottom
+  assign custom_css      = section.settings.custom_css
+-%}
+
+{%- liquid
+  case img_aspect
+    when 'square' 
+      assign iar = '1/1'
+    when 'wide'
+      assign iar = '16/9'
+    when 'landscape'
+      assign iar = '4/3'
+    when 'cinematic'
+      assign iar = '21/9'
+    else
+      assign iar = 'auto'
+  endcase
+  case img_aspect_m
+    when 'square'
+      assign iar_m = '1/1'
+    when 'portrait'
+      assign iar_m = '3/4'
+    when 'landscape'
+      assign iar_m = '4/3'
+    else
+      assign iar_m = 'auto'
+  endcase
+  case card_img_ratio
+    when 'square'
+      assign cir = '1/1'
+    when 'portrait'
+      assign cir = '3/4'
+    when 'landscape'
+      assign cir = '4/3'
+    else
+      assign cir = '1/1'
+  endcase
+-%}
+
+{%- comment -%} Collect unique tabs {%- endcomment -%}
+{%- assign tab_names = '' -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'product_card' and block.settings.tab_name != blank -%}
+    {%- unless tab_names contains block.settings.tab_name -%}
+      {%- if tab_names != '' -%}{%- assign tab_names = tab_names | append: '||' -%}{%- endif -%}
+      {%- assign tab_names = tab_names | append: block.settings.tab_name -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign tabs_arr = tab_names | split: '||' -%}
+
+{%- if use_custom_font -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ heading_font | replace: ' ', '+' }}:wght@400;700&display=swap" rel="stylesheet">
+{%- endif -%}
+{%- if use_title_font -%}
+  <link href="https://fonts.googleapis.com/css2?family={{ title_font | replace: ' ', '+' }}:wght@400;600&display=swap" rel="stylesheet">
+{%- endif -%}
+
+<style>
+  #stlt-{{ section.id }} {
+    --stlt-heading-font: {% if use_custom_font %}'{{ heading_font }}', serif{% else %}inherit{% endif %};
+    --stlt-heading-size: {{ heading_size }}px;
+    --stlt-heading-size-m: {{ heading_size_m }}px;
+    --stlt-heading-lh: {{ heading_lh }};
+    --stlt-heading-color: {{ heading_color }};
+    --stlt-heading-align: {{ heading_align }};
+
+    --stlt-img-round: {{ img_round }}px;
+    --stlt-img-border: {{ img_border }}px;
+    --stlt-img-border-c: {{ img_border_c }};
+    --stlt-img-ar: {{ iar }};
+    --stlt-img-ar-m: {{ iar_m }};
+    --stlt-img-fit: {{ img_fit }};
+
+    --stlt-panel-bg: {{ panel_bg }};
+    --stlt-panel-round: {{ panel_round }}px;
+    --stlt-panel-w: {{ panel_width }}px;
+
+    --stlt-card-bg: {{ card_bg }};
+    --stlt-card-round: {{ card_round }}px;
+    --stlt-card-img-ar: {{ cir }};
+    --stlt-card-img-round: {{ card_img_round }}px;
+    --stlt-card-img-border: {{ card_img_border }}px;
+
+    --stlt-title-font: {% if use_title_font %}'{{ title_font }}', sans-serif{% else %}inherit{% endif %};
+    --stlt-title-size: {{ title_size }}px;
+    --stlt-title-color: {{ title_color }};
+    --stlt-desc-size: {{ desc_size }}px;
+    --stlt-desc-color: {{ desc_color }};
+    --stlt-desc-lines: {{ desc_lines }};
+    --stlt-price-size: {{ price_size }}px;
+    --stlt-price-color: {{ price_color }};
+    --stlt-price-compare-c: {{ price_compare_c }};
+    --stlt-price-mt: {{ price_mt }}px;
+
+    --stlt-tab-bg: {{ tab_bg }};
+    --stlt-tab-active-bg: {{ tab_active_bg }};
+    --stlt-tab-color: {{ tab_color }};
+    --stlt-tab-active-color: {{ tab_active_color }};
+    --stlt-tab-round: {{ tab_round }}px;
+    --stlt-tab-size: {{ tab_size }}px;
+    --stlt-tab-px: {{ tab_padding_x }}px;
+    --stlt-tab-py: {{ tab_padding_y }}px;
+
+    --stlt-btn-bg: {{ btn_bg }};
+    --stlt-btn-color: {{ btn_color }};
+    --stlt-btn-round: {{ btn_round }}px;
+
+    --stlt-bg: {% if bg_gradient != blank %}{{ bg_gradient }}{% else %}{{ bg_color }}{% endif %};
+    --stlt-content-w: {{ content_width }}px;
+    --stlt-mt: {{ margin_top }}px;
+    --stlt-mb: {{ margin_bottom }}px;
+    --stlt-pt: {{ padding_top }}px;
+    --stlt-pb: {{ padding_bottom }}px;
+    --stlt-ps: {{ padding_sides }}px;
+    --stlt-ps-m: {{ padding_sides_m }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="stlt-{{ section.id }}" class="stlt-section{% if full_width %} stlt-full-width{% endif %}">
+  <div class="stlt-wrapper">
+    {%- if heading != blank -%}
+      <h2 class="stlt-heading">{{ heading }}</h2>
+    {%- endif -%}
+
+    <div class="stlt-canvas">
+      {%- comment -%} Background image {%- endcomment -%}
+      <div class="stlt-image-wrap">
+        {%- if img != blank -%}
+          <picture>
+            {%- if img_mobile != blank -%}
+              <source media="(max-width: 749px)" srcset="{{ img_mobile | image_url: width: 800 }}">
+            {%- endif -%}
+            <img src="{{ img | image_url: width: 1600 }}" alt="{{ img.alt | default: heading | escape }}" class="stlt-image" {% if lazy %}loading="lazy"{% endif %}>
+          </picture>
+        {%- else -%}
+          {{ 'lifestyle-2' | placeholder_svg_tag: 'stlt-image stlt-placeholder' }}
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Product panel overlay {%- endcomment -%}
+      <div class="stlt-panel stlt-panel--{{ panel_position }}" data-stlt-panel="{{ section.id }}">
+        <div class="stlt-panel__inner">
+          <p class="stlt-panel__title">{{ heading | default: 'Shop the room' }}</p>
+
+          {%- comment -%} Tabs {%- endcomment -%}
+          {%- if tabs_arr.size > 1 -%}
+            <div class="stlt-tabs">
+              {%- for tab in tabs_arr -%}
+                <button class="stlt-tab{% if forloop.first %} stlt-tab--active{% endif %}" data-stlt-tab="{{ tab | handle }}">{{ tab }}</button>
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Product cards grouped by tab {%- endcomment -%}
+          <div class="stlt-cards-wrap">
+            {%- for tab in tabs_arr -%}
+              <div class="stlt-cards-group{% if forloop.first %} stlt-cards-group--active{% endif %}" data-stlt-group="{{ tab | handle }}">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'product_card' and block.settings.tab_name == tab -%}
+                    {%- assign p = block.settings.product -%}
+                    <div class="stlt-card" {{ block.shopify_attributes }}>
+                      <a href="{% if p != blank %}{{ p.url }}{% else %}#{% endif %}" class="stlt-card__link">
+                        <div class="stlt-card__img-wrap">
+                          {%- if block.settings.custom_image != blank -%}
+                            <img src="{{ block.settings.custom_image | image_url: width: 300 }}" alt="" class="stlt-card__img" {% if lazy %}loading="lazy"{% endif %}>
+                          {%- elsif p != blank and p.featured_image != blank -%}
+                            <img src="{{ p.featured_image | image_url: width: 300 }}" alt="{{ p.featured_image.alt | escape }}" class="stlt-card__img" {% if lazy %}loading="lazy"{% endif %}>
+                          {%- else -%}
+                            {{ 'product-1' | placeholder_svg_tag: 'stlt-card__img stlt-placeholder' }}
+                          {%- endif -%}
+                        </div>
+                        <div class="stlt-card__info">
+                          <p class="stlt-card__name">{%- if p != blank -%}{{ p.title }}{%- else -%}Product Name{%- endif -%}</p>
+                          {%- if p != blank and p.description != blank -%}
+                            <p class="stlt-card__desc">{{ p.description | strip_html | truncate: 80 }}</p>
+                          {%- endif -%}
+                          <p class="stlt-card__price">
+                            {%- if p != blank -%}
+                              {%- if p.compare_at_price > p.price -%}
+                                <span class="stlt-card__price-sale">{{ p.price | money }}</span>
+                                <s class="stlt-card__price-compare">{{ p.compare_at_price | money }}</s>
+                              {%- else -%}
+                                {{ p.price | money }}
+                              {%- endif -%}
+                            {%- else -%}$0.00{%- endif -%}
+                          </p>
+                        </div>
+                      </a>
+                    </div>
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  (function () {
+    var root = document.getElementById('stlt-{{ section.id }}');
+    if (!root) return;
+    var tabs = root.querySelectorAll('.stlt-tab');
+    var groups = root.querySelectorAll('.stlt-cards-group');
+    tabs.forEach(function (tab) {
+      tab.addEventListener('click', function () {
+        var id = tab.dataset.stltTab;
+        tabs.forEach(function (t) { t.classList.toggle('stlt-tab--active', t === tab); });
+        groups.forEach(function (g) { g.classList.toggle('stlt-cards-group--active', g.dataset.stltGroup === id); });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Shop the Look – Tabs",
+  "tag": "section",
+  "class": "stlt-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop the room"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font",
+      "label": "Use Custom Heading Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "heading_font_family",
+      "label": "Heading Font Family",
+      "default": "Playfair Display"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 18,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size – Mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading Line Height",
+      "min": 0.8,
+      "max": 2.0,
+      "step": 0.1,
+      "default": 1.2
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_align",
+      "label": "Heading Align",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Desktop Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_mobile",
+      "label": "Mobile Image (optional)"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "square", "label": "1:1" },
+        { "value": "landscape", "label": "4:3" },
+        { "value": "wide", "label": "16:9" },
+        { "value": "cinematic", "label": "21:9" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "select",
+      "id": "image_aspect_ratio_mobile",
+      "label": "Image Aspect Ratio – Mobile",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "square", "label": "1:1" },
+        { "value": "portrait", "label": "3:4" },
+        { "value": "landscape", "label": "4:3" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image Fit",
+      "info": "Cover füllt den Bereich (Bild wird ggf. beschnitten). Contain zeigt das gesamte Bild.",
+      "options": [
+        { "value": "cover", "label": "Cover (füllen)" },
+        { "value": "contain", "label": "Contain (ganzes Bild)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "image_roundness",
+      "label": "Image Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "image_border_thickness",
+      "label": "Image Border",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "image_border_color",
+      "label": "Image Border Color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Product Panel"
+    },
+    {
+      "type": "select",
+      "id": "panel_position",
+      "label": "Panel Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "color",
+      "id": "panel_bg",
+      "label": "Panel Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "panel_roundness",
+      "label": "Panel Roundness",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "panel_width",
+      "label": "Panel Width",
+      "min": 200,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "default": 320
+    },
+    {
+      "type": "checkbox",
+      "id": "panel_shadow",
+      "label": "Panel Shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product Card – Image"
+    },
+    {
+      "type": "select",
+      "id": "card_image_ratio",
+      "label": "Card Image Ratio",
+      "options": [
+        { "value": "square", "label": "1:1" },
+        { "value": "portrait", "label": "3:4" },
+        { "value": "landscape", "label": "4:3" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "range",
+      "id": "card_image_roundness",
+      "label": "Card Image Roundness",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "card_image_border",
+      "label": "Card Image Border",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_roundness",
+      "label": "Card Roundness",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Product Card – Text"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_font_title",
+      "label": "Use Custom Title Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "card_title_font_family",
+      "label": "Title Font Family",
+      "default": "Inter"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "label": "Title Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Title Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "card_desc_size",
+      "label": "Description Size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "color",
+      "id": "card_desc_color",
+      "label": "Description Color",
+      "default": "#666666"
+    },
+    {
+      "type": "range",
+      "id": "card_desc_lines",
+      "label": "Description Max Lines",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "card_price_size",
+      "label": "Price Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "card_price_color",
+      "label": "Price Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "card_price_compare_color",
+      "label": "Compare Price Color",
+      "default": "#999999"
+    },
+    {
+      "type": "range",
+      "id": "card_price_margin_top",
+      "label": "Price Margin Top",
+      "min": 0,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Toggle Tabs"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg",
+      "label": "Tab Background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg",
+      "label": "Tab Active Background",
+      "default": "#3b5998"
+    },
+    {
+      "type": "color",
+      "id": "tab_color",
+      "label": "Tab Text Color",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_color",
+      "label": "Tab Active Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "tab_roundness",
+      "label": "Tab Roundness",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "tab_font_size",
+      "label": "Tab Font Size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_x",
+      "label": "Tab Padding X",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "tab_padding_y",
+      "label": "Tab Padding Y",
+      "min": 4,
+      "max": 16,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "More Details"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Section"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Background",
+      "default": "#f5f0eb"
+    },
+    {
+      "type": "color_background",
+      "id": "section_bg_gradient",
+      "label": "Background Gradient"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width",
+      "min": 600,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Padding Sides",
+      "min": 0,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Padding Sides – Mobile",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy Load",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Product Card",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "tab_name",
+          "label": "Tab Name",
+          "info": "Group products by tab (e.g. Kids, Baby, Women)",
+          "default": "All"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop the Look – Tabs",
+      "blocks": [
+        { "type": "product_card", "settings": { "tab_name": "Kids" } },
+        { "type": "product_card", "settings": { "tab_name": "Kids" } },
+        { "type": "product_card", "settings": { "tab_name": "Baby" } },
+        { "type": "product_card", "settings": { "tab_name": "Baby" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

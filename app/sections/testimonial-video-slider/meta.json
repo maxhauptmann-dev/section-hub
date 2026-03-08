@@ -2,19 +2,29 @@
   "id": "testimonial-video-slider",
   "name": "Testimonial Video Slider",
   "description": "Video testimonial slider with star ratings, autoplay, and overlay text. Perfect for authentic social proof with real customer voices.",
-  "category": "Testimonials",
-  "version": "1.0.0",
+  "category": [
+    "Testimonials",
+    "Video"
+  ],
+  "version": "1.1.0",
   "price": {
     "type": "one_time",
     "amount": 9,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Video", "Slider", "Trust", "Responsive", "Social Proof"],
+  "tags": [
+    "OS2.0",
+    "Video",
+    "Slider",
+    "Trust",
+    "Responsive",
+    "Social Proof"
+  ],
   "author": "Section Hub",
-  "previewColor": "#6366f1",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/testimonial-video-slider/default.svg",
+      "src": "/previews/testimonial-video-slider/default.webp",
       "alt": "Testimonial Video Slider - Default Style",
       "label": "Default"
     },
@@ -30,7 +40,13 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -38,5 +54,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-02-09",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added video thumbnail customization",
+        "Improved slider autoplay with video playback",
+        "Fixed overlay text readability on light videos"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-09",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

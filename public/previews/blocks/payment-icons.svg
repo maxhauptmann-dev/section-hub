@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="50" viewBox="0 0 280 50">
+  <rect width="280" height="50" rx="12" fill="#F8FAFC"/>
+  <text x="16" y="20" font-family="system-ui" font-size="10" fill="#64748B" font-weight="500">We accept</text>
+  <rect x="16" y="28" width="40" height="16" rx="3" fill="#1A1F71"/>
+  <text x="36" y="39" text-anchor="middle" font-family="system-ui" font-size="7" fill="white" font-weight="700">VISA</text>
+  <rect x="62" y="28" width="40" height="16" rx="3" fill="#EB001B"/>
+  <circle cx="78" cy="36" r="6" fill="#EB001B" opacity="0.8"/>
+  <circle cx="86" cy="36" r="6" fill="#F79E1B" opacity="0.8"/>
+  <rect x="108" y="28" width="40" height="16" rx="3" fill="#006FCF"/>
+  <text x="128" y="39" text-anchor="middle" font-family="system-ui" font-size="6" fill="white" font-weight="700">AMEX</text>
+  <rect x="154" y="28" width="40" height="16" rx="3" fill="#003087"/>
+  <text x="174" y="39" text-anchor="middle" font-family="system-ui" font-size="7" fill="white" font-weight="700">PayPal</text>
+  <rect x="200" y="28" width="40" height="16" rx="3" fill="#5F6368"/>
+  <text x="220" y="39" text-anchor="middle" font-family="system-ui" font-size="6" fill="white" font-weight="700">GPay</text>
+</svg>

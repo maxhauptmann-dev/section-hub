@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="40" viewBox="0 0 280 40">
+  <rect width="280" height="40" rx="12" fill="#F0FDF4"/>
+  <circle cx="24" cy="20" r="5" fill="#22C55E">
+    <animate attributeName="r" values="4;6;4" dur="1.5s" repeatCount="indefinite"/>
+    <animate attributeName="opacity" values="1;0.5;1" dur="1.5s" repeatCount="indefinite"/>
+  </circle>
+  <text x="36" y="24" font-family="system-ui" font-size="12" fill="#16A34A" font-weight="600">In Stock</text>
+  <text x="92" y="24" font-family="system-ui" font-size="10" fill="#6B7280">· Ready to ship</text>
+</svg>

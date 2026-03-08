@@ -1,0 +1,368 @@
+{% comment %}
+  Section Hub – Feature Columns
+  Showcase features, services, or benefits in a clean column grid.
+  Supports icons, images, and flexible layout settings.
+{% endcomment %}
+
+{{ 'section-feature-columns.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="sh-feat sh-feat--{{ section.settings.style }}"
+  style="
+    --sh-feat-bg: {{ section.settings.background_color }};
+    --sh-feat-text: {{ section.settings.text_color }};
+    --sh-feat-accent: {{ section.settings.accent_color }};
+    --sh-feat-icon-size: {{ section.settings.icon_size }}px;
+    --sh-feat-icon-bg: {{ section.settings.icon_background }};
+    --sh-feat-cols: {{ section.settings.columns }};
+    --sh-feat-cols-m: {{ section.settings.columns_mobile }};
+    --sh-feat-gap: {{ section.settings.gap }}px;
+    --sh-feat-pad-y: {{ section.settings.padding_y }}px;
+    --sh-feat-pad-x: {{ section.settings.padding_x }}px;
+    --sh-feat-radius: {{ section.settings.card_roundness }}px;
+    --sh-feat-border: {{ section.settings.border_color }};
+    --sh-feat-title-size: {{ section.settings.title_size }}px;
+    --sh-feat-desc-size: {{ section.settings.description_size }}px;
+    --sh-feat-align: {{ section.settings.text_align }};
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  <div class="sh-feat__container">
+    {% if section.settings.heading != blank %}
+      <div class="sh-feat__header">
+        {% if section.settings.eyebrow != blank %}
+          <span class="sh-feat__eyebrow">{{ section.settings.eyebrow }}</span>
+        {% endif %}
+        <h2 class="sh-feat__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="sh-feat__subheading">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    <div class="sh-feat__grid">
+      {% for block in section.blocks %}
+        <div class="sh-feat__item" {{ block.shopify_attributes }}>
+          {% if block.settings.custom_image != blank %}
+            <div class="sh-feat__icon-wrap">
+              <img
+                src="{{ block.settings.custom_image | image_url: width: 200 }}"
+                alt="{{ block.settings.title | escape }}"
+                width="100"
+                height="100"
+                loading="lazy"
+                class="sh-feat__custom-img"
+              >
+            </div>
+          {% elsif block.settings.icon != 'none' %}
+            <div class="sh-feat__icon-wrap">
+              <div class="sh-feat__icon">
+                {% case block.settings.icon %}
+                  {% when 'star' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {% when 'heart' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                  {% when 'zap' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                  {% when 'shield' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                  {% when 'globe' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  {% when 'clock' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  {% when 'layers' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                  {% when 'users' %}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                {% endcase %}
+              </div>
+            </div>
+          {% endif %}
+
+          {% if block.settings.title != blank %}
+            <h3 class="sh-feat__title">{{ block.settings.title }}</h3>
+          {% endif %}
+          {% if block.settings.description != blank %}
+            <p class="sh-feat__desc">{{ block.settings.description }}</p>
+          {% endif %}
+          {% if block.settings.link_text != blank %}
+            <a href="{{ block.settings.link_url }}" class="sh-feat__link">
+              {{ block.settings.link_text }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "SH – Feature Columns",
+  "tag": "section",
+  "class": "sh-feat-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Everything you need to know about our products and services."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "style",
+      "label": "Card Style",
+      "options": [
+        { "value": "plain", "label": "Plain (no border)" },
+        { "value": "bordered", "label": "Bordered" },
+        { "value": "filled", "label": "Filled" }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns – Desktop",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns – Mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 16,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 24,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "card_roundness",
+      "label": "Card Roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Size",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "description_size",
+      "label": "Description Size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "icon_background",
+      "label": "Icon Background",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" },
+            { "value": "star", "label": "Star" },
+            { "value": "heart", "label": "Heart" },
+            { "value": "zap", "label": "Zap / Lightning" },
+            { "value": "shield", "label": "Shield" },
+            { "value": "globe", "label": "Globe" },
+            { "value": "clock", "label": "Clock" },
+            { "value": "layers", "label": "Layers" },
+            { "value": "users", "label": "Users" }
+          ],
+          "default": "star"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom Icon Image",
+          "info": "Overrides the built-in icon"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Describe this feature briefly. Keep it concise and valuable."
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link Text"
+        },
+        {
+          "type": "url",
+          "id": "link_url",
+          "label": "Link URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Feature Columns",
+      "blocks": [
+        { "type": "feature", "settings": { "icon": "zap", "title": "Lightning Fast", "description": "Optimized for speed. Your store loads in the blink of an eye." } },
+        { "type": "feature", "settings": { "icon": "shield", "title": "Secure & Reliable", "description": "Bank-level security for all your transactions and data." } },
+        { "type": "feature", "settings": { "icon": "heart", "title": "Made with Love", "description": "Every product is handpicked and carefully curated for quality." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,255 @@
+/* ═══════════════════════════════════════════
+   SS - Slideshow  |  Section Hub
+   ═══════════════════════════════════════════ */
+
+/* ── Container ── */
+.ssw-slideshow {
+  position: relative;
+  width: 100%;
+  height: var(--ssw-height);
+  overflow: hidden;
+  border-radius: var(--ssw-round);
+}
+
+@media (max-width: 749px) {
+  .ssw-slideshow {
+    height: var(--ssw-height-m);
+  }
+}
+
+/* ── Slides Wrapper ── */
+.ssw-slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Single Slide ── */
+.ssw-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--ssw-transition) ease;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ssw-slide--active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* ── Slide Image ── */
+.ssw-slide__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.ssw-slide__img--mobile { display: none; }
+
+@media (max-width: 749px) {
+  .ssw-slide__img--desk   { display: none; }
+  .ssw-slide__img--mobile { display: block; }
+}
+
+/* ── Overlay ── */
+.ssw-slide__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--ssw-overlay));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════
+   Product Card
+   ═══════════════════════════════════════════ */
+.ssw-product {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  /* Extra right-padding so card never overlaps the thumbnail strip */
+  padding: var(--ssw-card-offset) calc(var(--ssw-thumb-size) + var(--ssw-thumb-gap) + var(--ssw-card-offset) + 16px) var(--ssw-card-offset) var(--ssw-card-offset);
+  pointer-events: none;
+}
+
+@media (max-width: 749px) {
+  .ssw-product {
+    /* On mobile thumbnails sit at bottom-right; leave room below for them */
+    padding: var(--ssw-card-offset) calc(var(--ssw-thumb-size) + 20px) calc(var(--ssw-thumb-size) + var(--ssw-card-offset) + 16px) var(--ssw-card-offset);
+  }
+}
+
+.ssw-product__card {
+  pointer-events: auto;
+  background: var(--ssw-card-bg);
+  border-radius: var(--ssw-card-round);
+  padding: var(--ssw-card-pad);
+  display: inline-flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 300px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .18), 0 2px 8px rgba(0, 0, 0, .12);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+@media (max-width: 749px) {
+  .ssw-product__card { max-width: 220px; }
+}
+
+/* Alignment */
+.ssw-product--bottom-left   { align-items: flex-start; justify-content: flex-end; }
+.ssw-product--bottom-center { align-items: center;     justify-content: flex-end; }
+.ssw-product--bottom-right  { align-items: flex-end;   justify-content: flex-end; }
+.ssw-product--center-left   { align-items: flex-start; justify-content: center; }
+.ssw-product--center-center { align-items: center;     justify-content: center; }
+.ssw-product--center-right  { align-items: flex-end;   justify-content: center; }
+.ssw-product--top-left      { align-items: flex-start; justify-content: flex-start; }
+.ssw-product--top-center    { align-items: center;     justify-content: flex-start; }
+.ssw-product--top-right     { align-items: flex-end;   justify-content: flex-start; }
+
+/* Texts */
+.ssw-product__title {
+  margin: 0;
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  color: var(--ssw-heading-c);
+}
+
+.ssw-product__vendor {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.4;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--ssw-vendor-c);
+  opacity: .65;
+}
+
+.ssw-product__price {
+  margin: 2px 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ssw-price-c);
+}
+
+/* Button */
+.ssw-product__btn {
+  display: inline-block;
+  margin-top: 12px;
+  padding: 11px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  text-decoration: none;
+  text-align: center;
+  border-radius: 6px;
+  border: 2px solid var(--ssw-btn-bc);
+  background: var(--ssw-btn-bg);
+  color: var(--ssw-btn-tc);
+  cursor: pointer;
+  align-self: flex-start;
+  transition: background .22s, color .22s, border-color .22s, transform .15s;
+}
+
+.ssw-product__btn:hover {
+  background: var(--ssw-btn-bgh);
+  color: var(--ssw-btn-th);
+  border-color: var(--ssw-btn-bch);
+  transform: translateY(-1px);
+}
+
+/* ═══════════════════════════════════════════
+   Thumbnails
+   ═══════════════════════════════════════════ */
+.ssw-thumbs {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  gap: var(--ssw-thumb-gap);
+  align-items: center;
+}
+
+@media (max-width: 749px) {
+  .ssw-thumbs {
+    bottom: 16px;
+    right: 16px;
+  }
+}
+
+/* Single Thumb */
+.ssw-thumb {
+  position: relative;
+  width: var(--ssw-thumb-size);
+  height: var(--ssw-thumb-size);
+  padding: 0;
+  border: var(--ssw-thumb-border-w) solid var(--ssw-thumb-border-c);
+  border-radius: var(--ssw-thumb-round);
+  background: rgba(0, 0, 0, .35);
+  cursor: pointer;
+  overflow: hidden;
+  flex-shrink: 0;
+  transition: opacity .25s;
+  opacity: .65;
+}
+
+.ssw-thumb--active,
+.ssw-thumb:hover {
+  opacity: 1;
+}
+
+.ssw-thumb__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+.ssw-thumb__placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* ── Progress SVG ── */
+.ssw-thumb__progress {
+  position: absolute;
+  inset: calc(var(--ssw-thumb-border-w) * -1);
+  width: calc(100% + var(--ssw-thumb-border-w) * 2);
+  height: calc(100% + var(--ssw-thumb-border-w) * 2);
+  z-index: 2;
+  pointer-events: none;
+}
+
+.ssw-thumb__track {
+  stroke-dasharray: 384;
+  stroke-dashoffset: 384;
+}
+
+/* ═══════════════════════════════════════════
+   Theme Editor Fix
+   ═══════════════════════════════════════════ */
+html.designMode [id^="shopify-section-"].ssw-root,
+html.designMode [id^="shopify-section-"].ssw-root ~ * {
+  margin-top: 0 !important;
+}

@@ -1,207 +1,248 @@
-import { useState } from "react";
-import { Page, Layout, Card, Text, BlockStack, Badge, Button, Box } from "@shopify/polaris";
+import type { LoaderFunctionArgs } from "react-router";
+import { useLoaderData, useFetcher, useNavigate } from "react-router";
+import { useEffect } from "react";
+import { authenticate } from "../shopify.server";
+import { checkIsPremium } from "../lib/is-premium.server";
+import {
+  Page,
+  Card,
+  BlockStack,
+  InlineStack,
+  Text,
+  Badge,
+  Button,
+} from "@shopify/polaris";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const { session } = await authenticate.admin(request);
+  const { isPremium } = await checkIsPremium(session.shop);
+  return { isPremium };
+};
 
 interface ConversionBlock {
   id: string;
   name: string;
   description: string;
-  category: string;
-  preview: React.ReactNode;
-  installed?: boolean;
-  isLoading?: boolean;
+  preview: string;
+  premium: boolean;
 }
 
-const PaymentIconsBlockPreview = () => (
-  <Box padding="400">
-    <BlockStack gap="300">
-      <Text as="p" variant="bodySm" tone="subdued">
-        Store + custom payment icons
-      </Text>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">💳 6Pay</Text>
-        </div>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">💳 Mastercard</Text>
-        </div>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">🔵 Google Pay</Text>
-        </div>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">🍎 Apple Pay</Text>
-        </div>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">🅿️ PayPal</Text>
-        </div>
-        <div style={{ padding: "8px 12px", backgroundColor: "#f5f5f5", borderRadius: "4px" }}>
-          <Text as="span" variant="bodySm">💳 Visa</Text>
-        </div>
-      </div>
-    </BlockStack>
-  </Box>
-);
-
-const conversionBlocks: ConversionBlock[] = [
-  {
-    id: "payment-icons",
-    name: "Payment Icons",
-    description: "Display payment method icons below the purchase button to build customer trust and show accepted payment options.",
-    category: "Trust & Credibility",
-    preview: <PaymentIconsBlockPreview />,
-    installed: false,
-  },
-  {
-    id: "countdown-timer",
-    name: "Countdown Timer",
-    description: "Create urgency with a countdown timer for limited-time offers.",
-    category: "Urgency",
-    preview: null,
-    installed: false,
-  },
-  {
-    id: "trust-badges",
-    name: "Trust Badges",
-    description: "Display security and trust badges to increase customer confidence.",
-    category: "Trust & Credibility",
-    preview: null,
-    installed: false,
-  },
-  {
-    id: "social-proof",
-    name: "Social Proof",
-    description: "Show recent purchases and customer testimonials.",
-    category: "Social Proof",
-    preview: null,
-    installed: false,
-  },
+const ALL_BLOCKS: ConversionBlock[] = [
+  { id: "countdown", name: "Countdown Timer", description: "Create urgency with a countdown timer for limited offers", preview: "/previews/blocks/countdown.svg", premium: true },
+  { id: "inventory-bar", name: "Inventory Bar", description: "Show stock levels with a colored progress bar", preview: "/previews/blocks/inventory-bar.svg", premium: true },
+  { id: "copy-discount-code", name: "Copy Discount Code", description: "Clickable discount code with copy-to-clipboard functionality", preview: "/previews/blocks/copy-discount-code.svg", premium: true },
+  { id: "badges", name: "Badges", description: "Colorful tags like Trending, Bestseller, Only a few left", preview: "/previews/blocks/badges.svg", premium: true },
+  { id: "payment-icons", name: "Payment Icons", description: "Show accepted payment methods to build customer trust", preview: "/previews/blocks/payment-icons.svg", premium: true },
+  { id: "shipping-info", name: "Shipping Info", description: "Estimated shipping date with status indicator and fast shipping badge", preview: "/previews/blocks/shipping-info.svg", premium: true },
+  { id: "social-proof", name: "Social Proof", description: "Display user avatars and testimonials with verified badges", preview: "/previews/blocks/social-proof.svg", premium: true },
+  { id: "benefit-boxes", name: "Benefit Boxes", description: "Highlight key benefits (Free Shipping, Returns, Support, etc.)", preview: "/previews/blocks/benefit-boxes.svg", premium: true },
+  { id: "feature-list", name: "Feature List", description: "Display product features with checkmark bullets", preview: "/previews/blocks/feature-list.svg", premium: true },
+  { id: "video-carousel", name: "Video Carousel", description: "Horizontal scroll carousel with video thumbnails and play buttons", preview: "/previews/blocks/video-carousel.svg", premium: true },
+  { id: "upsell", name: "Upsell", description: "Frequently bought together product recommendations with Add button", preview: "/previews/blocks/upsell.svg", premium: true },
+  { id: "wrapper", name: "Wrapper", description: "Container card with benefit icons row for product info area", preview: "/previews/blocks/wrapper.svg", premium: true },
+  { id: "trustpilot-review", name: "Review Summary", description: "Trustpilot-style review rating with star boxes and review count", preview: "/previews/blocks/trustpilot-review.svg", premium: true },
+  { id: "inventory-status", name: "Inventory Status", description: "Display stock status badges with pulsing indicator", preview: "/previews/blocks/inventory-status.svg", premium: true },
+  { id: "countdown-shipping", name: "Countdown Shipping Bar", description: "Order within X hours for same-day shipping with live timer", preview: "/previews/blocks/countdown-shipping.svg", premium: true },
+  { id: "smart-upsell", name: "Smart Upsell Carousel", description: "Dynamic product recommendations with one-click add to cart", preview: "/previews/blocks/smart-upsell.svg", premium: true },
 ];
 
 export default function ConversionBlocksPage() {
-  const [blocks, setBlocks] = useState<ConversionBlock[]>(conversionBlocks);
+  const { isPremium } = useLoaderData<typeof loader>();
+  const navigate = useNavigate();
+  const totalBlocks = ALL_BLOCKS.length;
 
-  const handleInstall = async (blockId: string) => {
-    // Update UI to show loading state
-    setBlocks(blocks.map(block => 
-      block.id === blockId ? { ...block, isLoading: true } : block
-    ));
-
-    try {
-      // Call the install-block API endpoint
-      const formData = new FormData();
-      formData.append("blockId", blockId);
-
-      const response = await fetch("/app/api/install-block", {
-        method: "POST",
-        body: formData,
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        // Mark block as installed
-        setBlocks(blocks.map(block => 
-          block.id === blockId 
-            ? { ...block, installed: true, isLoading: false } 
-            : block
-        ));
-        console.log(`✅ Block installed: ${result.message}`);
-      } else {
-        // Show error but don't change UI permanently
-        console.error(`❌ Installation failed: ${result.error}`);
-        setBlocks(blocks.map(block => 
-          block.id === blockId ? { ...block, isLoading: false } : block
-        ));
-        alert(`Installation failed: ${result.error}`);
-      }
-    } catch (error) {
-      console.error("Installation error:", error);
-      setBlocks(blocks.map(block => 
-        block.id === blockId ? { ...block, isLoading: false } : block
-      ));
-      alert(`Installation failed: ${error instanceof Error ? error.message : String(error)}`);
+  const subscribeFetcher = useFetcher<{ confirmationUrl?: string; error?: string }>();
+  const isSubscribing = subscribeFetcher.state !== "idle";
+  useEffect(() => {
+    if (subscribeFetcher.data?.confirmationUrl) {
+      window.open(subscribeFetcher.data.confirmationUrl, "_top");
     }
-  };
+  }, [subscribeFetcher.data]);
 
-  const categorizedBlocks = blocks.reduce((acc, block) => {
-    if (!acc[block.category]) {
-      acc[block.category] = [];
-    }
-    acc[block.category].push(block);
-    return acc;
-  }, {} as Record<string, ConversionBlock[]>);
+  const UpgradeButton = ({ fullWidth = false, size = "medium" as "medium" | "large" }) => (
+    <subscribeFetcher.Form method="post" action="/app/api/subscribe">
+      <Button fullWidth={fullWidth} variant="primary" tone="success" size={size} loading={isSubscribing} submit>
+        Upgrade to Premium — €8/mo
+      </Button>
+    </subscribeFetcher.Form>
+  );
 
   return (
-    <Page title="Conversion Blocks">
-      <Layout>
-        <Layout.Section>
+    <Page title="Conversion Blocks" backAction={{ onAction: () => navigate("/app") }}>
+      <BlockStack gap="600">
+        {/* Hero Header */}
+        <Card>
+          <div style={{
+            background: "linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)",
+            margin: "-16px",
+            padding: "32px 28px",
+            borderRadius: "12px",
+            position: "relative",
+            overflow: "hidden",
+          }}>
+            <div style={{
+              position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+              background: "radial-gradient(circle at 80% 20%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 20% 80%, rgba(16,185,129,0.1) 0%, transparent 50%)",
+            }} />
+            <div style={{ position: "relative", zIndex: 1 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "8px" }}>
+                <span style={{ fontSize: "28px" }}>⚡</span>
+                <span style={{ color: "white", fontSize: "22px", fontWeight: 700 }}>Conversion Blocks</span>
+              </div>
+              <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", margin: "0 0 16px 0", maxWidth: "500px" }}>
+                {totalBlocks} powerful blocks to boost your product page conversions. Add countdown timers, social proof, upsells, and more.
+              </p>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+                <span style={{
+                  background: isPremium ? "rgba(16,185,129,0.2)" : "rgba(251,191,36,0.2)",
+                  color: isPremium ? "#6ee7b7" : "#fcd34d",
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                }}>
+                  {isPremium ? "✓ All Unlocked" : "🔒 Premium Required"}
+                </span>
+                <span style={{
+                  background: "rgba(255,255,255,0.1)",
+                  color: "rgba(255,255,255,0.8)",
+                  padding: "4px 12px",
+                  borderRadius: "20px",
+                  fontSize: "13px",
+                  fontWeight: 500,
+                }}>
+                  {totalBlocks} blocks
+                </span>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        {/* Upgrade Banner for non-premium */}
+        {!isPremium && (
           <Card>
-            <BlockStack gap="300">
-              <BlockStack gap="200">
-                <Text as="h2" variant="headingMd">
-                  High-Converting Blocks
-                </Text>
-                <Text as="p" variant="bodyMd">
-                  Boost your conversion rate with proven UI elements that can be fixed below the purchase button.
-                </Text>
+            <InlineStack align="space-between" blockAlign="center" gap="400" wrap={false}>
+              <BlockStack gap="100">
+                <Text as="p" variant="headingSm">👑 Unlock all Conversion Blocks</Text>
+                <Text as="p" variant="bodySm" tone="subdued">Get all {totalBlocks} blocks + all premium sections for just €8/month.</Text>
               </BlockStack>
-            </BlockStack>
+              <UpgradeButton />
+            </InlineStack>
           </Card>
-        </Layout.Section>
+        )}
 
-        {Object.entries(categorizedBlocks).map(([category, categoryBlocks]) => (
-          <Layout.Section key={category}>
-            <Card>
-              <BlockStack gap="400">
-                <div style={{ paddingBottom: "12px", borderBottom: "1px solid #d5d5d5" }}>
-                  <Text as="h3" variant="headingMd">
-                    {category}
-                  </Text>
+        {/* How to use */}
+        <Card>
+          <BlockStack gap="300">
+            <Text as="h3" variant="headingSm">How to use</Text>
+            <InlineStack gap="400" wrap>
+              {[
+                { step: "1", icon: "🎨", text: "Open Theme Editor" },
+                { step: "2", icon: "📄", text: "Go to Product Page" },
+                { step: "3", icon: "➕", text: "Add Block → Section Hub" },
+                { step: "4", icon: "✨", text: "Customize & Save" },
+              ].map((s) => (
+                <div key={s.step} style={{
+                  display: "flex", alignItems: "center", gap: "8px",
+                  background: "#f8f9fa", borderRadius: "8px", padding: "8px 14px",
+                }}>
+                  <span style={{ fontSize: "16px" }}>{s.icon}</span>
+                  <Text as="span" variant="bodySm">{s.text}</Text>
                 </div>
-                
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
-                  {categoryBlocks.map((block) => (
-                    <Card key={block.id}>
-                      <BlockStack gap="300">
-                        <BlockStack gap="100">
-                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                            <Text as="h4" variant="headingMd">
-                              {block.name}
-                            </Text>
-                            {block.installed && (
-                              <Badge tone="success">Installed</Badge>
-                            )}
-                          </div>
-                          <Text as="p" variant="bodySm" tone="subdued">
-                            {block.description}
-                          </Text>
-                        </BlockStack>
+              ))}
+            </InlineStack>
+          </BlockStack>
+        </Card>
 
-                        {block.preview && (
-                          <div style={{ paddingTop: "12px", paddingBottom: "12px", borderTop: "1px solid #e5e5e5", borderBottom: "1px solid #e5e5e5" }}>
-                            {block.preview}
-                          </div>
-                        )}
-
-                        <div style={{ paddingTop: "8px" }}>
-                          <Button
-                            onClick={() => handleInstall(block.id)}
-                            disabled={block.installed || block.isLoading}
-                            loading={block.isLoading}
-                            variant="primary"
-                            fullWidth
-                          >
-                            {block.isLoading ? "Installing..." : block.installed ? "Installed" : "Install Block"}
-                          </Button>
-                        </div>
-                      </BlockStack>
-                    </Card>
-                  ))}
+        {/* Blocks Grid */}
+        <div style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(2, 1fr)",
+          gap: "16px",
+        }}>
+          {ALL_BLOCKS.map((block) => (
+            <Card key={block.id}>
+              <BlockStack gap="300">
+                {/* Preview Image – compact */}
+                <div style={{
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  border: "1px solid #e3e5e7",
+                  background: "#fafbfc",
+                  position: "relative",
+                  opacity: isPremium ? 1 : 0.65,
+                  transition: "opacity 0.2s ease",
+                }}>
+                  <div style={{
+                    maxHeight: "140px",
+                    overflow: "hidden",
+                    display: "flex",
+                    alignItems: "flex-start",
+                    justifyContent: "center",
+                  }}>
+                    <img
+                      src={block.preview}
+                      alt={block.name}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        display: "block",
+                        transform: "scale(0.85)",
+                        transformOrigin: "top center",
+                      }}
+                    />
+                  </div>
+                  {!isPremium && (
+                    <div style={{
+                      position: "absolute", top: 0, left: 0, right: 0, bottom: 0,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      background: "rgba(255,255,255,0.35)",
+                      backdropFilter: "blur(1px)",
+                    }}>
+                      <span style={{
+                        fontSize: "20px",
+                        background: "rgba(0,0,0,0.06)",
+                        borderRadius: "50%",
+                        width: "36px",
+                        height: "36px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}>🔒</span>
+                    </div>
+                  )}
                 </div>
+                {/* Block Info */}
+                <InlineStack align="space-between" blockAlign="start" gap="200" wrap={false}>
+                  <BlockStack gap="050">
+                    <Text as="h3" variant="headingSm">{block.name}</Text>
+                    <Text as="p" variant="bodySm" tone="subdued">{block.description}</Text>
+                  </BlockStack>
+                  {isPremium
+                    ? <Badge tone="success">Active</Badge>
+                    : <Badge tone="attention">Locked</Badge>
+                  }
+                </InlineStack>
               </BlockStack>
             </Card>
-          </Layout.Section>
-        ))}
-      </Layout>
+          ))}
+        </div>
+
+        {/* Bottom CTA for non-premium */}
+        {!isPremium && (
+          <Card>
+            <BlockStack gap="300" inlineAlign="center">
+              <Text as="p" variant="headingMd" alignment="center">Ready to boost your conversions?</Text>
+              <Text as="p" variant="bodySm" tone="subdued" alignment="center">
+                Unlock all {totalBlocks} conversion blocks and all premium sections.
+              </Text>
+              <div style={{ maxWidth: "320px", width: "100%", margin: "0 auto" }}>
+                <UpgradeButton fullWidth size="large" />
+              </div>
+            </BlockStack>
+          </Card>
+        )}
+      </BlockStack>
     </Page>
   );
 }

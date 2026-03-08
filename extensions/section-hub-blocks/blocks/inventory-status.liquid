@@ -1,0 +1,210 @@
+{% comment %}
+  Section Hub - Inventory Status Block
+  Shows stock status badge (In Stock, Low Stock, Out of Stock)
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-inv-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: {{ block.settings.font_size }}px;
+  font-weight: 600;
+}
+
+.sh-inv-status__dot {
+  width: {{ block.settings.dot_size }}px;
+  height: {{ block.settings.dot_size }}px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  animation: sh-inv-pulse 2s ease-in-out infinite;
+}
+
+.sh-inv-status--in-stock .sh-inv-status__dot {
+  background: {{ block.settings.color_in_stock }};
+  box-shadow: 0 0 0 0 {{ block.settings.color_in_stock }};
+}
+.sh-inv-status--in-stock .sh-inv-status__label {
+  color: {{ block.settings.color_in_stock }};
+}
+
+.sh-inv-status--low-stock .sh-inv-status__dot {
+  background: {{ block.settings.color_low_stock }};
+  box-shadow: 0 0 0 0 {{ block.settings.color_low_stock }};
+}
+.sh-inv-status--low-stock .sh-inv-status__label {
+  color: {{ block.settings.color_low_stock }};
+}
+
+.sh-inv-status--out-of-stock .sh-inv-status__dot {
+  background: {{ block.settings.color_out_of_stock }};
+}
+.sh-inv-status--out-of-stock .sh-inv-status__label {
+  color: {{ block.settings.color_out_of_stock }};
+}
+
+.sh-inv-status__info {
+  display: block;
+  font-size: {{ block.settings.font_size | minus: 2 }}px;
+  font-weight: 400;
+  opacity: 0.7;
+  margin-top: 2px;
+}
+
+@keyframes sh-inv-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 currentColor; }
+  50% { box-shadow: 0 0 0 4px transparent; }
+}
+</style>
+
+{% case block.settings.status %}
+  {% when 'in_stock' %}
+    <div class="sh-inv-status sh-inv-status--in-stock">
+      <span class="sh-inv-status__dot"></span>
+      <div>
+        <span class="sh-inv-status__label">{{ block.settings.in_stock_label }}</span>
+        {% if block.settings.in_stock_info != blank %}
+          <span class="sh-inv-status__info">{{ block.settings.in_stock_info }}</span>
+        {% endif %}
+      </div>
+    </div>
+  {% when 'low_stock' %}
+    <div class="sh-inv-status sh-inv-status--low-stock">
+      <span class="sh-inv-status__dot"></span>
+      <div>
+        <span class="sh-inv-status__label">{{ block.settings.low_stock_label }}</span>
+        {% if block.settings.low_stock_info != blank %}
+          <span class="sh-inv-status__info">{{ block.settings.low_stock_info }}</span>
+        {% endif %}
+      </div>
+    </div>
+  {% when 'out_of_stock' %}
+    <div class="sh-inv-status sh-inv-status--out-of-stock">
+      <span class="sh-inv-status__dot"></span>
+      <div>
+        <span class="sh-inv-status__label">{{ block.settings.out_of_stock_label }}</span>
+        {% if block.settings.out_of_stock_info != blank %}
+          <span class="sh-inv-status__info">{{ block.settings.out_of_stock_info }}</span>
+        {% endif %}
+      </div>
+    </div>
+{% endcase %}
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Inventory Status",
+  "target": "section",
+  "settings": [
+    {
+      "type": "select",
+      "id": "status",
+      "label": "Stock Status",
+      "default": "in_stock",
+      "options": [
+        { "value": "in_stock", "label": "In Stock" },
+        { "value": "low_stock", "label": "Low Stock" },
+        { "value": "out_of_stock", "label": "Out of Stock" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "In Stock"
+    },
+    {
+      "type": "text",
+      "id": "in_stock_label",
+      "label": "Label",
+      "default": "IN STOCK"
+    },
+    {
+      "type": "text",
+      "id": "in_stock_info",
+      "label": "Info Text",
+      "default": "Delivery in 2-3 business days"
+    },
+    {
+      "type": "header",
+      "content": "Low Stock"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_label",
+      "label": "Label",
+      "default": "LOW STOCK"
+    },
+    {
+      "type": "text",
+      "id": "low_stock_info",
+      "label": "Info Text",
+      "default": "Order soon – selling fast"
+    },
+    {
+      "type": "header",
+      "content": "Out of Stock"
+    },
+    {
+      "type": "text",
+      "id": "out_of_stock_label",
+      "label": "Label",
+      "default": "OUT OF STOCK"
+    },
+    {
+      "type": "text",
+      "id": "out_of_stock_info",
+      "label": "Info Text",
+      "default": "Check back soon"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "color_in_stock",
+      "label": "In Stock Color",
+      "default": "#22c55e"
+    },
+    {
+      "type": "color",
+      "id": "color_low_stock",
+      "label": "Low Stock Color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "color_out_of_stock",
+      "label": "Out of Stock Color",
+      "default": "#ef4444"
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "label": "Dot Size",
+      "min": 6,
+      "max": 16,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

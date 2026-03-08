@@ -3,20 +3,43 @@
   "name": "Hero Minimal",
   "description": "A clean, minimalist hero section with headline, text, and animated CTA button.",
   "category": "Hero",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "price": {
     "type": "free"
   },
-  "tags": ["OS2.0", "Minimal", "Clean", "Responsive"],
+  "tags": [
+    "OS2.0",
+    "Minimal",
+    "Clean",
+    "Responsive"
+  ],
   "author": "Section Hub",
-  "previewColor": "#6366f1",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/hero-minimal/default.svg", "alt": "Hero Minimal - Default Layout", "label": "Default" },
-    { "src": "/previews/hero-minimal/dark.svg", "alt": "Hero Minimal - Dark Mode", "label": "Dark" },
-    { "src": "/previews/hero-minimal/centered.svg", "alt": "Hero Minimal - Centered Layout", "label": "Centered" }
+    {
+      "src": "/previews/hero-minimal/default.webp",
+      "alt": "Hero Minimal - Default Layout",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/hero-minimal/dark.svg",
+      "alt": "Hero Minimal - Dark Mode",
+      "label": "Dark"
+    },
+    {
+      "src": "/previews/hero-minimal/centered.svg",
+      "alt": "Hero Minimal - Centered Layout",
+      "label": "Centered"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -24,5 +47,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-15",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added text shadow option for readability",
+        "Improved CTA button animation on hover",
+        "Fixed heading font size on ultra-wide screens"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-15",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

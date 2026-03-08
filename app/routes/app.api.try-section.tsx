@@ -287,9 +287,9 @@ ${section.liquidContent || ""}`;
     const editorUrl = `https://${shop}/admin/themes/${numericThemeId}/editor`;
 
     // ----------------------------------------------------------------
-    // 6. Save preview in DB (7-day trial)
+    // 6. Save preview in DB (1-day demo)
     // ----------------------------------------------------------------
-    const TRIAL_DAYS = 7;
+    const TRIAL_DAYS = 1;
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + TRIAL_DAYS);
 

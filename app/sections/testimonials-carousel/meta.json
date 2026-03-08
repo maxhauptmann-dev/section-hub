@@ -1,0 +1,71 @@
+{
+  "id": "testimonials-carousel",
+  "name": "Testimonials Carousel",
+  "description": "Horizontal scrolling carousel with customer testimonials, avatars, star ratings, verified badges, and overall rating. Perfect for showcasing customer reviews and building trust.",
+  "category": "Social Proof",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Reviews",
+    "Carousel",
+    "Social Proof",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonials-carousel2/default.webp",
+      "alt": "Testimonials Carousel – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 20
+  },
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added verified badge color customization",
+        "Improved carousel arrow hover effect",
+        "Fixed overall rating calculation rounding"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-20",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-04",
+  "createdAt": "2026-02-20"
+}

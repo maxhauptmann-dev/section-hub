@@ -54,75 +54,72 @@
               {% if block.settings.media_type == 'video' %}
                 {%- comment -%} Video media: Shopify hosted, YouTube, Vimeo or external URL {%- endcomment -%}
                 {% if block.settings.shopify_video != blank %}
-                  {% if section.settings.autoplay_videos %}
-                    {{
-                      block.settings.shopify_video
-                      | video_tag:
-                        class: 'tv-slider__video',
-                        playsinline: true,
-                        muted: true,
-                        loop: true,
-                        autoplay: true,
-                        controls: true,
-                        preload: 'auto',
-                        poster: ''
-                    }}
+                  {%- comment -%} Shopify hosted video — show thumbnail overlay, load video on click {%- endcomment -%}
+                  {% assign sv = block.settings.shopify_video %}
+                  {% if block.settings.poster != blank %}
+                    {% assign thumb_url = block.settings.poster | image_url: width: 800 %}
+                  {% elsif sv.preview_image != blank %}
+                    {% assign thumb_url = sv.preview_image | image_url: width: 800 %}
                   {% else %}
-                    {{
-                      block.settings.shopify_video
-                      | video_tag:
-                        class: 'tv-slider__video',
-                        playsinline: true,
-                        muted: false,
-                        loop: true,
-                        controls: true,
-                        preload: 'metadata',
-                        poster: ''
-                    }}
-                    <button class="tv-slider__play" aria-label="Play">
-                      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-                        <circle cx="24" cy="24" r="23" fill="rgba(0,0,0,0.45)" stroke="#fff" stroke-width="2"/>
-                        <path d="M19 15L34 24L19 33V15Z" fill="#fff"/>
-                      </svg>
-                    </button>
+                    {% assign thumb_url = '' %}
+                  {% endif %}
+                  {% if thumb_url != '' %}
+                    <div class="tv-slider__thumb" data-video-type="shopify">
+                      <img class="tv-slider__thumb-img" src="{{ thumb_url }}" alt="{{ block.settings.name | escape }}" loading="lazy">
+                      <button class="tv-slider__play" aria-label="Play">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27" fill="rgba(0,0,0,0.5)" stroke="#fff" stroke-width="2"/><path d="M22 18L38 28L22 38V18Z" fill="#fff"/></svg>
+                      </button>
+                    </div>
+                    <div class="tv-slider__video-container" style="display:none;">
+                      {% if section.settings.autoplay_videos %}
+                        {{ sv | video_tag: class: 'tv-slider__video', playsinline: true, muted: true, loop: true, autoplay: true, controls: true, preload: 'auto' }}
+                      {% else %}
+                        {{ sv | video_tag: class: 'tv-slider__video', playsinline: true, muted: false, loop: true, controls: true, preload: 'metadata' }}
+                      {% endif %}
+                    </div>
+                  {% else %}
+                    {%- comment -%} No thumbnail available — just show video directly {%- endcomment -%}
+                    {% if section.settings.autoplay_videos %}
+                      {{ sv | video_tag: class: 'tv-slider__video', playsinline: true, muted: true, loop: true, autoplay: true, controls: true, preload: 'auto' }}
+                    {% else %}
+                      {{ sv | video_tag: class: 'tv-slider__video', playsinline: true, muted: false, loop: true, controls: true, preload: 'metadata' }}
+                      <button class="tv-slider__play" aria-label="Play">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27" fill="rgba(0,0,0,0.5)" stroke="#fff" stroke-width="2"/><path d="M22 18L38 28L22 38V18Z" fill="#fff"/></svg>
+                      </button>
+                    {% endif %}
                   {% endif %}
                 {% elsif block.settings.video_url != blank %}
+                  {%- comment -%} YouTube / Vimeo — show thumbnail, load iframe on click {%- endcomment -%}
                   {% if block.settings.video_url.type == 'youtube' %}
-                    {% if section.settings.autoplay_videos %}
-                      <iframe
-                        class="tv-slider__video"
-                        src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?controls=1&modestbranding=1&rel=0&autoplay=1&mute=1"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                      ></iframe>
+                    {% assign yt_id = block.settings.video_url.id %}
+                    {% if block.settings.poster != blank %}
+                      {% assign yt_thumb = block.settings.poster | image_url: width: 800 %}
                     {% else %}
-                      <iframe
-                        class="tv-slider__video"
-                        src="https://www.youtube.com/embed/{{ block.settings.video_url.id }}?controls=1&modestbranding=1&rel=0"
-                        frameborder="0"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                        allowfullscreen
-                      ></iframe>
+                      {% assign yt_thumb = 'https://img.youtube.com/vi/' | append: yt_id | append: '/maxresdefault.jpg' %}
                     {% endif %}
+                    <div class="tv-slider__thumb" data-video-type="youtube" data-video-id="{{ yt_id }}" data-autoplay="{{ section.settings.autoplay_videos }}">
+                      <img class="tv-slider__thumb-img" src="{{ yt_thumb }}" alt="{{ block.settings.name | escape }}" loading="lazy">
+                      <button class="tv-slider__play" aria-label="Play">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27" fill="rgba(0,0,0,0.5)" stroke="#fff" stroke-width="2"/><path d="M22 18L38 28L22 38V18Z" fill="#fff"/></svg>
+                      </button>
+                    </div>
                   {% elsif block.settings.video_url.type == 'vimeo' %}
-                    {% if section.settings.autoplay_videos %}
-                      <iframe
-                        class="tv-slider__video"
-                        src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}?autoplay=1&muted=1"
-                        frameborder="0"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                      ></iframe>
+                    {% assign vm_id = block.settings.video_url.id %}
+                    {% if block.settings.poster != blank %}
+                      {% assign vm_thumb = block.settings.poster | image_url: width: 800 %}
                     {% else %}
-                      <iframe
-                        class="tv-slider__video"
-                        src="https://player.vimeo.com/video/{{ block.settings.video_url.id }}"
-                        frameborder="0"
-                        allow="autoplay; fullscreen; picture-in-picture"
-                        allowfullscreen
-                      ></iframe>
+                      {% assign vm_thumb = '' %}
                     {% endif %}
+                    <div class="tv-slider__thumb" data-video-type="vimeo" data-video-id="{{ vm_id }}" data-autoplay="{{ section.settings.autoplay_videos }}"{% if vm_thumb != '' %} data-thumb="{{ vm_thumb }}"{% endif %}>
+                      {% if vm_thumb != '' %}
+                        <img class="tv-slider__thumb-img" src="{{ vm_thumb }}" alt="{{ block.settings.name | escape }}" loading="lazy">
+                      {% else %}
+                        <div class="tv-slider__thumb-placeholder"></div>
+                      {% endif %}
+                      <button class="tv-slider__play" aria-label="Play">
+                        <svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="27" fill="rgba(0,0,0,0.5)" stroke="#fff" stroke-width="2"/><path d="M22 18L38 28L22 38V18Z" fill="#fff"/></svg>
+                      </button>
+                    </div>
                   {% endif %}
                 {% else %}
                   <div class="tv-slider__placeholder">
@@ -224,11 +221,53 @@
   next.addEventListener('click',function(){goTo(current+1);});
   buildDots();
 
-  /* Play / pause videos on click */
+  /* ── Thumbnail → Video on click ── */
+  wrap.querySelectorAll('.tv-slider__thumb').forEach(function(thumb){
+    var btn = thumb.querySelector('.tv-slider__play');
+    if(!btn) return;
+    btn.addEventListener('click', function(){
+      var type = thumb.dataset.videoType;
+
+      if(type === 'shopify'){
+        /* Shopify hosted: reveal hidden video container */
+        var container = thumb.nextElementSibling;
+        if(container && container.classList.contains('tv-slider__video-container')){
+          thumb.style.display = 'none';
+          container.style.display = 'block';
+          var vid = container.querySelector('video');
+          if(vid){ vid.play(); }
+        }
+      } else if(type === 'youtube'){
+        var id = thumb.dataset.videoId;
+        var autoplay = thumb.dataset.autoplay === 'true' ? 1 : 1; /* always autoplay after click */
+        var iframe = document.createElement('iframe');
+        iframe.className = 'tv-slider__video';
+        iframe.src = 'https://www.youtube.com/embed/' + id + '?controls=1&modestbranding=1&rel=0&autoplay=1';
+        iframe.setAttribute('frameborder','0');
+        iframe.setAttribute('allow','accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture');
+        iframe.setAttribute('allowfullscreen','');
+        thumb.parentElement.appendChild(iframe);
+        thumb.style.display = 'none';
+      } else if(type === 'vimeo'){
+        var id = thumb.dataset.videoId;
+        var iframe = document.createElement('iframe');
+        iframe.className = 'tv-slider__video';
+        iframe.src = 'https://player.vimeo.com/video/' + id + '?autoplay=1';
+        iframe.setAttribute('frameborder','0');
+        iframe.setAttribute('allow','autoplay; fullscreen; picture-in-picture');
+        iframe.setAttribute('allowfullscreen','');
+        thumb.parentElement.appendChild(iframe);
+        thumb.style.display = 'none';
+      }
+    });
+  });
+
+  /* Legacy play buttons (direct video, no thumbnail) */
   wrap.querySelectorAll('.tv-slider__play').forEach(function(btn){
-    btn.addEventListener('click',function(){
-      var vid=this.parentElement.querySelector('video');
-      if(vid){vid.paused?vid.play():vid.pause();this.style.opacity=vid.paused?'1':'0';}
+    if(btn.closest('.tv-slider__thumb')) return; /* already handled above */
+    btn.addEventListener('click', function(){
+      var vid = this.parentElement.querySelector('video');
+      if(vid){ vid.paused ? vid.play() : vid.pause(); this.style.opacity = vid.paused ? '1' : '0'; }
     });
   });
 

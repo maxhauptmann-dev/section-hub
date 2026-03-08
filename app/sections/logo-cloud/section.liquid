@@ -9,6 +9,11 @@
   --lc-bg: {{ section.settings.background_color }};
   --lc-text: {{ section.settings.text_color }};
   --lc-logo-opacity: {{ section.settings.logo_opacity | divided_by: 100.0 }};
+  --lc-logo-h: {{ section.settings.logo_height }}px;
+  --lc-logo-h-m: {{ section.settings.logo_height_mobile }}px;
+  --lc-gap: {{ section.settings.logo_gap }}px;
+  --lc-pad-v: {{ section.settings.padding_vertical }}px;
+  --lc-pad-h: {{ section.settings.padding_horizontal }}px;
 ">
   <div class="logo-cloud__container">
     {% if section.settings.heading != blank %}
@@ -17,19 +22,19 @@
     
     <div class="logo-cloud__grid {% if section.settings.animate %}logo-cloud__grid--animate{% endif %}">
       {% for block in section.blocks %}
-        <div class="logo-cloud__item" {{ block.shopify_attributes }}>
+        {%- assign logo_h = section.settings.logo_height | times: block.settings.logo_scale | divided_by: 100 -%}
+        {%- assign logo_h_m = section.settings.logo_height_mobile | times: block.settings.logo_scale | divided_by: 100 -%}
+        <div class="logo-cloud__item" style="--lc-logo-h: {{ logo_h }}px; --lc-logo-h-m: {{ logo_h_m }}px;" {{ block.shopify_attributes }}>
           {% if block.settings.link != blank %}
             <a href="{{ block.settings.link }}" target="_blank" rel="noopener" class="logo-cloud__link">
           {% endif %}
           
           {% if block.settings.logo != blank %}
             <img 
-              src="{{ block.settings.logo | image_url: width: 200 }}" 
+              src="{{ block.settings.logo | image_url: width: 400 }}" 
               alt="{{ block.settings.alt_text | default: 'Partner Logo' }}"
-              class="logo-cloud__logo"
+              class="logo-cloud__logo{% if section.settings.grayscale %} logo-cloud__logo--gray{% endif %}"
               loading="lazy"
-              width="140"
-              height="48"
             >
           {% else %}
             <div class="logo-cloud__placeholder">{{ block.settings.alt_text | default: 'Logo' }}</div>
@@ -78,6 +83,36 @@
     },
     {
       "type": "range",
+      "id": "logo_height",
+      "label": "Logo Height",
+      "min": 20,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "logo_height_mobile",
+      "label": "Logo Height – Mobile",
+      "min": 16,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "logo_gap",
+      "label": "Gap between logos",
+      "min": 8,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
       "id": "logo_opacity",
       "min": 20,
       "max": 100,
@@ -88,8 +123,35 @@
     },
     {
       "type": "checkbox",
+      "id": "grayscale",
+      "label": "Grayscale logos",
+      "default": true,
+      "info": "Logos become coloured on hover"
+    },
+    {
+      "type": "range",
+      "id": "padding_vertical",
+      "label": "Padding vertical",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_horizontal",
+      "label": "Padding horizontal",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "checkbox",
       "id": "animate",
-      "label": "Infinite Animation",
+      "label": "Infinite scroll animation",
       "default": false
     }
   ],
@@ -102,6 +164,17 @@
           "type": "image_picker",
           "id": "logo",
           "label": "Logo Image"
+        },
+        {
+          "type": "range",
+          "id": "logo_scale",
+          "label": "Logo Size",
+          "info": "100% = global size, 150% = 1.5× larger",
+          "min": 50,
+          "max": 200,
+          "step": 10,
+          "unit": "%",
+          "default": 100
         },
         {
           "type": "text",

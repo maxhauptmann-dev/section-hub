@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="70" viewBox="0 0 280 70">
+  <rect width="280" height="70" rx="12" fill="#F0FDF4"/>
+  <g transform="translate(12, 8)">
+    <rect width="80" height="24" rx="6" fill="white" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="8" y="16" font-family="system-ui" font-size="9" fill="#16A34A">🚚 Free Shipping</text>
+  </g>
+  <g transform="translate(98, 8)">
+    <rect width="80" height="24" rx="6" fill="white" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="8" y="16" font-family="system-ui" font-size="9" fill="#16A34A">🔄 Easy Returns</text>
+  </g>
+  <g transform="translate(184, 8)">
+    <rect width="80" height="24" rx="6" fill="white" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="8" y="16" font-family="system-ui" font-size="9" fill="#16A34A">🔒 Secure Pay</text>
+  </g>
+  <g transform="translate(12, 38)">
+    <rect width="80" height="24" rx="6" fill="white" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="8" y="16" font-family="system-ui" font-size="9" fill="#16A34A">💬 24/7 Support</text>
+  </g>
+  <g transform="translate(98, 38)">
+    <rect width="80" height="24" rx="6" fill="white" stroke="#BBF7D0" stroke-width="1"/>
+    <text x="8" y="16" font-family="system-ui" font-size="9" fill="#16A34A">✓ Warranty</text>
+  </g>
+</svg>

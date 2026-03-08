@@ -1,0 +1,344 @@
+{% comment %}
+  Section Hub – Newsletter Banner
+  Email signup with flexible layout, optional background image, overlay, and full styling controls.
+{% endcomment %}
+
+{{ 'section-newsletter-banner.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign img = section.settings.background_image
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+-%}
+
+<section
+  class="sh-newsletter sh-newsletter--{{ section.settings.layout }}"
+  style="
+    --sh-nl-bg: {{ section.settings.background_color }};
+    --sh-nl-text: {{ section.settings.text_color }};
+    --sh-nl-accent: {{ section.settings.accent_color }};
+    --sh-nl-btn-bg: {{ section.settings.button_color }};
+    --sh-nl-btn-text: {{ section.settings.button_text_color }};
+    --sh-nl-input-bg: {{ section.settings.input_background }};
+    --sh-nl-input-border: {{ section.settings.input_border_color }};
+    --sh-nl-pad-y: {{ section.settings.padding_y }}px;
+    --sh-nl-pad-x: {{ section.settings.padding_x }}px;
+    --sh-nl-radius: {{ section.settings.section_roundness }}px;
+    --sh-nl-btn-radius: {{ section.settings.button_roundness }}px;
+    --sh-nl-input-radius: {{ section.settings.input_roundness }}px;
+    --sh-nl-heading-size: {{ section.settings.heading_size }}px;
+    --sh-nl-heading-size-m: {{ section.settings.heading_size_mobile }}px;
+    --sh-nl-max-w: {{ section.settings.content_max_width }}px;
+    --sh-nl-overlay: {{ section.settings.overlay_color }};
+    --sh-nl-overlay-op: {{ overlay_opacity }};
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  {%- if img != blank -%}
+    <div class="sh-newsletter__bg">
+      <img
+        src="{{ img | image_url: width: 1600 }}"
+        alt=""
+        width="{{ img.width }}"
+        height="{{ img.height }}"
+        loading="lazy"
+      >
+    </div>
+  {%- endif -%}
+
+  {%- if section.settings.overlay_opacity > 0 -%}
+    <div class="sh-newsletter__overlay"></div>
+  {%- endif -%}
+
+  <div class="sh-newsletter__inner">
+    <div class="sh-newsletter__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="sh-newsletter__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h2 class="sh-newsletter__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="sh-newsletter__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+    </div>
+
+    <div class="sh-newsletter__form-wrap">
+      {%- form 'customer', class: 'sh-newsletter__form' -%}
+        <input type="hidden" name="contact[tags]" value="newsletter">
+        <div class="sh-newsletter__field-group">
+          <input
+            type="email"
+            name="contact[email]"
+            class="sh-newsletter__input"
+            placeholder="{{ section.settings.placeholder }}"
+            required
+            autocomplete="email"
+            aria-label="{{ section.settings.placeholder }}"
+          >
+          <button type="submit" class="sh-newsletter__btn">
+            {{ section.settings.button_text }}
+          </button>
+        </div>
+      {%- endform -%}
+
+      {%- if section.settings.disclaimer != blank -%}
+        <p class="sh-newsletter__disclaimer">{{ section.settings.disclaimer }}</p>
+      {%- endif -%}
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "SH – Newsletter Banner",
+  "tag": "section",
+  "class": "sh-newsletter-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow Text",
+      "default": "Stay Updated"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Join Our Newsletter"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Be the first to know about new collections, exclusive offers, and more."
+    },
+    {
+      "type": "text",
+      "id": "placeholder",
+      "label": "Input Placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button Text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "text",
+      "id": "disclaimer",
+      "label": "Disclaimer Text",
+      "default": "No spam. Unsubscribe at any time."
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "background_image",
+      "label": "Background Image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "stacked", "label": "Stacked (centered)" },
+        { "value": "split", "label": "Split (side by side)" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content Max Width",
+      "min": 400,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 24,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 20,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size – Mobile",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Roundness"
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section Roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "input_roundness",
+      "label": "Input Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#38bdf8"
+    },
+    {
+      "type": "color",
+      "id": "button_color",
+      "label": "Button Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button Text Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "input_background",
+      "label": "Input Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "input_border_color",
+      "label": "Input Border Color",
+      "default": "#e2e8f0"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Newsletter Banner"
+    }
+  ]
+}
+{% endschema %}

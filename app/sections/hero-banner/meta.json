@@ -1,0 +1,45 @@
+{
+  "id": "hero-banner",
+  "name": "Hero Banner",
+  "description": "Full-width hero banner with dual image/video slides that auto-alternate on a timer, bold heading, two CTA buttons, and autoplay video support. Perfect for sales, launches, and landing pages.",
+  "category": "Free",
+  "version": "1.1.0",
+  "price": {
+    "type": "free",
+    "amount": 0
+  },
+  "tags": ["OS2.0", "Hero", "Banner", "Video", "Image", "CTA", "Free", "Responsive", "Autoplay", "Slideshow"],
+  "author": "Section Hub",
+  "previewColor": "#222222",
+  "previews": [
+    { "src": "/previews/hero-banner/default.webp", "alt": "Hero Banner - Default", "label": "Default" }
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added overlay opacity slider setting",
+        "Improved video loading performance on mobile",
+        "Fixed CTA button alignment on small screens"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-03-02",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-02",
+  "updatedAt": "2026-03-04"
+}

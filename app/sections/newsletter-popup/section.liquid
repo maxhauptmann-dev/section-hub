@@ -1,0 +1,574 @@
+{% comment %}
+  Section Hub – Newsletter Popup v1.0
+  Email signup popup with image, customizable fields, and discount code display.
+{% endcomment %}
+
+{{ 'section-newsletter-popup.css' | asset_url | stylesheet_tag }}
+
+<!-- Overlay -->
+<div class="nlp-overlay" id="nlpOverlay-{{ section.id }}"
+  data-trigger="{{ section.settings.trigger_type }}"
+  data-delay="{{ section.settings.trigger_delay }}"
+  data-scroll="{{ section.settings.trigger_scroll }}"
+  data-cookie-days="{{ section.settings.cookie_days }}"
+  data-section-id="{{ section.id }}"
+  data-discount-code="{{ section.settings.discount_code }}"
+  style="
+    --nlp-overlay-bg: {{ section.settings.overlay_bg }};
+    --nlp-modal-bg: {{ section.settings.modal_bg }};
+    --nlp-modal-radius: {{ section.settings.modal_radius }}px;
+    --nlp-max-width: {{ section.settings.modal_width }}px;
+    --nlp-heading-color: {{ section.settings.heading_color }};
+    --nlp-text-color: {{ section.settings.text_color }};
+    --nlp-accent: {{ section.settings.accent_color }};
+    --nlp-title-size: {{ section.settings.title_size | divided_by: 100.0 }}em;
+    --nlp-subtitle-size: {{ section.settings.subtitle_size | divided_by: 100.0 }}em;
+    --nlp-input-border: {{ section.settings.input_border }};
+    --nlp-input-bg: {{ section.settings.input_bg }};
+    --nlp-input-radius: {{ section.settings.input_radius }}px;
+    --nlp-btn-bg: {{ section.settings.btn_bg }};
+    --nlp-btn-text: {{ section.settings.btn_text_color }};
+    --nlp-btn-radius: {{ section.settings.btn_radius }}px;
+    --nlp-close-bg: {{ section.settings.close_bg }};
+    --nlp-close-color: {{ section.settings.close_color }};
+    --nlp-placeholder-color: {{ section.settings.placeholder_color }};
+  "
+>
+  <div class="nlp-modal">
+    <button class="nlp-close" id="nlpClose-{{ section.id }}" aria-label="Close">&times;</button>
+
+    <!-- Left: Form -->
+    <div class="nlp-form-panel">
+      <!-- Form State -->
+      <div id="nlpFormState-{{ section.id }}">
+        {%- if section.settings.logo != blank -%}
+          <div class="nlp-logo">
+            <img
+              src="{{ section.settings.logo | image_url: width: 300 }}"
+              alt="{{ shop.name }}"
+              width="150"
+              height="44"
+              loading="lazy"
+            >
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.title != blank -%}
+          <h2 class="nlp-title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+
+        {%- if section.settings.subtitle != blank -%}
+          <p class="nlp-subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+
+        <form class="nlp-form" id="nlpForm-{{ section.id }}" onsubmit="return false;">
+          {%- if section.settings.show_name_field -%}
+            <input
+              class="nlp-input"
+              type="text"
+              id="nlpName-{{ section.id }}"
+              placeholder="{{ section.settings.name_placeholder }}"
+            >
+          {%- endif -%}
+          <input
+            class="nlp-input"
+            type="email"
+            id="nlpEmail-{{ section.id }}"
+            placeholder="{{ section.settings.email_placeholder }}"
+            required
+          >
+          <button type="submit" class="nlp-submit-btn" id="nlpSubmitBtn-{{ section.id }}">
+            {{ section.settings.btn_text }}
+          </button>
+        </form>
+
+        {%- if section.settings.terms_text != blank -%}
+          <p class="nlp-terms">{{ section.settings.terms_text }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.show_no_thanks -%}
+          <button class="nlp-no-thanks" id="nlpNoThanks-{{ section.id }}">
+            {{ section.settings.no_thanks_text }}
+          </button>
+        {%- endif -%}
+      </div>
+
+      <!-- Success State -->
+      <div class="nlp-success" id="nlpSuccess-{{ section.id }}">
+        <div class="nlp-success-emoji">{{ section.settings.success_emoji }}</div>
+        <h2 class="nlp-success-title" id="nlpSuccessTitle-{{ section.id }}">{{ section.settings.success_title }}</h2>
+        <p class="nlp-success-message">{{ section.settings.success_message }}</p>
+
+        {%- if section.settings.discount_code != blank -%}
+          <div class="nlp-discount-code" id="nlpDiscountCode-{{ section.id }}">
+            {{ section.settings.discount_code }}
+          </div>
+          <p class="nlp-copy-hint">{{ section.settings.copy_hint }}</p>
+          <button class="nlp-copy-btn" id="nlpCopyBtn-{{ section.id }}">
+            {{ section.settings.copy_btn_text }}
+          </button>
+        {%- endif -%}
+      </div>
+    </div>
+
+    <!-- Right: Image -->
+    <div class="nlp-image-panel{% if section.settings.image == blank %} nlp-image-panel--empty{% endif %}">
+      {%- if section.settings.image != blank -%}
+        <img
+          src="{{ section.settings.image | image_url: width: 800 }}"
+          alt="{{ section.settings.image_alt | default: section.settings.title }}"
+          loading="lazy"
+        >
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  var sid = {{ section.id | json }};
+  var overlay = document.getElementById('nlpOverlay-' + sid);
+  if (!overlay) return;
+
+  var sectionId = overlay.dataset.sectionId;
+  var cookieKey = 'nlp_shown_' + sectionId;
+  var cookieDays = parseInt(overlay.dataset.cookieDays) || 7;
+
+  /* ── Cookie helpers ── */
+  function getCookie(name) {
+    var v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+  }
+  function setCookie(name, val, days) {
+    var d = new Date();
+    d.setTime(d.getTime() + days * 86400000);
+    document.cookie = name + '=' + val + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+  }
+
+  // Don't show if already shown
+  if (getCookie(cookieKey) === '1') return;
+
+  /* ── Show / Close ── */
+  function showPopup() {
+    overlay.classList.add('nlp-overlay--visible');
+  }
+  function closePopup() {
+    overlay.classList.remove('nlp-overlay--visible');
+    setCookie(cookieKey, '1', cookieDays);
+  }
+
+  /* ── Trigger ── */
+  var triggerType = overlay.dataset.trigger;
+  var triggerDelay = parseInt(overlay.dataset.delay) || 3;
+  var triggerScroll = parseInt(overlay.dataset.scroll) || 50;
+
+  if (triggerType === 'delay') {
+    setTimeout(showPopup, triggerDelay * 1000);
+  } else if (triggerType === 'scroll') {
+    var scrollTriggered = false;
+    window.addEventListener('scroll', function() {
+      if (scrollTriggered) return;
+      var pct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (pct >= triggerScroll) {
+        scrollTriggered = true;
+        showPopup();
+      }
+    });
+  } else if (triggerType === 'exit') {
+    var exitTriggered = false;
+    document.addEventListener('mouseleave', function(e) {
+      if (exitTriggered) return;
+      if (e.clientY < 0) {
+        exitTriggered = true;
+        showPopup();
+      }
+    });
+  }
+
+  /* ── Close handlers ── */
+  document.getElementById('nlpClose-' + sid).addEventListener('click', closePopup);
+  var noThanks = document.getElementById('nlpNoThanks-' + sid);
+  if (noThanks) noThanks.addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closePopup();
+  });
+
+  /* ── Form submit ── */
+  var form = document.getElementById('nlpForm-' + sid);
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    var emailInput = document.getElementById('nlpEmail-' + sid);
+    if (!emailInput.value || !emailInput.validity.valid) {
+      emailInput.focus();
+      return;
+    }
+
+    // Hide form, show success
+    document.getElementById('nlpFormState-' + sid).style.display = 'none';
+    var success = document.getElementById('nlpSuccess-' + sid);
+    success.classList.add('nlp-success--visible');
+
+    setCookie(cookieKey, '1', cookieDays);
+  });
+
+  /* ── Copy discount code ── */
+  var copyBtn = document.getElementById('nlpCopyBtn-' + sid);
+  var codeEl = document.getElementById('nlpDiscountCode-' + sid);
+  if (copyBtn && codeEl) {
+    function copyCode() {
+      var code = codeEl.textContent.trim();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(code);
+      }
+      copyBtn.textContent = {{ section.settings.copied_text | json }};
+      setTimeout(function() {
+        copyBtn.textContent = {{ section.settings.copy_btn_text | json }};
+      }, 2000);
+    }
+    copyBtn.addEventListener('click', copyCode);
+    codeEl.addEventListener('click', copyCode);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Newsletter Popup",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Headline",
+      "default": "Get 20% Off Your First Order"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle / Description",
+      "default": "Sign up now for your exclusive welcome discount and shop our best-selling products."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Side Image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image Alt Text",
+      "default": "Newsletter signup"
+    },
+    {
+      "type": "header",
+      "content": "Form Fields"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_name_field",
+      "label": "Show Name Field",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "label": "Name Placeholder",
+      "default": "Name"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email Placeholder",
+      "default": "Email"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "GET 20% OFF"
+    },
+    {
+      "type": "header",
+      "content": "Discount Code"
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount Code",
+      "info": "Leave empty to not show a code after signup.",
+      "default": "WELCOME20"
+    },
+    {
+      "type": "header",
+      "content": "Footer"
+    },
+    {
+      "type": "text",
+      "id": "terms_text",
+      "label": "Terms / Fine Print",
+      "default": "By signing up, you agree to our privacy policy."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_no_thanks",
+      "label": "Show 'No thanks' Link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "no_thanks_text",
+      "label": "'No thanks' Text",
+      "default": "No thanks, I don't want discounts"
+    },
+    {
+      "type": "header",
+      "content": "Success State"
+    },
+    {
+      "type": "text",
+      "id": "success_emoji",
+      "label": "Success Emoji",
+      "default": "🎉"
+    },
+    {
+      "type": "text",
+      "id": "success_title",
+      "label": "Success Title",
+      "default": "Welcome aboard!"
+    },
+    {
+      "type": "text",
+      "id": "success_message",
+      "label": "Success Message",
+      "default": "Here is your discount code:"
+    },
+    {
+      "type": "text",
+      "id": "copy_hint",
+      "label": "Copy Hint Text",
+      "default": "Click the code or button to copy"
+    },
+    {
+      "type": "text",
+      "id": "copy_btn_text",
+      "label": "Copy Button Text",
+      "default": "Copy Code"
+    },
+    {
+      "type": "text",
+      "id": "copied_text",
+      "label": "Copied Confirmation Text",
+      "default": "Copied! ✓"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger_type",
+      "label": "When to show",
+      "options": [
+        { "value": "delay", "label": "After delay" },
+        { "value": "scroll", "label": "After scroll %" },
+        { "value": "exit",  "label": "Exit intent" }
+      ],
+      "default": "delay"
+    },
+    {
+      "type": "range",
+      "id": "trigger_delay",
+      "label": "Delay (seconds)",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "trigger_scroll",
+      "label": "Scroll threshold",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Don't show again for X days",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "modal_width",
+      "label": "Modal Max Width",
+      "min": 600,
+      "max": 1000,
+      "step": 20,
+      "unit": "px",
+      "default": 820
+    },
+    {
+      "type": "range",
+      "id": "modal_radius",
+      "label": "Modal Roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Size",
+      "min": 150,
+      "max": 300,
+      "step": 10,
+      "default": 200,
+      "info": "Relative size (200 = 2em)"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle Size",
+      "min": 80,
+      "max": 130,
+      "step": 5,
+      "default": 95,
+      "info": "Relative size (100 = 1em)"
+    },
+    {
+      "type": "header",
+      "content": "Colors – General"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg",
+      "label": "Overlay Background",
+      "default": "rgba(0,0,0,0.5)"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg",
+      "label": "Modal Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#cc0000"
+    },
+    {
+      "type": "header",
+      "content": "Colors – Form"
+    },
+    {
+      "type": "color",
+      "id": "input_border",
+      "label": "Input Border",
+      "default": "#dddddd"
+    },
+    {
+      "type": "color",
+      "id": "input_bg",
+      "label": "Input Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "placeholder_color",
+      "label": "Placeholder Color",
+      "default": "#999999"
+    },
+    {
+      "type": "range",
+      "id": "input_radius",
+      "label": "Input Roundness",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Colors – Button"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#cc0000"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Colors – Close Button"
+    },
+    {
+      "type": "color",
+      "id": "close_bg",
+      "label": "Close Button Background",
+      "default": "rgba(0,0,0,0.06)"
+    },
+    {
+      "type": "color",
+      "id": "close_color",
+      "label": "Close Button Color",
+      "default": "#333333"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Newsletter Popup"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,83 @@
+{
+  "id": "hero-slideshow",
+  "name": "Hero Slideshow",
+  "description": "Fullscreen hero slideshow with autoplay, thumbnail navigation and animated progress border. Clean editorial look without text overlays — images speak for themselves.",
+  "category": [
+    "Hero",
+    "Slideshow"
+  ],
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Slideshow",
+    "Autoplay",
+    "Thumbnails",
+    "Progress",
+    "Editorial",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#1a1a1a",
+  "previews": [
+    {
+      "src": "/previews/hero-slideshow/default.webp",
+      "alt": "Hero Slideshow – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-28",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Fullscreen image slideshow",
+    "Autoplay with configurable speed",
+    "Thumbnail navigation with progress border",
+    "Optional heading, subheading, and button per slide",
+    "Smooth crossfade transitions",
+    "Touch swipe support",
+    "Keyboard navigation",
+    "Responsive design",
+    "Lazy loading support"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added pause on hover option",
+        "Improved thumbnail loading performance",
+        "Fixed progress border animation reset"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-28",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

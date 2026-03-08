@@ -1,0 +1,334 @@
+/* ============================================
+   Section Hub – Spin Wheel Popup
+   ============================================ */
+
+/* === Overlay === */
+.swp-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: var(--swp-overlay-bg, rgba(0,0,0,0.6));
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  animation: swpFadeIn 0.3s ease;
+}
+
+.swp-overlay--visible {
+  display: flex;
+}
+
+@keyframes swpFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* === Modal === */
+.swp-modal {
+  position: relative;
+  background: var(--swp-modal-bg, #1a1a2e);
+  color: var(--swp-text-color, #ffffff);
+  border-radius: var(--swp-modal-radius, 20px);
+  max-width: 800px;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+  animation: swpSlideUp 0.4s ease;
+}
+
+@keyframes swpSlideUp {
+  from { opacity: 0; transform: translateY(40px) scale(0.95); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* === Close Button === */
+.swp-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  z-index: 10;
+  background: none;
+  border: none;
+  color: var(--swp-text-color, #ffffff);
+  font-size: 24px;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 0.2s;
+  line-height: 1;
+  padding: 4px;
+}
+
+.swp-close:hover {
+  opacity: 1;
+}
+
+/* === Left Panel (Wheel) === */
+.swp-wheel-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* === Wheel Container === */
+.swp-wheel-container {
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+
+/* === Pointer / Arrow === */
+.swp-pointer {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 5;
+  width: 0;
+  height: 0;
+  border-left: 14px solid transparent;
+  border-right: 14px solid transparent;
+  border-top: 28px solid var(--swp-pointer-color, #ff6b6b);
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+
+/* === Wheel === */
+.swp-wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  position: relative;
+  transition: transform 4s cubic-bezier(0.17, 0.67, 0.12, 0.99);
+  box-shadow: 0 0 0 6px var(--swp-wheel-border, rgba(255,255,255,0.2)),
+              0 0 30px rgba(0,0,0,0.3);
+}
+
+.swp-wheel canvas {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+}
+
+/* === Center Circle === */
+.swp-wheel-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: var(--swp-center-bg, #ffffff);
+  color: var(--swp-center-text, #1a1a2e);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 11px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+  cursor: pointer;
+  z-index: 3;
+  letter-spacing: 0.03em;
+}
+
+/* === Right Panel (Form) === */
+.swp-form-panel {
+  padding: 40px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 20px;
+}
+
+.swp-title {
+  font-size: var(--swp-title-size, 1.6em);
+  font-weight: 800;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.swp-subtitle {
+  font-size: var(--swp-subtitle-size, 0.95em);
+  opacity: 0.8;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* === Form === */
+.swp-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.swp-input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--swp-input-border, rgba(255,255,255,0.2));
+  border-radius: var(--swp-input-radius, 8px);
+  background: var(--swp-input-bg, rgba(255,255,255,0.08));
+  color: var(--swp-text-color, #ffffff);
+  font-size: 0.95em;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.swp-input::placeholder {
+  color: var(--swp-text-color, #ffffff);
+  opacity: 0.45;
+}
+
+.swp-input:focus {
+  border-color: var(--swp-accent, #ff6b6b);
+}
+
+.swp-spin-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: var(--swp-btn-bg, #ff6b6b);
+  color: var(--swp-btn-text, #ffffff);
+  border: none;
+  border-radius: var(--swp-btn-radius, 8px);
+  font-size: 1em;
+  font-weight: 700;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.2s;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.swp-spin-btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.swp-spin-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.swp-terms {
+  font-size: 0.75em;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.swp-no-thanks {
+  background: none;
+  border: none;
+  color: var(--swp-text-color, #ffffff);
+  opacity: 0.5;
+  cursor: pointer;
+  font-size: 0.8em;
+  padding: 4px 0;
+  text-decoration: underline;
+  transition: opacity 0.2s;
+}
+
+.swp-no-thanks:hover {
+  opacity: 0.8;
+}
+
+/* === Result State === */
+.swp-result {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.swp-result--visible {
+  display: flex;
+}
+
+.swp-result-emoji {
+  font-size: 3em;
+}
+
+.swp-result-title {
+  font-size: 1.4em;
+  font-weight: 800;
+  margin: 0;
+}
+
+.swp-result-message {
+  font-size: 0.95em;
+  opacity: 0.8;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.swp-discount-code {
+  display: inline-block;
+  padding: 12px 24px;
+  background: var(--swp-accent, #ff6b6b);
+  color: var(--swp-btn-text, #fff);
+  border-radius: 8px;
+  font-size: 1.3em;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  user-select: all;
+  cursor: pointer;
+}
+
+.swp-result-hint {
+  font-size: 0.8em;
+  opacity: 0.5;
+  margin: 0;
+}
+
+.swp-copy-btn {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: var(--swp-text-color, #fff);
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 0.9em;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.swp-copy-btn:hover {
+  background: rgba(255,255,255,0.2);
+}
+
+/* === Mobile === */
+@media (max-width: 649px) {
+  .swp-modal {
+    grid-template-columns: 1fr;
+    max-width: 380px;
+  }
+
+  .swp-wheel-panel {
+    padding: 24px 16px;
+  }
+
+  .swp-wheel-container {
+    width: 220px;
+    height: 220px;
+  }
+
+  .swp-wheel-center {
+    width: 40px;
+    height: 40px;
+    font-size: 9px;
+  }
+
+  .swp-form-panel {
+    padding: 24px 20px;
+  }
+
+  .swp-title {
+    font-size: 1.3em;
+  }
+}

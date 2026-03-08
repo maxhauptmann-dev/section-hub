@@ -1,0 +1,690 @@
+{{ 'featured-collection-tabs.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign heading       = section.settings.heading
+  assign subheading    = section.settings.subheading
+  assign desktop_cols  = section.settings.products_desktop
+  assign mobile_cols   = section.settings.products_mobile
+  assign img_ratio     = section.settings.image_ratio
+  assign img_radius    = section.settings.image_border_radius
+  assign show_vendor   = section.settings.show_vendor
+  assign show_price    = section.settings.show_price
+  assign btn_label     = section.settings.button_label
+  assign btn_style     = section.settings.button_style
+  assign show_arrows   = section.settings.show_arrows
+  assign shopall_label = section.settings.shop_all_label
+  assign shopall_style = section.settings.shop_all_style
+  assign gap_desktop   = section.settings.gap_desktop
+  assign gap_mobile    = section.settings.gap_mobile
+-%}
+
+<section
+  class="sh-ct{% if section.settings.bg_pattern != 'none' %} sh-ct--pattern sh-ct--pattern-{{ section.settings.bg_pattern }}{% endif %}"
+  style="
+    --sh-ct-bg: {{ section.settings.bg_color }};
+    --sh-ct-bg2: {{ section.settings.bg_color_2 }};
+    --sh-ct-pattern-opacity: {{ section.settings.bg_pattern_opacity | divided_by: 100.0 }};
+    --sh-ct-text: {{ section.settings.text_color }};
+    --sh-ct-accent: {{ section.settings.accent_color }};
+    --sh-ct-card-bg: {{ section.settings.card_bg_color }};
+    --sh-ct-tab-bg: {{ section.settings.tab_bg_color }};
+    --sh-ct-tab-text: {{ section.settings.tab_text_color }};
+    --sh-ct-tab-active-bg: {{ section.settings.tab_active_bg_color }};
+    --sh-ct-tab-active-text: {{ section.settings.tab_active_text_color }};
+    --sh-ct-btn-bg: {{ section.settings.btn_bg_color }};
+    --sh-ct-btn-text: {{ section.settings.btn_text_color }};
+    --sh-ct-gap: {{ gap_desktop }}px;
+    --sh-ct-gap-m: {{ gap_mobile }}px;
+    --sh-ct-cols: {{ desktop_cols }};
+    --sh-ct-cols-m: {{ mobile_cols }};
+    --sh-ct-img-radius: {{ img_radius }}px;
+    --sh-ct-card-radius: {{ section.settings.card_border_radius }}px;
+    --sh-ct-pad-y: {{ section.settings.padding_top }}px;
+    --sh-ct-pad-y-b: {{ section.settings.padding_bottom }}px;
+    --sh-ct-tab-radius: {{ section.settings.tab_border_radius }}px;
+    {% if section.settings.bg_gradient != 'none' %}
+      {% case section.settings.bg_gradient %}
+        {% when 'top-bottom' %}--sh-ct-gradient: linear-gradient(180deg, var(--sh-ct-bg), var(--sh-ct-bg2));
+        {% when 'bottom-top' %}--sh-ct-gradient: linear-gradient(0deg, var(--sh-ct-bg), var(--sh-ct-bg2));
+        {% when 'left-right' %}--sh-ct-gradient: linear-gradient(90deg, var(--sh-ct-bg), var(--sh-ct-bg2));
+        {% when 'diagonal' %}--sh-ct-gradient: linear-gradient(135deg, var(--sh-ct-bg), var(--sh-ct-bg2));
+        {% when 'radial' %}--sh-ct-gradient: radial-gradient(circle at center, var(--sh-ct-bg), var(--sh-ct-bg2));
+      {% endcase %}
+    {% endif %}
+  "
+  data-section-id="{{ section.id }}"
+>
+  <div class="sh-ct__inner">
+
+    {%- comment -%} ── Header ── {%- endcomment -%}
+    {% if heading != blank or subheading != blank %}
+      <div class="sh-ct__header" style="text-align: {{ section.settings.header_align }};">
+        {% if heading != blank %}
+          <h2 class="sh-ct__heading">{{ heading }}</h2>
+        {% endif %}
+        {% if subheading != blank %}
+          <p class="sh-ct__subheading">{{ subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} ── Tabs ── {%- endcomment -%}
+    {% if section.blocks.size > 1 %}
+      <div class="sh-ct__tabs sh-ct__tabs--{{ section.settings.tab_align }}" role="tablist">
+        {% for block in section.blocks %}
+          <button
+            class="sh-ct__tab{% if forloop.first %} is-active{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            aria-controls="sh-ct-panel-{{ block.id }}"
+            data-index="{{ forloop.index0 }}"
+          >
+            {{ block.settings.tab_label | default: block.settings.collection | default: "Collection" }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} ── Panels ── {%- endcomment -%}
+    {% for block in section.blocks %}
+      {%- assign col = collections[block.settings.collection] -%}
+      <div
+        id="sh-ct-panel-{{ block.id }}"
+        class="sh-ct__panel{% if forloop.first %} is-active{% endif %}"
+        role="tabpanel"
+        {{ block.shopify_attributes }}
+      >
+        <div class="sh-ct__slider">
+          {%- comment -%} Arrows {%- endcomment -%}
+          {% if show_arrows %}
+            <button class="sh-ct__arrow sh-ct__arrow--prev" aria-label="Previous" disabled>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18L9 12L15 6"/></svg>
+            </button>
+            <button class="sh-ct__arrow sh-ct__arrow--next" aria-label="Next">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18L15 12L9 6"/></svg>
+            </button>
+          {% endif %}
+
+          {%- comment -%} Track (scrollable) {%- endcomment -%}
+          <div class="sh-ct__track">
+            {% if col != blank and col.products_count > 0 %}
+              {% for product in col.products limit: section.settings.products_limit %}
+                <div class="sh-ct__card">
+                  <a href="{{ product.url }}" class="sh-ct__card-link" aria-label="{{ product.title }}">
+                    <div class="sh-ct__img-wrap"
+                         style="aspect-ratio: {% case img_ratio %}{% when 'square' %}1/1{% when 'portrait' %}3/4{% when 'landscape' %}4/3{% when 'wide' %}16/9{% else %}auto{% endcase %};">
+                      {% if product.featured_image %}
+                        <img
+                          src="{{ product.featured_image | image_url: width: 800 }}"
+                          alt="{{ product.featured_image.alt | escape | default: product.title }}"
+                          loading="lazy"
+                          width="{{ product.featured_image.width }}"
+                          height="{{ product.featured_image.height }}"
+                          class="sh-ct__img"
+                        >
+                      {% else %}
+                        {{ 'product-1' | placeholder_svg_tag: 'sh-ct__placeholder' }}
+                      {% endif %}
+
+                      {%- if product.compare_at_price > product.price -%}
+                        <span class="sh-ct__badge">Sale</span>
+                      {%- endif -%}
+                    </div>
+                  </a>
+
+                  <div class="sh-ct__info">
+                    {% if show_vendor and product.vendor != blank %}
+                      <span class="sh-ct__vendor">{{ product.vendor }}</span>
+                    {% endif %}
+
+                    <h3 class="sh-ct__title">
+                      <a href="{{ product.url }}">{{ product.title }}</a>
+                    </h3>
+
+                    {% if show_price %}
+                      <div class="sh-ct__price">
+                        {% if product.compare_at_price > product.price %}
+                          <span class="sh-ct__price-compare">{{ product.compare_at_price | money }}</span>
+                        {% endif %}
+                        <span class="sh-ct__price-current {% if product.compare_at_price > product.price %}sh-ct__price-sale{% endif %}">
+                          {{ product.price | money }}
+                        </span>
+                      </div>
+                    {% endif %}
+
+                    {% if btn_label != blank %}
+                      <a href="{{ product.url }}" class="sh-ct__btn sh-ct__btn--{{ btn_style }}">
+                        {{ btn_label }}
+                      </a>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+            {% else %}
+              {% for i in (1..6) %}
+                <div class="sh-ct__card">
+                  <div class="sh-ct__img-wrap" style="aspect-ratio: 3/4;">
+                    {{ 'product-1' | placeholder_svg_tag: 'sh-ct__placeholder' }}
+                  </div>
+                  <div class="sh-ct__info">
+                    <span class="sh-ct__vendor">Brand</span>
+                    <h3 class="sh-ct__title"><a href="#">Product {{ i }}</a></h3>
+                    <div class="sh-ct__price"><span class="sh-ct__price-current">$0.00</span></div>
+                  </div>
+                </div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+
+        {%- comment -%} Shop all {%- endcomment -%}
+        {% if shopall_label != blank and col != blank %}
+          <div class="sh-ct__shopall">
+            <a href="{{ col.url }}" class="sh-ct__btn sh-ct__btn--{{ shopall_style }}">
+              {{ shopall_label }}
+            </a>
+          </div>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var SEC = '[data-section-id="{{ section.id }}"]';
+
+  function setup(root) {
+    if (!root) return;
+    /* ── Tabs ── */
+    var tabs = root.querySelectorAll('.sh-ct__tab');
+    var panels = root.querySelectorAll('.sh-ct__panel');
+
+    tabs.forEach(function(tab) {
+      tab.addEventListener('click', function() {
+        tabs.forEach(function(t) { t.classList.remove('is-active'); t.setAttribute('aria-selected','false'); });
+        panels.forEach(function(p) { p.classList.remove('is-active'); });
+        tab.classList.add('is-active');
+        tab.setAttribute('aria-selected','true');
+        var target = root.querySelector('#' + tab.getAttribute('aria-controls'));
+        if (target) {
+          target.classList.add('is-active');
+          initSlider(target);
+        }
+      });
+    });
+
+    /* init first */
+    var first = root.querySelector('.sh-ct__panel.is-active');
+    if (first) initSlider(first);
+  }
+
+  function initSlider(panel) {
+    var track = panel.querySelector('.sh-ct__track');
+    if (!track) return;
+    var prevBtn = panel.querySelector('.sh-ct__arrow--prev');
+    var nextBtn = panel.querySelector('.sh-ct__arrow--next');
+
+    /* reset scroll */
+    track.scrollLeft = 0;
+
+    function updateArrows() {
+      if (!prevBtn || !nextBtn) return;
+      prevBtn.disabled = track.scrollLeft <= 2;
+      nextBtn.disabled = track.scrollLeft + track.clientWidth >= track.scrollWidth - 2;
+
+      /* Position arrows at center of the first image */
+      var firstImg = track.querySelector('.sh-ct__img-wrap');
+      if (firstImg) {
+        var imgH = firstImg.offsetHeight;
+        var arrowH = prevBtn.offsetHeight;
+        var topPx = (imgH / 2) - (arrowH / 2);
+        prevBtn.style.top = topPx + 'px';
+        nextBtn.style.top = topPx + 'px';
+      }
+    }
+
+    /* Scroll by one "page" */
+    function scrollBy(dir) {
+      var card = track.querySelector('.sh-ct__card');
+      if (!card) return;
+      var gap = parseFloat(getComputedStyle(track).columnGap) || 16;
+      var amount = (card.offsetWidth + gap) * dir;
+      track.scrollBy({ left: amount, behavior: 'smooth' });
+    }
+
+    if (prevBtn) {
+      var np = prevBtn.cloneNode(true);
+      prevBtn.parentNode.replaceChild(np, prevBtn);
+      prevBtn = np;
+      prevBtn.addEventListener('click', function() { scrollBy(-1); });
+    }
+    if (nextBtn) {
+      var nn = nextBtn.cloneNode(true);
+      nextBtn.parentNode.replaceChild(nn, nextBtn);
+      nextBtn = nn;
+      nextBtn.addEventListener('click', function() { scrollBy(1); });
+    }
+
+    track.addEventListener('scroll', updateArrows, { passive: true });
+    updateArrows();
+
+    /* Update on resize */
+    var rt;
+    window.addEventListener('resize', function() {
+      clearTimeout(rt);
+      rt = setTimeout(updateArrows, 150);
+    });
+  }
+
+  function init() {
+    var root = document.querySelector(SEC);
+    if (root) setup(root);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+
+  document.addEventListener('shopify:section:load', function(e) {
+    var root = e.target.querySelector('.sh-ct');
+    if (root) setup(root);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SH – Collection Tabs",
+  "tag": "section",
+  "class": "sh-collection-tabs",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Collections"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading"
+    },
+    {
+      "type": "select",
+      "id": "header_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Products"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "products_desktop",
+      "label": "Visible on desktop",
+      "info": "How many product cards are visible",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "products_mobile",
+      "label": "Visible on mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap_desktop",
+      "label": "Gap",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap – Mobile",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide", "label": "Wide (16:9)" },
+        { "value": "auto", "label": "Original" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "label": "Image roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Card roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Product button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button label",
+      "default": "Shop now",
+      "info": "Leave empty to hide"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "text", "label": "Text link" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "\"Shop all\" button"
+    },
+    {
+      "type": "text",
+      "id": "shop_all_label",
+      "label": "Label",
+      "default": "View all",
+      "info": "Leave empty to hide"
+    },
+    {
+      "type": "select",
+      "id": "shop_all_style",
+      "label": "Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "default": true,
+      "info": "Swipe / drag always works"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "bg_color_2",
+      "label": "Background 2",
+      "default": "#f0f0f0",
+      "info": "Used for gradients & patterns"
+    },
+    {
+      "type": "select",
+      "id": "bg_gradient",
+      "label": "Gradient",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "top-bottom", "label": "Top → Bottom" },
+        { "value": "bottom-top", "label": "Bottom → Top" },
+        { "value": "left-right", "label": "Left → Right" },
+        { "value": "diagonal", "label": "Diagonal" },
+        { "value": "radial", "label": "Radial" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Background pattern"
+    },
+    {
+      "type": "select",
+      "id": "bg_pattern",
+      "label": "Pattern",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "dots", "label": "Dots" },
+        { "value": "grid", "label": "Grid" },
+        { "value": "diagonal", "label": "Diagonal lines" },
+        { "value": "waves", "label": "Waves" },
+        { "value": "zigzag", "label": "Zigzag" },
+        { "value": "crosses", "label": "Crosses" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "range",
+      "id": "bg_pattern_opacity",
+      "label": "Pattern opacity",
+      "min": 5,
+      "max": 50,
+      "step": 5,
+      "unit": "%",
+      "default": 10
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / Sale badge",
+      "default": "#e53e3e"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Tab colors"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg_color",
+      "label": "Tab background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Tab text",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg_color",
+      "label": "Active tab background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text_color",
+      "label": "Active tab text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Tab style"
+    },
+    {
+      "type": "select",
+      "id": "tab_align",
+      "label": "Tab alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "tab_border_radius",
+      "label": "Tab roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label",
+          "default": "Collection"
+        },
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Collection Tabs",
+      "blocks": [
+        { "type": "collection", "settings": { "tab_label": "New Arrivals" } },
+        { "type": "collection", "settings": { "tab_label": "Best Sellers" } },
+        { "type": "collection", "settings": { "tab_label": "Sale" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

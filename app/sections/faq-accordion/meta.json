@@ -3,7 +3,7 @@
   "name": "FAQ Accordion",
   "description": "Elegant FAQ with animated accordion. Only one item open at a time. Perfect for support pages.",
   "category": "FAQ",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "price": {
     "type": "one_time",
     "amount": 19,
@@ -11,10 +11,28 @@
   },
   "tags": ["OS2.0", "Conversion", "Support", "Animated"],
   "author": "Section Hub",
-  "previewColor": "#10b981",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/faq-accordion/default.svg", "alt": "FAQ Accordion - Light Mode", "label": "Light" },
+    { "src": "/previews/faq-accordion/default.webp", "alt": "FAQ Accordion - Light Mode", "label": "Light" },
     { "src": "/previews/faq-accordion/dark.svg", "alt": "FAQ Accordion - Dark Mode", "label": "Dark" }
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added schema-based color customization for question & answer text",
+        "Improved accordion animation smoothness",
+        "Fixed icon rotation on close in Safari"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-18",
+      "changes": [
+        "Initial release"
+      ]
+    }
   ],
   "compatibility": {
     "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
@@ -25,5 +43,5 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-18",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04"
 }

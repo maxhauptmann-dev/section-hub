@@ -1,0 +1,71 @@
+{
+  "id": "collection-circles",
+  "name": "Collection Circles",
+  "description": "Circular collection images with labels underneath. Perfect for showcasing product categories in a clean, minimal layout.",
+  "category": "Collection",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Circles",
+    "Category",
+    "Minimal",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#000000",
+  "previews": [
+    {
+      "src": "/previews/collection-circles/default.webp",
+      "alt": "Collection Circles – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 12
+  },
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added hover scale animation for circle items",
+        "Improved image cropping for non-square images",
+        "Fixed spacing between circles on tablet"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-15",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-04",
+  "createdAt": "2026-02-15"
+}

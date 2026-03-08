@@ -1,0 +1,581 @@
+/* ============================================
+   Section Hub – Header Glass v3.0
+   Frosted-Glass header that overlays content.
+   ============================================ */
+
+/* Fix Editor preview gap - Shopify adds designMode class in editor */
+html.designMode [id^="shopify-section-"].shg-root,
+html.designMode [id^="shopify-section-"].shg-root ~ * {
+  margin-top: 0 !important;
+}
+
+/* --- Section root wrapper --- */
+.shg-root {
+  position: relative;
+  width: 100%;
+  z-index: 1000;
+  /* Floating offsets – applied via JS when overlay mode is on */
+}
+
+/*
+ * When JS patches the parent container (header group / <header>) to
+ * position:absolute or fixed, make sure overflow is visible so the
+ * glass blur can render and the mega-menu is not clipped.
+ */
+[data-shg-patched] {
+  overflow: visible !important;
+}
+
+/* --- Haupt-Header Element --- */
+.shg-header {
+  position: relative;
+  width: 100%;
+  /* Floating side offset */
+  margin-left: var(--shg-float-side);
+  margin-right: var(--shg-float-side);
+  width: calc(100% - 2 * var(--shg-float-side));
+  background: var(--shg-bg);
+  border-radius: var(--shg-round);
+  overflow: visible;
+  transition: box-shadow 0.3s ease;
+}
+
+/* ── Overlay + Glass mode ── */
+.shg-header--overlay {
+  background: transparent;
+}
+.shg-header--overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--shg-bg);
+  opacity: var(--shg-opacity);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 0;
+}
+.shg-header--overlay::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(255, 255, 255, var(--shg-border-op));
+  pointer-events: none;
+  z-index: 1;
+}
+/* backdrop-filter on the header itself — works because bg is transparent */
+.shg-header--overlay {
+  -webkit-backdrop-filter: blur(var(--shg-blur));
+  backdrop-filter: blur(var(--shg-blur));
+}
+
+/* ── Non-overlay mode: solid bg, no glass ── */
+.shg-header:not(.shg-header--overlay)::before,
+.shg-header:not(.shg-header--overlay)::after {
+  display: none;
+}
+
+/* Schatten beim Scrollen */
+.shg-header.shg-scrolled {
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+}
+
+/* --- Inner container --- */
+.shg-inner {
+  position: relative;
+  z-index: 2;
+  max-width: var(--shg-content-w);
+  margin: 0 auto;
+  padding: var(--shg-py) var(--shg-px);
+}
+.shg-header.shg-full-width .shg-inner {
+  max-width: 100%;
+}
+
+/* --- Wrapper: Logo left | Nav center (absolute) | Actions right --- */
+.shg-wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 40px;
+}
+
+/* --- Logo always left --- */
+.shg-logo {
+  flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+}
+.shg-logo__link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+.shg-logo__img {
+  width: var(--shg-logo-w);
+  height: auto;
+  display: block;
+}
+.shg-logo__text {
+  font-size: var(--shg-shop-size);
+  font-weight: 700;
+  color: var(--shg-shop-color);
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+/* --- Desktop Nav — always centered regardless of logo/actions width --- */
+.shg-nav {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  pointer-events: auto;
+}
+.shg-nav__list {
+  list-style: none;
+  margin: 0;
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  gap: var(--shg-link-gap);
+  border-radius: var(--shg-nav-round);
+  transition: background 0.3s, border-radius 0.3s;
+}
+.shg-nav__item { position: relative; }
+.shg-nav__link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: var(--shg-link-size);
+  font-weight: var(--shg-link-weight);
+  color: var(--shg-link-color);
+  text-decoration: none;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+.shg-nav__link:hover,
+.shg-nav__link--active {
+  color: var(--shg-link-hover);
+}
+.shg-nav__chevron {
+  transition: transform 0.2s;
+}
+.shg-nav__item--has-dd:hover .shg-nav__chevron {
+  transform: rotate(180deg);
+}
+
+/* --- Dropdown wrapper (positioning) --- */
+.shg-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%) translateY(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  pointer-events: none;
+  z-index: 1000;
+}
+.shg-nav__item--has-dd:hover .shg-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  pointer-events: auto;
+}
+
+/*
+ * Teleported Mega Menu: appended directly to .shg-inner by JS.
+ * Positioned absolutely within .shg-inner (full width, below header).
+ */
+.shg-dropdown--teleported {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%; /* overridden by JS with exact px */
+  transform: translateY(6px);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.22s ease, transform 0.22s ease, visibility 0.22s;
+  pointer-events: none;
+  z-index: 1001;
+  /* Reset centering from base .shg-dropdown */
+  width: auto;
+}
+.shg-dropdown--teleported.shg-dropdown--open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* ── Connector bridge (keeps hover alive while moving mouse to dropdown) ── */
+.shg-dropdown::before {
+  content: '';
+  position: absolute;
+  top: -10px;
+  left: 0;
+  right: 0;
+  height: 10px;
+}
+
+/* ── Base inner styles ── */
+.shg-dropdown__inner {
+  min-width: 220px;
+  border-radius: var(--shg-dd-round);
+  padding: var(--shg-dd-pad);
+  box-shadow: var(--shg-dd-shadow);
+  border: 1px solid var(--shg-dd-border);
+  overflow: visible;
+}
+
+/* ── Style: Glass (default) ── */
+.shg-dropdown__inner--glass {
+  background: color-mix(in srgb, var(--shg-dd-bg) 70%, transparent);
+  -webkit-backdrop-filter: blur(var(--shg-dd-blur));
+  backdrop-filter: blur(var(--shg-dd-blur));
+  border-color: rgba(255,255,255,0.25);
+}
+
+/* ── Style: Solid ── */
+.shg-dropdown__inner--solid {
+  background: var(--shg-dd-bg);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* ── Style: Minimal ── */
+.shg-dropdown__inner--minimal {
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-color: transparent;
+  box-shadow: none;
+}
+
+/* ── Simple dropdown list ── */
+.shg-dropdown__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.shg-dropdown__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 12px;
+  color: var(--shg-dd-link);
+  text-decoration: none;
+  font-size: var(--shg-dd-font);
+  border-radius: calc(var(--shg-dd-round) - 4px);
+  transition: background 0.15s, color 0.15s, padding-left 0.15s;
+  line-height: 1.4;
+}
+.shg-dropdown__link:hover {
+  background: color-mix(in srgb, var(--shg-dd-hover) 10%, transparent);
+  color: var(--shg-dd-hover);
+  padding-left: 16px;
+}
+.shg-dropdown__inner--minimal .shg-dropdown__link:hover {
+  background: transparent;
+}
+
+/* ── Mega Menu ── */
+.shg-mega {
+  display: flex;
+  gap: 28px;
+}
+.shg-mega__col {
+  min-width: 150px;
+  flex: 1;
+}
+/* Divider between columns */
+.shg-mega__col + .shg-mega__col {
+  padding-left: 28px;
+  border-left: 1px solid color-mix(in srgb, var(--shg-dd-border) 60%, transparent);
+}
+.shg-mega__heading {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--shg-dd-link);
+  margin: 0 0 10px;
+  opacity: 0.45;
+  padding-bottom: 8px;
+  border-bottom: 1px solid color-mix(in srgb, var(--shg-dd-border) 60%, transparent);
+}
+.shg-mega__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.shg-mega__link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px 7px 0;
+  color: var(--shg-dd-link);
+  text-decoration: none;
+  font-size: var(--shg-dd-font);
+  border-radius: 6px;
+  transition: color 0.15s, padding-left 0.15s;
+}
+.shg-mega__link:hover {
+  color: var(--shg-dd-hover);
+  padding-left: 6px;
+}
+/* Arrow on hover */
+.shg-mega__link::after {
+  content: '→';
+  opacity: 0;
+  font-size: 12px;
+  margin-left: auto;
+  transition: opacity 0.15s, transform 0.15s;
+  transform: translateX(-4px);
+}
+.shg-mega__link:hover::after {
+  opacity: 0.5;
+  transform: translateX(0);
+}
+.shg-mega__promo {
+  display: block;
+  margin-top: 14px;
+  border-radius: calc(var(--shg-dd-round) - 4px);
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.shg-mega__promo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+.shg-mega__promo-img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --- Actions (Icons + CTA + Burger) — always right --- */
+.shg-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+  margin-left: auto;
+  position: relative;
+  z-index: 2;
+}
+.shg-actions__icon {
+  color: var(--shg-icon-color);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  transition: opacity 0.2s;
+  text-decoration: none;
+}
+.shg-actions__icon:hover { opacity: 0.65; }
+.shg-actions__cart-count {
+  position: absolute;
+  top: -6px; right: -8px;
+  background: var(--shg-cta-bg, #7c3aed);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  min-width: 16px;
+  height: 16px;
+  border-radius: 99px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* --- CTA Button --- */
+.shg-cta {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 18px;
+  font-size: 13px;
+  font-weight: 600;
+  background: var(--shg-cta-bg);
+  color: var(--shg-cta-color);
+  border-radius: var(--shg-cta-round);
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+  border: 2px solid transparent;
+}
+.shg-cta:hover { opacity: 0.88; transform: translateY(-1px); }
+.shg-cta--outline {
+  background: transparent;
+  border-color: var(--shg-cta-bg);
+  color: var(--shg-cta-bg);
+}
+.shg-cta--outline:hover {
+  background: var(--shg-cta-bg);
+  color: var(--shg-cta-color);
+}
+
+/* --- Burger (mobile only) --- */
+.shg-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 32px;
+  height: 32px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+.shg-burger span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: var(--shg-icon-color);
+  border-radius: 2px;
+  transition: transform 0.25s, opacity 0.2s;
+}
+
+/* --- Drawer (mobile) --- */
+.shg-drawer {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  pointer-events: none;
+  visibility: hidden;
+}
+.shg-drawer--open {
+  pointer-events: auto;
+  visibility: visible;
+}
+.shg-drawer__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.shg-drawer--open .shg-drawer__overlay { opacity: 1; }
+.shg-drawer__panel {
+  position: absolute;
+  top: 0; right: 0;
+  width: min(85vw, 380px);
+  height: 100%;
+  background: #fff;
+  transform: translateX(100%);
+  transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+.shg-drawer--open .shg-drawer__panel {
+  transform: translateX(0);
+}
+.shg-drawer__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+.shg-drawer__logo {
+  height: auto;
+  display: block;
+}
+.shg-drawer__close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #374151;
+}
+.shg-drawer__nav {
+  flex: 1;
+  padding: 8px 0;
+}
+.shg-drawer__group {
+  border-bottom: 1px solid #f3f4f6;
+}
+.shg-drawer__link,
+.shg-drawer__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 20px;
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+  text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+}
+.shg-drawer__arrow {
+  transition: transform 0.2s;
+}
+.shg-drawer__toggle--open .shg-drawer__arrow {
+  transform: rotate(180deg);
+}
+.shg-drawer__sub {
+  display: none;
+  padding: 0 20px 10px;
+}
+.shg-drawer__sub--open {
+  display: block;
+}
+.shg-drawer__sublink {
+  display: block;
+  padding: 8px 12px;
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.shg-drawer__sublink:hover { background: #f9fafb; }
+.shg-drawer__subheading {
+  display: block;
+  padding: 10px 12px 4px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #9ca3af;
+}
+.shg-drawer__footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.shg-drawer__flink {
+  color: #4b5563;
+  text-decoration: none;
+  font-size: 14px;
+}
+.shg-drawer__cta {
+  text-align: center;
+  justify-content: center;
+}
+
+/* --- Responsive --- */
+@media (max-width: 749px) {
+  .shg-nav { display: none; }
+  .shg-burger { display: flex; }
+  .shg-actions__icon.shg-hide-mobile,
+  .shg-cta:not(.shg-drawer__cta) { display: none; }
+  .shg-logo__img { width: var(--shg-logo-w-m); }
+}

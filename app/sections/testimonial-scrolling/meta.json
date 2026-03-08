@@ -1,23 +1,52 @@
 {
   "id": "testimonial-scrolling",
-  "name": "Testimonial Scrolling Images",
-  "description": "Infinitely scrolling testimonial images with customizable size, shape (round/square/rounded), and heading. Auto marquee with hover pause.",
-  "category": "Testimonials",
-  "version": "1.0.0",
+  "name": "Testimonial Scrolling Cards",
+  "description": "Infinitely scrolling testimonial cards with images, videos (Shopify/YouTube/Vimeo), star ratings, review comments and author names. Customizable card size, speed, multi-row support. Auto marquee with hover pause.",
+  "category": [
+    "Testimonials",
+    "Scrolling"
+  ],
+  "version": "2.1.0",
   "price": {
     "type": "one_time",
     "amount": 9,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Scrolling", "Marquee", "Images", "Responsive", "Social Proof"],
+  "tags": [
+    "OS2.0",
+    "Scrolling",
+    "Marquee",
+    "Images",
+    "Video",
+    "Reviews",
+    "Stars",
+    "Responsive",
+    "Social Proof"
+  ],
   "author": "Section Hub",
-  "previewColor": "#ec4899",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/testimonial-scrolling/default.svg", "alt": "Testimonial Scrolling - Light Mode", "label": "Light" },
-    { "src": "/previews/testimonial-scrolling/dark.svg", "alt": "Testimonial Scrolling - Dark Mode", "label": "Dark" }
+    {
+      "src": "/previews/testimonial-scrolling/default.webp",
+      "alt": "Testimonial Scrolling Cards - Light Mode",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/testimonial-scrolling/dark.webp",
+      "alt": "Testimonial Scrolling Cards - Dark Mode",
+      "label": "Dark"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
     "os2": true
   },
   "files": {
@@ -25,5 +54,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-02-09",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "2.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added video autoplay toggle per card",
+        "Improved marquee pause on card hover",
+        "Fixed multi-row alignment with mixed content"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-02-09",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

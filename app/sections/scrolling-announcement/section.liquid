@@ -1,0 +1,245 @@
+{% comment %}
+  Section Hub – Scrolling Announcement
+  Infinite scrolling marquee banner for promotions, offers, or branding.
+{% endcomment %}
+
+{{ 'section-scrolling-announcement.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign speed = section.settings.speed
+  assign direction = section.settings.direction
+  assign pause = section.settings.pause_on_hover
+-%}
+
+<section
+  class="sh-marquee{% if pause %} sh-marquee--pause{% endif %}"
+  style="
+    --sh-marquee-bg: {{ section.settings.background_color }};
+    --sh-marquee-text: {{ section.settings.text_color }};
+    --sh-marquee-accent: {{ section.settings.accent_color }};
+    --sh-marquee-speed: {{ speed }}s;
+    --sh-marquee-font-size: {{ section.settings.font_size }}px;
+    --sh-marquee-font-size-m: {{ section.settings.font_size_mobile }}px;
+    --sh-marquee-pad-y: {{ section.settings.padding_y }}px;
+    --sh-marquee-gap: {{ section.settings.item_gap }}px;
+    --sh-marquee-icon-size: {{ section.settings.icon_size }}px;
+    --sh-marquee-separator: '{{ section.settings.separator }}';
+    --sh-marquee-direction: {% if direction == 'right' %}reverse{% else %}normal{% endif %};
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  <div class="sh-marquee__track">
+    {%- for i in (1..3) -%}
+      <div class="sh-marquee__content" aria-hidden="{% if i > 1 %}true{% else %}false{% endif %}">
+        {%- for block in section.blocks -%}
+          <div class="sh-marquee__item" {{ block.shopify_attributes }}>
+            {% if block.settings.icon_image != blank %}
+              <img
+                src="{{ block.settings.icon_image | image_url: width: 80 }}"
+                alt=""
+                width="24"
+                height="24"
+                loading="lazy"
+                class="sh-marquee__icon-img"
+              >
+            {% endif %}
+            <span class="sh-marquee__text">{{ block.settings.text }}</span>
+            {% if block.settings.link != blank %}
+              <a href="{{ block.settings.link }}" class="sh-marquee__link-overlay" aria-label="{{ block.settings.text }}"></a>
+            {% endif %}
+          </div>
+          {% unless forloop.last %}
+            <span class="sh-marquee__separator" aria-hidden="true"></span>
+          {% endunless %}
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "SH – Announcement Bar",
+  "tag": "section",
+  "class": "sh-marquee-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll Speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 25,
+      "info": "Seconds for one full loop. Lower = faster."
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_on_hover",
+      "label": "Pause on Hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator Symbol",
+      "default": "✦",
+      "info": "Character between items, e.g. · ✦ — ★ ●"
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Item Gap",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon Size",
+      "min": 12,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Font Size – Mobile",
+      "min": 12,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Separator / Accent Color",
+      "default": "#6366f1"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Free Shipping on Orders Over $50"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link (optional)"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon Image (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Announcement Bar",
+      "blocks": [
+        { "type": "item", "settings": { "text": "Free Shipping on Orders Over $50" } },
+        { "type": "item", "settings": { "text": "New Collection Available Now" } },
+        { "type": "item", "settings": { "text": "30-Day Returns, No Questions Asked" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,58 @@
+{
+  "id": "header-announcement",
+  "name": "Header – Announce",
+  "description": "A stylish announcement header bar for promotions and important messages.",
+  "category": "Header",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Announcement"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/header-announcement/default.webp",
+      "alt": "Header Announcement",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-01-15",
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added close/dismiss button option",
+        "Improved text truncation for long messages",
+        "Fixed bar height on iOS Safari"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-15",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

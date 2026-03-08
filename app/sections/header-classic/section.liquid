@@ -1,0 +1,688 @@
+{% comment %}
+  Section Hub – Header Classic v1.0
+  Elegant centered-logo header with clean dropdowns, featured product support.
+{% endcomment %}
+
+{%- liquid
+  assign logo            = section.settings.logo
+  assign logo_mobile     = section.settings.logo_mobile
+  assign logo_width      = section.settings.logo_width
+  assign logo_width_m    = section.settings.logo_width_mobile
+  assign use_shop_name   = section.settings.use_shop_name
+  assign shop_font       = section.settings.shop_name_font
+  assign shop_size       = section.settings.shop_name_size
+  assign shop_color      = section.settings.shop_name_color
+  assign logo_position   = section.settings.logo_position
+
+  assign menu            = section.settings.menu
+  assign link_color      = section.settings.link_color
+  assign link_hover      = section.settings.link_hover_color
+  assign link_size       = section.settings.link_font_size
+  assign link_weight     = section.settings.link_weight
+  assign link_gap        = section.settings.link_gap
+  assign link_transform  = section.settings.link_transform
+
+  assign show_search     = section.settings.show_search
+  assign show_account    = section.settings.show_account
+  assign show_cart       = section.settings.show_cart
+  assign icon_color      = section.settings.icon_color
+
+  assign bg_color        = section.settings.bg_color
+  assign border_color    = section.settings.border_color
+  assign border_width    = section.settings.border_width
+  assign dd_bg           = section.settings.dropdown_bg
+  assign dd_link_color   = section.settings.dropdown_link_color
+  assign dd_hover        = section.settings.dropdown_link_hover
+  assign dd_round        = section.settings.dropdown_roundness
+  assign dd_shadow       = section.settings.dropdown_shadow
+
+  assign scroll_mode     = section.settings.scroll_behavior
+  assign content_width   = section.settings.content_width
+  assign padding_y       = section.settings.padding_y
+  assign padding_x       = section.settings.padding_x
+  assign lazy            = section.settings.lazy_load
+  assign custom_css      = section.settings.custom_css
+-%}
+
+<style>
+  #shc-{{ section.id }} {
+    --shc-logo-w: {{ logo_width }}px;
+    --shc-logo-w-m: {{ logo_width_m }}px;
+    --shc-shop-size: {{ shop_size }}px;
+    --shc-shop-color: {{ shop_color }};
+    --shc-link-color: {{ link_color }};
+    --shc-link-hover: {{ link_hover }};
+    --shc-link-size: {{ link_size }}px;
+    --shc-link-weight: {{ link_weight }};
+    --shc-link-gap: {{ link_gap }}px;
+    --shc-icon-color: {{ icon_color }};
+    --shc-bg: {{ bg_color }};
+    --shc-border-color: {{ border_color }};
+    --shc-border-w: {{ border_width }}px;
+    --shc-content-w: {{ content_width }}px;
+    --shc-py: {{ padding_y }}px;
+    --shc-px: {{ padding_x }}px;
+    --shc-dd-bg: {{ dd_bg }};
+    --shc-dd-link: {{ dd_link_color }};
+    --shc-dd-hover: {{ dd_hover }};
+    --shc-dd-round: {{ dd_round }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+{%- if section.settings.use_custom_shop_font -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ shop_font | replace: ' ', '+' }}:wght@400;700&display=swap" rel="stylesheet">
+{%- endif -%}
+
+<header id="shc-{{ section.id }}" class="shc-header" data-shc-scroll="{{ scroll_mode }}" data-shc-header>
+  <div class="shc-inner">
+
+    {%- comment -%} Top row: logo centered or left {%- endcomment -%}
+    <div class="shc-top{% if logo_position == 'center' %} shc-top--center{% endif %}">
+      {%- if logo_position == 'center' -%}
+        <div class="shc-top__left">
+          {%- if show_search -%}
+            <a href="/search" class="shc-icon" aria-label="Search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      <div class="shc-logo{% if logo_position == 'center' %} shc-logo--center{% endif %}">
+        <a href="/" class="shc-logo__link">
+          {%- if use_shop_name or logo == blank -%}
+            <span class="shc-logo__text" {% if section.settings.use_custom_shop_font %}style="font-family:'{{ shop_font }}',sans-serif"{% endif %}>{{ shop.name }}</span>
+          {%- else -%}
+            <picture>
+              {%- if logo_mobile != blank -%}
+                <source media="(max-width: 749px)" srcset="{{ logo_mobile | image_url: width: 400 }}">
+              {%- endif -%}
+              <img src="{{ logo | image_url: width: 600 }}" alt="{{ shop.name }}" class="shc-logo__img" width="{{ logo_width }}" {% if lazy %}loading="lazy"{% endif %}>
+            </picture>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- if logo_position == 'center' -%}
+        <div class="shc-top__right">
+          {%- if show_account -%}
+            <a href="/account" class="shc-icon" aria-label="Account">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if show_cart -%}
+            <a href="/cart" class="shc-icon" aria-label="Cart">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <span class="shc-cart-badge">{{ cart.item_count }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- if logo_position == 'left' -%}
+        <div class="shc-actions-row">
+          {%- if show_search -%}
+            <a href="/search" class="shc-icon" aria-label="Search">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if show_account -%}
+            <a href="/account" class="shc-icon" aria-label="Account">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if show_cart -%}
+            <a href="/cart" class="shc-icon" aria-label="Cart">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+              <span class="shc-cart-badge">{{ cart.item_count }}</span>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Mobile burger always {%- endcomment -%}
+      <button class="shc-burger" aria-label="Menu" data-shc-burger>
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+
+    {%- comment -%} Bottom row: Navigation links {%- endcomment -%}
+    <nav class="shc-nav" aria-label="Main navigation">
+      {%- if menu != blank -%}
+        {%- assign nav_menu = linklists[menu] -%}
+        {%- if nav_menu -%}
+          <ul class="shc-nav__list">
+            {%- for link in nav_menu.links -%}
+              {%- assign link_has_mega = false -%}
+              {%- assign link_title_down = link.title | downcase | strip -%}
+              {%- for block in section.blocks -%}
+                {%- assign block_title_down = block.settings.menu_title | downcase | strip -%}
+                {%- if block.type == 'mega_menu' and block_title_down == link_title_down and block_title_down != '' -%}
+                  {%- assign link_has_mega = true -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {%- assign has_dropdown = false -%}
+              {%- if link.links.size > 0 or link_has_mega -%}
+                {%- assign has_dropdown = true -%}
+              {%- endif -%}
+              <li class="shc-nav__item{% if has_dropdown %} shc-nav__item--dd{% endif %}">
+                <a href="{{ link.url }}" class="shc-nav__link{% if link.active %} shc-nav__link--active{% endif %}" style="text-transform:{{ link_transform }}">
+                  {{ link.title }}
+                  {%- if has_dropdown -%}
+                    <svg class="shc-nav__chev" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  {%- endif -%}
+                </a>
+                {%- if has_dropdown -%}
+                  <div class="shc-dd">
+                    <div class="shc-dd__inner{% if dd_shadow %} shc-dd--shadow{% endif %}">
+                      {%- if link_has_mega -%}
+                        <div class="shc-mega">
+                          {%- for block in section.blocks -%}
+                            {%- assign block_title_down2 = block.settings.menu_title | downcase | strip -%}
+                            {%- if block.type == 'mega_menu' and block_title_down2 == link_title_down and block_title_down2 != '' -%}
+                              <div class="shc-mega__col" {{ block.shopify_attributes }}>
+                                {%- if block.settings.column_heading != blank -%}
+                                  <p class="shc-mega__heading">{{ block.settings.column_heading }}</p>
+                                {%- endif -%}
+                                {%- if block.settings.submenu != blank -%}
+                                  {%- assign submenu = linklists[block.settings.submenu] -%}
+                                  {%- if submenu -%}
+                                    <ul class="shc-mega__list">
+                                      {%- for sublink in submenu.links -%}
+                                        <li><a href="{{ sublink.url }}" class="shc-mega__link">{{ sublink.title }}</a></li>
+                                      {%- endfor -%}
+                                    </ul>
+                                  {%- endif -%}
+                                {%- endif -%}
+                                {%- if block.settings.featured_product != blank -%}
+                                  {%- assign fp = block.settings.featured_product -%}
+                                  <a href="{{ fp.url }}" class="shc-mega__featured">
+                                    {%- if fp.featured_image != blank -%}
+                                      <img src="{{ fp.featured_image | image_url: width: 260 }}" alt="{{ fp.title }}" class="shc-mega__feat-img" {% if lazy %}loading="lazy"{% endif %}>
+                                    {%- endif -%}
+                                    <span class="shc-mega__feat-title">{{ fp.title }}</span>
+                                    <span class="shc-mega__feat-price">{{ fp.price | money }}</span>
+                                  </a>
+                                {%- endif -%}
+                                {%- if block.settings.promo_image != blank -%}
+                                  <a href="{{ block.settings.promo_link | default: '#' }}" class="shc-mega__promo">
+                                    <img src="{{ block.settings.promo_image | image_url: width: 300 }}" alt="" class="shc-mega__promo-img" {% if lazy %}loading="lazy"{% endif %}>
+                                  </a>
+                                {%- endif -%}
+                              </div>
+                            {%- endif -%}
+                          {%- endfor -%}
+                        </div>
+                      {%- else -%}
+                        <ul class="shc-dd__list">
+                          {%- for sublink in link.links -%}
+                            <li><a href="{{ sublink.url }}" class="shc-dd__link">{{ sublink.title }}</a></li>
+                          {%- endfor -%}
+                        </ul>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          </ul>
+        {%- endif -%}
+      {%- endif -%}
+    </nav>
+
+  </div>
+</header>
+
+{%- comment -%} Mobile Drawer {%- endcomment -%}
+<div class="shc-drawer" data-shc-drawer id="shc-drawer-{{ section.id }}">
+  <div class="shc-drawer__overlay" data-shc-drawer-close></div>
+  <div class="shc-drawer__panel">
+    <div class="shc-drawer__top">
+      {%- if use_shop_name or logo == blank -%}
+        <span class="shc-logo__text" {% if section.settings.use_custom_shop_font %}style="font-family:'{{ shop_font }}',sans-serif"{% endif %}>{{ shop.name }}</span>
+      {%- elsif logo_mobile != blank -%}
+        <img src="{{ logo_mobile | image_url: width: 300 }}" alt="{{ shop.name }}" class="shc-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- else -%}
+        <img src="{{ logo | image_url: width: 300 }}" alt="{{ shop.name }}" class="shc-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- endif -%}
+      <button class="shc-drawer__close" aria-label="Close" data-shc-drawer-close>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="shc-drawer__nav">
+      {%- if menu != blank -%}
+        {%- assign nav_menu = linklists[menu] -%}
+        {%- if nav_menu -%}
+          {%- for link in nav_menu.links -%}
+            <div class="shc-drawer__group">
+              {%- if link.links.size > 0 -%}
+                <button class="shc-drawer__toggle" data-shc-toggle>
+                  {{ link.title }}
+                  <svg class="shc-drawer__arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <div class="shc-drawer__sub" data-shc-sub>
+                  {%- for sublink in link.links -%}
+                    <a href="{{ sublink.url }}" class="shc-drawer__sublink">{{ sublink.title }}</a>
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                <a href="{{ link.url }}" class="shc-drawer__link">{{ link.title }}</a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endif -%}
+    </nav>
+    <div class="shc-drawer__footer">
+      {%- if show_search -%}<a href="/search" class="shc-drawer__flink">Search</a>{%- endif -%}
+      {%- if show_account -%}<a href="/account" class="shc-drawer__flink">Account</a>{%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var header = document.getElementById('shc-{{ section.id }}');
+  if(!header) return;
+  var mode = header.getAttribute('data-shc-scroll');
+
+  /* ── Drawer ── */
+  var burger = header.querySelector('[data-shc-burger]');
+  var drawer = document.getElementById('shc-drawer-{{ section.id }}');
+  if(drawer){
+    var closers = drawer.querySelectorAll('[data-shc-drawer-close]');
+    var toggles = drawer.querySelectorAll('[data-shc-toggle]');
+    if(burger) burger.addEventListener('click', function(){ drawer.classList.add('shc-drawer--open'); document.body.style.overflow='hidden'; });
+    closers.forEach(function(c){ c.addEventListener('click', function(){ drawer.classList.remove('shc-drawer--open'); document.body.style.overflow=''; }); });
+    toggles.forEach(function(t){
+      t.addEventListener('click', function(){
+        var sub = t.nextElementSibling;
+        var open = sub.classList.toggle('shc-drawer__sub--open');
+        t.classList.toggle('shc-drawer__toggle--open', open);
+      });
+    });
+  }
+
+  /* ── Scroll behavior ── */
+  if(mode === 'default' || !mode) {
+    /* Clean up any fixed positioning */
+    header.style.position = '';
+    header.style.top = '';
+    header.style.left = '';
+    header.style.width = '';
+    header.style.zIndex = '';
+    header.style.transform = '';
+    header.style.transition = '';
+    return;
+  }
+
+  if(mode === 'sticky'){
+    header.style.position = 'fixed';
+    header.style.top      = '0';
+    header.style.left     = '0';
+    header.style.width    = '100%';
+    header.style.zIndex   = '1000';
+  }
+
+  if(mode === 'scroll-up'){
+    header.style.position   = 'fixed';
+    header.style.top        = '0';
+    header.style.left       = '0';
+    header.style.width      = '100%';
+    header.style.zIndex     = '1000';
+    header.style.transition = 'transform 0.3s ease';
+    var lastY = 0;
+    window.addEventListener('scroll', function(){
+      var y = window.scrollY;
+      header.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+      lastY = y;
+    }, { passive: true });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Header – Classic",
+  "tag": "section",
+  "class": "shc-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Logo – Mobile"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 140
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Logo Width – Mobile",
+      "min": 30,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "logo_position",
+      "label": "Logo Position",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_shop_name",
+      "label": "Use Shop Name",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_shop_font",
+      "label": "Custom Shop Name Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shop_name_font",
+      "label": "Font Family",
+      "default": "Playfair Display"
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Shop Name Size",
+      "min": 16,
+      "max": 52,
+      "step": 1,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Shop Name Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "link_font_size",
+      "label": "Link Size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "link_weight",
+      "label": "Link Weight",
+      "min": 400,
+      "max": 700,
+      "step": 100,
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "link_gap",
+      "label": "Link Gap",
+      "min": 12,
+      "max": 56,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "link_transform",
+      "label": "Link Text Transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link Hover",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#374151"
+    },
+    {
+      "type": "header",
+      "content": "Appearance"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border Width",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "header",
+      "content": "Dropdown"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg",
+      "label": "Dropdown Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_color",
+      "label": "Dropdown Link Color",
+      "default": "#4b5563"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_hover",
+      "label": "Dropdown Link Hover",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_roundness",
+      "label": "Dropdown Roundness",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "checkbox",
+      "id": "dropdown_shadow",
+      "label": "Dropdown Shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "scroll_behavior",
+      "label": "Scroll Behavior",
+      "options": [
+        { "value": "default", "label": "Default (stays at top)" },
+        { "value": "sticky", "label": "Always Sticky" },
+        { "value": "scroll-up", "label": "Show on Scroll Up" }
+      ],
+      "default": "sticky"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width",
+      "min": 800,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Padding Vertical",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Padding Horizontal",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy Load Images",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Parent Menu Title",
+          "info": "Must match a navigation link title (case-insensitive). E.g. if your nav has 'Shop', enter 'Shop'."
+        },
+        {
+          "type": "text",
+          "id": "column_heading",
+          "label": "Column Heading"
+        },
+        {
+          "type": "link_list",
+          "id": "submenu",
+          "label": "Submenu"
+        },
+        {
+          "type": "product",
+          "id": "featured_product",
+          "label": "Featured Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promo Image"
+        },
+        {
+          "type": "url",
+          "id": "promo_link",
+          "label": "Promo Image Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header – Classic",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

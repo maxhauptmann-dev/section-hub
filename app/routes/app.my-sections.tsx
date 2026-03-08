@@ -66,10 +66,12 @@ function PreviewSlider({
         <img
           src={previews[currentIndex].src}
           alt={previews[currentIndex].alt}
+          loading="lazy"
+          decoding="async"
           style={{
             width: "100%",
             height: "100%",
-            objectFit: "cover",
+            objectFit: "contain",
             transition: "opacity 0.3s ease",
           }}
         />
@@ -281,7 +283,20 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const installedSections = allSections.filter(s => installedSectionIds.includes(s.id));
 
-  return { allSections, installedSections, installedSectionIds, aiSections, installedAiSlugs };
+  // Load installation records for version tracking
+  let sectionVersions: Record<string, string> = {};
+  try {
+    const installations = await (prisma as any).sectionInstallation.findMany({
+      where: { shop: session.shop },
+    });
+    for (const inst of installations) {
+      sectionVersions[(inst as any).sectionHandle] = (inst as any).installedVersion;
+    }
+  } catch (err) {
+    console.error("Error loading installation records (non-fatal):", err);
+  }
+
+  return { allSections, installedSections, installedSectionIds, aiSections, installedAiSlugs, sectionVersions };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -462,6 +477,26 @@ ${section.liquidContent || ""}`;
       if (upsertedFiles.length === 0) {
         return { success: false, error: "Section could not be installed. Please try again later." };
       }
+
+      // Track installed version
+      await (prisma as any).sectionInstallation.upsert({
+        where: {
+          shop_sectionHandle: {
+            shop: session.shop,
+            sectionHandle: sectionId,
+          },
+        },
+        update: {
+          installedVersion: section.version,
+          themeId: mainTheme.id,
+        },
+        create: {
+          shop: session.shop,
+          sectionHandle: sectionId,
+          installedVersion: section.version,
+          themeId: mainTheme.id,
+        },
+      });
 
       return {
         success: true,
@@ -660,7 +695,7 @@ ${section.liquidContent || ""}`;
 };
 
 export default function MySectionsPage() {
-  const { allSections, installedSections, aiSections, installedAiSlugs } = useLoaderData<typeof loader>();
+  const { allSections, installedSections, aiSections, installedAiSlugs, sectionVersions } = useLoaderData<typeof loader>();
   const [showUninstallModal, setShowUninstallModal] = useState<string | null>(null);
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -668,6 +703,24 @@ export default function MySectionsPage() {
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
 
   const isSubmitting = navigation.state === "submitting";
+
+  // Semver comparison
+  const isNewerVersion = (a: string, b: string): boolean => {
+    const pa = a.split(".").map(Number);
+    const pb = b.split(".").map(Number);
+    for (let i = 0; i < 3; i++) {
+      if ((pa[i] || 0) > (pb[i] || 0)) return true;
+      if ((pa[i] || 0) < (pb[i] || 0)) return false;
+    }
+    return false;
+  };
+
+  const hasUpdate = (section: SectionMeta): boolean => {
+    const installed = (sectionVersions as Record<string, string>)[section.id] || "1.0.0";
+    return isNewerVersion(section.version, installed);
+  };
+
+  const updatesCount = installedSections.filter(hasUpdate).length;
 
   useEffect(() => {
     if (actionData) {
@@ -716,14 +769,26 @@ export default function MySectionsPage() {
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <div>
-                <Text as="h2" variant="headingLg">
-                  📥 Installed Sections ({installedSections.length})
-                </Text>
-                <Text as="p" variant="bodySm" tone="subdued">
-                  These sections are installed in your theme and can be managed.
-                </Text>
-              </div>
+              <InlineStack align="space-between" blockAlign="center" wrap>
+                <div>
+                  <InlineStack gap="200" blockAlign="center">
+                    <Text as="h2" variant="headingLg">
+                      📥 Installed Sections ({String(installedSections.length)})
+                    </Text>
+                    {updatesCount > 0 && (
+                      <Badge tone="attention">{`${updatesCount} update${updatesCount > 1 ? "s" : ""}`}</Badge>
+                    )}
+                  </InlineStack>
+                  <Text as="p" variant="bodySm" tone="subdued">
+                    These sections are installed in your theme and can be managed.
+                  </Text>
+                </div>
+                {updatesCount > 0 && (
+                  <Button variant="primary" url="/app/updates">
+                    View Updates
+                  </Button>
+                )}
+              </InlineStack>
 
               {installedSections.length === 0 ? (
                 <Text as="p" variant="bodySm" tone="subdued">
@@ -762,16 +827,32 @@ export default function MySectionsPage() {
                             </div>
                             <div style={{ marginTop: "auto" }}>
                               <InlineStack gap="100" wrap>
-                                <Badge tone="success">{section.category}</Badge>
+                                <Badge tone="success">{Array.isArray(section.category) ? section.category[0] : section.category}</Badge>
+                                {hasUpdate(section) && (
+                                  <Badge tone="attention">{`Update: v${section.version}`}</Badge>
+                                )}
                                 {section.tags.slice(0, 2).map((tag: string) => (
                                   <Badge key={tag}>{tag}</Badge>
                                 ))}
                               </InlineStack>
                               <div style={{ marginTop: 12 }}>
                                 <InlineStack gap="200">
-                                  <Button variant="primary" size="slim" fullWidth disabled>
-                                    ✓ Installed
-                                  </Button>
+                                  {hasUpdate(section) ? (
+                                    <Button
+                                      variant="primary"
+                                      tone="success"
+                                      size="slim"
+                                      fullWidth
+                                      loading={isSubmitting}
+                                      onClick={() => handleInstall(section.id)}
+                                    >
+                                      🔄 Update to v{section.version}
+                                    </Button>
+                                  ) : (
+                                    <Button variant="primary" size="slim" fullWidth disabled>
+                                      ✓ Installed
+                                    </Button>
+                                  )}
                                   <Button
                                     size="slim"
                                     variant="secondary"
@@ -975,7 +1056,7 @@ export default function MySectionsPage() {
                             </div>
                             <div style={{ marginTop: "auto" }}>
                               <InlineStack gap="100" wrap>
-                                <Badge tone="info">{section.category}</Badge>
+                                <Badge tone="info">{Array.isArray(section.category) ? section.category[0] : section.category}</Badge>
                                 {section.tags.slice(0, 2).map((tag: string) => (
                                   <Badge key={tag}>{tag}</Badge>
                                 ))}

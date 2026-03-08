@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="280" height="50" viewBox="0 0 280 50">
+  <rect width="280" height="50" rx="12" fill="#EFF6FF"/>
+  <rect x="12" y="8" width="256" height="34" rx="8" fill="white" stroke="#BFDBFE" stroke-width="1"/>
+  <text x="24" y="22" font-family="system-ui" font-size="10" fill="#1D4ED8" font-weight="600">🚚 Order within</text>
+  <text x="110" y="22" font-family="system-ui" font-size="12" fill="#DC2626" font-weight="800">2h 34m</text>
+  <text x="160" y="22" font-family="system-ui" font-size="10" fill="#1D4ED8" font-weight="600">for same-day shipping</text>
+  <rect x="12" y="34" width="256" height="4" rx="2" fill="#DBEAFE"/>
+  <rect x="12" y="34" width="140" height="4" rx="2" fill="#3B82F6"/>
+</svg>

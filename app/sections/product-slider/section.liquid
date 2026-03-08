@@ -1,0 +1,671 @@
+{% comment %}
+  Section Hub – Product Slider
+  Scrollable product carousel with hover image swap.
+  Supports: collection source OR individual product blocks.
+{% endcomment %}
+
+{{ 'styles.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign card_width = section.settings.card_width
+  assign card_width_mobile = section.settings.card_width_mobile
+  assign gap = section.settings.gap
+  assign ratio = section.settings.image_ratio
+  assign show_vendor = section.settings.show_vendor
+  assign show_price = section.settings.show_price
+  assign show_badge = section.settings.show_badge
+  assign badge_text = section.settings.badge_text
+  assign show_quick_add = section.settings.show_quick_add
+  assign show_compare = section.settings.show_compare_price
+  assign source = section.settings.source
+-%}
+
+<div
+  class="sh-product-slider"
+  style="
+    --sh-ps-pt: {{ section.settings.padding_top }}px;
+    --sh-ps-pb: {{ section.settings.padding_bottom }}px;
+    --sh-ps-mt: {{ section.settings.margin_top }}px;
+    --sh-ps-mb: {{ section.settings.margin_bottom }}px;
+    --sh-ps-bg: {{ section.settings.bg_color }};
+    --sh-ps-side: {{ section.settings.side_padding }}rem;
+    --sh-ps-side-mobile: {{ section.settings.side_padding_mobile }}rem;
+    --sh-ps-gap: {{ gap }}px;
+    --sh-ps-card-width: {{ card_width }}px;
+    --sh-ps-card-width-mobile: {{ card_width_mobile }}px;
+    --sh-ps-card-radius: {{ section.settings.card_radius }}px;
+    --sh-ps-ratio: {% if ratio == 'square' %}1/1{% elsif ratio == 'portrait' %}3/4{% elsif ratio == 'tall' %}2/3{% elsif ratio == 'landscape' %}4/3{% else %}auto{% endif %};
+    --sh-ps-heading-size: {{ section.settings.heading_size }}px;
+    --sh-ps-heading-size-mobile: {{ section.settings.heading_size_mobile }}px;
+    --sh-ps-heading-color: {{ section.settings.heading_color }};
+    --sh-ps-title-size: {{ section.settings.title_size }}px;
+    --sh-ps-title-color: {{ section.settings.title_color }};
+    --sh-ps-price-size: {{ section.settings.price_size }}px;
+    --sh-ps-price-color: {{ section.settings.price_color }};
+    --sh-ps-compare-color: {{ section.settings.compare_color }};
+    --sh-ps-vendor-color: {{ section.settings.vendor_color }};
+    --sh-ps-badge-bg: {{ section.settings.badge_bg }};
+    --sh-ps-badge-color: {{ section.settings.badge_color }};
+    --sh-ps-badge-size: {{ section.settings.badge_size }}px;
+    --sh-ps-badge-radius: {{ section.settings.badge_radius }}px;
+    --sh-ps-border-color: {{ section.settings.arrow_border_color }};
+    --sh-ps-arrow-bg: {{ section.settings.arrow_bg }};
+    --sh-ps-arrow-color: {{ section.settings.arrow_color }};
+    --sh-ps-arrow-hover-bg: {{ section.settings.arrow_hover_bg }};
+    --sh-ps-arrow-hover-color: {{ section.settings.arrow_hover_color }};
+    --sh-ps-arrow-size: {{ section.settings.arrow_size }}px;
+    --sh-ps-quick-bg: {{ section.settings.quick_add_bg }};
+    --sh-ps-quick-color: {{ section.settings.quick_add_color }};
+  "
+  data-section-id="{{ section.id }}"
+>
+  {%- if section.settings.heading != blank or section.settings.show_arrows -%}
+    <div class="sh-product-slider__header">
+      {% if section.settings.heading != blank %}
+        <h2 class="sh-product-slider__heading">{{ section.settings.heading }}</h2>
+      {% else %}
+        <span></span>
+      {% endif %}
+
+      {% if section.settings.show_arrows %}
+        <div class="sh-product-slider__nav {% if section.settings.hide_arrows_mobile %}sh-product-slider__nav--hide-mobile{% endif %}">
+          <button class="sh-product-slider__arrow" data-sh-ps-prev aria-label="Previous">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M15 18L9 12L15 6"/>
+            </svg>
+          </button>
+          <button class="sh-product-slider__arrow" data-sh-ps-next aria-label="Next">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 18L15 12L9 6"/>
+            </svg>
+          </button>
+        </div>
+      {% endif %}
+    </div>
+  {%- endif -%}
+
+  <div class="sh-product-slider__track" data-sh-ps-track>
+    {%- if source == 'collection' -%}
+      {%- assign col = section.settings.collection -%}
+      {%- if col != blank -%}
+        {%- for product in collections[col].products limit: section.settings.max_products -%}
+          <a class="sh-product-slider__card" href="{{ product.url }}">
+            <div class="sh-product-slider__image-wrap">
+              {%- if product.featured_image -%}
+                <img
+                  class="sh-product-slider__img sh-product-slider__img--primary"
+                  src="{{ product.featured_image | image_url: width: 600 }}"
+                  alt="{{ product.featured_image.alt | escape }}"
+                  loading="lazy"
+                  width="600"
+                  height="800"
+                >
+                {%- if product.images[1] != blank -%}
+                  <img
+                    class="sh-product-slider__img sh-product-slider__img--secondary"
+                    src="{{ product.images[1] | image_url: width: 600 }}"
+                    alt="{{ product.images[1].alt | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="800"
+                  >
+                {%- endif -%}
+              {%- else -%}
+                <div class="sh-product-slider__placeholder">
+                  {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {%- endif -%}
+
+              {%- if show_badge and badge_text != blank -%}
+                <span class="sh-product-slider__badge">{{ badge_text }}</span>
+              {%- endif -%}
+
+              {%- if show_quick_add -%}
+                <span class="sh-product-slider__quick-add" aria-label="Quick view">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </span>
+              {%- endif -%}
+            </div>
+
+            <div class="sh-product-slider__info">
+              {%- if show_vendor -%}
+                <div class="sh-product-slider__vendor">{{ product.vendor }}</div>
+              {%- endif -%}
+              <p class="sh-product-slider__title">{{ product.title }}</p>
+              {%- if show_price -%}
+                <div class="sh-product-slider__price">
+                  {%- if show_compare and product.compare_at_price > product.price -%}
+                    <span class="sh-product-slider__compare-price">{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  {{ product.price | money }}
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Placeholder cards when no collection selected {%- endcomment -%}
+        {%- for i in (1..6) -%}
+          <div class="sh-product-slider__card">
+            <div class="sh-product-slider__image-wrap">
+              <div class="sh-product-slider__placeholder">
+                {{ 'product-1' | placeholder_svg_tag }}
+              </div>
+            </div>
+            <div class="sh-product-slider__info">
+              <p class="sh-product-slider__title">Example Product {{ i }}</p>
+              <div class="sh-product-slider__price">€29.95</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+
+    {%- elsif source == 'products' -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'product' and block.settings.product != blank -%}
+          {%- assign p = block.settings.product -%}
+          {%- assign custom_badge = block.settings.custom_badge -%}
+          <a class="sh-product-slider__card" href="{{ p.url }}" {{ block.shopify_attributes }}>
+            <div class="sh-product-slider__image-wrap">
+              {%- if p.featured_image -%}
+                <img
+                  class="sh-product-slider__img sh-product-slider__img--primary"
+                  src="{{ p.featured_image | image_url: width: 600 }}"
+                  alt="{{ p.featured_image.alt | escape }}"
+                  loading="lazy"
+                  width="600"
+                  height="800"
+                >
+                {%- if p.images[1] != blank -%}
+                  <img
+                    class="sh-product-slider__img sh-product-slider__img--secondary"
+                    src="{{ p.images[1] | image_url: width: 600 }}"
+                    alt="{{ p.images[1].alt | escape }}"
+                    loading="lazy"
+                    width="600"
+                    height="800"
+                  >
+                {%- endif -%}
+              {%- else -%}
+                <div class="sh-product-slider__placeholder">
+                  {{ 'product-1' | placeholder_svg_tag }}
+                </div>
+              {%- endif -%}
+
+              {%- if show_badge and custom_badge != blank -%}
+                <span class="sh-product-slider__badge">{{ custom_badge }}</span>
+              {%- endif -%}
+
+              {%- if show_quick_add -%}
+                <span class="sh-product-slider__quick-add" aria-label="Quick view">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                  </svg>
+                </span>
+              {%- endif -%}
+            </div>
+
+            <div class="sh-product-slider__info">
+              {%- if show_vendor -%}
+                <div class="sh-product-slider__vendor">{{ p.vendor }}</div>
+              {%- endif -%}
+              <p class="sh-product-slider__title">{{ p.title }}</p>
+              {%- if show_price -%}
+                <div class="sh-product-slider__price">
+                  {%- if show_compare and p.compare_at_price > p.price -%}
+                    <span class="sh-product-slider__compare-price">{{ p.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  {{ p.price | money }}
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </div>
+</div>
+
+<script>
+(function () {
+  var section = document.querySelector('[data-section-id="{{ section.id }}"]');
+  if (!section) return;
+
+  var track = section.querySelector('[data-sh-ps-track]');
+  var prev = section.querySelector('[data-sh-ps-prev]');
+  var next = section.querySelector('[data-sh-ps-next]');
+  if (!track) return;
+
+  var scrollAmount = parseInt(getComputedStyle(section).getPropertyValue('--sh-ps-card-width')) + parseInt(getComputedStyle(section).getPropertyValue('--sh-ps-gap'));
+
+  if (prev) {
+    prev.addEventListener('click', function () {
+      track.scrollBy({ left: -scrollAmount * 2, behavior: 'smooth' });
+    });
+  }
+  if (next) {
+    next.addEventListener('click', function () {
+      track.scrollBy({ left: scrollAmount * 2, behavior: 'smooth' });
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SH – Product Slider",
+  "tag": "section",
+  "class": "sh-product-slider-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Source"
+    },
+    {
+      "type": "select",
+      "id": "source",
+      "label": "Product source",
+      "options": [
+        { "value": "collection", "label": "Collection" },
+        { "value": "products", "label": "Individual products" }
+      ],
+      "default": "collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection",
+      "info": "Used when source is 'Collection'"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Max products",
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "New Arrivals"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_compare_price",
+      "label": "Show compare-at price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text (collection mode)",
+      "default": "Neu",
+      "info": "In 'Individual products' mode each block has its own badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quick_add",
+      "label": "Show quick-add button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "portrait", "label": "Portrait (3:4)" },
+        { "value": "tall", "label": "Tall (2:3)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "auto", "label": "Auto (original)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width – desktop",
+      "min": 180,
+      "max": 400,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width – mobile",
+      "min": 140,
+      "max": 300,
+      "step": 10,
+      "default": 200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap between cards",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show navigation arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_arrows_mobile",
+      "label": "Hide arrows on mobile",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "arrow_size",
+      "label": "Arrow button size",
+      "min": 28,
+      "max": 56,
+      "step": 2,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size – desktop",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size – mobile",
+      "min": 16,
+      "max": 36,
+      "step": 1,
+      "default": 22,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Product title size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "price_size",
+      "label": "Price size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "badge_size",
+      "label": "Badge font size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "badge_radius",
+      "label": "Badge border radius",
+      "min": 0,
+      "max": 20,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Product title color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "price_color",
+      "label": "Price color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "compare_color",
+      "label": "Compare-at price color",
+      "default": "#9ca3af"
+    },
+    {
+      "type": "color",
+      "id": "vendor_color",
+      "label": "Vendor color",
+      "default": "#6b7280"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_bg",
+      "label": "Arrow background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "arrow_color",
+      "label": "Arrow icon color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "arrow_border_color",
+      "label": "Arrow border color",
+      "default": "#d1d5db"
+    },
+    {
+      "type": "color",
+      "id": "arrow_hover_bg",
+      "label": "Arrow hover background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "arrow_hover_color",
+      "label": "Arrow hover icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "quick_add_bg",
+      "label": "Quick-add button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "quick_add_color",
+      "label": "Quick-add button color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "side_padding",
+      "label": "Side padding – desktop",
+      "min": 0,
+      "max": 6,
+      "step": 0.5,
+      "default": 2,
+      "unit": "rem"
+    },
+    {
+      "type": "range",
+      "id": "side_padding_mobile",
+      "label": "Side padding – mobile",
+      "min": 0,
+      "max": 4,
+      "step": 0.5,
+      "default": 1,
+      "unit": "rem"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "custom_badge",
+          "label": "Badge text",
+          "default": "Neu",
+          "info": "Leave blank to hide badge for this product"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Product Slider",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,182 @@
+{% comment %}
+  Section Hub - Trustpilot Review Block
+  Trustpilot-style review summary with green star boxes and review count
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-trustpilot {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: {{ block.settings.padding }}px 0;
+  margin: 4px 0;
+}
+
+.sh-trustpilot__label {
+  font-size: {{ block.settings.font_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.text_color }};
+}
+
+.sh-trustpilot__stars {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.sh-trustpilot__star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: {{ block.settings.star_size }}px;
+  height: {{ block.settings.star_size }}px;
+  background: {{ block.settings.star_color }};
+  border-radius: 2px;
+}
+
+.sh-trustpilot__star svg {
+  width: {{ block.settings.star_size | minus: 6 }}px;
+  height: {{ block.settings.star_size | minus: 6 }}px;
+  fill: #fff;
+}
+
+.sh-trustpilot__star--half {
+  background: linear-gradient(90deg, {{ block.settings.star_color }} 50%, #dcdce6 50%);
+}
+
+.sh-trustpilot__star--empty {
+  background: #dcdce6;
+}
+
+.sh-trustpilot__count {
+  font-size: {{ block.settings.font_size | minus: 1 }}px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.7;
+}
+
+.sh-trustpilot__source {
+  font-size: {{ block.settings.font_size | minus: 2 }}px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.5;
+  margin-left: 2px;
+}
+</style>
+
+<div class="sh-trustpilot">
+  {% if block.settings.label != blank %}
+    <span class="sh-trustpilot__label">{{ block.settings.label }}</span>
+  {% endif %}
+
+  <span class="sh-trustpilot__stars">
+    {% assign rating_val = block.settings.rating %}
+    {% for i in (1..5) %}
+      {% if i <= rating_val %}
+        <span class="sh-trustpilot__star">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+        </span>
+      {% else %}
+        <span class="sh-trustpilot__star sh-trustpilot__star--empty">
+          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 22 12 18.27 5.82 22 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+        </span>
+      {% endif %}
+    {% endfor %}
+  </span>
+
+  {% if block.settings.count != blank %}
+    <span class="sh-trustpilot__count">{{ block.settings.count }} reviews</span>
+  {% endif %}
+
+  {% if block.settings.source != blank %}
+    <span class="sh-trustpilot__source">on {{ block.settings.source }}</span>
+  {% endif %}
+</div>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Review Summary",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "label",
+      "label": "Label",
+      "default": "Excellent"
+    },
+    {
+      "type": "text",
+      "id": "count",
+      "label": "Review Count",
+      "default": "20,921"
+    },
+    {
+      "type": "text",
+      "id": "source",
+      "label": "Source",
+      "default": "Trustpilot"
+    },
+    {
+      "type": "range",
+      "id": "rating",
+      "label": "Rating",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star Color",
+      "default": "#00b67a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "star_size",
+      "label": "Star Size",
+      "min": 16,
+      "max": 28,
+      "step": 2,
+      "default": 22,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "default": 6,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

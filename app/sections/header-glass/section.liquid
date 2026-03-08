@@ -1,0 +1,1228 @@
+{% comment %}
+  Section Hub – Header Glass v1.0
+  Frosted glass header with mega menu, CTA button, search/account/cart.
+  Supports Shopify linklists, sticky/scroll-up, mobile drawer.
+{% endcomment %}
+
+{%- liquid
+  assign logo            = section.settings.logo
+  assign logo_mobile     = section.settings.logo_mobile
+  assign logo_width      = section.settings.logo_width
+  assign logo_width_m    = section.settings.logo_width_mobile
+  assign use_shop_name   = section.settings.use_shop_name
+  assign shop_font       = section.settings.shop_name_font
+  assign shop_size       = section.settings.shop_name_size
+  assign shop_color      = section.settings.shop_name_color
+
+  assign menu             = section.settings.menu
+  assign link_color       = section.settings.link_color
+  assign link_hover_color = section.settings.link_hover_color
+  assign link_size        = section.settings.link_font_size
+  assign link_weight      = section.settings.link_weight
+  assign link_gap         = section.settings.link_gap
+
+  assign show_search     = section.settings.show_search
+  assign show_account    = section.settings.show_account
+  assign show_cart       = section.settings.show_cart
+  assign icon_color      = section.settings.icon_color
+
+  assign show_cta        = section.settings.show_cta
+  assign cta_text        = section.settings.cta_text
+  assign cta_link        = section.settings.cta_link
+  assign cta_style       = section.settings.cta_style
+  assign cta_bg          = section.settings.cta_bg
+  assign cta_color       = section.settings.cta_color
+  assign cta_round       = section.settings.cta_roundness
+
+  assign glass_blur      = section.settings.glass_blur
+  assign glass_opacity   = section.settings.glass_opacity
+  assign glass_border    = section.settings.glass_border_opacity
+  assign bg_color        = section.settings.bg_color
+  assign bg_gradient     = section.settings.bg_gradient
+
+  assign scroll_mode     = section.settings.scroll_behavior
+  assign content_width   = section.settings.content_width
+  assign full_width      = section.settings.full_width
+  assign header_round    = section.settings.header_roundness
+  assign padding_y       = section.settings.padding_y
+  assign padding_x       = section.settings.padding_x
+  assign floating_top    = section.settings.floating_top
+  assign floating_side   = section.settings.floating_side
+
+  assign dd_bg           = section.settings.dropdown_bg
+  assign dd_link_color   = section.settings.dropdown_link_color
+  assign dd_hover_color  = section.settings.dropdown_link_hover
+  assign dd_round        = section.settings.dropdown_roundness
+  assign dd_padding      = section.settings.dropdown_padding
+  assign dd_style        = section.settings.dropdown_style
+  assign dd_blur         = section.settings.dropdown_blur
+  assign dd_shadow       = section.settings.dropdown_shadow
+  assign dd_border_color = section.settings.dropdown_border_color
+  assign dd_font_size    = section.settings.dropdown_font_size
+
+  assign nav_round       = section.settings.nav_roundness
+  assign overlay_mode    = section.settings.overlay_mode
+
+  assign lazy            = section.settings.lazy_load
+  assign custom_css      = section.settings.custom_css
+-%}
+
+<style>
+  #shg-{{ section.id }} {
+    --shg-logo-w: {{ logo_width }}px;
+    --shg-logo-w-m: {{ logo_width_m }}px;
+    --shg-shop-size: {{ shop_size }}px;
+    --shg-shop-color: {{ shop_color }};
+    --shg-link-color: {{ link_color }};
+    --shg-link-hover: {{ link_hover_color }};
+    --shg-link-size: {{ link_size }}px;
+    --shg-link-weight: {{ link_weight }};
+    --shg-link-gap: {{ link_gap }}px;
+    --shg-icon-color: {{ icon_color }};
+    --shg-cta-bg: {{ cta_bg }};
+    --shg-cta-color: {{ cta_color }};
+    --shg-cta-round: {{ cta_round }}px;
+    --shg-blur: {{ glass_blur }}px;
+    --shg-opacity: {{ glass_opacity | divided_by: 100.0 }};
+    --shg-border-op: {{ glass_border | divided_by: 100.0 }};
+    --shg-bg: {% if bg_gradient != blank %}{{ bg_gradient }}{% else %}{{ bg_color }}{% endif %};
+    --shg-content-w: {{ content_width }}px;
+    --shg-round: {{ header_round }}px;
+    --shg-py: {{ padding_y }}px;
+    --shg-px: {{ padding_x }}px;
+    --shg-dd-bg: {{ dd_bg }};
+    --shg-dd-link: {{ dd_link_color }};
+    --shg-dd-hover: {{ dd_hover_color }};
+    --shg-dd-round: {{ dd_round }}px;
+    --shg-dd-pad: {{ dd_padding }}px;
+    --shg-dd-blur: {{ dd_blur }}px;
+    --shg-dd-border: {{ dd_border_color }};
+    --shg-dd-font: {{ dd_font_size }}px;
+    --shg-dd-shadow: {% case dd_shadow %}{% when 'none' %}none{% when 'sm' %}0 4px 12px rgba(0,0,0,0.08){% when 'md' %}0 8px 24px rgba(0,0,0,0.12){% when 'lg' %}0 16px 48px rgba(0,0,0,0.18){% else %}0 8px 24px rgba(0,0,0,0.12){% endcase %};
+    --shg-nav-round: {{ nav_round }}px;
+    --shg-float-top: {{ floating_top }}px;
+    --shg-float-side: {{ floating_side }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+{%- if section.settings.use_custom_shop_font -%}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family={{ shop_font | replace: ' ', '+' }}:wght@400;700&display=swap" rel="stylesheet">
+{%- endif -%}
+
+<header
+  id="shg-{{ section.id }}"
+  class="shg-header{% if full_width %} shg-full-width{% endif %}{% if overlay_mode %} shg-header--overlay{% endif %}"
+  data-shg-scroll="{{ scroll_mode }}"
+  data-shg-overlay="{{ overlay_mode }}"
+  data-shg-header
+>
+  <div class="shg-inner">
+    <div class="shg-wrapper">
+
+      {%- comment -%} Logo / Shop Name {%- endcomment -%}
+      <div class="shg-logo">
+        <a href="/" class="shg-logo__link">
+          {%- if use_shop_name or logo == blank -%}
+            <span class="shg-logo__text" {% if section.settings.use_custom_shop_font %}style="font-family:'{{ shop_font }}',sans-serif"{% endif %}>
+              {{ shop.name }}
+            </span>
+          {%- else -%}
+            <picture>
+              {%- if logo_mobile != blank -%}
+                <source media="(max-width: 749px)" srcset="{{ logo_mobile | image_url: width: 400 }}">
+              {%- endif -%}
+              <img
+                src="{{ logo | image_url: width: 600 }}"
+                alt="{{ shop.name }}"
+                class="shg-logo__img"
+                width="{{ logo_width }}"
+                {% if lazy %}loading="lazy"{% endif %}
+              >
+            </picture>
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} Desktop navigation {%- endcomment -%}
+      <nav class="shg-nav" aria-label="Main navigation">
+        <ul class="shg-nav__list">
+
+          {%- comment -%} ── Standard Shopify menu links ── {%- endcomment -%}
+          {%- if menu != blank -%}
+            {%- assign nav_menu = linklists[menu] -%}
+            {%- if nav_menu -%}
+              {%- for link in nav_menu.links -%}
+                {%- assign link_has_mega = false -%}
+                {%- assign link_title_down = link.title | downcase | strip -%}
+                {%- for block in section.blocks -%}
+                  {%- assign block_menu_title_down = block.settings.menu_title | downcase | strip -%}
+                  {%- if block.type == 'mega_menu' and block_menu_title_down == link_title_down and block_menu_title_down != '' -%}
+                    {%- assign link_has_mega = true -%}
+                  {%- endif -%}
+                {%- endfor -%}
+                {%- assign has_dropdown = false -%}
+                {%- if link.links.size > 0 or link_has_mega -%}
+                  {%- assign has_dropdown = true -%}
+                {%- endif -%}
+
+                <li class="shg-nav__item{% if has_dropdown %} shg-nav__item--has-dd{% endif %}">
+                  <a href="{{ link.url }}" class="shg-nav__link{% if link.active %} shg-nav__link--active{% endif %}">
+                    {{ link.title }}
+                    {%- if has_dropdown -%}
+                      <svg class="shg-nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    {%- endif -%}
+                  </a>
+                  {%- if has_dropdown -%}
+                    <div class="shg-dropdown">
+                      <div class="shg-dropdown__inner shg-dropdown__inner--{{ dd_style }}">
+                        {%- if link_has_mega -%}
+                          <div class="shg-mega">
+                            {%- for block in section.blocks -%}
+                              {%- assign block_menu_title_down2 = block.settings.menu_title | downcase | strip -%}
+                              {%- if block.type == 'mega_menu' and block_menu_title_down2 == link_title_down and block_menu_title_down2 != '' -%}
+                                <div class="shg-mega__col" {{ block.shopify_attributes }}>
+                                  {%- if block.settings.column_heading != blank -%}
+                                    <p class="shg-mega__heading">{{ block.settings.column_heading }}</p>
+                                  {%- endif -%}
+                                  {%- if block.settings.submenu != blank -%}
+                                    {%- assign submenu = linklists[block.settings.submenu] -%}
+                                    {%- if submenu -%}
+                                      <ul class="shg-mega__list">
+                                        {%- for sublink in submenu.links -%}
+                                          <li><a href="{{ sublink.url }}" class="shg-mega__link">{{ sublink.title }}</a></li>
+                                        {%- endfor -%}
+                                      </ul>
+                                    {%- endif -%}
+                                  {%- endif -%}
+                                  {%- if block.settings.promo_image != blank -%}
+                                    <a href="{{ block.settings.promo_link | default: '#' }}" class="shg-mega__promo">
+                                      <img src="{{ block.settings.promo_image | image_url: width: 300 }}" alt="" class="shg-mega__promo-img" {% if lazy %}loading="lazy"{% endif %}>
+                                    </a>
+                                  {%- endif -%}
+                                </div>
+                              {%- endif -%}
+                            {%- endfor -%}
+                          </div>
+                        {%- else -%}
+                          <ul class="shg-dropdown__list">
+                            {%- for sublink in link.links -%}
+                              <li><a href="{{ sublink.url }}" class="shg-dropdown__link">{{ sublink.title }}</a></li>
+                            {%- endfor -%}
+                          </ul>
+                        {%- endif -%}
+                      </div>
+                    </div>
+                  {%- endif -%}
+                </li>
+              {%- endfor -%}
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- comment -%} ── Custom Nav Items (from blocks) ── {%- endcomment -%}
+          {%- assign custom_titles = '' -%}
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'custom_nav' and block.settings.nav_title != blank -%}
+              {%- assign nav_title = block.settings.nav_title -%}
+              {%- assign already_listed = false -%}
+              {%- if custom_titles != '' -%}
+                {%- assign titles_arr = custom_titles | split: '|||' -%}
+                {%- for t in titles_arr -%}
+                  {%- if t == nav_title -%}
+                    {%- assign already_listed = true -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+              {%- unless already_listed -%}
+                {%- if custom_titles == '' -%}
+                  {%- assign custom_titles = nav_title -%}
+                {%- else -%}
+                  {%- assign custom_titles = custom_titles | append: '|||' | append: nav_title -%}
+                {%- endif -%}
+              {%- endunless -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if custom_titles != '' -%}
+            {%- assign unique_titles = custom_titles | split: '|||' -%}
+            {%- for title in unique_titles -%}
+              {%- assign nav_link_url = '#' -%}
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'custom_nav' and block.settings.nav_title == title and block.settings.nav_link != blank -%}
+                  {%- assign nav_link_url = block.settings.nav_link -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              <li class="shg-nav__item shg-nav__item--has-dd">
+                <a href="{{ nav_link_url }}" class="shg-nav__link">
+                  {{ title }}
+                  <svg class="shg-nav__chevron" width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1L5 5L9 1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+                <div class="shg-dropdown">
+                  <div class="shg-dropdown__inner shg-dropdown__inner--{{ dd_style }}">
+                    <div class="shg-mega">
+                      {%- for block in section.blocks -%}
+                        {%- if block.type == 'custom_nav' and block.settings.nav_title == title -%}
+                          <div class="shg-mega__col" {{ block.shopify_attributes }}>
+                            {%- if block.settings.column_heading != blank -%}
+                              <p class="shg-mega__heading">{{ block.settings.column_heading }}</p>
+                            {%- endif -%}
+                            {%- if block.settings.submenu != blank -%}
+                              {%- assign submenu = linklists[block.settings.submenu] -%}
+                              {%- if submenu -%}
+                                <ul class="shg-mega__list">
+                                  {%- for sublink in submenu.links -%}
+                                    <li><a href="{{ sublink.url }}" class="shg-mega__link">{{ sublink.title }}</a></li>
+                                  {%- endfor -%}
+                                </ul>
+                              {%- endif -%}
+                            {%- endif -%}
+                            {%- if block.settings.promo_image != blank -%}
+                              <a href="{{ block.settings.promo_link | default: '#' }}" class="shg-mega__promo">
+                                <img src="{{ block.settings.promo_image | image_url: width: 300 }}" alt="" class="shg-mega__promo-img" {% if lazy %}loading="lazy"{% endif %}>
+                              </a>
+                            {%- endif -%}
+                          </div>
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  </div>
+                </div>
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
+
+        </ul>
+      </nav>
+
+      {%- comment -%} Right-side actions {%- endcomment -%}
+      <div class="shg-actions">
+        {%- if show_search -%}
+          <a href="/search" class="shg-actions__icon" aria-label="Search">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if show_account -%}
+          <a href="/account" class="shg-actions__icon" aria-label="Account">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </a>
+        {%- endif -%}
+        {%- if show_cart -%}
+          <a href="/cart" class="shg-actions__icon" aria-label="Cart">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+            <span class="shg-actions__cart-count" data-cart-count>{{ cart.item_count }}</span>
+          </a>
+        {%- endif -%}
+        {%- if show_cta -%}
+          <a href="{{ cta_link }}" class="shg-cta{% if cta_style == 'outline' %} shg-cta--outline{% endif %}">
+            {{ cta_text }}
+          </a>
+        {%- endif -%}
+
+        {%- comment -%} Mobile burger {%- endcomment -%}
+        <button class="shg-burger" aria-label="Menu" data-shg-burger>
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+</header>
+
+{%- comment -%} Mobile drawer {%- endcomment -%}
+<div class="shg-drawer" data-shg-drawer id="shg-drawer-{{ section.id }}">
+  <div class="shg-drawer__overlay" data-shg-drawer-close></div>
+  <div class="shg-drawer__panel">
+    <div class="shg-drawer__top">
+      {%- if use_shop_name or logo == blank -%}
+        <span class="shg-logo__text" {% if section.settings.use_custom_shop_font %}style="font-family:'{{ shop_font }}',sans-serif"{% endif %}>{{ shop.name }}</span>
+      {%- elsif logo_mobile != blank -%}
+        <img src="{{ logo_mobile | image_url: width: 300 }}" alt="{{ shop.name }}" class="shg-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- else -%}
+        <img src="{{ logo | image_url: width: 300 }}" alt="{{ shop.name }}" class="shg-drawer__logo" style="width:{{ logo_width_m }}px">
+      {%- endif -%}
+      <button class="shg-drawer__close" aria-label="Close" data-shg-drawer-close>
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+    </div>
+    <nav class="shg-drawer__nav">
+      {%- if menu != blank -%}
+        {%- assign nav_menu = linklists[menu] -%}
+        {%- if nav_menu -%}
+          {%- for link in nav_menu.links -%}
+            <div class="shg-drawer__group">
+              {%- if link.links.size > 0 -%}
+                <button class="shg-drawer__toggle" data-shg-toggle>
+                  {{ link.title }}
+                  <svg class="shg-drawer__arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+                </button>
+                <div class="shg-drawer__sub" data-shg-sub>
+                  {%- for sublink in link.links -%}
+                    <a href="{{ sublink.url }}" class="shg-drawer__sublink">{{ sublink.title }}</a>
+                  {%- endfor -%}
+                </div>
+              {%- else -%}
+                <a href="{{ link.url }}" class="shg-drawer__link">{{ link.title }}</a>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      {%- endif -%}
+
+      {%- comment -%} ── Custom Nav Items in mobile drawer ── {%- endcomment -%}
+      {%- assign mob_titles = '' -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'custom_nav' and block.settings.nav_title != blank -%}
+          {%- assign nav_title = block.settings.nav_title -%}
+          {%- assign already_listed = false -%}
+          {%- if mob_titles != '' -%}
+            {%- assign mob_arr = mob_titles | split: '|||' -%}
+            {%- for t in mob_arr -%}
+              {%- if t == nav_title -%}{%- assign already_listed = true -%}{%- endif -%}
+            {%- endfor -%}
+          {%- endif -%}
+          {%- unless already_listed -%}
+            {%- if mob_titles == '' -%}
+              {%- assign mob_titles = nav_title -%}
+            {%- else -%}
+              {%- assign mob_titles = mob_titles | append: '|||' | append: nav_title -%}
+            {%- endif -%}
+          {%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if mob_titles != '' -%}
+        {%- assign mob_unique = mob_titles | split: '|||' -%}
+        {%- for title in mob_unique -%}
+          <div class="shg-drawer__group">
+            <button class="shg-drawer__toggle" data-shg-toggle>
+              {{ title }}
+              <svg class="shg-drawer__arrow" width="12" height="7" viewBox="0 0 12 7" fill="none"><path d="M1 1l5 5 5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
+            <div class="shg-drawer__sub" data-shg-sub>
+              {%- for block in section.blocks -%}
+                {%- if block.type == 'custom_nav' and block.settings.nav_title == title -%}
+                  {%- if block.settings.column_heading != blank -%}
+                    <span class="shg-drawer__subheading">{{ block.settings.column_heading }}</span>
+                  {%- endif -%}
+                  {%- if block.settings.submenu != blank -%}
+                    {%- assign submenu = linklists[block.settings.submenu] -%}
+                    {%- if submenu -%}
+                      {%- for sublink in submenu.links -%}
+                        <a href="{{ sublink.url }}" class="shg-drawer__sublink">{{ sublink.title }}</a>
+                      {%- endfor -%}
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </nav>
+    <div class="shg-drawer__footer">
+      {%- if show_search -%}<a href="/search" class="shg-drawer__flink">Search</a>{%- endif -%}
+      {%- if show_account -%}<a href="/account" class="shg-drawer__flink">Account</a>{%- endif -%}
+      {%- if show_cta -%}
+        <a href="{{ cta_link }}" class="shg-cta shg-drawer__cta">{{ cta_text }}</a>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+/*
+ * Header – Glass  v3.1
+ * Uses a named init function so the Theme Editor can re-run it on
+ * shopify:section:load (which fires after the HTML is replaced).
+ */
+(function(){
+  var SECTION_ID = '{{ section.id }}';
+
+  function initGlassHeader(){
+    var header = document.getElementById('shg-' + SECTION_ID);
+    if(!header) return;
+
+    var mode      = header.getAttribute('data-shg-scroll');
+    var isOverlay = header.getAttribute('data-shg-overlay') === 'true';
+    var floatTop  = parseInt('{{ floating_top }}') || 0;
+
+    /* ── Drawer ── */
+    var burger  = header.querySelector('[data-shg-burger]');
+    var drawer  = document.getElementById('shg-drawer-' + SECTION_ID);
+    if(drawer){
+      var closers = drawer.querySelectorAll('[data-shg-drawer-close]');
+      var toggles = drawer.querySelectorAll('[data-shg-toggle]');
+      if(burger) burger.addEventListener('click', function(){ drawer.classList.add('shg-drawer--open'); document.body.style.overflow='hidden'; });
+      closers.forEach(function(c){ c.addEventListener('click', function(){ drawer.classList.remove('shg-drawer--open'); document.body.style.overflow=''; }); });
+      toggles.forEach(function(t){
+        t.addEventListener('click', function(){
+          var sub = t.nextElementSibling;
+          var open = sub.classList.toggle('shg-drawer__sub--open');
+          t.classList.toggle('shg-drawer__toggle--open', open);
+        });
+      });
+    }
+
+    /* ── Resolve wrapper elements ── */
+    var stickyRoot     = header.closest('.shg-root') || header;
+    var shopifySection = header.closest('[id^="shopify-section-"]') || stickyRoot;
+
+    /* Apply floating top offset as padding on the sticky root */
+    if(floatTop > 0){
+      stickyRoot.style.paddingTop = floatTop + 'px';
+    }
+
+    /* ── Clean any previous overlay patches (from prior init) ── */
+    document.querySelectorAll('[data-shg-patched]').forEach(function(el){
+      el.style.position     = '';
+      el.style.top          = '';
+      el.style.left         = '';
+      el.style.width        = '';
+      el.style.zIndex       = '';
+      el.style.marginTop    = '';
+      el.style.marginBottom = '';
+      el.style.transition   = '';
+      el.style.transform    = '';
+      el.removeAttribute('data-shg-patched');
+    });
+
+    /* ── Sticky (non-overlay mode) ── */
+    if(!isOverlay && (mode === 'sticky' || mode === 'scroll-up')){
+      shopifySection.style.position = 'sticky';
+      shopifySection.style.top      = floatTop > 0 ? '-' + floatTop + 'px' : '0';
+      shopifySection.style.zIndex   = '1000';
+      shopifySection.setAttribute('data-shg-patched', '1');
+      if(mode === 'scroll-up'){
+        shopifySection.style.transition = 'transform 0.3s ease';
+        var lastY = 0;
+        window.addEventListener('scroll', function scrollUpNonOverlay(){
+          var y = window.scrollY;
+          shopifySection.style.transform = (y > lastY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+          lastY = y;
+        }, { passive: true });
+      }
+    }
+
+    /* ── Overlay mode ── */
+    if(isOverlay){
+      function applyOverlap(){
+        /*
+         * Goal: header floats (transparent) over the first content section,
+         * but sits BELOW any announcement bar.
+         *
+         * Strategy:
+         *  1. Find the floatEl = the header-group container (or shopifySection)
+         *  2. Make it position:sticky top:0 so it sticks just below any bars
+         *     above it that are still in flow.
+         *  3. For "default" scroll mode: position:absolute — header scrolls
+         *     away with page but starts overlapping the content below.
+         *
+         * We do NOT use position:fixed for sticky overlay, because that would
+         * ignore the announcement bar. Instead position:sticky handles both
+         * "always sticky" and the initial overlap.
+         */
+        var floatEl = shopifySection;
+        var parent  = shopifySection.parentElement;
+        if(parent){
+          var tag = parent.tagName.toLowerCase();
+          var id  = (parent.id || '').toLowerCase();
+          if(tag === 'header' || id.indexOf('header-group') !== -1 || id.indexOf('header') !== -1){
+            floatEl = parent;
+          }
+        }
+
+        /*
+         * For the overlap we need to pull the content UP behind the header.
+         * We do this by giving the floatEl a negative bottom-margin equal
+         * to the header height — this is the only approach that works when
+         * the header is still in flow (sticky) AND respects the announcement bar.
+         */
+        var hHeight = shopifySection.offsetHeight;
+
+        if(mode === 'sticky' || mode === 'scroll-up'){
+          /* Sticky overlay: header sticks below announcement bar */
+          floatEl.style.position = 'sticky';
+          floatEl.style.top      = floatTop > 0 ? floatTop + 'px' : '0';
+          floatEl.style.zIndex   = '1000';
+          floatEl.style.marginBottom = '-' + hHeight + 'px';
+        } else {
+          /* Default scroll: header scrolls away, content starts behind it */
+          floatEl.style.position    = 'relative';
+          floatEl.style.zIndex      = '1000';
+          floatEl.style.marginBottom = '-' + hHeight + 'px';
+        }
+        floatEl.setAttribute('data-shg-patched', '1');
+
+        if(floatEl !== shopifySection){
+          shopifySection.style.position = 'relative';
+          shopifySection.style.zIndex   = '1000';
+          shopifySection.setAttribute('data-shg-patched', '1');
+        }
+      }
+
+      applyOverlap();
+      requestAnimationFrame(applyOverlap);
+      window.addEventListener('load', applyOverlap);
+      window.addEventListener('resize', applyOverlap, { passive: true });
+
+      /* Scroll-up (overlay version) */
+      if(mode === 'scroll-up'){
+        var lastScrollY = 0;
+        window.addEventListener('scroll', function scrollUpOverlay(){
+          var y = window.scrollY;
+          var floatEl = shopifySection;
+          var p = shopifySection.parentElement;
+          if(p){
+            var t = p.tagName.toLowerCase();
+            var i = (p.id || '').toLowerCase();
+            if(t === 'header' || i.indexOf('header') !== -1) floatEl = p;
+          }
+          floatEl.style.transform  = (y > lastScrollY && y > 80) ? 'translateY(-100%)' : 'translateY(0)';
+          floatEl.style.transition = 'transform 0.3s ease';
+          lastScrollY = y;
+        }, { passive: true });
+      }
+
+      /* MutationObserver for theme editor DOM changes */
+      var observer = new MutationObserver(function(mutations){
+        var relevant = mutations.some(function(m){
+          return Array.from(m.addedNodes).concat(Array.from(m.removedNodes)).some(function(n){
+            return n.nodeType === 1;
+          });
+        });
+        if(relevant) requestAnimationFrame(applyOverlap);
+      });
+      var mainContent = document.getElementById('MainContent') ||
+                        document.querySelector('main') ||
+                        shopifySection.parentElement;
+      if(mainContent) observer.observe(mainContent, { childList: true, subtree: false });
+      var observeParent = shopifySection.parentElement;
+      while(observeParent && observeParent !== document.body){
+        if(observeParent !== mainContent) observer.observe(observeParent, { childList: true, subtree: false });
+        observeParent = observeParent.parentElement;
+      }
+    }
+
+    /* ── Mega Menu: teleport dropdowns to .shg-inner ──
+     *
+     * .shg-dropdown lives inside a <li> → inside .shg-nav (position:absolute,
+     * shrink-wrapped to its content width). So "left:0;right:0;width:100%"
+     * would only stretch to the nav width, not the header width.
+     *
+     * Fix: move each .shg-dropdown that contains a .shg-mega out of the <li>
+     * and append it directly to .shg-inner (which is the correct full-width
+     * positioned ancestor). We store the source <li> on the dropdown so hover
+     * events still work via JS delegation.
+     */
+    var inner = header.querySelector('.shg-inner');
+    if(inner){
+      /* Remove any previously teleported dropdowns first */
+      inner.querySelectorAll('.shg-dropdown--teleported').forEach(function(d){ d.remove(); });
+
+      header.querySelectorAll('.shg-dropdown').forEach(function(dd){
+        if(!dd.querySelector('.shg-mega')) return; /* only mega menus */
+        var li = dd.closest('.shg-nav__item');
+        if(!li) return;
+
+        /* Clone, mark, and append to inner */
+        var clone = dd.cloneNode(true);
+        clone.classList.add('shg-dropdown--teleported');
+        clone.removeAttribute('style');
+        inner.appendChild(clone);
+
+        /* Hide the original (keep it in DOM for Shopify block editor) */
+        dd.style.display = 'none';
+
+        /* Show/hide the clone based on hover on the original <li> */
+        li.addEventListener('mouseenter', function(){
+          /* Position the clone below the header */
+          var liRect    = li.getBoundingClientRect();
+          var innerRect = inner.getBoundingClientRect();
+          clone.style.left = '0';
+          clone.style.right = '0';
+          clone.style.top = inner.offsetHeight + 'px';
+          clone.classList.add('shg-dropdown--open');
+        });
+        li.addEventListener('mouseleave', function(e){
+          /* Only close if mouse left both li AND the clone */
+          if(clone.contains(e.relatedTarget)) return;
+          clone.classList.remove('shg-dropdown--open');
+        });
+        clone.addEventListener('mouseleave', function(e){
+          if(li.contains(e.relatedTarget)) return;
+          clone.classList.remove('shg-dropdown--open');
+        });
+      });
+    }
+
+    /* ── Scroll shadow ── */
+    window.addEventListener('scroll', function(){
+      header.classList.toggle('shg-scrolled', window.scrollY > 10);
+    }, { passive: true });
+  }
+
+  /* Run on first load */
+  initGlassHeader();
+
+  /*
+   * Theme Editor: when Shopify re-renders this section (on ANY setting
+   * change), it replaces the HTML and fires shopify:section:load.
+   * We re-run the full init to re-bind events and re-apply overlay.
+   */
+  document.addEventListener('shopify:section:load', function(e){
+    if(e.detail && e.detail.sectionId === SECTION_ID){
+      initGlassHeader();
+    }
+  });
+
+  /* Also re-apply when other sections change (e.g. hero added/removed) */
+  document.addEventListener('shopify:section:unload', function(){ setTimeout(initGlassHeader, 100); });
+  document.addEventListener('shopify:section:reorder', function(){ setTimeout(initGlassHeader, 100); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Header – Glass",
+  "tag": "section",
+  "class": "shg-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Logo & Branding"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo",
+      "label": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_mobile",
+      "label": "Logo – Mobile"
+    },
+    {
+      "type": "range",
+      "id": "logo_width",
+      "label": "Logo Width",
+      "min": 40,
+      "max": 300,
+      "step": 5,
+      "unit": "px",
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "logo_width_mobile",
+      "label": "Logo Width – Mobile",
+      "min": 30,
+      "max": 200,
+      "step": 5,
+      "unit": "px",
+      "default": 90
+    },
+    {
+      "type": "checkbox",
+      "id": "use_shop_name",
+      "label": "Use Shop Name instead of Logo",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "use_custom_shop_font",
+      "label": "Use Custom Shop Name Font",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shop_name_font",
+      "label": "Shop Name Font",
+      "default": "Playfair Display"
+    },
+    {
+      "type": "range",
+      "id": "shop_name_size",
+      "label": "Shop Name Size",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "color",
+      "id": "shop_name_color",
+      "label": "Shop Name Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "link_list",
+      "id": "menu",
+      "label": "Menu",
+      "default": "main-menu"
+    },
+    {
+      "type": "range",
+      "id": "link_font_size",
+      "label": "Link Font Size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "link_weight",
+      "label": "Link Weight",
+      "min": 400,
+      "max": 700,
+      "step": 100,
+      "default": 500
+    },
+    {
+      "type": "range",
+      "id": "link_gap",
+      "label": "Link Gap",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "color",
+      "id": "link_color",
+      "label": "Link Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "link_hover_color",
+      "label": "Link Hover Color",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "header",
+      "content": "Right-Side Icons"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show Search",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_account",
+      "label": "Show Account",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cart",
+      "label": "Show Cart",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA Button",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA Text",
+      "default": "Get Started →"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA Link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg",
+      "label": "CTA Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "cta_color",
+      "label": "CTA Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_roundness",
+      "label": "CTA Roundness",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Glass Effect"
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Glass Blur",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "glass_opacity",
+      "label": "Glass Overlay Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "info": "0 = fully transparent, 100 = opaque"
+    },
+    {
+      "type": "range",
+      "id": "glass_border_opacity",
+      "label": "Glass Border Opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Colors & Background"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color_background",
+      "id": "bg_gradient",
+      "label": "Background Gradient"
+    },
+    {
+      "type": "header",
+      "content": "Dropdown"
+    },
+    {
+      "type": "select",
+      "id": "dropdown_style",
+      "label": "Dropdown Style",
+      "options": [
+        { "value": "glass",   "label": "Glass (matches header)" },
+        { "value": "solid",   "label": "Solid" },
+        { "value": "minimal", "label": "Minimal (no background)" }
+      ],
+      "default": "glass"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_bg",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_blur",
+      "label": "Background Blur",
+      "info": "Only visible in Glass style.",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "dropdown_border_color",
+      "label": "Border Color",
+      "default": "#e5e7eb"
+    },
+    {
+      "type": "select",
+      "id": "dropdown_shadow",
+      "label": "Shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm",   "label": "Soft" },
+        { "value": "md",   "label": "Medium" },
+        { "value": "lg",   "label": "Strong" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_color",
+      "label": "Link Color",
+      "default": "#374151"
+    },
+    {
+      "type": "color",
+      "id": "dropdown_link_hover",
+      "label": "Link Hover Color",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "range",
+      "id": "dropdown_font_size",
+      "label": "Link Font Size",
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "dropdown_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "dropdown_padding",
+      "label": "Padding",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Scroll & Layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_mode",
+      "label": "Overlay (transparent over content)",
+      "info": "Header floats over the section below. Enable this for the glass effect to work over banners & images.",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "scroll_behavior",
+      "label": "Scroll Behavior",
+      "options": [
+        { "value": "default", "label": "Default (stays at top)" },
+        { "value": "sticky", "label": "Always Sticky" },
+        { "value": "scroll-up", "label": "Show on Scroll Up" }
+      ],
+      "default": "sticky"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full Width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content Width",
+      "min": 800,
+      "max": 1800,
+      "step": 20,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "header_roundness",
+      "label": "Header Roundness",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "nav_roundness",
+      "label": "Nav Bar Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "floating_top",
+      "label": "Floating – Top Offset",
+      "info": "Distance from the top edge. Use together with Overlay for a floating glass look.",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "floating_side",
+      "label": "Floating – Side Offset",
+      "info": "Distance from left & right edges.",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Padding Vertical",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Padding Horizontal",
+      "min": 8,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy Load Images",
+      "default": false
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "mega_menu",
+      "name": "Mega Menu Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "menu_title",
+          "label": "Parent Menu Title",
+          "info": "⚠️ Must exactly match the navigation link title (case-sensitive). E.g. if your nav has a link called 'Shop', enter 'Shop' here. Hover over that nav link to open the Mega Menu."
+        },
+        {
+          "type": "text",
+          "id": "column_heading",
+          "label": "Column Heading",
+          "info": "Heading shown above the links in this column. Leave blank to hide."
+        },
+        {
+          "type": "link_list",
+          "id": "submenu",
+          "label": "Links (link list)",
+          "info": "Select a navigation menu from your Shopify Navigation settings. Go to Online Store → Navigation to create one."
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promo Image (optional)"
+        },
+        {
+          "type": "url",
+          "id": "promo_link",
+          "label": "Promo Image Link"
+        }
+      ]
+    },
+    {
+      "type": "custom_nav",
+      "name": "Custom Nav Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "nav_title",
+          "label": "Menu Name",
+          "info": "The name shown in the navigation bar (e.g. 'Shop', 'Sale', 'New')."
+        },
+        {
+          "type": "url",
+          "id": "nav_link",
+          "label": "Link (optional)",
+          "info": "Where this menu item links to when clicked."
+        },
+        {
+          "type": "text",
+          "id": "column_heading",
+          "label": "Column Name",
+          "info": "Heading above the links in this dropdown column. Leave blank to hide."
+        },
+        {
+          "type": "link_list",
+          "id": "submenu",
+          "label": "Submenu (link list)",
+          "info": "Select a link list for this dropdown column."
+        },
+        {
+          "type": "image_picker",
+          "id": "promo_image",
+          "label": "Promo Image (optional)"
+        },
+        {
+          "type": "url",
+          "id": "promo_link",
+          "label": "Promo Image Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Header – Glass",
+      "blocks": []
+    }
+  ]
+}
+{% endschema %}

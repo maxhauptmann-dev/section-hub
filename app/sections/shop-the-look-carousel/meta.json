@@ -1,0 +1,80 @@
+{
+  "id": "shop-the-look-carousel",
+  "name": "Shop the Look – Carousel",
+  "description": "Swipeable lookbook carousel with lifestyle images, product hotspots, and multi-product cards per look. Each look features a large editorial image with positioned hotspot dots and a product card that cycles through linked products with dot navigation. Product images swap on hover to show a second variant. Supports prev/next arrows, touch swipe, autoplay, and full color/layout customization.",
+  "category": "Product Discovery",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 14,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Shop the Look",
+    "Carousel",
+    "Hotspot",
+    "Lookbook",
+    "Swipe",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/shop-the-look-carousel/default.webp",
+      "alt": "Shop the Look Carousel – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-04",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Swipeable look carousel with prev/next arrows",
+    "Multiple products per look with dot navigation",
+    "Hotspot dots on lifestyle image linked to products",
+    "Product image hover swap (shows second image)",
+    "Wishlist heart icon on product card",
+    "Product badge (NEU, AUSVERKAUFT, custom)",
+    "Eyebrow text + heading",
+    "Touch swipe support",
+    "Full color and layout customization",
+    "Responsive design with stacked mobile layout"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added autoplay speed customization",
+        "Improved swipe gesture sensitivity",
+        "Fixed product dot navigation alignment"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

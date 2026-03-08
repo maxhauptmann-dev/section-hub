@@ -19,8 +19,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 export default function App() {
   const { apiKey, env } = useLoaderData<typeof loader>();
 
-  console.log("App loading with apiKey:", apiKey ? "present" : "missing", "env:", env);
-
   if (!apiKey) {
     return (
       <div style={{ padding: "20px", textAlign: "center" }}>
@@ -36,12 +34,12 @@ export default function App() {
       <PolarisAppProvider i18n={enTranslations}>
         <s-app-nav>
           <s-link href="/app/my-sections">My Sections</s-link>
+          <s-link href="/app/updates">Updates 🔄</s-link>
+          <s-link href="/app/analyzer">Store Analyzer 📊</s-link>
           <s-link href="/app/explore">Explore Sections</s-link>
-          <s-link href="/app/section-ai">Section AI 🤖</s-link>
-          <s-link href="/app/bundles">Bundle &amp; Save</s-link>
+          <s-link href="/app/premium">Premium 👑</s-link>
           <s-link href="/app/blocks">Conversion Blocks</s-link>
           <s-link href="/app/help">Help Center</s-link>
-          <s-link href="/app/inspiration">Section Inspiration</s-link>
           <s-link href="/app/suggest">Suggest Idea 💡</s-link>
         </s-app-nav>
         <Outlet />

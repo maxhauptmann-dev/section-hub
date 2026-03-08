@@ -1,0 +1,696 @@
+{% comment %}
+  Section Hub – Category Scroll
+  Horizontal scrolling category cards with large images
+  and bold labels. Supports drag-scroll on desktop.
+{% endcomment %}
+
+{%- liquid
+  assign section_title = section.settings.section_title
+  assign section_sub   = section.settings.section_subtitle
+
+  assign card_w        = section.settings.card_width
+  assign card_h        = section.settings.card_height
+  assign card_wm       = section.settings.card_width_mobile
+  assign card_hm       = section.settings.card_height_mobile
+  assign card_round    = section.settings.card_roundness
+  assign card_gap      = section.settings.card_gap
+  assign card_gap_m    = section.settings.card_gap_mobile
+  assign overlay_bot   = section.settings.overlay_bottom
+
+  assign label_fs      = section.settings.label_font_size
+  assign label_fsm     = section.settings.label_font_size_mobile
+  assign label_fw      = section.settings.label_font_weight
+  assign label_ls      = section.settings.label_letter_spacing
+  assign label_tt      = section.settings.label_text_transform
+  assign label_c       = section.settings.label_color
+  assign label_pad     = section.settings.label_padding
+
+  assign sublabel_fs   = section.settings.sublabel_font_size
+  assign sublabel_c    = section.settings.sublabel_color
+
+  assign title_fs      = section.settings.title_font_size
+  assign title_fsm     = section.settings.title_font_size_mobile
+  assign title_fw      = section.settings.title_font_weight
+  assign title_ls      = section.settings.title_letter_spacing
+  assign title_tt      = section.settings.title_text_transform
+  assign title_c       = section.settings.title_color
+  assign title_sub_fs  = section.settings.title_sub_font_size
+  assign title_sub_c   = section.settings.title_sub_color
+  assign header_gap    = section.settings.header_gap
+
+  assign bg_color      = section.settings.bg_color
+  assign pad_top       = section.settings.padding_top
+  assign pad_bottom    = section.settings.padding_bottom
+  assign pad_sides     = section.settings.padding_sides
+  assign pad_sides_m   = section.settings.padding_sides_mobile
+  assign margin_top    = section.settings.margin_top
+  assign margin_bottom = section.settings.margin_bottom
+  assign sec_width     = section.settings.section_width
+  assign lazy          = section.settings.lazy_load
+
+  assign custom_css    = section.settings.custom_css
+-%}
+
+<style>
+  #cs-{{ section.id }} {
+    --cs-card-w: {{ card_w }}px;
+    --cs-card-h: {{ card_h }}px;
+    --cs-card-wm: {{ card_wm }}px;
+    --cs-card-hm: {{ card_hm }}px;
+    --cs-card-r: {{ card_round }}px;
+    --cs-gap: {{ card_gap }}px;
+    --cs-gap-m: {{ card_gap_m }}px;
+    --cs-overlay-bottom: {{ overlay_bot | divided_by: 100.0 }};
+
+    --cs-label-fs: {{ label_fs }}px;
+    --cs-label-fsm: {{ label_fsm }}px;
+    --cs-label-fw: {{ label_fw }};
+    --cs-label-ls: {{ label_ls | divided_by: 100.0 }}em;
+    --cs-label-tt: {{ label_tt }};
+    --cs-label-c: {{ label_c }};
+    --cs-label-pad: {{ label_pad }}px;
+
+    --cs-sublabel-fs: {{ sublabel_fs }}px;
+    --cs-sublabel-c: {{ sublabel_c }};
+
+    --cs-title-fs: {{ title_fs }}px;
+    --cs-title-fsm: {{ title_fsm }}px;
+    --cs-title-fw: {{ title_fw }};
+    --cs-title-ls: {{ title_ls | divided_by: 100.0 }}em;
+    --cs-title-tt: {{ title_tt }};
+    --cs-title-c: {{ title_c }};
+    --cs-title-sub-fs: {{ title_sub_fs }}px;
+    --cs-title-sub-c: {{ title_sub_c }};
+    --cs-header-gap: {{ header_gap }}px;
+
+    --cs-bg: {{ bg_color }};
+    --cs-pt: {{ pad_top }}px;
+    --cs-pb: {{ pad_bottom }}px;
+    --cs-ps: {{ pad_sides }}rem;
+    --cs-ps-m: {{ pad_sides_m }}rem;
+    --cs-mt: {{ margin_top }}px;
+    --cs-mb: {{ margin_bottom }}px;
+
+    {% if sec_width == 'page' %}
+      --cs-max-w: 1200px;
+    {% elsif sec_width == 'custom' %}
+      --cs-max-w: {{ section.settings.section_custom_width }}px;
+    {% else %}
+      --cs-max-w: 100%;
+    {% endif %}
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="cs-{{ section.id }}" class="cs-wrap">
+
+  {%- if section_title != blank or section_sub != blank -%}
+    <div class="cs-header">
+      {%- if section_title != blank -%}
+        <h2 class="cs-header__title">{{ section_title }}</h2>
+      {%- endif -%}
+      {%- if section_sub != blank -%}
+        <p class="cs-header__sub">{{ section_sub }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="cs-track" data-cs-drag>
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'category' -%}
+        {%- liquid
+          assign col = block.settings.collection
+          if block.settings.link != blank
+            assign card_url = block.settings.link
+          elsif col != blank
+            assign card_url = col.url
+          else
+            assign card_url = '#'
+          endif
+
+          if block.settings.image != blank
+            assign card_img = block.settings.image
+          elsif col != blank and col.image != blank
+            assign card_img = col.image
+          elsif col != blank and col.products.first != blank and col.products.first.featured_image != blank
+            assign card_img = col.products.first.featured_image
+          else
+            assign card_img = blank
+          endif
+
+          if block.settings.label != blank
+            assign card_label = block.settings.label
+          elsif col != blank
+            assign card_label = col.title
+          else
+            assign card_label = ''
+          endif
+        -%}
+
+        <a href="{{ card_url }}"
+           class="cs-card"
+           style="{% if block.settings.image_position != blank %}--cs-img-pos: {{ block.settings.image_position }};{% endif %}"
+           {{ block.shopify_attributes }}>
+
+          {%- if card_img != blank -%}
+            <img
+              src="{{ card_img | image_url: width: 800 }}"
+              alt="{{ card_img.alt | default: card_label | default: 'Category' }}"
+              class="cs-card__img"
+              {% if lazy %}loading="lazy"{% else %}loading="eager"{% endif %}
+            >
+          {%- else -%}
+            <div class="cs-card__placeholder">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+              </svg>
+            </div>
+          {%- endif -%}
+
+          <div class="cs-card__overlay"></div>
+
+          <div class="cs-card__content">
+            {%- if card_label != blank -%}
+              <span class="cs-card__label">{{ card_label }}</span>
+            {%- endif -%}
+            {%- if block.settings.sublabel != blank -%}
+              <span class="cs-card__sublabel">{{ block.settings.sublabel }}</span>
+            {%- endif -%}
+          </div>
+
+        </a>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+(function(){
+  /* Drag-to-scroll on desktop */
+  var track = document.querySelector('#cs-{{ section.id }} .cs-track');
+  if(!track) return;
+
+  var isDown = false, startX = 0, scrollLeft = 0;
+
+  track.addEventListener('mousedown', function(e){
+    isDown = true;
+    track.style.scrollSnapType = 'none';
+    startX = e.pageX - track.offsetLeft;
+    scrollLeft = track.scrollLeft;
+  });
+
+  track.addEventListener('mouseleave', function(){
+    isDown = false;
+    track.style.scrollSnapType = '';
+  });
+
+  track.addEventListener('mouseup', function(){
+    isDown = false;
+    track.style.scrollSnapType = '';
+  });
+
+  track.addEventListener('mousemove', function(e){
+    if(!isDown) return;
+    e.preventDefault();
+    var x = e.pageX - track.offsetLeft;
+    var walk = (x - startX) * 1.5;
+    track.scrollLeft = scrollLeft - walk;
+  });
+
+  /* Prevent click when dragged */
+  var moved = false;
+  track.addEventListener('mousedown', function(){ moved = false; });
+  track.addEventListener('mousemove', function(){ if(isDown) moved = true; });
+  track.addEventListener('click', function(e){
+    if(moved){ e.preventDefault(); moved = false; }
+  }, true);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Category Scroll",
+  "tag": "div",
+  "class": "cs-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section heading"
+    },
+    {
+      "type": "text",
+      "id": "section_title",
+      "label": "Title"
+    },
+    {
+      "type": "text",
+      "id": "section_subtitle",
+      "label": "Subtitle"
+    },
+    {
+      "type": "range",
+      "id": "header_gap",
+      "label": "Space below heading",
+      "min": 8,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "Card size"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "unit": "px",
+      "default": 400
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 250,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 550
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width – mobile",
+      "min": 150,
+      "max": 400,
+      "step": 10,
+      "unit": "px",
+      "default": 260
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "label": "Card height – mobile",
+      "min": 200,
+      "max": 550,
+      "step": 10,
+      "unit": "px",
+      "default": 380
+    },
+    {
+      "type": "header",
+      "content": "Card styling"
+    },
+    {
+      "type": "range",
+      "id": "card_roundness",
+      "label": "Card roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "card_gap_mobile",
+      "label": "Gap – mobile",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "overlay_bottom",
+      "label": "Bottom overlay strength",
+      "info": "Gradient darkness at the bottom for text readability",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Label typography"
+    },
+    {
+      "type": "range",
+      "id": "label_font_size",
+      "label": "Font size",
+      "min": 16,
+      "max": 72,
+      "step": 1,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "label_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 14,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "select",
+      "id": "label_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "range",
+      "id": "label_letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": -1
+    },
+    {
+      "type": "select",
+      "id": "label_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "lowercase"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "label_padding",
+      "label": "Label padding",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "header",
+      "content": "Sublabel"
+    },
+    {
+      "type": "range",
+      "id": "sublabel_font_size",
+      "label": "Font size",
+      "min": 11,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "sublabel_color",
+      "label": "Sublabel color",
+      "default": "rgba(255,255,255,0.75)"
+    },
+    {
+      "type": "header",
+      "content": "Section heading typography"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Font size",
+      "min": 16,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "title_font_size_mobile",
+      "label": "Font size – mobile",
+      "min": 14,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "select",
+      "id": "title_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "title_letter_spacing",
+      "label": "Letter spacing",
+      "min": -3,
+      "max": 10,
+      "step": 1,
+      "unit": "em",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "title_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "title_sub_font_size",
+      "label": "Subtitle font size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "color",
+      "id": "title_sub_color",
+      "label": "Subtitle color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Padding sides",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "rem",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Padding sides – mobile",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "unit": "rem",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "full", "label": "Full width" },
+        { "value": "page", "label": "Page width (1200px)" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "full"
+    },
+    {
+      "type": "range",
+      "id": "section_custom_width",
+      "label": "Custom width",
+      "min": 800,
+      "max": 1800,
+      "step": 10,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy-load images",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "category",
+      "name": "Category",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Overrides the collection image"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image focus",
+          "options": [
+            { "value": "center center", "label": "Center" },
+            { "value": "center top", "label": "Top" },
+            { "value": "center bottom", "label": "Bottom" },
+            { "value": "left center", "label": "Left" },
+            { "value": "right center", "label": "Right" }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Custom label",
+          "info": "Overrides the collection title"
+        },
+        {
+          "type": "text",
+          "id": "sublabel",
+          "label": "Sublabel"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom link",
+          "info": "Overrides the collection link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Category Scroll",
+      "category": "Collection",
+      "blocks": [
+        { "type": "category", "settings": { "label": "getränke." } },
+        { "type": "category", "settings": { "label": "klamotten." } },
+        { "type": "category", "settings": { "label": "accessoires." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

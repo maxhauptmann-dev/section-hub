@@ -35,3 +35,9 @@ coverage
 
 # Logs
 *.log
+
+# Local SQLite DB (wird in Production nicht gebraucht)
+prisma/dev.sqlite
+prisma/dev.sqlite-journal
+prisma/dev.sqlite-wal
+prisma/dev.sqlite-shm

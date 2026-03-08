@@ -3,23 +3,56 @@
   "name": "Shop the Look",
   "description": "Showcase products in context with a hero lifestyle image. Products can be freely positioned around the image with customizable layouts, floating product cards, and interactive hotspot dots. Perfect for fashion, lifestyle, and home decor stores.",
   "category": "Product Discovery",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "price": {
     "type": "one_time",
     "amount": 12,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Product Grid", "Visual Commerce", "Responsive", "Flexible", "Hotspots"],
+  "tags": [
+    "OS2.0",
+    "Product Grid",
+    "Visual Commerce",
+    "Responsive",
+    "Flexible",
+    "Hotspots"
+  ],
   "author": "Section Hub",
-  "previewColor": "#1a1a2e",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/shop-the-look/default.png", "alt": "Shop the Look - Light Mode with Women's Fashion", "label": "Light" },
-    { "src": "/previews/shop-the-look/dark.png", "alt": "Shop the Look - Dark Mode with Accessories", "label": "Dark" },
-    { "src": "/previews/shop-the-look/oval.png", "alt": "Shop the Look - Oval Image with Men's Fashion", "label": "Oval" },
-    { "src": "/previews/shop-the-look/custom-bg.png", "alt": "Shop the Look - Custom Background Color", "label": "Custom BG" }
+    {
+      "src": "/previews/shop-the-look/default.webp",
+      "alt": "Shop the Look - Light Mode with Women's Fashion",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/shop-the-look/dark.svg",
+      "alt": "Shop the Look - Dark Mode with Accessories",
+      "label": "Dark"
+    },
+    {
+      "src": "/previews/shop-the-look/oval.svg",
+      "alt": "Shop the Look - Oval Image with Men's Fashion",
+      "label": "Oval"
+    },
+    {
+      "src": "/previews/shop-the-look/custom-bg.svg",
+      "alt": "Shop the Look - Custom Background Color",
+      "label": "Custom BG"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Refresh", "Spotlight", "Trade", "Studio"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
     "os2": true
   },
   "files": {
@@ -27,5 +60,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-02-12",
-  "updatedAt": "2026-02-19"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "2.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added hotspot pulse animation toggle",
+        "Improved product card positioning logic",
+        "Fixed hotspot dot alignment on mobile"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-02-12",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

@@ -1,0 +1,140 @@
+/* Section Hub – Rich Text Block */
+
+.sh-richtext {
+  background-color: var(--sh-rt-bg, #fff);
+  color: var(--sh-rt-text, #1a1a1a);
+  padding: var(--sh-rt-pad-y, 64px) var(--sh-rt-pad-x, 24px);
+}
+
+.sh-richtext__inner {
+  max-width: var(--sh-rt-max-w, 720px);
+  margin: 0 auto;
+  text-align: var(--sh-rt-align, center);
+}
+
+@media (max-width: 749px) {
+  .sh-richtext__inner {
+    text-align: var(--sh-rt-align-m, center);
+  }
+}
+
+/* ── Eyebrow ── */
+.sh-richtext__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sh-rt-accent, #6366f1);
+  margin-bottom: 0.75rem;
+}
+
+/* ── Heading ── */
+.sh-richtext__heading {
+  font-size: var(--sh-rt-heading-size, 40px);
+  font-weight: 700;
+  margin: 0 0 1.25rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+@media (max-width: 749px) {
+  .sh-richtext__heading {
+    font-size: var(--sh-rt-heading-size-m, 28px);
+  }
+}
+
+/* ── Body ── */
+.sh-richtext__body {
+  font-size: var(--sh-rt-body-size, 17px);
+  line-height: calc(var(--sh-rt-line-height, 18) / 10);
+  opacity: 0.8;
+  margin-bottom: 1.5rem;
+}
+
+.sh-richtext__body p {
+  margin: 0 0 1em;
+}
+
+.sh-richtext__body p:last-child {
+  margin-bottom: 0;
+}
+
+.sh-richtext__body a {
+  color: var(--sh-rt-accent, #6366f1);
+  text-decoration: underline;
+}
+
+/* ── Buttons ── */
+.sh-richtext__buttons {
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sh-richtext__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: var(--sh-rt-btn-radius, 8px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sh-richtext__btn--solid {
+  background: var(--sh-rt-accent, #6366f1);
+  color: #fff;
+  border-color: var(--sh-rt-accent, #6366f1);
+}
+
+.sh-richtext__btn--solid:hover {
+  opacity: 0.88;
+  transform: translateY(-2px);
+}
+
+.sh-richtext__btn--outline {
+  background: transparent;
+  color: var(--sh-rt-accent, #6366f1);
+  border-color: var(--sh-rt-accent, #6366f1);
+}
+
+.sh-richtext__btn--outline:hover {
+  background: var(--sh-rt-accent, #6366f1);
+  color: #fff;
+}
+
+.sh-richtext__btn--ghost {
+  background: transparent;
+  color: var(--sh-rt-accent, #6366f1);
+  border: none;
+  padding-left: 0;
+  padding-right: 0;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.sh-richtext__btn--ghost:hover {
+  opacity: 0.7;
+}
+
+/* ── Divider ── */
+.sh-richtext__divider {
+  border: none;
+  border-top: 1px solid var(--sh-rt-divider, #e5e7eb);
+  margin: 2rem 0;
+}
+
+/* ── Image ── */
+.sh-richtext__image {
+  margin: 1.5rem 0;
+}
+
+.sh-richtext__image img {
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}

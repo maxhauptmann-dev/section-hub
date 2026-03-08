@@ -1,49 +1,184 @@
 {% comment %}
-  Section Hub - Hero Minimal
-  A clean, minimalist hero section with heading, text and CTA button.
+  Section Hub – Hero Minimal
+  Full-featured hero section with image/video background, content alignment,
+  two buttons, overlay, and extensive typography controls.
 {% endcomment %}
 
 {{ 'section-hero-minimal.css' | asset_url | stylesheet_tag }}
 
-<section class="hero-minimal" style="
-  --hero-bg: {{ section.settings.background_color }};
-  --hero-text: {{ section.settings.text_color }};
-  --hero-accent: {{ section.settings.accent_color }};
-  --hero-height: {{ section.settings.section_height }}vh;
-">
-  <div class="hero-minimal__container">
-    {% if section.settings.eyebrow != blank %}
-      <span class="hero-minimal__eyebrow">{{ section.settings.eyebrow }}</span>
-    {% endif %}
-    
-    <h1 class="hero-minimal__heading">{{ section.settings.heading }}</h1>
-    
-    {% if section.settings.subheading != blank %}
-      <p class="hero-minimal__subheading">{{ section.settings.subheading }}</p>
-    {% endif %}
-    
-    {% if section.settings.button_text != blank %}
-      <a href="{{ section.settings.button_link }}" class="hero-minimal__button">
-        {{ section.settings.button_text }}
-        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-          <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-      </a>
-    {% endif %}
+{%- liquid
+  assign img             = section.settings.image
+  assign overlay_opacity = section.settings.overlay_opacity | divided_by: 100.0
+  assign content_align   = section.settings.content_align
+  assign content_align_m = section.settings.content_align_mobile
+  assign height          = section.settings.section_height
+  assign height_m        = section.settings.section_height_mobile
+  assign lazy            = section.settings.lazy_load
+-%}
+
+<section
+  class="sh-hero"
+  style="
+    --sh-hero-bg:          {{ section.settings.background_color }};
+    --sh-hero-text:        {{ section.settings.text_color }};
+    --sh-hero-accent:      {{ section.settings.accent_color }};
+    --sh-hero-height:      {{ height }}vh;
+    --sh-hero-height-m:    {{ height_m }}vh;
+    --sh-hero-overlay:     {{ section.settings.overlay_color }};
+    --sh-hero-overlay-op:  {{ overlay_opacity }};
+    --sh-hero-pad-top:     {{ section.settings.padding_top }}px;
+    --sh-hero-pad-bot:     {{ section.settings.padding_bottom }}px;
+    --sh-hero-pad-sides:   {{ section.settings.padding_sides }}px;
+    --sh-hero-pad-sides-m: {{ section.settings.padding_sides_mobile }}px;
+    --sh-hero-radius:      {{ section.settings.section_roundness }}px;
+    --sh-hero-img-pos:     {{ section.settings.image_position }};
+    --sh-hero-align:       {{ content_align }};
+    --sh-hero-align-m:     {{ content_align_m }};
+    --sh-hero-text-align:  {{ content_align }};
+    --sh-hero-text-align-m:{{ content_align_m }};
+    --sh-hero-max-w:       {{ section.settings.content_max_width }}px;
+    --sh-hero-eyebrow-size:{{ section.settings.eyebrow_size }}px;
+    --sh-hero-heading-size:{{ section.settings.heading_size }}px;
+    --sh-hero-heading-size-m:{{ section.settings.heading_size_mobile }}px;
+    --sh-hero-heading-lh:  {{ section.settings.heading_line_height }};
+    --sh-hero-sub-size:    {{ section.settings.subheading_size }}px;
+    --sh-hero-sub-size-m:  {{ section.settings.subheading_size_mobile }}px;
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  {%- comment -%} Background image {%- endcomment -%}
+  {%- if img != blank -%}
+    <div class="sh-hero__bg-wrap">
+      <img
+        class="sh-hero__bg-img"
+        src="{{ img | image_url: width: 2000 }}"
+        alt="{{ img.alt | escape }}"
+        width="{{ img.width }}"
+        height="{{ img.height }}"
+        {% if lazy %}loading="lazy"{% else %}loading="eager"{% endif %}
+      >
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Overlay {%- endcomment -%}
+  {%- if section.settings.overlay_opacity > 0 -%}
+    <div class="sh-hero__overlay"></div>
+  {%- endif -%}
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="sh-hero__inner">
+    <div class="sh-hero__content">
+
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="sh-hero__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <{{ section.settings.heading_tag }} class="sh-hero__heading">
+          {{ section.settings.heading }}
+        </{{ section.settings.heading_tag }}>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <p class="sh-hero__subheading">{{ section.settings.subheading }}</p>
+      {%- endif -%}
+
+      {%- if section.settings.button_text != blank or section.settings.button2_text != blank -%}
+        <div class="sh-hero__buttons">
+          {%- if section.settings.button_text != blank -%}
+            <a
+              href="{{ section.settings.button_link }}"
+              class="sh-hero__btn sh-hero__btn--primary sh-hero__btn--{{ section.settings.button_style }}"
+              style="border-radius: {{ section.settings.button_roundness }}px;"
+            >
+              {{ section.settings.button_text }}
+            </a>
+          {%- endif -%}
+          {%- if section.settings.button2_text != blank -%}
+            <a
+              href="{{ section.settings.button2_link }}"
+              class="sh-hero__btn sh-hero__btn--secondary sh-hero__btn--{{ section.settings.button2_style }}"
+              style="border-radius: {{ section.settings.button_roundness }}px;"
+            >
+              {{ section.settings.button2_text }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+    </div>
   </div>
 </section>
 
 {% schema %}
 {
-  "name": "Hero Minimal",
+  "name": "SH – Hero Minimal",
   "tag": "section",
-  "class": "section-hero-minimal",
+  "class": "sh-hero-root",
   "settings": [
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Background Image"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Image Position",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" }
+      ],
+      "default": "center center"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
     {
       "type": "text",
       "id": "eyebrow",
       "label": "Eyebrow Text",
       "default": "Just Arrived"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading Tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h1"
     },
     {
       "type": "text",
@@ -58,6 +193,10 @@
       "default": "Premium products that enrich your life."
     },
     {
+      "type": "header",
+      "content": "Primary Button"
+    },
+    {
       "type": "text",
       "id": "button_text",
       "label": "Button Text",
@@ -66,8 +205,173 @@
     {
       "type": "url",
       "id": "button_link",
-      "label": "Button Link",
-      "default": "/collections/all"
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "ghost", "label": "Ghost" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Button"
+    },
+    {
+      "type": "text",
+      "id": "button2_text",
+      "label": "Button Text"
+    },
+    {
+      "type": "url",
+      "id": "button2_link",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "button2_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "ghost", "label": "Ghost" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Eyebrow Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 24,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size – Mobile",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Heading Line Height",
+      "min": 8,
+      "max": 20,
+      "step": 1,
+      "default": 11,
+      "info": "Divided by 10 (11 = 1.1)"
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading Size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "subheading_size_mobile",
+      "label": "Subheading Size – Mobile",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_align_mobile",
+      "label": "Content Alignment – Mobile",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content Max Width",
+      "min": 400,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section Height",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_height_mobile",
+      "label": "Section Height – Mobile",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 60
     },
     {
       "type": "header",
@@ -77,7 +381,13 @@
       "type": "color",
       "id": "background_color",
       "label": "Background Color",
-      "default": "#1a1a2e"
+      "default": "#1a1a2e",
+      "info": "Visible when no image is set"
+    },
+    {
+      "type": "color_background",
+      "id": "background_gradient",
+      "label": "Background Gradient"
     },
     {
       "type": "color",
@@ -88,27 +398,97 @@
     {
       "type": "color",
       "id": "accent_color",
-      "label": "Accent Color",
+      "label": "Accent / Button Color",
       "default": "#6366f1"
     },
     {
       "type": "header",
-      "content": "Layout"
+      "content": "Section padding (inside)"
     },
     {
       "type": "range",
-      "id": "section_height",
-      "min": 40,
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
       "max": 100,
-      "step": 5,
-      "unit": "vh",
-      "label": "Section Height",
-      "default": 80
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Padding sides",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_sides_mobile",
+      "label": "Padding sides – mobile",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Section margin (outside)"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section Roundness",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "checkbox",
+      "id": "lazy_load",
+      "label": "Lazy load image",
+      "default": false
     }
   ],
   "presets": [
     {
-      "name": "Hero Minimal"
+      "name": "SH – Hero Minimal"
     }
   ]
 }

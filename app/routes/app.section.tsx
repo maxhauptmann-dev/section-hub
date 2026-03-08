@@ -4,6 +4,8 @@ import { useLoaderData, useNavigate, useActionData, useSubmit, useNavigation } f
 import { authenticate } from "../shopify.server";
 import { getSectionWithFiles, getAllSections } from "../lib/sections.server";
 import { hasPurchasedSection } from "../services/billing.server";
+import prisma from "../db.server";
+import { checkIsPremium } from "../lib/is-premium.server";
 import {
   Page,
   Layout,
@@ -20,16 +22,19 @@ import {
   Icon,
   Spinner,
 } from "@shopify/polaris";
-import { ExternalIcon, ViewIcon, PlayIcon } from "@shopify/polaris-icons";
+import { ExternalIcon, ViewIcon, PlayIcon, ChevronLeftIcon, ChevronRightIcon, MaximizeIcon } from "@shopify/polaris-icons";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { session } = await authenticate.admin(request);
   
   const url = new URL(request.url);
   const sectionId = url.searchParams.get("id");
+
+  // Check premium status
+  const { isPremium } = await checkIsPremium(session.shop);
   
   if (!sectionId) {
-    return { section: null, allSections: getAllSections(), isPurchased: false };
+    return { section: null, allSections: getAllSections(), isPurchased: false, isPremium };
   }
   
   const section = getSectionWithFiles(sectionId);
@@ -40,7 +45,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     isPurchased = await hasPurchasedSection(session.shop, sectionId);
   }
   
-  return { section, allSections: getAllSections(), isPurchased };
+  return { section, allSections: getAllSections(), isPurchased, isPremium };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -189,13 +194,326 @@ ${section.liquidContent || ""}`;
   return { success: false, error: "Unknown action" };
 };
 
+/* =============================================
+   Preview Gallery with slider, thumbnails & lightbox
+   ============================================= */
+function PreviewGallery({
+  previews,
+  previewColor,
+  sectionName,
+}: {
+  previews: { src: string; alt?: string; label?: string }[];
+  previewColor?: string;
+  sectionName: string;
+}) {
+  const [current, setCurrent] = useState(0);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const hasMultiple = previews.length > 1;
+  const bg = previewColor || "#1a1a1a";
+
+  const goNext = () => setCurrent((i) => (i + 1) % previews.length);
+  const goPrev = () => setCurrent((i) => (i - 1 + previews.length) % previews.length);
+
+  // Close lightbox on Escape
+  useEffect(() => {
+    if (!lightboxOpen) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setLightboxOpen(false);
+      if (e.key === "ArrowRight") goNext();
+      if (e.key === "ArrowLeft") goPrev();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [lightboxOpen, previews.length]);
+
+  const arrowBtn = (direction: "left" | "right", onClick: () => void) => (
+    <button
+      onClick={(e) => { e.stopPropagation(); onClick(); }}
+      style={{
+        position: "absolute",
+        [direction]: 12,
+        top: "50%",
+        transform: "translateY(-50%)",
+        background: "rgba(255,255,255,0.9)",
+        border: "none",
+        borderRadius: "50%",
+        width: 32,
+        height: 32,
+        cursor: "pointer",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+        zIndex: 3,
+      }}
+      aria-label={direction === "left" ? "Previous" : "Next"}
+    >
+      <Icon source={direction === "left" ? ChevronLeftIcon : ChevronRightIcon} />
+    </button>
+  );
+
+  return (
+    <>
+      {/* Main image */}
+      <div
+        style={{
+          position: "relative",
+          width: "100%",
+          borderRadius: 12,
+          overflow: "hidden",
+          background: bg,
+          cursor: "pointer",
+        }}
+        onClick={() => setLightboxOpen(true)}
+      >
+        <img
+          src={previews[current].src}
+          alt={previews[current].alt || sectionName}
+          style={{
+            display: "block",
+            width: "100%",
+            maxHeight: 420,
+            objectFit: "contain",
+            padding: 12,
+            boxSizing: "border-box",
+          }}
+        />
+
+        {/* Label badge */}
+        {previews[current].label && (
+          <div style={{
+            position: "absolute",
+            bottom: 12,
+            left: 12,
+            background: "rgba(0,0,0,0.6)",
+            color: "#fff",
+            padding: "4px 10px",
+            borderRadius: 6,
+            fontSize: 12,
+            fontWeight: 500,
+          }}>
+            {previews[current].label}
+          </div>
+        )}
+
+        {/* Enlarge hint */}
+        <div style={{
+          position: "absolute",
+          top: 12,
+          right: 12,
+          background: "rgba(0,0,0,0.5)",
+          color: "#fff",
+          borderRadius: "50%",
+          width: 32,
+          height: 32,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <Icon source={MaximizeIcon} tone="base" />
+        </div>
+
+        {/* Arrows */}
+        {hasMultiple && (
+          <>
+            {arrowBtn("left", goPrev)}
+            {arrowBtn("right", goNext)}
+          </>
+        )}
+      </div>
+
+      {/* Thumbnail strip */}
+      {hasMultiple && (
+        <div style={{
+          display: "flex",
+          gap: 8,
+          marginTop: 12,
+          justifyContent: "center",
+          flexWrap: "wrap",
+        }}>
+          {previews.map((p, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrent(idx)}
+              style={{
+                width: 72,
+                height: 48,
+                borderRadius: 8,
+                overflow: "hidden",
+                border: idx === current ? `2px solid #2563eb` : "2px solid #e5e7eb",
+                padding: 2,
+                background: bg,
+                cursor: "pointer",
+                opacity: idx === current ? 1 : 0.7,
+                transition: "all 0.2s",
+              }}
+            >
+              <img
+                src={p.src}
+                alt={p.label || `Preview ${idx + 1}`}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "contain",
+                  borderRadius: 5,
+                }}
+              />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* Lightbox overlay */}
+      {lightboxOpen && (
+        <div
+          onClick={() => setLightboxOpen(false)}
+          style={{
+            position: "fixed",
+            inset: 0,
+            zIndex: 9999,
+            background: "rgba(0,0,0,0.85)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            cursor: "zoom-out",
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={() => setLightboxOpen(false)}
+            style={{
+              position: "absolute",
+              top: 20,
+              right: 20,
+              background: "rgba(255,255,255,0.15)",
+              border: "none",
+              borderRadius: "50%",
+              width: 40,
+              height: 40,
+              cursor: "pointer",
+              color: "#fff",
+              fontSize: 22,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 10000,
+            }}
+            aria-label="Close"
+          >
+            ✕
+          </button>
+
+          {/* Image counter */}
+          {hasMultiple && (
+            <div style={{
+              position: "absolute",
+              top: 20,
+              left: "50%",
+              transform: "translateX(-50%)",
+              color: "rgba(255,255,255,0.7)",
+              fontSize: 14,
+              fontWeight: 500,
+            }}>
+              {current + 1} / {previews.length}
+            </div>
+          )}
+
+          {/* Full image */}
+          <img
+            src={previews[current].src}
+            alt={previews[current].alt || sectionName}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              maxWidth: "90vw",
+              maxHeight: "85vh",
+              objectFit: "contain",
+              borderRadius: 12,
+              cursor: "default",
+            }}
+          />
+
+          {/* Label in lightbox */}
+          {previews[current].label && (
+            <div style={{
+              position: "absolute",
+              bottom: 24,
+              left: "50%",
+              transform: "translateX(-50%)",
+              background: "rgba(0,0,0,0.6)",
+              color: "#fff",
+              padding: "6px 16px",
+              borderRadius: 8,
+              fontSize: 14,
+              fontWeight: 500,
+            }}>
+              {previews[current].label}
+            </div>
+          )}
+
+          {/* Lightbox arrows */}
+          {hasMultiple && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); goPrev(); }}
+                style={{
+                  position: "absolute",
+                  left: 20,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(255,255,255,0.15)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 48,
+                  height: 48,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 24,
+                }}
+                aria-label="Previous"
+              >
+                ‹
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); goNext(); }}
+                style={{
+                  position: "absolute",
+                  right: 20,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  background: "rgba(255,255,255,0.15)",
+                  border: "none",
+                  borderRadius: "50%",
+                  width: 48,
+                  height: 48,
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "#fff",
+                  fontSize: 24,
+                }}
+                aria-label="Next"
+              >
+                ›
+              </button>
+            </>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
   if (price.type === "free") return "Free";
   return `€${price.amount}`;
 }
 
 export default function SectionDetailPage() {
-  const { section, allSections, isPurchased } = useLoaderData<typeof loader>();
+  const { section, allSections, isPurchased, isPremium } = useLoaderData<typeof loader>();
   const navigate = useNavigate();
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -203,8 +521,6 @@ export default function SectionDetailPage() {
   const isSubmitting = navigation.state === "submitting";
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
   const [tryLoading, setTryLoading] = useState(false);
-  const [purchaseSuccess, setPurchaseSuccess] = useState(isPurchased);
-  const [purchaseLoading, setPurchaseLoading] = useState(false);
   const [tryResult, setTryResult] = useState<{
     success?: boolean;
     message?: string;
@@ -216,8 +532,8 @@ export default function SectionDetailPage() {
   } | null>(null);
   const [autoTriggered, setAutoTriggered] = useState(false);
 
-  // Demo store URL – replace with your actual demo store URL
-  const DEMO_STORE_URL = "https://section-hub-demo.myshopify.com";
+  const isFreeSection = !section || section.price?.type === "free";
+  const canInstall = isFreeSection || isPremium || isPurchased;
 
   // Show action result
   useEffect(() => {
@@ -232,7 +548,6 @@ export default function SectionDetailPage() {
     try {
       const formData = new FormData();
       formData.append("sectionId", section.id);
-      formData.append("action", "install");
 
       const response = await fetch("/app/api/install-section", {
         method: "POST",
@@ -240,85 +555,12 @@ export default function SectionDetailPage() {
       });
 
       const data = await response.json();
-
-      // Handle purchase requirement
-      if (data.purchaseRequired && data.confirmationUrl) {
-        // Redirect to Shopify confirmation URL
-        window.top!.location.href = data.confirmationUrl;
-        return;
-      }
-
-      // Regular install response
       setResult(data);
     } catch (error) {
       setResult({
         success: false,
         error: error instanceof Error ? error.message : "Installation failed",
       });
-    }
-  };
-
-  const handlePurchase = async () => {
-    if (!section) return;
-    setPurchaseLoading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("sectionId", section.id);
-
-      const response = await fetch("/app/api/purchase-section", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = await response.json();
-      console.log("Purchase Response:", { status: response.status, data });
-
-      // Already purchased
-      if (data.alreadyPurchased) {
-        setPurchaseSuccess(true);
-        setResult({
-          success: true,
-          message: `"${section.name}" wurde bereits gekauft. Du kannst sie jetzt installieren!`,
-        });
-        return;
-      }
-
-      // Redirect to Shopify checkout
-      if (data.purchaseRequired && data.confirmationUrl) {
-        // Mock purchase (Shopify Billing API not available) – treat as instant success
-        if (data.confirmationUrl === "__mock__") {
-          setPurchaseSuccess(true);
-          setResult({
-            success: true,
-            message: `"${section.name}" wurde erfolgreich gekauft (Testmodus). Du kannst sie jetzt installieren!`,
-          });
-          return;
-        }
-
-        // Real Shopify checkout – redirect
-        setResult({
-          success: true,
-          message: `Weiterleitung zum Shopify Checkout...`,
-        });
-        setTimeout(() => {
-          window.top!.location.href = data.confirmationUrl;
-        }, 1500);
-        return;
-      }
-
-      // Error from API
-      if (data.error) {
-        setResult({ success: false, error: data.error });
-        return;
-      }
-    } catch (error) {
-      setResult({
-        success: false,
-        error: `Kauf fehlgeschlagen: ${error instanceof Error ? error.message : "Unbekannter Fehler"}`,
-      });
-    } finally {
-      setPurchaseLoading(false);
     }
   };
 
@@ -360,28 +602,6 @@ export default function SectionDetailPage() {
       if (params.get("try") === "true") {
         setAutoTriggered(true);
         handleTrySection();
-      }
-      // Check for successful purchase redirect
-      if (params.get("purchased") === "true" && params.get("install") === "true") {
-        setPurchaseSuccess(true);
-        setResult({
-          success: true,
-          message: `"${section.name}" wurde erfolgreich gekauft! Du kannst die Section jetzt installieren.`,
-        });
-      }
-      // Check for declined purchase
-      if (params.get("purchase") === "declined") {
-        setResult({
-          success: false,
-          error: "Der Kauf wurde abgelehnt oder abgebrochen.",
-        });
-      }
-      // Check for purchase error
-      if (params.get("purchase") === "error") {
-        setResult({
-          success: false,
-          error: "Beim Verifizieren des Kaufs ist ein Fehler aufgetreten. Bitte versuche es erneut.",
-        });
       }
     }
   }, [section, autoTriggered, handleTrySection]);
@@ -435,7 +655,7 @@ export default function SectionDetailPage() {
                           </BlockStack>
                         </InlineStack>
                         <Badge tone={s.price.type === "free" ? "success" : "info"}>
-                          {priceLabel(s.price)}
+                          {s.price.type === "free" ? "Free" : "Premium"}
                         </Badge>
                       </InlineStack>
                     </button>
@@ -453,31 +673,27 @@ export default function SectionDetailPage() {
     <Page
       title={section.name}
       backAction={{ content: "Back", onAction: () => navigate("/app/explore") }}
-      primaryAction={{
-        content: isSubmitting ? "Installing..." : "Install to Theme (Dev)",
-        onAction: handleInstall,
-        loading: isSubmitting,
-      }}
+      primaryAction={
+        canInstall
+          ? {
+              content: isSubmitting ? "Installing..." : "Install to Theme",
+              onAction: handleInstall,
+              loading: isSubmitting,
+            }
+          : {
+              content: "Upgrade to Premium",
+              onAction: () => navigate("/app/premium"),
+            }
+      }
       secondaryActions={[
-        // Purchase button – only show for paid sections that aren't purchased yet
-        ...((section.price?.type === "one_time" && (section.price?.amount || 0) > 0 && !purchaseSuccess)
+        ...(!canInstall
           ? [{
-              content: `Buy – €${section.price.amount}`,
-              onAction: handlePurchase,
-              loading: purchaseLoading,
+              content: "Try Section",
+              onAction: handleTrySection,
+              loading: tryLoading,
+              icon: PlayIcon,
             }]
           : []),
-        {
-          content: "Try Section",
-          onAction: handleTrySection,
-          loading: tryLoading,
-          icon: PlayIcon,
-        },
-        {
-          content: "Demo Store",
-          onAction: () => window.open(DEMO_STORE_URL, "_blank"),
-          icon: ExternalIcon,
-        },
       ]}
     >
       <Layout>
@@ -511,11 +727,11 @@ export default function SectionDetailPage() {
                 <BlockStack gap="200">
                   <p>{tryResult.message}</p>
                   <p style={{ fontSize: 13, color: "#6b7280" }}>
-                    Theme: <strong>{tryResult.themeName}</strong> (unpublished – won&apos;t affect your live store)
+                    Demo theme: <strong>{tryResult.themeName}</strong> (unpublished – won&apos;t affect your live store)
                   </p>
                   {tryResult.expiresAt && (
                     <p style={{ fontSize: 13, color: "#6b7280" }}>
-                      ⏱️ Trial period: <strong>{tryResult.trialDays} days</strong> until {new Date(tryResult.expiresAt).toLocaleDateString()}
+                      ⏱️ Demo expires in <strong>24 hours</strong> ({new Date(tryResult.expiresAt).toLocaleDateString()})
                     </p>
                   )}
                   {tryResult.editorUrl && (
@@ -537,142 +753,117 @@ export default function SectionDetailPage() {
           </Layout.Section>
         )}
 
-        {/* Preview */}
+        {/* Preview Gallery */}
         <Layout.Section>
           <Card>
             <BlockStack gap="400">
-              <div style={{
-                width: "100%",
-                height: 200,
-                borderRadius: 12,
-                background: `linear-gradient(135deg, ${section.previewColor} 0%, ${section.previewColor}99 100%)`,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}>
-                <Text as="p" variant="headingXl" tone="text-inverse">
-                  {section.name}
-                </Text>
-              </div>
+              {section.previews && section.previews.length > 0 ? (
+                <PreviewGallery previews={section.previews} previewColor={section.previewColor} sectionName={section.name} />
+              ) : (
+                <div style={{
+                  width: "100%",
+                  height: 200,
+                  borderRadius: 12,
+                  background: `linear-gradient(135deg, ${section.previewColor} 0%, ${section.previewColor}99 100%)`,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}>
+                  <Text as="p" variant="headingXl" tone="text-inverse">
+                    {section.name}
+                  </Text>
+                </div>
+              )}
             </BlockStack>
           </Card>
         </Layout.Section>
 
-        {/* Try Before You Buy Card */}
-        <Layout.Section>
-          <Card>
-            <div style={{
-              background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
-              borderRadius: 12,
-              padding: 24,
-            }}>
-              <BlockStack gap="400">
-                <InlineStack gap="200" blockAlign="center">
-                  <div style={{
-                    background: "#0ea5e9",
-                    borderRadius: "50%",
-                    width: 36,
-                    height: 36,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}>
-                    <Icon source={ViewIcon} tone="base" />
-                  </div>
-                  <BlockStack gap="100">
-                    <Text as="h2" variant="headingMd">Try before you buy</Text>
-                    <Text as="p" variant="bodySm" tone="subdued">
-                      Test this section in your Theme Editor without affecting your live store
-                    </Text>
-                  </BlockStack>
-                </InlineStack>
-                <InlineStack gap="300">
-                  <Button
-                    variant="primary"
-                    icon={PlayIcon}
-                    onClick={handleTrySection}
-                    loading={tryLoading}
-                  >
-                    {tryLoading ? "Preparing preview…" : "Try Section ✨"}
-                  </Button>
-                  <Button
-                    variant="secondary"
-                    icon={ExternalIcon}
-                    onClick={() => window.open(DEMO_STORE_URL, "_blank")}
-                  >
-                    Demo Store
-                  </Button>
-                </InlineStack>
-                <Text as="p" variant="bodySm" tone="subdued">
-                  ℹ️ Creates a hidden preview theme – your live store stays untouched.
-                </Text>
-              </BlockStack>
-            </div>
-          </Card>
-        </Layout.Section>
-
-        {/* Purchase Card – only for paid sections */}
-        {section.price?.type === "one_time" && (section.price?.amount || 0) > 0 && (
+        {/* Try Before You Buy - only for non-premium, non-free */}
+        {!canInstall && (
           <Layout.Section>
             <Card>
               <div style={{
-                background: purchaseSuccess
-                  ? "linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%)"
-                  : "linear-gradient(135deg, #fefce8 0%, #fef3c7 100%)",
+                background: "linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)",
                 borderRadius: 12,
                 padding: 24,
               }}>
                 <BlockStack gap="400">
                   <InlineStack gap="200" blockAlign="center">
                     <div style={{
-                      background: purchaseSuccess ? "#22c55e" : "#f59e0b",
+                      background: "#0ea5e9",
                       borderRadius: "50%",
                       width: 36,
                       height: 36,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: 18,
                     }}>
-                      {purchaseSuccess ? "✅" : "🛒"}
+                      <Icon source={ViewIcon} tone="base" />
                     </div>
                     <BlockStack gap="100">
-                      <Text as="h2" variant="headingMd">
-                        {purchaseSuccess ? "Section gekauft!" : `Section kaufen – €${section.price.amount}`}
-                      </Text>
+                      <Text as="h2" variant="headingMd">Try before you subscribe</Text>
                       <Text as="p" variant="bodySm" tone="subdued">
-                        {purchaseSuccess
-                          ? "Du besitzt diese Section. Klicke auf \"Install to Theme\" um sie zu installieren."
-                          : "Einmalzahlung • Lifetime Updates • Shopify Billing (Testmodus)"}
+                        Preview this section in a demo theme — no changes to your live store
                       </Text>
                     </BlockStack>
                   </InlineStack>
-                  {!purchaseSuccess && (
-                    <InlineStack gap="300">
-                      <Button
-                        variant="primary"
-                        onClick={handlePurchase}
-                        loading={purchaseLoading}
-                      >
-                        {purchaseLoading ? "Weiterleitung…" : `Jetzt kaufen – €${section.price.amount}`}
-                      </Button>
-                      <Text as="p" variant="bodySm" tone="subdued">
-                        🔒 Sichere Zahlung über Shopify
+                  <InlineStack gap="300">
+                    <Button
+                      variant="primary"
+                      icon={PlayIcon}
+                      onClick={handleTrySection}
+                      loading={tryLoading}
+                    >
+                      {tryLoading ? "Preparing preview…" : "Try Section ✨"}
+                    </Button>
+                  </InlineStack>
+                  <Text as="p" variant="bodySm" tone="subdued">
+                    ℹ️ Opens a separate demo theme — your live store stays completely untouched. Demo expires after 24 hours.
+                  </Text>
+                </BlockStack>
+              </div>
+            </Card>
+          </Layout.Section>
+        )}
+
+        {/* Upgrade to Premium CTA - for non-premium, non-free */}
+        {!canInstall && (
+          <Layout.Section>
+            <Card padding="0">
+              <div style={{
+                background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #8b5cf6 100%)",
+                borderRadius: 12,
+                padding: 28,
+              }}>
+                <BlockStack gap="400">
+                  <InlineStack gap="300" blockAlign="center">
+                    <span style={{ fontSize: 32 }}>�</span>
+                    <BlockStack gap="100">
+                      <Text as="h2" variant="headingLg">
+                        <span style={{ color: "white" }}>Unlock all sections with Premium</span>
                       </Text>
-                    </InlineStack>
-                  )}
-                  {purchaseSuccess && (
-                    <InlineStack gap="300">
-                      <Button
-                        variant="primary"
-                        onClick={handleInstall}
-                        loading={isSubmitting}
-                      >
-                        Jetzt installieren
-                      </Button>
-                      <Badge tone="success">Gekauft</Badge>
-                    </InlineStack>
-                  )}
+                      <Text as="p" variant="bodyMd">
+                        <span style={{ color: "rgba(255,255,255,0.85)" }}>
+                          Install {section.name} and all other sections for just €8/month
+                        </span>
+                      </Text>
+                    </BlockStack>
+                  </InlineStack>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 16, marginTop: 4 }}>
+                    {[
+                      "✓ All sections included",
+                      "✓ New sections monthly",
+                      "✓ One-click install",
+                      "✓ Cancel anytime",
+                    ].map((f) => (
+                      <span key={f} style={{ fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{f}</span>
+                    ))}
+                  </div>
+                  <div>
+                    <Button variant="primary" size="large" onClick={() => navigate("/app/premium")}>
+                      Upgrade to Premium – €8/mo
+                    </Button>
+                  </div>
                 </BlockStack>
               </div>
             </Card>
@@ -689,7 +880,7 @@ export default function SectionDetailPage() {
                 
                 <InlineStack align="space-between">
                   <Text as="p" variant="bodySm" tone="subdued">Category</Text>
-                  <Badge>{section.category}</Badge>
+                  <Badge>{Array.isArray(section.category) ? section.category[0] : section.category}</Badge>
                 </InlineStack>
                 
                 <InlineStack align="space-between">
@@ -698,13 +889,17 @@ export default function SectionDetailPage() {
                 </InlineStack>
                 
                 <InlineStack align="space-between">
-                  <Text as="p" variant="bodySm" tone="subdued">Price</Text>
-                  <InlineStack gap="200">
-                    <Badge tone={section.price.type === "free" ? "success" : "info"}>
-                      {priceLabel(section.price)}
-                    </Badge>
-                    {purchaseSuccess && <Badge tone="success">Gekauft</Badge>}
-                  </InlineStack>
+                  <Text as="p" variant="bodySm" tone="subdued">Access</Text>
+                  <Badge tone={isFreeSection ? "success" : "info"}>
+                    {isFreeSection ? "Free" : "Premium"}
+                  </Badge>
+                </InlineStack>
+
+                <InlineStack align="space-between">
+                  <Text as="p" variant="bodySm" tone="subdued">Status</Text>
+                  <Badge tone={canInstall ? "success" : "attention"}>
+                    {canInstall ? "Unlocked" : "Premium Required"}
+                  </Badge>
                 </InlineStack>
                 
                 <InlineStack align="space-between">
@@ -745,6 +940,35 @@ export default function SectionDetailPage() {
                 )}
               </BlockStack>
             </Card>
+
+            {/* Changelog */}
+            {section.changelog && section.changelog.length > 0 && (
+              <Card>
+                <BlockStack gap="300">
+                  <Text as="h2" variant="headingMd">Changelog</Text>
+                  <Divider />
+                  {section.changelog.map((entry: { version: string; date: string; changes: string[] }) => (
+                    <BlockStack key={entry.version} gap="100">
+                      <InlineStack gap="200" blockAlign="center">
+                        <Badge tone="info">{`v${entry.version}`}</Badge>
+                        <Text as="span" variant="bodySm" tone="subdued">
+                          {new Date(entry.date).toLocaleDateString("en-US", {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                          })}
+                        </Text>
+                      </InlineStack>
+                      <List>
+                        {entry.changes.map((change: string, i: number) => (
+                          <List.Item key={i}>{change}</List.Item>
+                        ))}
+                      </List>
+                    </BlockStack>
+                  ))}
+                </BlockStack>
+              </Card>
+            )}
           </BlockStack>
         </Layout.Section>
 
@@ -754,11 +978,13 @@ export default function SectionDetailPage() {
             <BlockStack gap="400">
               <Text as="h2" variant="headingMd">How to use this section</Text>
               <List type="number">
-                <List.Item>Click &quot;Try Section&quot; to test it first, or &quot;Install to Theme&quot; to add it directly</List.Item>
-                <List.Item>The section will appear in the Shopify Theme Editor</List.Item>
+                {!canInstall && (
+                  <List.Item>Subscribe to Premium or click &quot;Try Section&quot; to preview it first</List.Item>
+                )}
+                <List.Item>Click &quot;Install to Theme&quot; to add the section to your theme</List.Item>
+                <List.Item>Open the Shopify Theme Editor</List.Item>
                 <List.Item>Click &quot;Add section&quot; and search for &quot;{section.name}&quot;</List.Item>
                 <List.Item>Customize the settings to your liking</List.Item>
-                <List.Item>If you tested it, install it to your live theme when ready</List.Item>
               </List>
             </BlockStack>
           </Card>

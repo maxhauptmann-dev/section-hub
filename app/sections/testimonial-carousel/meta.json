@@ -1,23 +1,42 @@
 {
   "id": "testimonial-carousel",
   "name": "Testimonial Carousel",
-  "description": "Modern testimonial carousel with star ratings, autoplay, and manual navigation. Perfect for social proof.",
-  "category": "Testimonials",
-  "version": "1.0.0",
+  "description": "Fully customisable testimonial carousel with flexible sizing, spacing, multi-card view, star ratings, autoplay and manual navigation.",
+  "category": [
+    "Testimonials",
+    "Carousel"
+  ],
+  "version": "2.1.0",
   "price": {
     "type": "one_time",
     "amount": 29,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Trust", "Animated", "Carousel", "Responsive"],
+  "tags": [
+    "OS2.0",
+    "Trust",
+    "Animated",
+    "Carousel",
+    "Responsive",
+    "Flexible"
+  ],
   "author": "Section Hub",
-  "previewColor": "#f59e0b",
+  "previewColor": "#0f172a",
   "previews": [
-    { "src": "/previews/testimonial-carousel/default.svg", "alt": "Testimonial Carousel - Light Mode", "label": "Light" },
-    { "src": "/previews/testimonial-carousel/dark.svg", "alt": "Testimonial Carousel - Dark Mode", "label": "Dark" }
+    {
+      "src": "/previews/testimonial-carousel1/default.webp",
+      "alt": "Testimonial Carousel - Light Mode",
+      "label": "Light"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -25,5 +44,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-22",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "2.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added card gap customization",
+        "Improved autoplay pause on hover",
+        "Fixed card width calculation with 3+ visible cards"
+      ]
+    },
+    {
+      "version": "2.0.0",
+      "date": "2026-01-22",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

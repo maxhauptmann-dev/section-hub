@@ -1,0 +1,612 @@
+{% comment %}
+  Section Hub – SS Slideshow v1.0
+  Fullscreen slideshow with product integration, thumbnail navigation
+  and animated progress border around active thumb.
+{% endcomment %}
+
+{%- liquid
+  assign autoplay       = section.settings.autoplay
+  assign speed          = section.settings.autoplay_speed
+  assign transition     = section.settings.transition_duration
+  assign height         = section.settings.section_height
+  assign height_m       = section.settings.section_height_mobile
+  assign overlay_op     = section.settings.overlay_opacity
+  assign content_align  = section.settings.content_align
+  assign content_valign = section.settings.content_valign
+  assign card_offset    = section.settings.card_offset | default: 32
+  assign thumb_size     = section.settings.thumb_size
+  assign thumb_gap      = section.settings.thumb_gap
+  assign thumb_round    = section.settings.thumb_roundness
+  assign thumb_border_w = section.settings.thumb_border_width
+  assign thumb_border_c = section.settings.thumb_border_color
+  assign progress_color = section.settings.progress_color
+  assign progress_w     = section.settings.progress_width
+
+  assign prod_bg        = section.settings.product_card_bg
+  assign prod_round     = section.settings.product_card_roundness
+  assign prod_pad       = section.settings.product_card_padding
+
+  assign section_round  = section.settings.section_roundness
+  assign custom_css     = section.settings.custom_css
+-%}
+
+<style>
+  #ssw-{{ section.id }} {
+    --ssw-height: {{ height }}vh;
+    --ssw-height-m: {{ height_m }}vh;
+    --ssw-overlay: {{ overlay_op | divided_by: 100.0 }};
+    --ssw-transition: {{ transition }}ms;
+    --ssw-speed: {{ speed }}ms;
+
+    --ssw-thumb-size: {{ thumb_size }}px;
+    --ssw-thumb-gap: {{ thumb_gap }}px;
+    --ssw-thumb-round: {{ thumb_round }}px;
+    --ssw-thumb-border-w: {{ thumb_border_w }}px;
+    --ssw-thumb-border-c: {{ thumb_border_c }};
+    --ssw-progress: {{ progress_color }};
+    --ssw-progress-w: {{ progress_w }}px;
+
+    --ssw-card-bg: {{ prod_bg }};
+    --ssw-card-round: {{ prod_round }}px;
+    --ssw-card-pad: {{ prod_pad }}px;
+    --ssw-card-offset: {{ card_offset }}px;
+    --ssw-round: {{ section_round }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<div id="ssw-{{ section.id }}" class="ssw-slideshow" data-ssw-autoplay="{{ autoplay }}" data-ssw-speed="{{ speed }}">
+
+  {%- comment -%} ── Slides ── {%- endcomment -%}
+  <div class="ssw-slides">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'slide' -%}
+        {%- assign img       = block.settings.image -%}
+        {%- assign img_m     = block.settings.image_mobile -%}
+        {%- assign product   = block.settings.product -%}
+        {%- assign title     = block.settings.title -%}
+        {%- assign vendor    = block.settings.vendor -%}
+        {%- assign btn_text  = block.settings.button_text -%}
+
+        {%- assign heading_c  = block.settings.product_heading_color -%}
+        {%- assign vendor_c   = block.settings.product_vendor_color -%}
+        {%- assign price_c    = block.settings.product_price_color -%}
+        {%- assign btn_tc     = block.settings.button_text_color -%}
+        {%- assign btn_th     = block.settings.button_hover_text_color -%}
+        {%- assign btn_bg     = block.settings.button_bg_color -%}
+        {%- assign btn_bgh    = block.settings.button_bg_hover_color -%}
+        {%- assign btn_bc     = block.settings.button_border_color -%}
+        {%- assign btn_bch    = block.settings.button_border_hover_color -%}
+
+        <div class="ssw-slide{% if forloop.first %} ssw-slide--active{% endif %}"
+             data-ssw-index="{{ forloop.index0 }}"
+             style="
+               --ssw-heading-c: {{ heading_c }};
+               --ssw-vendor-c: {{ vendor_c }};
+               --ssw-price-c: {{ price_c }};
+               --ssw-btn-tc: {{ btn_tc }};
+               --ssw-btn-th: {{ btn_th }};
+               --ssw-btn-bg: {{ btn_bg }};
+               --ssw-btn-bgh: {{ btn_bgh }};
+               --ssw-btn-bc: {{ btn_bc }};
+               --ssw-btn-bch: {{ btn_bch }};
+             "
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Background Image {%- endcomment -%}
+          {%- if img != blank -%}
+            <img
+              src="{{ img | image_url: width: 1920 }}"
+              alt="{{ img.alt | default: product.title | default: 'Slide' }}"
+              class="ssw-slide__img ssw-slide__img--desk"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              width="1920"
+              height="{{ 1920 | divided_by: img.aspect_ratio | round }}"
+            >
+          {%- endif -%}
+          {%- if img_m != blank -%}
+            <img
+              src="{{ img_m | image_url: width: 800 }}"
+              alt="{{ img_m.alt | default: product.title | default: 'Slide' }}"
+              class="ssw-slide__img ssw-slide__img--mobile"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              width="800"
+              height="{{ 800 | divided_by: img_m.aspect_ratio | round }}"
+            >
+          {%- else if img != blank -%}
+            <img
+              src="{{ img | image_url: width: 800 }}"
+              alt="{{ img.alt | default: 'Slide' }}"
+              class="ssw-slide__img ssw-slide__img--mobile"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+            >
+          {%- endif -%}
+
+          {%- comment -%} Overlay {%- endcomment -%}
+          <div class="ssw-slide__overlay"></div>
+
+          {%- comment -%} Product Card {%- endcomment -%}
+          {%- if product != blank -%}
+            <div class="ssw-product ssw-product--{{ content_valign }}-{{ content_align }}">
+              <div class="ssw-product__card">
+                {%- assign display_title = title | default: product.title -%}
+                {%- assign display_vendor = vendor | default: product.vendor -%}
+
+                <h3 class="ssw-product__title">{{ display_title }}</h3>
+                {%- if display_vendor != blank -%}
+                  <p class="ssw-product__vendor">{{ display_vendor }}</p>
+                {%- endif -%}
+                <p class="ssw-product__price">{{ product.price | money }}</p>
+
+                {%- if btn_text != blank -%}
+                  <a href="{{ product.url }}" class="ssw-product__btn">{{ btn_text }}</a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} ── Thumbnails (bottom-right) ── {%- endcomment -%}
+  <div class="ssw-thumbs">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'slide' -%}
+        {%- assign thumb = block.settings.image_thumb | default: block.settings.image -%}
+        <button class="ssw-thumb{% if forloop.first %} ssw-thumb--active{% endif %}"
+                data-ssw-thumb="{{ forloop.index0 }}"
+                aria-label="Slide {{ forloop.index }}">
+          {%- comment -%} SVG progress border {%- endcomment -%}
+          <svg class="ssw-thumb__progress" viewBox="0 0 100 100" fill="none">
+            <rect x="2" y="2" width="96" height="96"
+                  rx="{{ thumb_round | times: 96 | divided_by: thumb_size }}"
+                  ry="{{ thumb_round | times: 96 | divided_by: thumb_size }}"
+                  stroke="var(--ssw-progress)"
+                  stroke-width="{{ progress_w | times: 96 | divided_by: thumb_size }}"
+                  stroke-dasharray="384"
+                  stroke-dashoffset="384"
+                  class="ssw-thumb__track"/>
+          </svg>
+          {%- if thumb != blank -%}
+            <img src="{{ thumb | image_url: width: 200 }}" alt="Thumb {{ forloop.index }}" class="ssw-thumb__img" loading="lazy">
+          {%- else -%}
+            <span class="ssw-thumb__placeholder">{{ forloop.index }}</span>
+          {%- endif -%}
+        </button>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+</div>
+
+<script>
+(function(){
+  var root = document.getElementById('ssw-{{ section.id }}');
+  if(!root) return;
+
+  var slides    = root.querySelectorAll('.ssw-slide');
+  var thumbs    = root.querySelectorAll('.ssw-thumb');
+  var tracks    = root.querySelectorAll('.ssw-thumb__track');
+  var total     = slides.length;
+  if(total < 1) return;
+
+  var current   = 0;
+  var autoplay  = root.getAttribute('data-ssw-autoplay') === 'true';
+  var speed     = parseInt(root.getAttribute('data-ssw-speed')) || 5000;
+  var timer     = null;
+  var animFrame = null;
+
+  function goTo(index){
+    slides[current].classList.remove('ssw-slide--active');
+    thumbs[current].classList.remove('ssw-thumb--active');
+    /* Reset old progress */
+    if(tracks[current]){
+      tracks[current].style.transition = 'none';
+      tracks[current].style.strokeDashoffset = '384';
+    }
+
+    current = ((index % total) + total) % total;
+
+    slides[current].classList.add('ssw-slide--active');
+    thumbs[current].classList.add('ssw-thumb--active');
+
+    /* Animate new progress */
+    if(autoplay && tracks[current]){
+      /* Force reflow so transition restarts */
+      void tracks[current].offsetWidth;
+      tracks[current].style.transition = 'stroke-dashoffset ' + speed + 'ms linear';
+      tracks[current].style.strokeDashoffset = '0';
+    }
+  }
+
+  /* Thumb clicks */
+  thumbs.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var idx = parseInt(btn.getAttribute('data-ssw-thumb'));
+      stopAuto();
+      goTo(idx);
+      startAuto();
+    });
+  });
+
+  /* Auto-play */
+  function startAuto(){
+    if(!autoplay) return;
+    stopAuto();
+    /* Kick off progress for current thumb */
+    if(tracks[current]){
+      void tracks[current].offsetWidth;
+      tracks[current].style.transition = 'stroke-dashoffset ' + speed + 'ms linear';
+      tracks[current].style.strokeDashoffset = '0';
+    }
+    timer = setInterval(function(){
+      goTo(current + 1);
+    }, speed);
+  }
+
+  function stopAuto(){
+    if(timer) clearInterval(timer);
+    timer = null;
+  }
+
+  /* Touch swipe */
+  var touchX = 0;
+  root.addEventListener('touchstart', function(e){ touchX = e.touches[0].clientX; }, { passive: true });
+  root.addEventListener('touchend', function(e){
+    var diff = e.changedTouches[0].clientX - touchX;
+    if(Math.abs(diff) > 50){
+      stopAuto();
+      goTo(diff < 0 ? current + 1 : current - 1);
+      startAuto();
+    }
+  }, { passive: true });
+
+  /* Init */
+  startAuto();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Slideshow",
+  "tag": "section",
+  "class": "ssw-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Slideshow"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-play",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Auto-play speed",
+      "min": 2000,
+      "max": 9000,
+      "step": 500,
+      "unit": "ms",
+      "default": 5000
+    },
+    {
+      "type": "range",
+      "id": "transition_duration",
+      "label": "Transition duration",
+      "min": 200,
+      "max": 1200,
+      "step": 100,
+      "unit": "ms",
+      "default": 600
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "section_height_mobile",
+      "label": "Section height - mobile",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 15
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Product card horizontal",
+      "options": [
+        { "value": "left",   "label": "Left"   },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right"  }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "select",
+      "id": "content_valign",
+      "label": "Product card vertical",
+      "options": [
+        { "value": "bottom", "label": "Bottom" },
+        { "value": "center", "label": "Center" },
+        { "value": "top",    "label": "Top"    }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "range",
+      "id": "card_offset",
+      "label": "Card offset from edge",
+      "min": 12,
+      "max": 64,
+      "step": 4,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "section_roundness",
+      "label": "Section roundness",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Thumbnails"
+    },
+    {
+      "type": "range",
+      "id": "thumb_size",
+      "label": "Thumbnail size",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "thumb_gap",
+      "label": "Gap",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "thumb_roundness",
+      "label": "Roundness",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "thumb_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "thumb_border_color",
+      "label": "Border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Progress indicator"
+    },
+    {
+      "type": "color",
+      "id": "progress_color",
+      "label": "Progress color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "progress_width",
+      "label": "Progress line width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "unit": "px",
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Product card"
+    },
+    {
+      "type": "color",
+      "id": "product_card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "product_card_roundness",
+      "label": "Card roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "product_card_padding",
+      "label": "Card padding",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image - Mobile"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_thumb",
+          "label": "Image Thumb"
+        },
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Will Replace the Product Title"
+        },
+        {
+          "type": "text",
+          "id": "vendor",
+          "label": "Vendor",
+          "info": "Will Replace the Product Vendor"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "Shop"
+        },
+        {
+          "type": "header",
+          "content": "Product Colors"
+        },
+        {
+          "type": "color",
+          "id": "product_heading_color",
+          "label": "Product Heading Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "product_vendor_color",
+          "label": "Product Vendor Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "product_price_color",
+          "label": "Product Price Color",
+          "default": "#000000"
+        },
+        {
+          "type": "header",
+          "content": "Button Colors"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button Text Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "button_hover_text_color",
+          "label": "Button Hover Text Color",
+          "default": "#FFFFFF"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_color",
+          "label": "Button Background Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "button_bg_hover_color",
+          "label": "Button Background Hover Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "button_border_color",
+          "label": "Button Border Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "button_border_hover_color",
+          "label": "Button Border Hover Color",
+          "default": "#000000"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Slideshow",
+      "blocks": [
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" },
+        { "type": "slide" }
+      ]
+    }
+  ]
+}
+{% endschema %}

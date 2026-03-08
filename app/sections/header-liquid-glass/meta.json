@@ -1,0 +1,89 @@
+{
+  "id": "header-liquid-glass",
+  "name": "SS - Header Liquid Glass",
+  "description": "Premium frosted glass header with extensive customization. Features: liquid glass effect with adjustable opacity/blur, mega menu with custom column layouts, multiple button styles, right navigation with icons/text, custom fonts, mobile drawer, reveal on scroll, and comprehensive color controls for every element.",
+  "category": "Header",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Navigation",
+    "Mega Menu",
+    "Liquid Glass",
+    "Glassmorphism",
+    "Sticky",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/header-liquid-glass/default.webp",
+      "alt": "Header Liquid Glass – Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/header-liquid-glass/menu.webp",
+      "alt": "Header Liquid Glass – Menu Open",
+      "label": "Menu Open"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-26",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Liquid glass (glassmorphism) effect with customizable opacity and blur",
+    "Mega menu with multi-column layouts",
+    "Multiple button styles (solid, outline, with arrows)",
+    "Customizable shop name with Google Fonts support",
+    "Right navigation with icon/text toggle",
+    "Search, account, cart with mobile burger menu options",
+    "Always sticky or reveal on scroll up modes",
+    "Extensive color customization for every element",
+    "Section margin and padding controls",
+    "Border and roundness settings",
+    "Mobile drawer with collapsible submenus",
+    "Custom CSS support"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added custom font weight settings",
+        "Improved glassmorphism rendering on Firefox",
+        "Fixed mobile drawer backdrop blur"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-26",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

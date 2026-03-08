@@ -1,0 +1,389 @@
+{% comment %}
+  Section Hub – Rich Text Block
+  Flexible text section for storytelling, about pages, or any content.
+{% endcomment %}
+
+{{ 'section-rich-text.css' | asset_url | stylesheet_tag }}
+
+<section
+  class="sh-richtext"
+  style="
+    --sh-rt-bg: {{ section.settings.background_color }};
+    --sh-rt-text: {{ section.settings.text_color }};
+    --sh-rt-accent: {{ section.settings.accent_color }};
+    --sh-rt-pad-y: {{ section.settings.padding_y }}px;
+    --sh-rt-pad-x: {{ section.settings.padding_x }}px;
+    --sh-rt-max-w: {{ section.settings.content_max_width }}px;
+    --sh-rt-align: {{ section.settings.text_align }};
+    --sh-rt-align-m: {{ section.settings.text_align_mobile }};
+    --sh-rt-heading-size: {{ section.settings.heading_size }}px;
+    --sh-rt-heading-size-m: {{ section.settings.heading_size_mobile }}px;
+    --sh-rt-body-size: {{ section.settings.body_size }}px;
+    --sh-rt-line-height: {{ section.settings.body_line_height }};
+    --sh-rt-btn-radius: {{ section.settings.button_roundness }}px;
+    --sh-rt-divider: {{ section.settings.divider_color }};
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  <div class="sh-richtext__inner">
+    {% for block in section.blocks %}
+      {% case block.type %}
+        {% when 'eyebrow' %}
+          <span class="sh-richtext__eyebrow" {{ block.shopify_attributes }}>{{ block.settings.text }}</span>
+
+        {% when 'heading' %}
+          <{{ block.settings.tag }} class="sh-richtext__heading" {{ block.shopify_attributes }}>
+            {{ block.settings.text }}
+          </{{ block.settings.tag }}>
+
+        {% when 'text' %}
+          <div class="sh-richtext__body" {{ block.shopify_attributes }}>
+            {{ block.settings.text }}
+          </div>
+
+        {% when 'button' %}
+          <div class="sh-richtext__buttons" {{ block.shopify_attributes }}>
+            <a
+              href="{{ block.settings.link }}"
+              class="sh-richtext__btn sh-richtext__btn--{{ block.settings.style }}"
+            >
+              {{ block.settings.text }}
+            </a>
+          </div>
+
+        {% when 'divider' %}
+          <hr class="sh-richtext__divider" {{ block.shopify_attributes }}>
+
+        {% when 'image' %}
+          {% if block.settings.image != blank %}
+            <div class="sh-richtext__image" {{ block.shopify_attributes }}>
+              <img
+                src="{{ block.settings.image | image_url: width: 1200 }}"
+                alt="{{ block.settings.image.alt | escape }}"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                loading="lazy"
+                style="border-radius: {{ block.settings.image_roundness }}px; max-width: {{ block.settings.image_width }}%;"
+              >
+            </div>
+          {% endif %}
+
+        {% when 'spacing' %}
+          <div class="sh-richtext__spacer" style="height: {{ block.settings.height }}px;" {{ block.shopify_attributes }}></div>
+
+      {% endcase %}
+    {% endfor %}
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "SH – Rich Text",
+  "tag": "section",
+  "class": "sh-richtext-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align_mobile",
+      "label": "Text Alignment – Mobile",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content Max Width",
+      "min": 400,
+      "max": 1200,
+      "step": 40,
+      "unit": "px",
+      "default": 720
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 16,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 64
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading Size",
+      "min": 20,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading Size – Mobile",
+      "min": 18,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Body Font Size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 17
+    },
+    {
+      "type": "range",
+      "id": "body_line_height",
+      "label": "Body Line Height",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 18,
+      "info": "Divided by 10 (18 = 1.8)"
+    },
+    {
+      "type": "range",
+      "id": "button_roundness",
+      "label": "Button Roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider Color",
+      "default": "#e5e7eb"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "eyebrow",
+      "name": "Eyebrow",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Our Story"
+        }
+      ]
+    },
+    {
+      "type": "heading",
+      "name": "Heading",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Crafted with Care"
+        },
+        {
+          "type": "select",
+          "id": "tag",
+          "label": "Heading Tag",
+          "options": [
+            { "value": "h1", "label": "H1" },
+            { "value": "h2", "label": "H2" },
+            { "value": "h3", "label": "H3" }
+          ],
+          "default": "h2"
+        }
+      ]
+    },
+    {
+      "type": "text",
+      "name": "Text",
+      "settings": [
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Text",
+          "default": "<p>Share your brand story, explain your process, or introduce your team. This section is fully flexible — add as many text, image, and button blocks as you need.</p>"
+        }
+      ]
+    },
+    {
+      "type": "button",
+      "name": "Button",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "select",
+          "id": "style",
+          "label": "Style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "ghost", "label": "Ghost / Link" }
+          ],
+          "default": "solid"
+        }
+      ]
+    },
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "range",
+          "id": "image_width",
+          "label": "Image Width",
+          "min": 20,
+          "max": 100,
+          "step": 5,
+          "unit": "%",
+          "default": 100
+        },
+        {
+          "type": "range",
+          "id": "image_roundness",
+          "label": "Image Roundness",
+          "min": 0,
+          "max": 32,
+          "step": 2,
+          "unit": "px",
+          "default": 8
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider"
+    },
+    {
+      "type": "spacing",
+      "name": "Spacer",
+      "settings": [
+        {
+          "type": "range",
+          "id": "height",
+          "label": "Height",
+          "min": 8,
+          "max": 80,
+          "step": 4,
+          "unit": "px",
+          "default": 24
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SH – Rich Text",
+      "blocks": [
+        { "type": "eyebrow", "settings": { "text": "Our Story" } },
+        { "type": "heading", "settings": { "text": "Crafted with Care", "tag": "h2" } },
+        { "type": "text", "settings": { "text": "<p>Share your brand story, explain your process, or introduce your team. This section supports multiple content blocks so you can build any layout you need.</p>" } },
+        { "type": "button", "settings": { "text": "Learn More", "style": "solid" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -3,21 +3,42 @@
   "name": "Testimonial Image Review",
   "description": "Image testimonials with product photos, star ratings, and customer comments. Grid layout with adjustable columns and image sizes.",
   "category": "Testimonials",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "price": {
     "type": "one_time",
     "amount": 9,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Images", "Review", "Grid", "Responsive", "Social Proof"],
+  "tags": [
+    "OS2.0",
+    "Images",
+    "Review",
+    "Grid",
+    "Responsive",
+    "Social Proof"
+  ],
   "author": "Section Hub",
-  "previewColor": "#f59e0b",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/testimonial-image-review/default.svg", "alt": "Testimonial Image Review - Light Mode", "label": "Light" },
-    { "src": "/previews/testimonial-image-review/dark.svg", "alt": "Testimonial Image Review - Dark Mode", "label": "Dark" }
+    {
+      "src": "/previews/testimonial-image-review/default.webp",
+      "alt": "Testimonial Image Review - Light Mode",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/testimonial-image-review/dark.webp",
+      "alt": "Testimonial Image Review - Dark Mode",
+      "label": "Dark"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -25,5 +46,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-02-09",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added image lightbox on click",
+        "Improved grid gap consistency",
+        "Fixed star rating alignment with long names"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-09",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

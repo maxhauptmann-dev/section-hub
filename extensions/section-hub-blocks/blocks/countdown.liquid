@@ -1,0 +1,214 @@
+{% comment %}
+  Section Hub - Countdown Timer Block
+  Creates urgency with a countdown to a specific date.
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-countdown {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: {{ block.settings.background_color }};
+  border: 1px solid {{ block.settings.border_color }};
+  border-radius: {{ block.settings.border_radius }}px;
+  margin: 8px 0;
+}
+
+.sh-countdown__unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 50px;
+  padding: 8px 12px;
+  background: {{ block.settings.unit_background }};
+  border-radius: 8px;
+}
+
+.sh-countdown__number {
+  font-size: {{ block.settings.number_size }}px;
+  font-weight: 800;
+  color: {{ block.settings.number_color }};
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.sh-countdown__label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: {{ block.settings.label_color }};
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.sh-countdown__separator {
+  font-size: 20px;
+  font-weight: 700;
+  color: {{ block.settings.number_color }};
+  opacity: 0.4;
+}
+
+.sh-countdown__title {
+  font-size: 13px;
+  font-weight: 600;
+  color: {{ block.settings.text_color }};
+  margin-right: 12px;
+  white-space: nowrap;
+}
+</style>
+
+<div class="sh-countdown" id="sh-countdown-{{ block.id }}">
+  {% if block.settings.title != blank %}
+    <span class="sh-countdown__title">{{ block.settings.title }}</span>
+  {% endif %}
+
+  <div class="sh-countdown__unit">
+    <span class="sh-countdown__number" data-days>0</span>
+    <span class="sh-countdown__label">Days</span>
+  </div>
+  <span class="sh-countdown__separator">:</span>
+  <div class="sh-countdown__unit">
+    <span class="sh-countdown__number" data-hours>0</span>
+    <span class="sh-countdown__label">Hours</span>
+  </div>
+  <span class="sh-countdown__separator">:</span>
+  <div class="sh-countdown__unit">
+    <span class="sh-countdown__number" data-minutes>0</span>
+    <span class="sh-countdown__label">Minutes</span>
+  </div>
+  <span class="sh-countdown__separator">:</span>
+  <div class="sh-countdown__unit">
+    <span class="sh-countdown__number" data-seconds>0</span>
+    <span class="sh-countdown__label">Seconds</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  var container = document.getElementById('sh-countdown-{{ block.id }}');
+  var endDate = new Date('{{ block.settings.end_date }}T{{ block.settings.end_time }}:00').getTime();
+
+  function update() {
+    var now = new Date().getTime();
+    var diff = endDate - now;
+
+    if (diff <= 0) {
+      container.querySelector('[data-days]').textContent = '0';
+      container.querySelector('[data-hours]').textContent = '0';
+      container.querySelector('[data-minutes]').textContent = '0';
+      container.querySelector('[data-seconds]').textContent = '0';
+      return;
+    }
+
+    var days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    var hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    var minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    var seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    container.querySelector('[data-days]').textContent = days;
+    container.querySelector('[data-hours]').textContent = hours;
+    container.querySelector('[data-minutes]').textContent = minutes;
+    container.querySelector('[data-seconds]').textContent = seconds;
+  }
+
+  update();
+  setInterval(update, 1000);
+})();
+</script>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Countdown Timer",
+  "target": "section",
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "🔥 Sale ends in:"
+    },
+    {
+      "type": "text",
+      "id": "end_date",
+      "label": "End Date (YYYY-MM-DD)",
+      "default": "2026-03-01"
+    },
+    {
+      "type": "text",
+      "id": "end_time",
+      "label": "End Time (HH:MM)",
+      "default": "23:59"
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "unit_background",
+      "label": "Unit Background",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Title Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "number_size",
+      "label": "Number Size",
+      "min": 18,
+      "max": 40,
+      "step": 2,
+      "default": 28,
+      "unit": "px"
+    }
+  ]
+}
+{% endschema %}

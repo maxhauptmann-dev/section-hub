@@ -3,21 +3,40 @@
   "name": "Logo Cloud",
   "description": "Trust bar with partner or media logos. Grayscale effect, hover animation, optional infinite scroll.",
   "category": "Social Proof",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "price": {
     "type": "one_time",
     "amount": 9,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Trust", "Minimal", "Responsive"],
+  "tags": [
+    "OS2.0",
+    "Trust",
+    "Minimal",
+    "Responsive"
+  ],
   "author": "Section Hub",
-  "previewColor": "#64748b",
+  "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/logo-cloud/default.svg", "alt": "Logo Cloud - Light Mode", "label": "Light" },
-    { "src": "/previews/logo-cloud/dark.svg", "alt": "Logo Cloud - Dark Mode", "label": "Dark" }
+    {
+      "src": "/previews/logo-cloud/default.webp",
+      "alt": "Logo Cloud - Light Mode",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/logo-cloud/dark.svg",
+      "alt": "Logo Cloud - Dark Mode",
+      "label": "Dark"
+    }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -25,5 +44,23 @@
     "css": "styles.css"
   },
   "createdAt": "2026-01-20",
-  "updatedAt": "2026-02-09"
+  "updatedAt": "2026-03-04",
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added logo size customization",
+        "Improved infinite scroll smoothness",
+        "Fixed grayscale filter on SVG logos"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-01-20",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
 }

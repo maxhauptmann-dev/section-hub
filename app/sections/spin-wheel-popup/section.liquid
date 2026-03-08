@@ -1,0 +1,752 @@
+<style>
+  {% render 'styles.css' %}
+</style>
+
+{%- assign segments_data = '' -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'segment' -%}
+    {%- unless forloop.first -%}{%- assign segments_data = segments_data | append: '|||' -%}{%- endunless -%}
+    {%- assign segments_data = segments_data | append: block.settings.label | append: '::' | append: block.settings.discount_code | append: '::' | append: block.settings.color | append: '::' | append: block.settings.text_color | append: '::' | append: block.settings.probability | append: '::' | append: block.settings.win_message -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<!-- Overlay -->
+<div class="swp-overlay" id="swpOverlay"
+  data-trigger="{{ section.settings.trigger_type }}"
+  data-delay="{{ section.settings.trigger_delay }}"
+  data-scroll="{{ section.settings.trigger_scroll }}"
+  data-cookie-days="{{ section.settings.cookie_days }}"
+  data-section-id="{{ section.id }}"
+  style="
+    --swp-overlay-bg: {{ section.settings.overlay_bg }};
+    --swp-modal-bg: {{ section.settings.modal_bg }};
+    --swp-text-color: {{ section.settings.text_color }};
+    --swp-modal-radius: {{ section.settings.modal_radius }}px;
+    --swp-accent: {{ section.settings.accent_color }};
+    --swp-pointer-color: {{ section.settings.pointer_color }};
+    --swp-wheel-border: {{ section.settings.wheel_border_color }};
+    --swp-center-bg: {{ section.settings.center_bg }};
+    --swp-center-text: {{ section.settings.center_text_color }};
+    --swp-input-border: {{ section.settings.input_border }};
+    --swp-input-bg: {{ section.settings.input_bg }};
+    --swp-input-radius: {{ section.settings.input_radius }}px;
+    --swp-btn-bg: {{ section.settings.btn_bg }};
+    --swp-btn-text: {{ section.settings.btn_text_color }};
+    --swp-btn-radius: {{ section.settings.btn_radius }}px;
+    --swp-title-size: {{ section.settings.title_size | divided_by: 100.0 }}em;
+    --swp-subtitle-size: {{ section.settings.subtitle_size | divided_by: 100.0 }}em;
+  "
+>
+  <div class="swp-modal">
+    <button class="swp-close" id="swpClose" aria-label="Close">&times;</button>
+
+    <!-- Left: Wheel -->
+    <div class="swp-wheel-panel">
+      <div class="swp-wheel-container">
+        <div class="swp-pointer"></div>
+        <div class="swp-wheel" id="swpWheel">
+          <canvas id="swpCanvas" width="560" height="560"></canvas>
+        </div>
+        <div class="swp-wheel-center" id="swpCenter">{{ section.settings.center_text }}</div>
+      </div>
+    </div>
+
+    <!-- Right: Form / Result -->
+    <div class="swp-form-panel">
+      <!-- Form State -->
+      <div id="swpFormState">
+        {%- if section.settings.title != blank -%}
+          <h2 class="swp-title">{{ section.settings.title }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="swp-subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+
+        <form class="swp-form" id="swpForm" onsubmit="return false;">
+          <input
+            class="swp-input"
+            type="email"
+            id="swpEmail"
+            placeholder="{{ section.settings.email_placeholder }}"
+            required
+          >
+          {%- if section.settings.show_name_field -%}
+            <input
+              class="swp-input"
+              type="text"
+              id="swpName"
+              placeholder="{{ section.settings.name_placeholder }}"
+            >
+          {%- endif -%}
+          <button type="submit" class="swp-spin-btn" id="swpSpinBtn">
+            {{ section.settings.spin_button_text }}
+          </button>
+        </form>
+
+        {%- if section.settings.terms_text != blank -%}
+          <p class="swp-terms">{{ section.settings.terms_text }}</p>
+        {%- endif -%}
+
+        <button class="swp-no-thanks" id="swpNoThanks">
+          {{ section.settings.no_thanks_text }}
+        </button>
+      </div>
+
+      <!-- Result State -->
+      <div class="swp-result" id="swpResult">
+        <div class="swp-result-emoji">🎉</div>
+        <h2 class="swp-result-title" id="swpResultTitle">Congratulations!</h2>
+        <p class="swp-result-message" id="swpResultMessage"></p>
+        <div class="swp-discount-code" id="swpDiscountCode"></div>
+        <p class="swp-result-hint">{{ section.settings.copy_hint_text }}</p>
+        <button class="swp-copy-btn" id="swpCopyBtn">{{ section.settings.copy_button_text }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function() {
+  const overlay = document.getElementById('swpOverlay');
+  if (!overlay) return;
+
+  const sectionId = overlay.dataset.sectionId;
+  const cookieKey = 'swp_shown_' + sectionId;
+  const cookieDays = parseInt(overlay.dataset.cookieDays) || 7;
+
+  // Check cookie
+  function getCookie(name) {
+    const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+    return v ? v.pop() : '';
+  }
+  function setCookie(name, val, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + days * 86400000);
+    document.cookie = name + '=' + val + ';expires=' + d.toUTCString() + ';path=/;SameSite=Lax';
+  }
+
+  if (getCookie(cookieKey) === '1') return;
+
+  // Parse segments
+  const rawSegments = {{ segments_data | json }};
+  const segments = rawSegments.split('|||').map(s => {
+    const p = s.split('::');
+    return {
+      label: p[0] || '',
+      code: p[1] || '',
+      color: p[2] || '#ff6b6b',
+      textColor: p[3] || '#ffffff',
+      probability: parseInt(p[4]) || 1,
+      winMessage: p[5] || ''
+    };
+  }).filter(s => s.label);
+
+  if (!segments.length) return;
+
+  // Build probability pool
+  const pool = [];
+  segments.forEach((seg, i) => {
+    for (let j = 0; j < seg.probability; j++) pool.push(i);
+  });
+
+  // Draw wheel
+  const canvas = document.getElementById('swpCanvas');
+  const ctx = canvas.getContext('2d');
+  const size = canvas.width;
+  const center = size / 2;
+  const radius = center - 4;
+  const segCount = segments.length;
+  const arc = (2 * Math.PI) / segCount;
+
+  function drawWheel() {
+    ctx.clearRect(0, 0, size, size);
+    segments.forEach((seg, i) => {
+      const startAngle = i * arc - Math.PI / 2;
+      const endAngle = startAngle + arc;
+
+      // Segment
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.fillStyle = seg.color;
+      ctx.fill();
+
+      // Border line
+      ctx.beginPath();
+      ctx.moveTo(center, center);
+      ctx.arc(center, center, radius, startAngle, endAngle);
+      ctx.closePath();
+      ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Text
+      ctx.save();
+      ctx.translate(center, center);
+      ctx.rotate(startAngle + arc / 2);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = seg.textColor;
+      ctx.font = 'bold ' + Math.max(12, Math.min(16, 200 / segCount)) + 'px sans-serif';
+      ctx.fillText(seg.label, radius - 16, 5);
+      ctx.restore();
+    });
+  }
+
+  drawWheel();
+
+  // Trigger logic
+  const triggerType = overlay.dataset.trigger;
+  const triggerDelay = parseInt(overlay.dataset.delay) || 3;
+  const triggerScroll = parseInt(overlay.dataset.scroll) || 50;
+
+  function showPopup() {
+    overlay.classList.add('swp-overlay--visible');
+  }
+
+  if (triggerType === 'delay') {
+    setTimeout(showPopup, triggerDelay * 1000);
+  } else if (triggerType === 'scroll') {
+    let triggered = false;
+    window.addEventListener('scroll', function() {
+      if (triggered) return;
+      const scrollPct = (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100;
+      if (scrollPct >= triggerScroll) {
+        triggered = true;
+        showPopup();
+      }
+    });
+  } else if (triggerType === 'exit') {
+    let triggered = false;
+    document.addEventListener('mouseleave', function(e) {
+      if (triggered) return;
+      if (e.clientY < 0) {
+        triggered = true;
+        showPopup();
+      }
+    });
+  }
+
+  // Close
+  function closePopup() {
+    overlay.classList.remove('swp-overlay--visible');
+    setCookie(cookieKey, '1', cookieDays);
+  }
+
+  document.getElementById('swpClose').addEventListener('click', closePopup);
+  document.getElementById('swpNoThanks').addEventListener('click', closePopup);
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) closePopup();
+  });
+
+  // Spin
+  let isSpinning = false;
+  const wheel = document.getElementById('swpWheel');
+  const form = document.getElementById('swpForm');
+  const spinBtn = document.getElementById('swpSpinBtn');
+
+  form.addEventListener('submit', function(e) {
+    e.preventDefault();
+    if (isSpinning) return;
+
+    const emailInput = document.getElementById('swpEmail');
+    if (!emailInput.value || !emailInput.validity.valid) {
+      emailInput.focus();
+      return;
+    }
+
+    isSpinning = true;
+    spinBtn.disabled = true;
+
+    // Pick winner from probability pool
+    const winIndex = pool[Math.floor(Math.random() * pool.length)];
+    const winSegment = segments[winIndex];
+
+    // Calculate rotation – pointer is at 12 o'clock (top), segments are drawn
+    // starting at -90° (also top). We need to land the winning segment's center
+    // under the pointer after the wheel rotates clockwise.
+    const segAngle = 360 / segCount;
+    // The center of segment i sits at i * segAngle degrees from the top.
+    // To bring it under the pointer we rotate by -(that angle) plus full turns.
+    const targetAngle = -(winIndex * segAngle + segAngle / 2);
+    const totalRotation = 360 * 5 + targetAngle;
+
+    wheel.style.transform = 'rotate(' + totalRotation + 'deg)';
+
+    // Show result after spin
+    setTimeout(function() {
+      document.getElementById('swpFormState').style.display = 'none';
+      const result = document.getElementById('swpResult');
+      result.classList.add('swp-result--visible');
+
+      if (winSegment.code) {
+        document.getElementById('swpResultTitle').textContent = '{{ section.settings.win_title }}';
+        document.getElementById('swpResultMessage').textContent = winSegment.winMessage || '{{ section.settings.win_message }}';
+        document.getElementById('swpDiscountCode').textContent = winSegment.code;
+        document.getElementById('swpDiscountCode').style.display = 'inline-block';
+        document.getElementById('swpCopyBtn').style.display = 'block';
+      } else {
+        document.getElementById('swpResultTitle').textContent = '{{ section.settings.lose_title }}';
+        document.getElementById('swpResultMessage').textContent = '{{ section.settings.lose_message }}';
+        document.getElementById('swpDiscountCode').style.display = 'none';
+        document.getElementById('swpCopyBtn').style.display = 'none';
+        document.querySelector('.swp-result-hint').style.display = 'none';
+      }
+
+      setCookie(cookieKey, '1', cookieDays);
+    }, 4500);
+  });
+
+  // Copy code
+  document.getElementById('swpCopyBtn').addEventListener('click', function() {
+    const code = document.getElementById('swpDiscountCode').textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(code);
+    }
+    this.textContent = '{{ section.settings.copied_text }}';
+    setTimeout(function() {
+      document.getElementById('swpCopyBtn').textContent = '{{ section.settings.copy_button_text }}';
+    }, 2000);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Spin Wheel Popup",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Try your luck!"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Enter your email for a chance to win a special discount. Spin the wheel and see what you get!"
+    },
+    {
+      "type": "text",
+      "id": "center_text",
+      "label": "Wheel center text",
+      "default": "SPIN"
+    },
+    {
+      "type": "header",
+      "content": "Form"
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_name_field",
+      "label": "Show name field",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "name_placeholder",
+      "label": "Name placeholder",
+      "default": "Your name"
+    },
+    {
+      "type": "text",
+      "id": "spin_button_text",
+      "label": "Spin button text",
+      "default": "Spin the Wheel!"
+    },
+    {
+      "type": "text",
+      "id": "no_thanks_text",
+      "label": "No thanks text",
+      "default": "No thanks, I don't want a discount"
+    },
+    {
+      "type": "text",
+      "id": "terms_text",
+      "label": "Terms text",
+      "default": "By entering, you agree to receive marketing emails."
+    },
+    {
+      "type": "header",
+      "content": "Result Messages"
+    },
+    {
+      "type": "text",
+      "id": "win_title",
+      "label": "Win title",
+      "default": "Congratulations!"
+    },
+    {
+      "type": "text",
+      "id": "win_message",
+      "label": "Default win message",
+      "default": "Here is your discount code:"
+    },
+    {
+      "type": "text",
+      "id": "lose_title",
+      "label": "Lose title",
+      "default": "Almost!"
+    },
+    {
+      "type": "text",
+      "id": "lose_message",
+      "label": "Lose message",
+      "default": "Better luck next time! Come back soon."
+    },
+    {
+      "type": "text",
+      "id": "copy_button_text",
+      "label": "Copy button text",
+      "default": "Copy Code"
+    },
+    {
+      "type": "text",
+      "id": "copied_text",
+      "label": "Copied confirmation text",
+      "default": "Copied!"
+    },
+    {
+      "type": "text",
+      "id": "copy_hint_text",
+      "label": "Copy hint text",
+      "default": "Click the code or button to copy"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger_type",
+      "label": "Trigger type",
+      "options": [
+        { "value": "delay", "label": "Time delay" },
+        { "value": "scroll", "label": "Scroll percentage" },
+        { "value": "exit", "label": "Exit intent (desktop)" }
+      ],
+      "default": "delay"
+    },
+    {
+      "type": "range",
+      "id": "trigger_delay",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "unit": "s",
+      "label": "Delay before showing (seconds)",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "trigger_scroll",
+      "min": 10,
+      "max": 90,
+      "step": 10,
+      "unit": "%",
+      "label": "Scroll percentage to trigger",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "label": "Days before showing again",
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "Colors — Modal"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg",
+      "label": "Overlay background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg",
+      "label": "Modal background",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "header",
+      "content": "Colors — Wheel"
+    },
+    {
+      "type": "color",
+      "id": "pointer_color",
+      "label": "Pointer color",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "color",
+      "id": "wheel_border_color",
+      "label": "Wheel border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "center_bg",
+      "label": "Center circle background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "center_text_color",
+      "label": "Center circle text color",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "header",
+      "content": "Colors — Form"
+    },
+    {
+      "type": "color",
+      "id": "input_border",
+      "label": "Input border color",
+      "default": "#444466"
+    },
+    {
+      "type": "color",
+      "id": "input_bg",
+      "label": "Input background",
+      "default": "#16163a"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#ff6b6b"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "modal_radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "label": "Modal border radius",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "input_radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Input border radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Button border radius",
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "min": 100,
+      "max": 300,
+      "step": 10,
+      "unit": "px",
+      "label": "Title font size",
+      "default": 160
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "min": 70,
+      "max": 160,
+      "step": 5,
+      "unit": "px",
+      "label": "Subtitle font size",
+      "default": 95
+    }
+  ],
+  "blocks": [
+    {
+      "type": "segment",
+      "name": "Wheel Segment",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label (shown on wheel)",
+          "default": "10% OFF"
+        },
+        {
+          "type": "text",
+          "id": "discount_code",
+          "label": "Discount code (leave empty = no win)",
+          "default": "SPIN10"
+        },
+        {
+          "type": "text",
+          "id": "win_message",
+          "label": "Custom win message (optional)"
+        },
+        {
+          "type": "color",
+          "id": "color",
+          "label": "Segment color",
+          "default": "#ff6b6b"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Segment text color",
+          "default": "#ffffff"
+        },
+        {
+          "type": "range",
+          "id": "probability",
+          "min": 1,
+          "max": 10,
+          "step": 1,
+          "label": "Probability weight",
+          "default": 1,
+          "info": "Higher = more likely to land on this segment"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Spin Wheel Popup",
+      "settings": {
+        "title": "Try your luck!",
+        "subtitle": "Enter your email for a chance to win a special discount. Spin the wheel and see what you get!"
+      },
+      "blocks": [
+        {
+          "type": "segment",
+          "settings": {
+            "label": "10% OFF",
+            "discount_code": "SPIN10",
+            "color": "#ff6b6b",
+            "text_color": "#ffffff",
+            "probability": 3
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "Try again",
+            "discount_code": "",
+            "color": "#2d2d5e",
+            "text_color": "#ffffff",
+            "probability": 4
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "25% OFF",
+            "discount_code": "SPIN25",
+            "color": "#e84393",
+            "text_color": "#ffffff",
+            "probability": 1
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "Try again",
+            "discount_code": "",
+            "color": "#1a1a4e",
+            "text_color": "#ffffff",
+            "probability": 4
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "15% OFF",
+            "discount_code": "SPIN15",
+            "color": "#6c5ce7",
+            "text_color": "#ffffff",
+            "probability": 2
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "Try again",
+            "discount_code": "",
+            "color": "#2d2d5e",
+            "text_color": "#ffffff",
+            "probability": 4
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "Free Shipping",
+            "discount_code": "FREESHIP",
+            "color": "#00b894",
+            "text_color": "#ffffff",
+            "probability": 2
+          }
+        },
+        {
+          "type": "segment",
+          "settings": {
+            "label": "Try again",
+            "discount_code": "",
+            "color": "#1a1a4e",
+            "text_color": "#ffffff",
+            "probability": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

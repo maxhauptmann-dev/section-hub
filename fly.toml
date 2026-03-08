@@ -1,10 +1,13 @@
-# fly.toml app configuration file generated for shopify-quiet-night-395 on 2026-01-28T17:14:19+01:00
+# fly.toml app configuration file generated for section-hub-app
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'shopify-quiet-night-395'
+app = 'section-hub-app'
 primary_region = 'fra'
+
+[build]
+  depot = false
 
 [http_service]
   internal_port = 8080
@@ -15,6 +18,9 @@ primary_region = 'fra'
   max_machines_running = 1
   processes = ['app']
 
+  [http_service.response.headers]
+    "Content-Security-Policy" = "frame-ancestors https://*.myshopify.com https://admin.shopify.com https://section-hub-app.fly.dev;"
+
 [[http_service.checks]]
   protocol = 'http'
   method = 'GET'
@@ -22,6 +28,14 @@ primary_region = 'fra'
   interval = '10s'
   timeout = '5s'
   grace_period = '30s'
+
+[[mounts]]
+  source = "sqlite_data"
+  destination = "/data"
+
+[[statics]]
+  guest_path = "/app/public/previews"
+  url_prefix = "/previews"
 
 [[vm]]
   memory = '1gb'

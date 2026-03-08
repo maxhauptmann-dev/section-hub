@@ -1,0 +1,165 @@
+/* Section Hub – Image with Text */
+
+.sh-iwt {
+  background-color: var(--sh-iwt-bg, #fff);
+  color: var(--sh-iwt-text, #1a1a1a);
+  padding: var(--sh-iwt-pad-y, 64px) var(--sh-iwt-pad-x, 24px);
+}
+
+.sh-iwt__container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: var(--sh-iwt-split, 50%) 1fr;
+  gap: var(--sh-iwt-gap, 48px);
+  align-items: center;
+}
+
+.sh-iwt--reversed .sh-iwt__container {
+  direction: rtl;
+}
+
+.sh-iwt--reversed .sh-iwt__container > * {
+  direction: ltr;
+}
+
+@media (max-width: 749px) {
+  .sh-iwt__container {
+    grid-template-columns: 1fr;
+  }
+  .sh-iwt--reversed .sh-iwt__container {
+    direction: ltr;
+  }
+}
+
+/* ── Media ── */
+.sh-iwt__media {
+  overflow: hidden;
+  border-radius: var(--sh-iwt-img-radius, 12px);
+}
+
+.sh-iwt__img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  aspect-ratio: var(--sh-iwt-img-ratio, auto);
+}
+
+.sh-iwt__placeholder {
+  background: #f1f5f9;
+  border-radius: var(--sh-iwt-img-radius, 12px);
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sh-iwt__placeholder-svg {
+  width: 60%;
+  height: auto;
+  opacity: 0.3;
+}
+
+/* ── Content ── */
+.sh-iwt__content {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.sh-iwt__eyebrow {
+  display: inline-block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--sh-iwt-accent, #6366f1);
+  margin-bottom: 0.75rem;
+}
+
+.sh-iwt__heading {
+  font-size: var(--sh-iwt-heading-size, 36px);
+  font-weight: 700;
+  margin: 0 0 1rem;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+}
+
+@media (max-width: 749px) {
+  .sh-iwt__heading {
+    font-size: var(--sh-iwt-heading-size-m, 28px);
+  }
+}
+
+.sh-iwt__body {
+  font-size: var(--sh-iwt-body-size, 16px);
+  line-height: 1.7;
+  opacity: 0.8;
+  margin-bottom: 0.5rem;
+}
+
+.sh-iwt__body p {
+  margin: 0 0 1em;
+}
+
+.sh-iwt__body p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Buttons ── */
+.sh-iwt__buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.sh-iwt__btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.85rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  text-decoration: none;
+  border: 2px solid transparent;
+  border-radius: var(--sh-iwt-btn-radius, 8px);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.sh-iwt__btn--solid {
+  background: var(--sh-iwt-accent, #6366f1);
+  color: #fff;
+  border-color: var(--sh-iwt-accent, #6366f1);
+}
+
+.sh-iwt__btn--solid:hover {
+  opacity: 0.88;
+  transform: translateY(-2px);
+}
+
+.sh-iwt__btn--outline {
+  background: transparent;
+  color: var(--sh-iwt-accent, #6366f1);
+  border-color: var(--sh-iwt-accent, #6366f1);
+}
+
+.sh-iwt__btn--outline:hover {
+  background: var(--sh-iwt-accent, #6366f1);
+  color: #fff;
+}
+
+.sh-iwt__btn--ghost {
+  background: transparent;
+  color: var(--sh-iwt-accent, #6366f1);
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.sh-iwt__btn--ghost:hover {
+  opacity: 0.7;
+}

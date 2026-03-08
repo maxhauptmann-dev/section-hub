@@ -1,0 +1,72 @@
+{
+  "id": "scrolling-text",
+  "name": "Scrolling Text",
+  "description": "Bold auto-scrolling marquee text bar. Infinite loop with large editorial typography. Perfect for branding, collabs, or announcements.",
+  "category": "Scrolling",
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scrolling",
+    "Marquee",
+    "Text",
+    "Branding",
+    "Animated",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scrolling-text/default.webp",
+      "alt": "Scrolling Text – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 8
+  },
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added stroke/outline text style option",
+        "Improved marquee speed consistency across browsers",
+        "Fixed text duplication on window resize"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-20",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-04",
+  "createdAt": "2026-02-20"
+}

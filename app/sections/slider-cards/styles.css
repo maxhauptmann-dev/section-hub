@@ -1,0 +1,371 @@
+/* ═══════════════════════════════════════════
+   SS - Slider #16  |  Section Hub
+   Card-based slider with fullscreen BG
+   ═══════════════════════════════════════════ */
+
+/* ── Outer wrapper ── */
+.s16-wrap {
+  position: relative;
+  width: 100%;
+  max-width: var(--s16-max-w);
+  height: var(--s16-h);
+  margin: var(--s16-mt) auto var(--s16-mb);
+  padding: var(--s16-pt) var(--s16-ps) var(--s16-pb);
+  background: var(--s16-bg);
+  border: var(--s16-sec-bw) solid var(--s16-sec-bc);
+  border-radius: var(--s16-sec-r);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+@media (max-width: 749px) {
+  .s16-wrap {
+    height: var(--s16-hm);
+    margin-left: var(--s16-msm);
+    margin-right: var(--s16-msm);
+    padding-left: var(--s16-psm);
+    padding-right: var(--s16-psm);
+  }
+}
+
+/* ── Background layer ── */
+.s16-bg-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  border-radius: inherit;
+  overflow: hidden;
+}
+
+.s16-bg-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity .6s ease;
+  border-radius: var(--s16-img-r);
+}
+
+.s16-bg-img--active {
+  opacity: 1;
+}
+
+.s16-bg-overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--s16-overlay-c);
+  opacity: var(--s16-overlay-op);
+  pointer-events: none;
+  border-radius: var(--s16-img-r);
+}
+
+/* ── Inner layout ── */
+.s16-inner {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 24px;
+}
+
+/* ═══════════════════════════════════════════
+   Text Content
+   ═══════════════════════════════════════════ */
+.s16-content {
+  position: relative;
+  z-index: 3;
+  flex-shrink: 0;
+}
+
+.s16-content__item {
+  display: none;
+  opacity: 0;
+}
+
+.s16-content__item--active {
+  display: block;
+  animation: s16FadeIn .5s ease forwards;
+}
+
+/* Slide out animation for content leaving */
+.s16-content__item--exit {
+  display: block;
+  animation: s16FadeOut .3s ease forwards;
+}
+
+@keyframes s16FadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes s16FadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-8px); }
+}
+
+.s16-content__heading {
+  margin: 0 0 8px;
+  font-size: var(--s16-heading-fs);
+  font-weight: var(--s16-heading-fw);
+  letter-spacing: var(--s16-heading-ls);
+  text-transform: var(--s16-heading-tt);
+  color: var(--s16-heading-c);
+  line-height: 1.15;
+}
+
+@media (max-width: 749px) {
+  .s16-content__heading {
+    font-size: var(--s16-heading-fsm);
+  }
+}
+
+.s16-content__text {
+  margin: 0 0 16px;
+  font-size: var(--s16-text-fs);
+  font-weight: var(--s16-text-fw);
+  letter-spacing: var(--s16-text-ls);
+  text-transform: var(--s16-text-tt);
+  color: var(--s16-text-c);
+  line-height: 1.5;
+  max-width: 480px;
+}
+
+@media (max-width: 749px) {
+  .s16-content__text {
+    font-size: var(--s16-text-fsm);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Button
+   ═══════════════════════════════════════════ */
+.s16-btn {
+  display: inline-block;
+  padding: 12px 28px;
+  font-size: var(--s16-btn-fs);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: var(--s16-btn-round);
+  cursor: pointer;
+  transition: background .22s, color .22s, border-color .22s, transform .15s;
+}
+
+@media (max-width: 749px) {
+  .s16-btn { font-size: var(--s16-btn-fsm); }
+}
+
+.s16-btn--non-outline {
+  background: var(--s16-btn-bg);
+  color: var(--s16-btn-tc);
+  border: 2px solid var(--s16-btn-bg);
+}
+
+.s16-btn--non-outline:hover {
+  background: var(--s16-btn-bgh);
+  color: var(--s16-btn-th);
+  border-color: var(--s16-btn-bgh);
+}
+
+.s16-btn--outline {
+  background: transparent;
+  color: var(--s16-btn-tc);
+  border: 2px solid var(--s16-btn-tc);
+}
+
+.s16-btn--outline:hover {
+  background: var(--s16-btn-bgh);
+  color: var(--s16-btn-th);
+  border-color: var(--s16-btn-bgh);
+}
+
+/* ═══════════════════════════════════════════
+   Cards Strip (right side)
+   ═══════════════════════════════════════════ */
+.s16-cards {
+  position: absolute;
+  right: calc(var(--s16-ps) + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+  max-height: 75%;
+  overflow: visible;
+}
+
+@media (max-width: 749px) {
+  .s16-cards {
+    right: calc(var(--s16-psm) + 8px);
+    max-height: 60%;
+  }
+}
+
+.s16-cards__track {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow-y: auto;
+  max-height: 100%;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 12px 10px;
+}
+
+.s16-cards__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Single card */
+.s16-card {
+  flex-shrink: 0;
+  width: 170px;
+  height: 220px;
+  border-radius: var(--s16-img-r);
+  overflow: hidden;
+  cursor: pointer;
+  border: 3px solid rgba(255, 255, 255, .5);
+  padding: 0;
+  background: rgba(0, 0, 0, .2);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, .3), 0 2px 8px rgba(0, 0, 0, .15);
+  transition: border-color .3s, transform .4s ease, opacity .4s ease, box-shadow .3s, height .4s ease, margin .4s ease, width .4s ease;
+  opacity: 1;
+  position: relative;
+  /* Entry animation */
+  animation: s16CardIn .45s ease both;
+}
+
+/* Stagger animation per card via nth-child */
+.s16-card:nth-child(1) { animation-delay: 0s; }
+.s16-card:nth-child(2) { animation-delay: .08s; }
+.s16-card:nth-child(3) { animation-delay: .16s; }
+.s16-card:nth-child(4) { animation-delay: .24s; }
+.s16-card:nth-child(5) { animation-delay: .32s; }
+.s16-card:nth-child(6) { animation-delay: .40s; }
+
+@keyframes s16CardIn {
+  from {
+    opacity: 0;
+    transform: translateX(30px) scale(.92);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* The card representing the current background slide is hidden */
+.s16-card--hidden {
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(.8);
+  height: 0;
+  margin-top: -7px;
+  margin-bottom: -7px;
+  border-width: 0;
+}
+
+/* Re-trigger entry animation when card becomes visible again */
+.s16-card--enter {
+  animation: s16CardIn .4s ease both;
+}
+
+.s16-card:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, .9);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, .4), 0 2px 10px rgba(0, 0, 0, .2);
+}
+
+.s16-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: inherit;
+}
+
+.s16-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+}
+
+@media (max-width: 749px) {
+  .s16-card {
+    width: 110px;
+    height: 145px;
+  }
+}
+
+/* ═══════════════════════════════════════════
+   Arrows
+   ═══════════════════════════════════════════ */
+.s16-arrows {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  z-index: 5;
+  flex-shrink: 0;
+}
+
+.s16-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--s16-arr-size);
+  height: var(--s16-arr-size);
+  border-radius: var(--s16-arr-round);
+  border: var(--s16-arr-bw) solid var(--s16-arr-bc);
+  background: var(--s16-arr-bg);
+  color: var(--s16-arr-ic);
+  cursor: pointer;
+  padding: 0;
+  transition: background .22s, color .22s, border-color .22s, transform .15s;
+}
+
+.s16-arrow svg {
+  width: var(--s16-arr-icon);
+  height: var(--s16-arr-icon);
+}
+
+@media (max-width: 749px) {
+  .s16-arrow {
+    width: var(--s16-arr-sizem);
+    height: var(--s16-arr-sizem);
+  }
+  .s16-arrow svg {
+    width: var(--s16-arr-iconm);
+    height: var(--s16-arr-iconm);
+  }
+}
+
+/* Hover effects */
+.s16-arrow:hover {
+  background: var(--s16-arr-bgh);
+  color: var(--s16-arr-ih);
+  border-color: var(--s16-arr-bch);
+}
+
+/* Scale hover */
+.s16-wrap[data-s16-hover="scale"] .s16-arrow:hover {
+  transform: scale(1.1);
+}
+
+/* ═══════════════════════════════════════════
+   Theme Editor Fix
+   ═══════════════════════════════════════════ */
+html.designMode [id^="shopify-section-"].s16-root,
+html.designMode [id^="shopify-section-"].s16-root ~ * {
+  margin-top: 0 !important;
+}

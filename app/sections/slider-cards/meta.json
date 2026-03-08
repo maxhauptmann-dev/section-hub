@@ -1,0 +1,80 @@
+{
+  "id": "slider-cards",
+  "name": "SS - Slider #16",
+  "description": "Premium card-based slider with fullscreen background image, floating preview cards on the right, text overlay, and arrow navigation. Inspired by modern editorial layouts with extensive customization options.",
+  "category": [
+    "Slideshow",
+    "Hero"
+  ],
+  "version": "1.1.0",
+  "price": {
+    "type": "one_time",
+    "amount": 14,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Hero",
+    "Cards",
+    "Carousel",
+    "Editorial",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f5f0eb",
+  "previews": [
+    {
+      "src": "/previews/slider16/default.webp",
+      "alt": "Slider #16 – Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-02-26",
+  "updatedAt": "2026-03-04",
+  "features": [
+    "Fullscreen background image from active slide",
+    "Floating card previews with horizontal scroll",
+    "Text overlay with heading, description, button",
+    "Prev/Next arrow navigation",
+    "Extensive typography and color settings",
+    "Section margin, padding, and width controls",
+    "Lazy loading support"
+  ],
+  "changelog": [
+    {
+      "version": "1.1.0",
+      "date": "2026-03-04",
+      "changes": [
+        "Added card hover scale effect",
+        "Improved background image transition smoothness",
+        "Fixed card overflow on narrow viewports"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-02-26",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}
