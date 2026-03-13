@@ -1,0 +1,49 @@
+{
+  "id": "video-split-player",
+  "name": "SS - Video Split",
+  "description": "Premium split-layout video section with video on one side and editorial content on the other. Features animated circular play button with progress ring, custom poster images, multiple layout options (video left/right/full), muted autoplay mode, scroll-triggered reveal, ambient glow, and glassmorphism cards. Blocks for multiple video slides with scroll-based transitions. 70+ customization options.",
+  "category": "Video",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Video",
+    "Split",
+    "Player",
+    "Editorial",
+    "Animation",
+    "Glassmorphism",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0f0f0f",
+  "previews": [
+    {
+      "src": "/previews/video-split-player/default.webp",
+      "alt": "Video Split Player - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

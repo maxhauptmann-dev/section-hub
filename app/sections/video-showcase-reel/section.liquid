@@ -1,0 +1,562 @@
+{% comment %}
+  Section Hub – Video Showcase Reel v1.0
+  Cinematic video showcase with thumbnail reel navigation.
+  Each block is a video with poster, title, description, tag.
+  Main stage shows active video, thumbnails below for switching.
+  Prefix: shvr-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign stage_radius  = section.settings.stage_radius
+  assign aspect        = section.settings.aspect_ratio
+  assign thumb_w       = section.settings.thumb_width
+  assign thumb_r       = section.settings.thumb_radius
+  assign reel_gap      = section.settings.reel_gap
+  assign show_glow     = section.settings.show_glow
+  assign show_reel     = section.settings.show_reel
+  assign cta_style     = section.settings.cta_style
+  assign btn_radius    = section.settings.btn_radius
+  assign section_py    = section.settings.section_padding_y
+  assign section_px    = section.settings.section_padding_x
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shvr-wrap--{{ section.id }} {
+    --shvr-bg: {{ bg_color }};
+    --shvr-accent: {{ accent }};
+    --shvr-accent-2: {{ accent_2 }};
+    --shvr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shvr-heading-fw: {{ heading_font.weight }};
+    --shvr-heading-fs: {{ heading_font.style }};
+    --shvr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --shvr-body-fw: {{ body_font.weight }};
+    --shvr-body-fs: {{ body_font.style }};
+    --shvr-heading-color: {{ heading_color }};
+    --shvr-text-color: {{ text_color }};
+    --shvr-radius: {{ stage_radius }}px;
+    --shvr-aspect: {{ aspect }};
+    --shvr-thumb-w: {{ thumb_w }}px;
+    --shvr-thumb-radius: {{ thumb_r }}px;
+    --shvr-reel-gap: {{ reel_gap }}px;
+    --shvr-btn-radius: {{ btn_radius }}px;
+    --shvr-py: {{ section_py }}px;
+    --shvr-px: {{ section_px }}px;
+  }
+</style>
+
+<section class="shvr-wrap shvr-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if show_glow -%}
+    <div class="shvr-glow shvr-glow--1"></div>
+    <div class="shvr-glow shvr-glow--2"></div>
+  {%- endif -%}
+
+  <div class="shvr-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="shvr-header" data-shvr-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="shvr-header__eyebrow">{{ section.settings.eyebrow }}</div>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="shvr-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="shvr-header__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Main video stage {%- endcomment -%}
+    <div class="shvr-stage" data-shvr-reveal data-shvr-stage>
+      {%- for block in section.blocks -%}
+        <div class="shvr-slide{% if forloop.first %} shvr-slide--active{% endif %}" data-shvr-slide="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          {%- if block.settings.video_url != blank -%}
+            <video
+              data-shvr-video
+              playsinline
+              muted
+              loop
+              preload="metadata"
+              poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 1400 }}{% endif %}"
+            >
+              <source src="{{ block.settings.video_url }}" type="video/mp4">
+            </video>
+          {%- elsif block.settings.poster != blank -%}
+            <img
+              src="{{ block.settings.poster | image_url: width: 1400 }}"
+              alt="{{ block.settings.title | escape }}"
+              loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+              width="{{ block.settings.poster.width }}"
+              height="{{ block.settings.poster.height }}"
+            >
+          {%- else -%}
+            {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+          {%- endif -%}
+
+          <div class="shvr-slide__overlay"></div>
+
+          <div class="shvr-slide__content">
+            <div class="shvr-slide__info">
+              {%- if block.settings.tag != blank -%}
+                <span class="shvr-slide__tag">{{ block.settings.tag }}</span>
+              {%- endif -%}
+              {%- if block.settings.title != blank -%}
+                <h3 class="shvr-slide__title">{{ block.settings.title }}</h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="shvr-slide__desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.video_url != blank -%}
+              <button class="shvr-play-btn" data-shvr-play="{{ forloop.index0 }}" aria-label="Play video">
+                <svg class="shvr-play-btn__ring" viewBox="0 0 72 72">
+                  <circle class="shvr-play-btn__ring-bg" cx="36" cy="36" r="35"></circle>
+                  <circle class="shvr-play-btn__ring-progress" cx="36" cy="36" r="35" data-shvr-ring></circle>
+                </svg>
+                <svg data-shvr-icon-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg data-shvr-icon-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </button>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Thumbnail reel {%- endcomment -%}
+    {%- if show_reel and section.blocks.size > 1 -%}
+      <div class="shvr-reel" data-shvr-reveal>
+        {%- for block in section.blocks -%}
+          <div class="shvr-reel-item{% if forloop.first %} shvr-reel-item--active{% endif %}" data-shvr-thumb="{{ forloop.index0 }}">
+            {%- if block.settings.poster != blank -%}
+              <img
+                src="{{ block.settings.poster | image_url: width: 400 }}"
+                alt="{{ block.settings.title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.poster.width }}"
+                height="{{ block.settings.poster.height }}"
+              >
+            {%- else -%}
+              {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+            {%- endif -%}
+            <div class="shvr-reel-item__play">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            </div>
+            {%- if block.settings.title != blank -%}
+              <div class="shvr-reel-item__label">{{ block.settings.title }}</div>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank -%}
+      <div class="shvr-cta" data-shvr-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="shvr-cta__btn shvr-cta__btn--{{ cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shvr-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var slides = section.querySelectorAll('[data-shvr-slide]');
+    var thumbs = section.querySelectorAll('[data-shvr-thumb]');
+    var reveals = section.querySelectorAll('[data-shvr-reveal]');
+    var currentIdx = 0;
+
+    /* Scroll reveal */
+    var revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('shvr-visible');
+        revealObs.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(function(el) { revealObs.observe(el); });
+
+    /* Also observe the stage */
+    var stage = section.querySelector('[data-shvr-stage]');
+    if (stage) revealObs.observe(stage);
+
+    function switchSlide(idx) {
+      if (idx === currentIdx && slides.length > 1) return;
+      /* Pause all videos */
+      slides.forEach(function(s) {
+        s.classList.remove('shvr-slide--active');
+        var v = s.querySelector('[data-shvr-video]');
+        if (v) { v.pause(); }
+        var ip = s.querySelector('[data-shvr-icon-play]');
+        var ipa = s.querySelector('[data-shvr-icon-pause]');
+        if (ip) ip.style.display = '';
+        if (ipa) ipa.style.display = 'none';
+      });
+
+      thumbs.forEach(function(t) {
+        t.classList.remove('shvr-reel-item--active');
+      });
+
+      slides[idx].classList.add('shvr-slide--active');
+      if (thumbs[idx]) thumbs[idx].classList.add('shvr-reel-item--active');
+      currentIdx = idx;
+    }
+
+    /* Thumb clicks */
+    thumbs.forEach(function(thumb) {
+      thumb.addEventListener('click', function() {
+        var idx = parseInt(thumb.dataset.shvrThumb);
+        switchSlide(idx);
+      });
+    });
+
+    /* Play/pause buttons */
+    var playBtns = section.querySelectorAll('[data-shvr-play]');
+    playBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var idx = parseInt(btn.dataset.shvrPlay);
+        var slide = slides[idx];
+        var video = slide.querySelector('[data-shvr-video]');
+        if (!video) return;
+
+        var iconPlay = btn.querySelector('[data-shvr-icon-play]');
+        var iconPause = btn.querySelector('[data-shvr-icon-pause]');
+
+        if (video.paused) {
+          video.play();
+          if (iconPlay) iconPlay.style.display = 'none';
+          if (iconPause) iconPause.style.display = '';
+        } else {
+          video.pause();
+          if (iconPlay) iconPlay.style.display = '';
+          if (iconPause) iconPause.style.display = 'none';
+        }
+      });
+    });
+
+    /* Progress ring update */
+    function updateRings() {
+      slides.forEach(function(slide, i) {
+        var video = slide.querySelector('[data-shvr-video]');
+        var ring = slide.querySelector('[data-shvr-ring]');
+        if (!video || !ring || video.paused || !video.duration) return;
+
+        var progress = video.currentTime / video.duration;
+        var circumference = 2 * Math.PI * 35;
+        ring.style.strokeDashoffset = circumference * (1 - progress);
+      });
+      requestAnimationFrame(updateRings);
+    }
+    updateRings();
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Reel",
+  "tag": "section",
+  "class": "shvr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Showreel"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Latest Work"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Watch our curated collection of cinematic stories and brand films."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Video aspect ratio",
+      "options": [
+        { "value": "16/9", "label": "Widescreen (16:9)" },
+        { "value": "21/9", "label": "Ultrawide (21:9)" },
+        { "value": "4/3", "label": "Classic (4:3)" },
+        { "value": "1/1", "label": "Square (1:1)" }
+      ],
+      "default": "16/9"
+    },
+    {
+      "type": "range",
+      "id": "stage_radius",
+      "label": "Video border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 160,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (glow)",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Thumbnail reel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reel",
+      "label": "Show thumbnail reel",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "thumb_width",
+      "label": "Thumbnail width",
+      "min": 100,
+      "max": 220,
+      "step": 10,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "thumb_radius",
+      "label": "Thumbnail radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "reel_gap",
+      "label": "Reel gap",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show ambient glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "View All Videos"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "default": "glass"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "CTA border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video",
+      "name": "Video Clip",
+      "settings": [
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "Video URL (mp4)",
+          "info": "Paste a direct .mp4 link. Leave empty to use poster image only."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster / thumbnail image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / category",
+          "default": "Brand Film"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Behind the Scenes"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A look at the creative process behind our latest campaign."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Reel",
+      "blocks": [
+        {
+          "type": "video",
+          "settings": {
+            "tag": "Brand Film",
+            "title": "The Art of Craft",
+            "description": "Watch how our artisans bring decades of expertise to every piece. A story of passion, precision, and purpose."
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "tag": "Behind the Scenes",
+            "title": "Making of the Collection",
+            "description": "From concept sketch to finished product — an intimate look at our creative journey."
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "tag": "Campaign",
+            "title": "Spring Summer Collection",
+            "description": "Bold colors meet timeless silhouettes in our latest seasonal campaign."
+          }
+        },
+        {
+          "type": "video",
+          "settings": {
+            "tag": "Interview",
+            "title": "A Conversation with the Founder",
+            "description": "Our founder shares the vision, values, and ambition driving the brand forward."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

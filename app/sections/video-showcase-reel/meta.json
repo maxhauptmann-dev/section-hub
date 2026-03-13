@@ -1,0 +1,50 @@
+{
+  "id": "video-showcase-reel",
+  "name": "SS - Video Reel",
+  "description": "Cinematic fullscreen video showcase with thumbnail reel navigation at the bottom. Each video block features its own title, description, play button and progress bar. Supports MP4 URLs, Shopify hosted video, and fallback images. Includes autoplay, muted background mode, glassmorphism overlay cards, Ken Burns fallback, scroll-reveal animation, and ambient glow. 60+ customization options.",
+  "category": "Video",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Video",
+    "Showcase",
+    "Reel",
+    "Cinematic",
+    "Autoplay",
+    "Glassmorphism",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/video-showcase-reel/default.webp",
+      "alt": "Video Showcase Reel - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
