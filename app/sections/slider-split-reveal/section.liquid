@@ -1,0 +1,531 @@
+{% comment %}
+  Section Hub – Split Reveal Slider v1.0
+  Split-screen slider: image left, content right.
+  Cinematic wipe-reveal transition between slides.
+  Prefix: ssr-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign autoplay = section.settings.autoplay
+  assign auto_speed = section.settings.autoplay_speed
+  assign slide_h = section.settings.slide_height
+  assign split_ratio = section.settings.split_ratio
+  assign reveal_dir = section.settings.reveal_direction
+  assign show_arrows = section.settings.show_arrows
+  assign show_dots = section.settings.show_dots
+  assign show_counter = section.settings.show_counter
+  assign show_progress = section.settings.show_progress
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .ssr-wrap--{{ section.id }} {
+    --ssr-bg: {{ section.settings.bg_color }};
+    --ssr-accent: {{ section.settings.accent_color }};
+    --ssr-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --ssr-heading-fw: {{ hf.weight }};
+    --ssr-heading-fs: {{ hf.style }};
+    --ssr-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --ssr-body-fw: {{ bf.weight }};
+    --ssr-body-fs: {{ bf.style }};
+    --ssr-heading-color: {{ section.settings.heading_color }};
+    --ssr-text-color: {{ section.settings.text_color }};
+    --ssr-content-bg: {{ section.settings.content_bg }};
+    --ssr-overlay-color: {{ section.settings.overlay_color }};
+    --ssr-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --ssr-slide-h: {{ slide_h }}vh;
+    --ssr-split: {{ split_ratio }};
+    --ssr-radius: {{ section.settings.border_radius }}px;
+    --ssr-py: {{ py }}px;
+    --ssr-px: {{ px }}px;
+  }
+</style>
+
+<section class="ssr-wrap ssr-wrap--{{ section.id }}"
+         data-section-id="{{ section.id }}"
+         data-ssr-autoplay="{{ autoplay }}"
+         data-ssr-speed="{{ auto_speed }}"
+         data-ssr-reveal="{{ reveal_dir }}">
+
+  {%- if section.settings.eyebrow != blank or section.settings.section_heading != blank -%}
+    <div class="ssr-section-header" data-ssr-reveal-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="ssr-section-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.section_heading != blank -%}
+        <h2 class="ssr-section-header__heading">{{ section.settings.section_heading }}</h2>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ssr-stage" data-ssr-reveal-el>
+    <div class="ssr-viewport" data-ssr-viewport>
+      {%- for block in section.blocks -%}
+        {%- assign ov_r = section.settings.overlay_color | color_extract: 'red' -%}
+        {%- assign ov_g = section.settings.overlay_color | color_extract: 'green' -%}
+        {%- assign ov_b = section.settings.overlay_color | color_extract: 'blue' -%}
+        {%- assign ov_a = section.settings.overlay_opacity | divided_by: 100.0 -%}
+
+        <div class="ssr-slide{% if forloop.first %} ssr-slide--active{% endif %}"
+             data-ssr-slide="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Image side {%- endcomment -%}
+          <div class="ssr-slide__media">
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 1600 }}"
+                   srcset="{{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1600 }} 1600w"
+                   sizes="50vw"
+                   alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                   class="ssr-slide__img">
+            {%- else -%}
+              <div class="ssr-slide__placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {%- endif -%}
+            <div class="ssr-slide__overlay" style="background:rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a }})"></div>
+          </div>
+
+          {%- comment -%} Content side {%- endcomment -%}
+          <div class="ssr-slide__content">
+            <div class="ssr-slide__inner">
+              {%- if block.settings.tag != blank -%}
+                <span class="ssr-slide__tag">{{ block.settings.tag }}</span>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="ssr-slide__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.text != blank -%}
+                <p class="ssr-slide__text">{{ block.settings.text }}</p>
+              {%- endif -%}
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="ssr-slide__btn">
+                  {{ block.settings.btn_text }}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if show_arrows -%}
+      <button class="ssr-arrow ssr-arrow--prev" data-ssr-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="ssr-arrow ssr-arrow--next" data-ssr-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    {%- endif -%}
+
+    {%- if show_counter -%}
+      <div class="ssr-counter" data-ssr-counter>
+        <span class="ssr-counter__cur">01</span>
+        <span class="ssr-counter__sep">/</span>
+        <span class="ssr-counter__total">{{ section.blocks.size | prepend: '00' | slice: -2, 2 }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- if show_progress and autoplay -%}
+      <div class="ssr-progress"><div class="ssr-progress__bar" data-ssr-progress></div></div>
+    {%- endif -%}
+  </div>
+
+  {%- if show_dots -%}
+    <div class="ssr-dots" data-ssr-reveal-el>
+      {%- for block in section.blocks -%}
+        <button class="ssr-dot{% if forloop.first %} ssr-dot--active{% endif %}" data-ssr-dot="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.querySelector('.ssr-wrap--' + sid);
+  if(!wrap) return;
+  var slides = wrap.querySelectorAll('[data-ssr-slide]');
+  var total = slides.length;
+  if(total < 1) return;
+
+  var cur = 0;
+  var autoplayOn = wrap.dataset.ssrAutoplay === 'true';
+  var speed = (parseInt(wrap.dataset.ssrSpeed) || 5) * 1000;
+  var timer = null;
+  var animating = false;
+  var prevBtn = wrap.querySelector('[data-ssr-prev]');
+  var nextBtn = wrap.querySelector('[data-ssr-next]');
+  var dots = wrap.querySelectorAll('[data-ssr-dot]');
+  var counterCur = wrap.querySelector('.ssr-counter__cur');
+  var progressBar = wrap.querySelector('[data-ssr-progress]');
+
+  function goTo(idx){
+    if(animating) return;
+    if(idx < 0) idx = total - 1;
+    if(idx >= total) idx = 0;
+    if(idx === cur) return;
+    animating = true;
+
+    slides[cur].classList.add('ssr-slide--exit');
+    slides[cur].classList.remove('ssr-slide--active');
+    slides[idx].classList.add('ssr-slide--enter', 'ssr-slide--active');
+    cur = idx;
+
+    dots.forEach(function(d){ d.classList.remove('ssr-dot--active'); });
+    if(dots[cur]) dots[cur].classList.add('ssr-dot--active');
+    if(counterCur){
+      var n = cur + 1;
+      counterCur.textContent = n < 10 ? '0' + n : '' + n;
+    }
+    restartProgress();
+
+    setTimeout(function(){
+      slides.forEach(function(s){ s.classList.remove('ssr-slide--exit', 'ssr-slide--enter'); });
+      animating = false;
+    }, 800);
+  }
+
+  function restartProgress(){
+    if(!progressBar) return;
+    progressBar.style.transition = 'none';
+    progressBar.style.transform = 'scaleX(0)';
+    void progressBar.offsetWidth;
+    if(autoplayOn){
+      progressBar.style.transition = 'transform ' + speed + 'ms linear';
+      progressBar.style.transform = 'scaleX(1)';
+    }
+  }
+
+  function startAP(){ stopAP(); if(!autoplayOn) return; restartProgress(); timer = setInterval(function(){ goTo(cur+1); }, speed); }
+  function stopAP(){ if(timer){ clearInterval(timer); timer = null; } }
+
+  if(prevBtn) prevBtn.addEventListener('click', function(){ stopAP(); goTo(cur-1); startAP(); });
+  if(nextBtn) nextBtn.addEventListener('click', function(){ stopAP(); goTo(cur+1); startAP(); });
+  dots.forEach(function(d){ d.addEventListener('click', function(){ stopAP(); goTo(parseInt(this.dataset.ssrDot)); startAP(); }); });
+
+  /* Touch */
+  var tx = 0;
+  var vp = wrap.querySelector('[data-ssr-viewport]');
+  if(vp){
+    vp.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; stopAP(); }, {passive:true});
+    vp.addEventListener('touchend', function(e){ var dx = tx - e.changedTouches[0].clientX; if(Math.abs(dx)>50){ dx>0 ? goTo(cur+1) : goTo(cur-1); } startAP(); }, {passive:true});
+  }
+
+  /* Keyboard */
+  wrap.setAttribute('tabindex','0');
+  wrap.addEventListener('keydown', function(e){
+    if(e.key==='ArrowLeft'){ stopAP(); goTo(cur-1); startAP(); }
+    if(e.key==='ArrowRight'){ stopAP(); goTo(cur+1); startAP(); }
+  });
+
+  /* Reveal */
+  var revs = wrap.querySelectorAll('[data-ssr-reveal-el]');
+  var obs = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('ssr-visible'); obs.unobserve(e.target); } }); }, {threshold:0.15});
+  revs.forEach(function(el){ obs.observe(el); });
+
+  startAP();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Split Slider",
+  "tag": "section",
+  "class": "ssr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Work"
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Section Heading",
+      "default": "Case Studies"
+    },
+    {
+      "type": "header",
+      "content": "Slider Settings"
+    },
+    {
+      "type": "range",
+      "id": "slide_height",
+      "label": "Slide Height",
+      "min": 50,
+      "max": 95,
+      "step": 5,
+      "default": 75,
+      "unit": "vh"
+    },
+    {
+      "type": "select",
+      "id": "split_ratio",
+      "label": "Split Ratio",
+      "options": [
+        { "value": "50", "label": "50 / 50" },
+        { "value": "55", "label": "55 / 45" },
+        { "value": "60", "label": "60 / 40" },
+        { "value": "65", "label": "65 / 35" }
+      ],
+      "default": "55"
+    },
+    {
+      "type": "select",
+      "id": "reveal_direction",
+      "label": "Reveal Direction",
+      "options": [
+        { "value": "left", "label": "Left to Right" },
+        { "value": "right", "label": "Right to Left" },
+        { "value": "up", "label": "Bottom to Top" },
+        { "value": "down", "label": "Top to Bottom" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay Interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 6,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show Counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show Progress Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image Overlay Color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay Opacity",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "default": 15,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0f0f14"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#c8a97e"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#a0a0b0"
+    },
+    {
+      "type": "color",
+      "id": "content_bg",
+      "label": "Content Side Background",
+      "default": "#14141c"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / Category"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Project Title"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Split Slider",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "tag": "Architecture",
+            "heading": "The Crystal Pavilion",
+            "text": "A landmark in modern architecture blending glass, steel, and light into a breathtaking public space that redefines urban design.",
+            "btn_text": "View Case Study"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "tag": "Branding",
+            "heading": "Lumina Identity",
+            "text": "Crafting a sophisticated visual identity for a premium wellness brand, from typography to packaging to digital presence.",
+            "btn_text": "Explore Project"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "tag": "Interior",
+            "heading": "Serene Spaces",
+            "text": "Minimalist interior design that balances warm textures, natural light, and carefully curated furnishings for modern living."
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "tag": "Photography",
+            "heading": "Golden Hour",
+            "text": "An editorial photo series capturing landscapes at the magical intersection of fading sunlight and emerging twilight.",
+            "btn_text": "See Gallery"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

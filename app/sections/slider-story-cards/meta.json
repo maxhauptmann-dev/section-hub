@@ -1,0 +1,50 @@
+{
+  "id": "slider-story-cards",
+  "name": "SS - Story Cards Slider",
+  "description": "Instagram-story inspired horizontal card slider with tall portrait cards, gradient overlays, parallax imagery, and animated progress rings. Each card feels like opening a new story chapter. Features peek navigation showing neighboring cards, smooth snap scrolling, autoplay with ring countdown, and rich content overlays.",
+  "category": ["Slider"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 20,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Story",
+    "Cards",
+    "Carousel",
+    "Gradient",
+    "Parallax",
+    "Instagram",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#111118",
+  "previews": [
+    {
+      "src": "/previews/slider-story-cards/default.webp",
+      "alt": "Story Cards Slider - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

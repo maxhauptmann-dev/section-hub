@@ -1,0 +1,49 @@
+{
+  "id": "slider-3d-coverflow",
+  "name": "SS - 3D Coverflow",
+  "description": "Stunning 3D coverflow carousel with perspective-tilted slides. The active slide is front and center while flanking slides angle away with depth blur and scale. Features reflection effect, auto-rotation, drag-to-spin interaction, and glassmorphism captions. A truly premium gallery experience.",
+  "category": ["Slider"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 23,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "3D",
+    "Coverflow",
+    "Carousel",
+    "Perspective",
+    "Gallery",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#08081a",
+  "previews": [
+    {
+      "src": "/previews/slider-3d-coverflow/default.webp",
+      "alt": "3D Coverflow Slider - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

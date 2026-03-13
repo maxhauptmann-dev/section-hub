@@ -1,0 +1,500 @@
+{% comment %}
+  Section Hub – 3D Coverflow Slider v1.0
+  Perspective-tilted slides with the active one front & center.
+  Flanking slides angle away with depth, blur, and scale.
+  Prefix: scf-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign autoplay = section.settings.autoplay
+  assign auto_speed = section.settings.autoplay_speed
+  assign card_w = section.settings.card_width
+  assign card_h = section.settings.card_height
+  assign tilt_angle = section.settings.tilt_angle
+  assign show_reflection = section.settings.show_reflection
+  assign show_caption = section.settings.show_caption
+  assign show_arrows = section.settings.show_arrows
+  assign show_dots = section.settings.show_dots
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .scf-wrap--{{ section.id }} {
+    --scf-bg: {{ section.settings.bg_color }};
+    --scf-accent: {{ section.settings.accent_color }};
+    --scf-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --scf-heading-fw: {{ hf.weight }};
+    --scf-heading-fs: {{ hf.style }};
+    --scf-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --scf-body-fw: {{ bf.weight }};
+    --scf-heading-color: {{ section.settings.heading_color }};
+    --scf-text-color: {{ section.settings.text_color }};
+    --scf-caption-bg: {{ section.settings.caption_bg }};
+    --scf-card-w: {{ card_w }}px;
+    --scf-card-h: {{ card_h }}px;
+    --scf-tilt: {{ tilt_angle }}deg;
+    --scf-radius: {{ section.settings.card_radius }}px;
+    --scf-py: {{ py }}px;
+    --scf-px: {{ px }}px;
+  }
+</style>
+
+<section class="scf-wrap scf-wrap--{{ section.id }}"
+         data-section-id="{{ section.id }}"
+         data-scf-autoplay="{{ autoplay }}"
+         data-scf-speed="{{ auto_speed }}">
+
+  {%- if section.settings.eyebrow != blank or section.settings.section_heading != blank or section.settings.subtext != blank -%}
+    <div class="scf-header" data-scf-reveal>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="scf-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.section_heading != blank -%}
+        <h2 class="scf-header__heading">{{ section.settings.section_heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="scf-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="scf-stage" data-scf-reveal>
+    <div class="scf-track" data-scf-track>
+      {%- for block in section.blocks -%}
+        <div class="scf-card" data-scf-card="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <div class="scf-card__face">
+            {%- if block.settings.image != blank -%}
+              <img src="{{ block.settings.image | image_url: width: 1000 }}"
+                   srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1000 }} 1000w"
+                   sizes="(max-width:768px) 80vw, {{ card_w }}px"
+                   alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                   loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                   class="scf-card__img">
+            {%- else -%}
+              <div class="scf-card__placeholder">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" width="48" height="48"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {%- endif -%}
+
+            {%- if show_caption -%}
+              {%- if block.settings.heading != blank or block.settings.subtitle != blank -%}
+                <div class="scf-card__caption">
+                  {%- if block.settings.heading != blank -%}
+                    <h3 class="scf-card__title">{{ block.settings.heading }}</h3>
+                  {%- endif -%}
+                  {%- if block.settings.subtitle != blank -%}
+                    <p class="scf-card__subtitle">{{ block.settings.subtitle }}</p>
+                  {%- endif -%}
+                  {%- if block.settings.btn_text != blank -%}
+                    <a href="{{ block.settings.btn_link | default: '#' }}" class="scf-card__btn">{{ block.settings.btn_text }}</a>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+
+          {%- if show_reflection -%}
+            <div class="scf-card__reflection" aria-hidden="true">
+              {%- if block.settings.image != blank -%}
+                <img src="{{ block.settings.image | image_url: width: 600 }}" alt="" class="scf-card__reflect-img" loading="lazy">
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if show_arrows -%}
+      <button class="scf-arrow scf-arrow--prev" data-scf-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="scf-arrow scf-arrow--next" data-scf-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    {%- endif -%}
+  </div>
+
+  {%- if show_dots -%}
+    <div class="scf-dots" data-scf-reveal>
+      {%- for block in section.blocks -%}
+        <button class="scf-dot{% if forloop.first %} scf-dot--active{% endif %}" data-scf-dot="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.querySelector('.scf-wrap--' + sid);
+  if(!wrap) return;
+  var cards = wrap.querySelectorAll('[data-scf-card]');
+  var total = cards.length;
+  if(total < 1) return;
+
+  var cur = 0;
+  var autoplayOn = wrap.dataset.scfAutoplay === 'true';
+  var speed = (parseInt(wrap.dataset.scfSpeed) || 5) * 1000;
+  var timer = null;
+  var tilt = parseFloat(getComputedStyle(wrap).getPropertyValue('--scf-tilt')) || 45;
+
+  var prevBtn = wrap.querySelector('[data-scf-prev]');
+  var nextBtn = wrap.querySelector('[data-scf-next]');
+  var dots = wrap.querySelectorAll('[data-scf-dot]');
+
+  function layout(){
+    cards.forEach(function(card, i){
+      var offset = i - cur;
+      var absOff = Math.abs(offset);
+      var tx = offset * 220;
+      var ry = offset < 0 ? tilt : (offset > 0 ? -tilt : 0);
+      var sc = absOff === 0 ? 1 : Math.max(0.65, 1 - absOff * 0.15);
+      var z = 100 - absOff * 10;
+      var op = absOff > 2 ? 0 : (absOff === 0 ? 1 : 0.6);
+      var blur = absOff === 0 ? 0 : absOff * 2;
+
+      card.style.transform = 'translateX(' + tx + 'px) rotateY(' + ry + 'deg) scale(' + sc + ')';
+      card.style.zIndex = z;
+      card.style.opacity = op;
+      card.style.filter = blur > 0 ? 'blur(' + blur + 'px)' : 'none';
+      card.classList.toggle('scf-card--active', i === cur);
+    });
+
+    dots.forEach(function(d){ d.classList.remove('scf-dot--active'); });
+    if(dots[cur]) dots[cur].classList.add('scf-dot--active');
+  }
+
+  function goTo(idx){
+    if(idx < 0) idx = total - 1;
+    if(idx >= total) idx = 0;
+    cur = idx;
+    layout();
+  }
+
+  function startAP(){ stopAP(); if(!autoplayOn) return; timer = setInterval(function(){ goTo(cur+1); }, speed); }
+  function stopAP(){ if(timer){ clearInterval(timer); timer = null; } }
+
+  if(prevBtn) prevBtn.addEventListener('click', function(){ stopAP(); goTo(cur-1); startAP(); });
+  if(nextBtn) nextBtn.addEventListener('click', function(){ stopAP(); goTo(cur+1); startAP(); });
+  dots.forEach(function(d){ d.addEventListener('click', function(){ stopAP(); goTo(parseInt(this.dataset.scfDot)); startAP(); }); });
+
+  /* Click on card to navigate */
+  cards.forEach(function(c){
+    c.addEventListener('click', function(){
+      var idx = parseInt(this.dataset.scfCard);
+      if(idx !== cur){ stopAP(); goTo(idx); startAP(); }
+    });
+  });
+
+  /* Touch swipe */
+  var tx0 = 0;
+  var stage = wrap.querySelector('.scf-stage');
+  if(stage){
+    stage.addEventListener('touchstart', function(e){ tx0 = e.touches[0].clientX; stopAP(); }, {passive:true});
+    stage.addEventListener('touchend', function(e){ var dx = tx0 - e.changedTouches[0].clientX; if(Math.abs(dx)>40){ dx>0 ? goTo(cur+1) : goTo(cur-1); } startAP(); }, {passive:true});
+  }
+
+  /* Keyboard */
+  wrap.setAttribute('tabindex','0');
+  wrap.addEventListener('keydown', function(e){
+    if(e.key === 'ArrowLeft'){ stopAP(); goTo(cur-1); startAP(); }
+    if(e.key === 'ArrowRight'){ stopAP(); goTo(cur+1); startAP(); }
+  });
+
+  /* Reveal */
+  var revs = wrap.querySelectorAll('[data-scf-reveal]');
+  var obs = new IntersectionObserver(function(entries){ entries.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('scf-visible'); obs.unobserve(e.target); } }); }, {threshold:0.15});
+  revs.forEach(function(el){ obs.observe(el); });
+
+  layout();
+  startAP();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - 3D Coverflow",
+  "tag": "section",
+  "class": "scf-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Gallery"
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Heading",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Browse our curated selection in a stunning 3D gallery experience."
+    },
+    {
+      "type": "header",
+      "content": "Card Settings"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card Width",
+      "min": 280,
+      "max": 550,
+      "step": 10,
+      "default": 400,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card Height",
+      "min": 300,
+      "max": 600,
+      "step": 10,
+      "default": 480,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tilt_angle",
+      "label": "Tilt Angle",
+      "min": 20,
+      "max": 65,
+      "step": 5,
+      "default": 45,
+      "unit": "deg"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reflection",
+      "label": "Show Reflection",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_caption",
+      "label": "Show Captions",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay Interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#08081a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#818cf8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "caption_bg",
+      "label": "Caption Background",
+      "default": "#0f0f2e"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Title",
+          "default": "Card Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - 3D Coverflow",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "heading": "Nordic Minimalism",
+            "subtitle": "Clean lines meet warm textures",
+            "btn_text": "View Collection"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "heading": "Urban Explorer",
+            "subtitle": "Street-ready essentials"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "heading": "Golden Hour",
+            "subtitle": "Sunset-inspired colorways",
+            "btn_text": "Shop Now"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "heading": "Midnight Studio",
+            "subtitle": "Dark & refined aesthetics"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "heading": "Coastal Breeze",
+            "subtitle": "Light, airy, effortless",
+            "btn_text": "Explore"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
