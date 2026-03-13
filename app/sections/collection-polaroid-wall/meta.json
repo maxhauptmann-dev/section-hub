@@ -1,0 +1,36 @@
+{
+  "id": "collection-polaroid-wall",
+  "name": "SS - Polaroid Wall",
+  "description": "Playful polaroid-style collection cards scattered on a wall with random tilts, tape decorations, and handwritten-style labels. Each card has a thick white border, subtle drop shadow, and reveals a color tint on hover. Configurable rotation range, card sizing, background texture, and staggered entrance animations. Perfect for lifestyle, artisan, and creative brands.",
+  "category": ["Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 23,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Polaroid",
+    "Creative",
+    "Playful",
+    "Light",
+    "Vintage",
+    "Premium",
+    "Animation",
+    "Unique"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#f4efe8",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
+}

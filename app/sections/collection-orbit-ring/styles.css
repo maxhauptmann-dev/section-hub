@@ -1,0 +1,284 @@
+/* ============================================
+   SectionHub – Collection Orbit Ring  (cor-)
+   3D orbital carousel of collection cards
+   ============================================ */
+
+.cor-wrap *, .cor-wrap *::before, .cor-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.cor-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--cor-bg);
+  padding: var(--cor-py) var(--cor-px) var(--cor-pb);
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.cor-header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 24px;
+  position: relative;
+  z-index: 2;
+}
+
+.cor-header__eyebrow {
+  display: inline-block;
+  font-family: var(--cor-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--cor-accent);
+  margin-bottom: 14px;
+}
+
+.cor-header__heading {
+  font-family: var(--cor-heading-ff);
+  font-weight: var(--cor-heading-fw);
+  font-style: var(--cor-heading-fs);
+  font-size: clamp(28px, 4vw, 52px);
+  color: var(--cor-heading-c);
+  line-height: 1.1;
+  margin: 0 0 14px;
+}
+
+.cor-header__subtext {
+  font-family: var(--cor-body-ff);
+  font-weight: var(--cor-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--cor-text-c);
+}
+
+/* ---------- Glow ---------- */
+.cor-glow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 500px;
+  height: 500px;
+  transform: translate(-50%, -40%);
+  background: radial-gradient(circle, var(--cor-glow) 0%, transparent 65%);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(60px);
+}
+
+/* ---------- Scene (perspective container) ---------- */
+.cor-scene {
+  position: relative;
+  width: 100%;
+  height: calc(var(--cor-card-h) + 180px);
+  perspective: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s,
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.2s;
+}
+
+.cor-scene.cor-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Ring ---------- */
+.cor-ring {
+  position: relative;
+  width: calc(var(--cor-orbit-r) * 2);
+  height: calc(var(--cor-orbit-r) * 2);
+  transform-style: preserve-3d;
+  transform: rotateX(var(--cor-tilt));
+}
+
+/* Keyframes */
+@keyframes cor-spin-cw {
+  from { transform: rotateX(var(--cor-tilt)) rotateZ(0deg); }
+  to   { transform: rotateX(var(--cor-tilt)) rotateZ(360deg); }
+}
+@keyframes cor-spin-ccw {
+  from { transform: rotateX(var(--cor-tilt)) rotateZ(0deg); }
+  to   { transform: rotateX(var(--cor-tilt)) rotateZ(-360deg); }
+}
+
+.cor-ring--spin.cor-ring--cw {
+  animation: cor-spin-cw var(--cor-speed) linear infinite;
+}
+.cor-ring--spin.cor-ring--ccw {
+  animation: cor-spin-ccw var(--cor-speed) linear infinite;
+}
+
+.cor-ring--pause:hover {
+  animation-play-state: paused;
+}
+
+/* ---------- Item on the ring ---------- */
+.cor-item {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--cor-card-w);
+  height: var(--cor-card-h);
+  margin-left: calc(var(--cor-card-w) * -0.5);
+  margin-top: calc(var(--cor-card-h) * -0.5);
+  transform-style: preserve-3d;
+  transform:
+    rotateZ(var(--cor-angle))
+    translateX(var(--cor-orbit-r))
+    rotateZ(calc(var(--cor-angle) * -1))
+    rotateX(calc(var(--cor-tilt) * -1));
+}
+
+/* ---------- Card ---------- */
+.cor-card {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--cor-radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: #fff;
+  position: relative;
+  background: var(--cor-card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.cor-card:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 30px rgba(108, 92, 231, 0.25);
+}
+
+/* ---------- Media ---------- */
+.cor-card__media {
+  position: absolute;
+  inset: 0;
+}
+
+.cor-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cor-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--cor-card-bg);
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.cor-card__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--cor-overlay-o)) 0%,
+    rgba(0, 0, 0, calc(var(--cor-overlay-o) * 0.2)) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+}
+
+/* Glass shine */
+.cor-card__shine {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.06) 45%,
+    rgba(255, 255, 255, 0.02) 55%,
+    transparent 60%
+  );
+  transition: left 0.6s ease;
+  pointer-events: none;
+}
+
+.cor-card:hover .cor-card__shine {
+  left: 130%;
+}
+
+/* ---------- Content ---------- */
+.cor-card__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  z-index: 2;
+}
+
+.cor-card__tag {
+  display: inline-block;
+  font-family: var(--cor-body-ff);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cor-accent);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-bottom: 6px;
+}
+
+.cor-card__title {
+  font-family: var(--cor-heading-ff);
+  font-weight: var(--cor-heading-fw);
+  font-size: 16px;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0 0 2px;
+}
+
+.cor-card__subtitle {
+  font-family: var(--cor-body-ff);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+  margin: 0;
+}
+
+/* ---------- Scroll Reveal ---------- */
+[data-cor-el] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-cor-el].cor-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .cor-scene {
+    height: calc(var(--cor-card-h) + 120px);
+  }
+}
+
+@media (max-width: 480px) {
+  .cor-scene {
+    height: calc(var(--cor-card-h) + 80px);
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cor-ring--spin.cor-ring--cw,
+  .cor-ring--spin.cor-ring--ccw {
+    animation: none;
+  }
+  .cor-card__shine { display: none; }
+}

@@ -1,0 +1,452 @@
+{% comment %}
+  Section Hub – Collection Reveal Tiles  (crt-)
+  Masonry tiles with curtain-wipe reveal on scroll.
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+
+  assign bg           = section.settings.bg_color
+  assign heading_c    = section.settings.heading_color
+  assign text_c       = section.settings.text_color
+  assign accent       = section.settings.accent_color
+  assign curtain_c    = section.settings.curtain_color
+  assign overlay_o    = section.settings.overlay_opacity
+
+  assign tile_gap     = section.settings.tile_gap
+  assign tile_radius  = section.settings.tile_radius
+  assign reveal_dir   = section.settings.reveal_direction
+  assign reveal_speed = section.settings.reveal_speed
+  assign layout_mode  = section.settings.layout_mode
+
+  assign py           = section.settings.padding_top
+  assign pb           = section.settings.padding_bottom
+  assign px           = section.settings.padding_sides
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #crt-{{ section.id }} {
+    --crt-bg: {{ bg }};
+    --crt-heading-c: {{ heading_c }};
+    --crt-text-c: {{ text_c }};
+    --crt-accent: {{ accent }};
+    --crt-curtain: {{ curtain_c }};
+    --crt-overlay-o: {{ overlay_o | divided_by: 100.0 }};
+    --crt-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --crt-heading-fw: {{ heading_font.weight }};
+    --crt-heading-fs: {{ heading_font.style }};
+    --crt-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --crt-body-fw: {{ body_font.weight }};
+    --crt-gap: {{ tile_gap }}px;
+    --crt-radius: {{ tile_radius }}px;
+    --crt-speed: {{ reveal_speed }}ms;
+    --crt-py: {{ py }}px;
+    --crt-pb: {{ pb }}px;
+    --crt-px: {{ px }}px;
+  }
+</style>
+
+<section id="crt-{{ section.id }}" class="crt-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="crt-header" data-crt-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="crt-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="crt-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="crt-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="crt-grid crt-grid--{{ layout_mode }}">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign col = block.settings.collection
+        assign col_obj = collections[col]
+        assign img = block.settings.image
+        assign title = block.settings.title
+        assign tag = block.settings.tag
+        assign subtitle = block.settings.subtitle
+        assign btn_text = block.settings.btn_text
+        assign link = block.settings.link
+        assign tile_height = block.settings.tile_height
+
+        if title == blank and col_obj != blank
+          assign title = col_obj.title
+        endif
+        if img == blank and col_obj != blank
+          assign img = col_obj.image
+        endif
+        assign url = link
+        if url == blank and col_obj != blank
+          assign url = col_obj.url
+        endif
+
+        assign idx_mod4 = forloop.index0 | modulo: 4
+      -%}
+
+      {%- capture item_reveal_dir -%}
+        {%- if reveal_dir == 'alternate' -%}
+          {%- case idx_mod4 -%}
+            {%- when 0 -%}left
+            {%- when 1 -%}bottom
+            {%- when 2 -%}right
+            {%- when 3 -%}top
+          {%- endcase -%}
+        {%- else -%}
+          {{ reveal_dir }}
+        {%- endif -%}
+      {%- endcapture -%}
+
+      <div
+        class="crt-tile"
+        style="--crt-tile-h: {{ tile_height }}px; --crt-delay: {{ forloop.index0 | times: 150 }}ms;"
+        data-crt-tile
+        data-crt-dir="{{ item_reveal_dir | strip }}"
+        {{ block.shopify_attributes }}
+      >
+        {%- comment -%} Curtain overlay {%- endcomment -%}
+        <div class="crt-tile__curtain"></div>
+
+        <a href="{{ url | default: '#' }}" class="crt-tile__link" {% if url != blank %}aria-label="View {{ title }}"{% endif %}>
+          <div class="crt-tile__media">
+            {%- if img != blank -%}
+              <img
+                src="{{ img | image_url: width: 900 }}"
+                alt="{{ img.alt | default: title | escape }}"
+                width="600"
+                height="400"
+                loading="lazy"
+                class="crt-tile__img"
+              >
+            {%- else -%}
+              <div class="crt-tile__placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+            {%- endif -%}
+            <div class="crt-tile__gradient"></div>
+          </div>
+
+          <div class="crt-tile__content">
+            {%- if tag != blank -%}
+              <span class="crt-tile__tag">{{ tag }}</span>
+            {%- endif -%}
+            {%- if title != blank -%}
+              <h3 class="crt-tile__title">{{ title }}</h3>
+            {%- endif -%}
+            {%- if subtitle != blank -%}
+              <p class="crt-tile__subtitle">{{ subtitle }}</p>
+            {%- endif -%}
+            {%- if btn_text != blank -%}
+              <span class="crt-tile__btn">{{ btn_text }} <span class="crt-tile__arrow">→</span></span>
+            {%- endif -%}
+          </div>
+        </a>
+      </div>
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('crt-{{ section.id }}');
+    if (!wrap) return;
+
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('crt-revealed');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    var header = wrap.querySelector('[data-crt-el]');
+    if (header) obs.observe(header);
+
+    wrap.querySelectorAll('[data-crt-tile]').forEach(function(t){ obs.observe(t); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Reveal Tiles",
+  "tag": "section",
+  "class": "crt-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Collections"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Unveiled For You"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Each collection reveals itself as you explore."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Grid layout",
+      "options": [
+        { "value": "masonry", "label": "Masonry (mixed heights)" },
+        { "value": "equal", "label": "Equal heights" },
+        { "value": "alternating", "label": "Alternating tall/short" }
+      ],
+      "default": "masonry"
+    },
+    {
+      "type": "range",
+      "id": "tile_gap",
+      "label": "Tile gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tile_radius",
+      "label": "Tile corner radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Reveal Animation"
+    },
+    {
+      "type": "select",
+      "id": "reveal_direction",
+      "label": "Curtain direction",
+      "options": [
+        { "value": "left", "label": "Slide from left" },
+        { "value": "right", "label": "Slide from right" },
+        { "value": "top", "label": "Slide from top" },
+        { "value": "bottom", "label": "Slide from bottom" },
+        { "value": "alternate", "label": "Alternating directions" }
+      ],
+      "default": "alternate"
+    },
+    {
+      "type": "range",
+      "id": "reveal_speed",
+      "label": "Reveal speed",
+      "min": 400,
+      "max": 1400,
+      "step": 100,
+      "default": 800,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "default": 35,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#f5f5f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#a0a0a0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#d4a574"
+    },
+    {
+      "type": "color",
+      "id": "curtain_color",
+      "label": "Curtain color",
+      "default": "#d4a574"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "tile",
+      "name": "Collection Tile",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Overrides the collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag label"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text",
+          "default": "Explore"
+        },
+        {
+          "type": "range",
+          "id": "tile_height",
+          "label": "Tile height",
+          "min": 200,
+          "max": 550,
+          "step": 10,
+          "default": 360,
+          "unit": "px",
+          "info": "Used in masonry layout"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom link",
+          "info": "Leave blank to use collection URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Reveal Tiles",
+      "settings": {
+        "eyebrow": "Collections",
+        "heading": "Unveiled For You",
+        "subtext": "Each collection reveals itself as you explore."
+      },
+      "blocks": [
+        {
+          "type": "tile",
+          "settings": { "title": "New Season", "tag": "Spring 2026", "subtitle": "Fresh arrivals for the new season", "tile_height": 420 }
+        },
+        {
+          "type": "tile",
+          "settings": { "title": "Essentials", "tag": "Wardrobe", "subtitle": "Timeless everyday pieces", "tile_height": 320 }
+        },
+        {
+          "type": "tile",
+          "settings": { "title": "Limited Edition", "tag": "Exclusive", "subtitle": "While stocks last", "tile_height": 380 }
+        },
+        {
+          "type": "tile",
+          "settings": { "title": "Accessories", "tag": "Curated", "subtitle": "The finishing touch", "tile_height": 340 }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

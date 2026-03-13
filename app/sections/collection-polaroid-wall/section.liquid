@@ -1,0 +1,460 @@
+{% comment %}
+  Section Hub – Collection Polaroid Wall  (cpw-)
+  Scattered polaroid-style cards with random tilts & tape deco.
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+
+  assign bg            = section.settings.bg_color
+  assign heading_c     = section.settings.heading_color
+  assign text_c        = section.settings.text_color
+  assign accent        = section.settings.accent_color
+  assign card_bg       = section.settings.card_bg
+  assign tape_c        = section.settings.tape_color
+  assign caption_c     = section.settings.caption_color
+
+  assign card_w        = section.settings.card_width
+  assign card_radius   = section.settings.card_radius
+  assign photo_ratio   = section.settings.photo_ratio
+  assign border_w      = section.settings.border_width
+  assign max_tilt      = section.settings.max_tilt
+  assign py            = section.settings.padding_top
+  assign pb            = section.settings.padding_bottom
+  assign px            = section.settings.padding_sides
+
+  assign show_tape     = section.settings.show_tape
+  assign show_shadow   = section.settings.show_shadow
+  assign hover_lift    = section.settings.hover_lift
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #cpw-{{ section.id }} {
+    --cpw-bg: {{ bg }};
+    --cpw-heading-c: {{ heading_c }};
+    --cpw-text-c: {{ text_c }};
+    --cpw-accent: {{ accent }};
+    --cpw-card-bg: {{ card_bg }};
+    --cpw-tape-c: {{ tape_c }};
+    --cpw-caption-c: {{ caption_c }};
+    --cpw-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --cpw-heading-fw: {{ heading_font.weight }};
+    --cpw-heading-fs: {{ heading_font.style }};
+    --cpw-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --cpw-body-fw: {{ body_font.weight }};
+    --cpw-card-w: {{ card_w }}px;
+    --cpw-radius: {{ card_radius }}px;
+    --cpw-border-w: {{ border_w }}px;
+    --cpw-py: {{ py }}px;
+    --cpw-pb: {{ pb }}px;
+    --cpw-px: {{ px }}px;
+    --cpw-lift: {{ hover_lift }}px;
+  }
+</style>
+
+<section id="cpw-{{ section.id }}" class="cpw-wrap" data-cpw-reveal>
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="cpw-header" data-cpw-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="cpw-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="cpw-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="cpw-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="cpw-wall">
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign col = block.settings.collection
+        assign col_obj = collections[col]
+        assign img = block.settings.image
+        assign title = block.settings.title
+        assign caption = block.settings.caption
+        assign link = block.settings.link
+
+        if title == blank and col_obj != blank
+          assign title = col_obj.title
+        endif
+
+        if img == blank and col_obj != blank
+          assign img = col_obj.image
+        endif
+
+        assign url = link
+        if url == blank and col_obj != blank
+          assign url = col_obj.url
+        endif
+
+        comment
+          Deterministic pseudo-random tilt based on block index
+        endcomment
+        assign idx_mod5 = forloop.index0 | modulo: 5
+        assign idx_mod3 = forloop.index0 | modulo: 3
+      -%}
+
+      {%- capture tilt_val -%}
+        {%- case idx_mod5 -%}
+          {%- when 0 -%}{{ max_tilt | times: -1 }}
+          {%- when 1 -%}{{ max_tilt | times: 0.6 }}
+          {%- when 2 -%}{{ max_tilt | times: -0.4 }}
+          {%- when 3 -%}{{ max_tilt }}
+          {%- when 4 -%}{{ max_tilt | times: -0.7 }}
+        {%- endcase -%}
+      {%- endcapture -%}
+
+      {%- capture tape_pos -%}
+        {%- case idx_mod3 -%}
+          {%- when 0 -%}center
+          {%- when 1 -%}left
+          {%- when 2 -%}right
+        {%- endcase -%}
+      {%- endcapture -%}
+
+      <div
+        class="cpw-card {% if show_shadow %}cpw-card--shadow{% endif %}"
+        style="--cpw-tilt: {{ tilt_val | strip }}deg; --cpw-delay: {{ forloop.index0 | times: 0.12 }}s;"
+        data-cpw-card
+        {{ block.shopify_attributes }}
+      >
+        {%- if show_tape -%}
+          <div class="cpw-card__tape cpw-card__tape--{{ tape_pos | strip }}"></div>
+        {%- endif -%}
+
+        <a href="{{ url | default: '#' }}" class="cpw-card__link" {% if url != blank %}aria-label="View {{ title }}"{% endif %}>
+          <div class="cpw-card__photo" style="--cpw-ratio: {{ photo_ratio }};">
+            {%- if img != blank -%}
+              <img
+                src="{{ img | image_url: width: 800 }}"
+                alt="{{ img.alt | default: title | escape }}"
+                width="400"
+                height="500"
+                loading="lazy"
+                class="cpw-card__img"
+              >
+            {%- else -%}
+              <div class="cpw-card__placeholder">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+              </div>
+            {%- endif -%}
+          </div>
+
+          <div class="cpw-card__bottom">
+            {%- if title != blank -%}
+              <p class="cpw-card__title">{{ title }}</p>
+            {%- endif -%}
+            {%- if caption != blank -%}
+              <p class="cpw-card__caption">{{ caption }}</p>
+            {%- endif -%}
+          </div>
+        </a>
+      </div>
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('cpw-{{ section.id }}');
+    if (!wrap) return;
+
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('cpw-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+
+    var header = wrap.querySelector('[data-cpw-el]');
+    if (header) obs.observe(header);
+
+    wrap.querySelectorAll('[data-cpw-card]').forEach(function(c){ obs.observe(c); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Polaroid Wall",
+  "tag": "section",
+  "class": "cpw-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Collections"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Pinned Favorites"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "A curated wall of our most-loved collections."
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 200,
+      "max": 360,
+      "step": 10,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "photo_ratio",
+      "label": "Photo aspect ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square 1:1" },
+        { "value": "4 / 5", "label": "Portrait 4:5" },
+        { "value": "3 / 4", "label": "Portrait 3:4" },
+        { "value": "5 / 7", "label": "Portrait 5:7" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Polaroid border width",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_tilt",
+      "label": "Max tilt angle",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 5,
+      "unit": "deg"
+    },
+    {
+      "type": "range",
+      "id": "hover_lift",
+      "label": "Hover lift distance",
+      "min": 4,
+      "max": 20,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tape",
+      "label": "Show tape decoration",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show card shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f4efe8"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#2c2418"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#6b5e50"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / eyebrow",
+      "default": "#c4956a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Polaroid background",
+      "default": "#fffef8"
+    },
+    {
+      "type": "color",
+      "id": "tape_color",
+      "label": "Tape color",
+      "default": "#e8dcc8"
+    },
+    {
+      "type": "color",
+      "id": "caption_color",
+      "label": "Caption color",
+      "default": "#9b8b78"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "polaroid",
+      "name": "Polaroid Card",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom image",
+          "info": "Overrides the collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "default": "Explore →"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom link",
+          "info": "Leave blank to use collection URL"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Polaroid Wall",
+      "settings": {
+        "eyebrow": "Our Collections",
+        "heading": "Pinned Favorites",
+        "subtext": "A curated wall of our most-loved collections."
+      },
+      "blocks": [
+        {
+          "type": "polaroid",
+          "settings": { "title": "New Arrivals", "caption": "Just landed →" }
+        },
+        {
+          "type": "polaroid",
+          "settings": { "title": "Summer Edit", "caption": "Sun-kissed styles →" }
+        },
+        {
+          "type": "polaroid",
+          "settings": { "title": "Accessories", "caption": "Finishing touches →" }
+        },
+        {
+          "type": "polaroid",
+          "settings": { "title": "Best Sellers", "caption": "Shop favorites →" }
+        },
+        {
+          "type": "polaroid",
+          "settings": { "title": "Denim", "caption": "Built to last →" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
