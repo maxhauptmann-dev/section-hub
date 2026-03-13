@@ -158,6 +158,46 @@
   height: 100%;
 }
 
+/* Shopify video wrapper & embed wrapper */
+.shvp-video__shopify-wrap,
+.shvp-video__embed {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.shvp-video__shopify-player {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.shvp-video__shopify-player video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.shvp-video__poster {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shvp-video__iframe-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.shvp-video__iframe-wrap iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
 /* Video gradient overlay (bottom) */
 .shvp-video__overlay {
   position: absolute;

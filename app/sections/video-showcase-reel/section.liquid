@@ -80,8 +80,71 @@
     {%- comment -%} Main video stage {%- endcomment -%}
     <div class="shvr-stage" data-shvr-reveal data-shvr-stage>
       {%- for block in section.blocks -%}
+        {%- liquid
+          assign has_shopify_video = false
+          assign has_embed_video = false
+          assign has_mp4 = false
+          if block.settings.shopify_video != blank
+            assign has_shopify_video = true
+          endif
+          if block.settings.embed_url != blank
+            assign has_embed_video = true
+          endif
+          if block.settings.video_url != blank
+            assign has_mp4 = true
+          endif
+          assign has_any_video = false
+          if has_shopify_video or has_embed_video or has_mp4
+            assign has_any_video = true
+          endif
+        -%}
         <div class="shvr-slide{% if forloop.first %} shvr-slide--active{% endif %}" data-shvr-slide="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
-          {%- if block.settings.video_url != blank -%}
+
+          {%- if has_shopify_video -%}
+            {%- comment -%} Shopify hosted video from media library {%- endcomment -%}
+            {%- assign sv = block.settings.shopify_video -%}
+            {%- assign sv_poster = '' -%}
+            {%- if block.settings.poster != blank -%}
+              {%- assign sv_poster = block.settings.poster | image_url: width: 1400 -%}
+            {%- elsif sv.preview_image != blank -%}
+              {%- assign sv_poster = sv.preview_image | image_url: width: 1400 -%}
+            {%- endif -%}
+            <div class="shvr-slide__shopify-video" data-shvr-shopify-wrap>
+              {%- if sv_poster != '' -%}
+                <img class="shvr-slide__poster" src="{{ sv_poster }}" alt="{{ block.settings.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+              {%- endif -%}
+              <div class="shvr-slide__shopify-player" data-shvr-shopify-player style="{% if sv_poster != '' %}display:none;{% endif %}">
+                {{ sv | video_tag: class: 'shvr-slide__video-el', playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata', data-shvr-video: '' }}
+              </div>
+            </div>
+
+          {%- elsif has_embed_video -%}
+            {%- comment -%} YouTube / Vimeo embed {%- endcomment -%}
+            {%- assign ev = block.settings.embed_url -%}
+            {%- if ev.type == 'youtube' -%}
+              {%- assign yt_thumb = 'https://img.youtube.com/vi/' | append: ev.id | append: '/maxresdefault.jpg' -%}
+              {%- if block.settings.poster != blank -%}
+                {%- assign yt_thumb = block.settings.poster | image_url: width: 1400 -%}
+              {%- endif -%}
+              <div class="shvr-slide__embed" data-shvr-embed data-video-type="youtube" data-video-id="{{ ev.id }}">
+                <img class="shvr-slide__poster" src="{{ yt_thumb }}" alt="{{ block.settings.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                <div class="shvr-slide__iframe-wrap" data-shvr-iframe-wrap style="display:none;"></div>
+              </div>
+            {%- elsif ev.type == 'vimeo' -%}
+              {%- assign vm_poster = '' -%}
+              {%- if block.settings.poster != blank -%}
+                {%- assign vm_poster = block.settings.poster | image_url: width: 1400 -%}
+              {%- endif -%}
+              <div class="shvr-slide__embed" data-shvr-embed data-video-type="vimeo" data-video-id="{{ ev.id }}">
+                {%- if vm_poster != '' -%}
+                  <img class="shvr-slide__poster" src="{{ vm_poster }}" alt="{{ block.settings.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+                {%- endif -%}
+                <div class="shvr-slide__iframe-wrap" data-shvr-iframe-wrap style="display:none;"></div>
+              </div>
+            {%- endif -%}
+
+          {%- elsif has_mp4 -%}
+            {%- comment -%} Direct MP4 URL {%- endcomment -%}
             <video
               data-shvr-video
               playsinline
@@ -92,6 +155,7 @@
             >
               <source src="{{ block.settings.video_url }}" type="video/mp4">
             </video>
+
           {%- elsif block.settings.poster != blank -%}
             <img
               src="{{ block.settings.poster | image_url: width: 1400 }}"
@@ -119,7 +183,7 @@
               {%- endif -%}
             </div>
 
-            {%- if block.settings.video_url != blank -%}
+            {%- if has_any_video -%}
               <button class="shvr-play-btn" data-shvr-play="{{ forloop.index0 }}" aria-label="Play video">
                 <svg class="shvr-play-btn__ring" viewBox="0 0 72 72">
                   <circle class="shvr-play-btn__ring-bg" cx="36" cy="36" r="35"></circle>
@@ -204,7 +268,7 @@
       /* Pause all videos */
       slides.forEach(function(s) {
         s.classList.remove('shvr-slide--active');
-        var v = s.querySelector('[data-shvr-video]');
+        var v = s.querySelector('[data-shvr-video]') || s.querySelector('[data-shvr-shopify-wrap] video');
         if (v) { v.pause(); }
         var ip = s.querySelector('[data-shvr-icon-play]');
         var ipa = s.querySelector('[data-shvr-icon-pause]');
@@ -229,34 +293,92 @@
       });
     });
 
-    /* Play/pause buttons */
+    /* Play/pause buttons — handles mp4, Shopify hosted, and YouTube/Vimeo */
     var playBtns = section.querySelectorAll('[data-shvr-play]');
     playBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
         var idx = parseInt(btn.dataset.shvrPlay);
         var slide = slides[idx];
-        var video = slide.querySelector('[data-shvr-video]');
-        if (!video) return;
-
         var iconPlay = btn.querySelector('[data-shvr-icon-play]');
         var iconPause = btn.querySelector('[data-shvr-icon-pause]');
 
-        if (video.paused) {
-          video.play();
-          if (iconPlay) iconPlay.style.display = 'none';
-          if (iconPause) iconPause.style.display = '';
-        } else {
-          video.pause();
-          if (iconPlay) iconPlay.style.display = '';
-          if (iconPause) iconPause.style.display = 'none';
+        /* MP4 video */
+        var video = slide.querySelector('[data-shvr-video]');
+        if (video) {
+          if (video.paused) {
+            video.play();
+            if (iconPlay) iconPlay.style.display = 'none';
+            if (iconPause) iconPause.style.display = '';
+          } else {
+            video.pause();
+            if (iconPlay) iconPlay.style.display = '';
+            if (iconPause) iconPause.style.display = 'none';
+          }
+          return;
+        }
+
+        /* Shopify hosted video — show player, hide poster */
+        var shopifyWrap = slide.querySelector('[data-shvr-shopify-wrap]');
+        if (shopifyWrap) {
+          var poster = shopifyWrap.querySelector('.shvr-slide__poster');
+          var playerWrap = shopifyWrap.querySelector('[data-shvr-shopify-player]');
+          var sv = shopifyWrap.querySelector('video');
+          if (sv) {
+            if (poster && poster.style.display !== 'none') {
+              poster.style.display = 'none';
+              if (playerWrap) playerWrap.style.display = '';
+              sv.play();
+              if (iconPlay) iconPlay.style.display = 'none';
+              if (iconPause) iconPause.style.display = '';
+            } else if (sv.paused) {
+              sv.play();
+              if (iconPlay) iconPlay.style.display = 'none';
+              if (iconPause) iconPause.style.display = '';
+            } else {
+              sv.pause();
+              if (iconPlay) iconPlay.style.display = '';
+              if (iconPause) iconPause.style.display = 'none';
+            }
+          }
+          return;
+        }
+
+        /* YouTube / Vimeo embed */
+        var embedWrap = slide.querySelector('[data-shvr-embed]');
+        if (embedWrap) {
+          var iframeWrap = embedWrap.querySelector('[data-shvr-iframe-wrap]');
+          var posterImg = embedWrap.querySelector('.shvr-slide__poster');
+          if (iframeWrap && iframeWrap.style.display === 'none') {
+            var vType = embedWrap.dataset.videoType;
+            var vId = embedWrap.dataset.videoId;
+            var iframeSrc = '';
+            if (vType === 'youtube') {
+              iframeSrc = 'https://www.youtube.com/embed/' + vId + '?autoplay=1&mute=1&loop=1&playlist=' + vId + '&controls=0&modestbranding=1&rel=0';
+            } else if (vType === 'vimeo') {
+              iframeSrc = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&loop=1&background=1';
+            }
+            if (iframeSrc) {
+              iframeWrap.innerHTML = '<iframe src="' + iframeSrc + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+              iframeWrap.style.display = '';
+              iframeWrap.style.position = 'absolute';
+              iframeWrap.style.inset = '0';
+              iframeWrap.style.width = '100%';
+              iframeWrap.style.height = '100%';
+              iframeWrap.style.zIndex = '1';
+              if (posterImg) posterImg.style.display = 'none';
+              if (iconPlay) iconPlay.style.display = 'none';
+              if (iconPause) iconPause.style.display = '';
+            }
+          }
+          return;
         }
       });
     });
 
-    /* Progress ring update */
+    /* Progress ring update — works for mp4 and Shopify video */
     function updateRings() {
       slides.forEach(function(slide, i) {
-        var video = slide.querySelector('[data-shvr-video]');
+        var video = slide.querySelector('[data-shvr-video]') || slide.querySelector('[data-shvr-shopify-wrap] video');
         var ring = slide.querySelector('[data-shvr-ring]');
         if (!video || !ring || video.paused || !video.duration) return;
 
@@ -488,15 +610,36 @@
       "name": "Video Clip",
       "settings": [
         {
+          "type": "header",
+          "content": "Video source"
+        },
+        {
+          "type": "video",
+          "id": "shopify_video",
+          "label": "Shopify video",
+          "info": "Upload or select a video from your Shopify media library."
+        },
+        {
+          "type": "video_url",
+          "id": "embed_url",
+          "accept": ["youtube", "vimeo"],
+          "label": "YouTube / Vimeo URL",
+          "info": "Used when no Shopify video is selected."
+        },
+        {
           "type": "text",
           "id": "video_url",
-          "label": "Video URL (mp4)",
-          "info": "Paste a direct .mp4 link. Leave empty to use poster image only."
+          "label": "External video URL (mp4)",
+          "info": "Direct .mp4 link. Used as last fallback."
         },
         {
           "type": "image_picker",
           "id": "poster",
           "label": "Poster / thumbnail image"
+        },
+        {
+          "type": "header",
+          "content": "Slide content"
         },
         {
           "type": "text",
