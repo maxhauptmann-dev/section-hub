@@ -1,0 +1,377 @@
+{% comment %}
+  SectionHub – Featured Collection Mosaic  (fcm-)
+  Asymmetric masonry grid with hero tile
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign columns      = section.settings.columns
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #fcm-{{ section.id }} {
+    --fcm-bg: {{ section.settings.bg_color }};
+    --fcm-heading-c: {{ section.settings.heading_color }};
+    --fcm-text-c: {{ section.settings.text_color }};
+    --fcm-accent: {{ section.settings.accent_color }};
+    --fcm-card-bg: {{ section.settings.card_bg }};
+    --fcm-badge-bg: {{ section.settings.badge_color }};
+    --fcm-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcm-heading-fw: {{ heading_font.weight }};
+    --fcm-heading-fs: {{ heading_font.style }};
+    --fcm-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcm-body-fw: {{ body_font.weight }};
+    --fcm-gap: {{ section.settings.tile_gap }}px;
+    --fcm-radius: {{ section.settings.card_radius }}px;
+    --fcm-py: {{ section.settings.padding_top }}px;
+    --fcm-pb: {{ section.settings.padding_bottom }}px;
+    --fcm-px: {{ section.settings.padding_sides }}px;
+    --fcm-max-w: {{ section.settings.max_width }}px;
+    --fcm-cols: {{ columns }};
+  }
+</style>
+
+<section id="fcm-{{ section.id }}" class="fcm-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="fcm-header" data-fcm-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="fcm-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcm-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="fcm-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+      <div class="fcm-header__rule"></div>
+    </div>
+  {%- endif -%}
+
+  {%- if col_obj != blank and col_obj.products_count > 0 -%}
+
+    <div class="fcm-grid">
+      {%- for product in col_obj.products limit: limit -%}
+        {%- assign is_hero = false -%}
+        {%- if forloop.first -%}
+          {%- assign is_hero = true -%}
+        {%- endif -%}
+
+        <a
+          href="{{ product.url }}"
+          class="fcm-tile {% if is_hero %}fcm-tile--hero{% endif %}"
+          data-fcm-tile
+          style="--fcm-delay: {{ forloop.index0 | times: 0.08 }}s"
+          aria-label="{{ product.title }}"
+        >
+          <div class="fcm-tile__media">
+            {%- if product.featured_image -%}
+              <img
+                src="{{ product.featured_image | image_url: width: 700 }}"
+                alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                loading="lazy"
+                class="fcm-tile__img"
+              >
+            {%- else -%}
+              <div class="fcm-tile__placeholder">
+                {{ 'product-1' | placeholder_svg_tag: 'fcm-tile__svg' }}
+              </div>
+            {%- endif -%}
+
+            <div class="fcm-tile__gradient"></div>
+
+            {%- if show_badge -%}
+              {%- if product.compare_at_price > product.price -%}
+                <span class="fcm-badge">Sale</span>
+              {%- endif -%}
+            {%- endif -%}
+          </div>
+
+          <div class="fcm-tile__info">
+            {%- if show_vendor and product.vendor != blank -%}
+              <span class="fcm-tile__vendor">{{ product.vendor }}</span>
+            {%- endif -%}
+            <h3 class="fcm-tile__title">{{ product.title }}</h3>
+            {%- if show_price -%}
+              <div class="fcm-tile__price">
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="fcm-tile__price-old">{{ product.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span class="fcm-tile__price-now">{{ product.price | money }}</span>
+              </div>
+            {%- endif -%}
+          </div>
+        </a>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.shop_all_text != blank -%}
+      <div class="fcm-footer" data-fcm-el>
+        <a href="{{ col_obj.url }}" class="fcm-footer__link">
+          {{ section.settings.shop_all_text }}
+          <span class="fcm-footer__arrow">→</span>
+        </a>
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    <div class="fcm-empty" data-fcm-el>
+      <p class="fcm-empty__text">Select a collection to display products.</p>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('fcm-{{ section.id }}');
+    if (!wrap) return;
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('fcm-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    wrap.querySelectorAll('[data-fcm-el]').forEach(function(el){ obs.observe(el); });
+    wrap.querySelectorAll('[data-fcm-tile]').forEach(function(el){ obs.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FC Mosaic",
+  "tag": "section",
+  "class": "fcm-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products",
+      "min": 3,
+      "max": 16,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Curated"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Shop The Edit"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Our favorite picks, beautifully arranged."
+    },
+    {
+      "type": "header",
+      "content": "Grid Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "tile_gap",
+      "label": "Tile gap",
+      "min": 4,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Tile radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop All link text",
+      "default": "View Full Collection"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8f8f6"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#666666"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#c8956c"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge",
+      "default": "#d4453b"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - FC Mosaic",
+      "settings": {
+        "eyebrow": "Curated",
+        "heading": "Shop The Edit",
+        "subtext": "Our favorite picks, beautifully arranged.",
+        "products_limit": 7,
+        "columns": 3,
+        "show_vendor": true,
+        "show_price": true,
+        "show_sale_badge": true,
+        "shop_all_text": "View Full Collection"
+      }
+    }
+  ]
+}
+{% endschema %}

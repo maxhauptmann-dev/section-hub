@@ -1,0 +1,501 @@
+{% comment %}
+  SectionHub – Featured Collection Spotlight  (fcs-)
+  Cinematic spotlight hero + horizontal carousel
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign img_ratio    = section.settings.image_ratio
+  assign autoplay     = section.settings.autoplay
+  assign speed        = section.settings.speed
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #fcs-{{ section.id }} {
+    --fcs-bg: {{ section.settings.bg_color }};
+    --fcs-heading-c: {{ section.settings.heading_color }};
+    --fcs-text-c: {{ section.settings.text_color }};
+    --fcs-accent: {{ section.settings.accent_color }};
+    --fcs-glow: {{ section.settings.glow_color }};
+    --fcs-card-bg: {{ section.settings.card_bg }};
+    --fcs-badge-bg: {{ section.settings.badge_color }};
+    --fcs-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcs-heading-fw: {{ heading_font.weight }};
+    --fcs-heading-fs: {{ heading_font.style }};
+    --fcs-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcs-body-fw: {{ body_font.weight }};
+    --fcs-radius: {{ section.settings.card_radius }}px;
+    --fcs-gap: {{ section.settings.card_gap }}px;
+    --fcs-py: {{ section.settings.padding_top }}px;
+    --fcs-pb: {{ section.settings.padding_bottom }}px;
+    --fcs-px: {{ section.settings.padding_sides }}px;
+    --fcs-max-w: {{ section.settings.max_width }}px;
+    --fcs-spot-h: {{ section.settings.spotlight_height }}px;
+  }
+</style>
+
+<section id="fcs-{{ section.id }}" class="fcs-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="fcs-header" data-fcs-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="fcs-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcs-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="fcs-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if col_obj != blank and col_obj.products_count > 0 -%}
+
+    {%- comment -%} Spotlight – first product {%- endcomment -%}
+    {%- assign spot = col_obj.products[0] -%}
+    <div class="fcs-spotlight" data-fcs-el>
+      <div class="fcs-spotlight__glow"></div>
+      <a href="{{ spot.url }}" class="fcs-spotlight__link" aria-label="{{ spot.title }}">
+        <div class="fcs-spotlight__media">
+          {%- if spot.featured_image -%}
+            <img
+              src="{{ spot.featured_image | image_url: width: 800 }}"
+              alt="{{ spot.featured_image.alt | default: spot.title | escape }}"
+              loading="lazy"
+              class="fcs-spotlight__img"
+            >
+          {%- else -%}
+            <div class="fcs-spotlight__placeholder">
+              {{ 'product-1' | placeholder_svg_tag: 'fcs-spotlight__svg' }}
+            </div>
+          {%- endif -%}
+        </div>
+
+        <div class="fcs-spotlight__info">
+          {%- if show_vendor and spot.vendor != blank -%}
+            <span class="fcs-spotlight__vendor">{{ spot.vendor }}</span>
+          {%- endif -%}
+          <h3 class="fcs-spotlight__title">{{ spot.title }}</h3>
+          {%- if show_price -%}
+            <div class="fcs-spotlight__price">
+              {%- if spot.compare_at_price > spot.price -%}
+                <span class="fcs-spotlight__price-old">{{ spot.compare_at_price | money }}</span>
+              {%- endif -%}
+              <span class="fcs-spotlight__price-tag">{{ spot.price | money }}</span>
+            </div>
+          {%- endif -%}
+          <span class="fcs-spotlight__btn">View Product <span class="fcs-spotlight__arrow">→</span></span>
+        </div>
+
+        {%- if show_badge -%}
+          {%- if spot.compare_at_price > spot.price -%}
+            <span class="fcs-badge">Sale</span>
+          {%- endif -%}
+        {%- endif -%}
+      </a>
+    </div>
+
+    {%- comment -%} Carousel – remaining products {%- endcomment -%}
+    <div class="fcs-carousel" data-fcs-el>
+      <div class="fcs-carousel__label">
+        <span class="fcs-carousel__dot"></span>
+        More from this collection
+      </div>
+
+      <div class="fcs-track" data-fcs-track>
+        {%- for product in col_obj.products limit: limit offset: 1 -%}
+          <a href="{{ product.url }}" class="fcs-card" data-fcs-card style="--fcs-delay: {{ forloop.index0 | times: 0.1 }}s" aria-label="{{ product.title }}">
+            <div class="fcs-card__media" style="aspect-ratio: {{ img_ratio }};">
+              {%- if product.featured_image -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 500 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  class="fcs-card__img"
+                >
+              {%- else -%}
+                <div class="fcs-card__placeholder">
+                  {{ 'product-1' | placeholder_svg_tag: 'fcs-card__svg' }}
+                </div>
+              {%- endif -%}
+
+              {%- if show_badge -%}
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="fcs-badge fcs-badge--sm">Sale</span>
+                {%- endif -%}
+              {%- endif -%}
+
+              <div class="fcs-card__shine"></div>
+            </div>
+
+            <div class="fcs-card__info">
+              {%- if show_vendor and product.vendor != blank -%}
+                <span class="fcs-card__vendor">{{ product.vendor }}</span>
+              {%- endif -%}
+              <h4 class="fcs-card__title">{{ product.title }}</h4>
+              {%- if show_price -%}
+                <div class="fcs-card__price">
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="fcs-card__price-old">{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  <span class="fcs-card__price-now">{{ product.price | money }}</span>
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Navigation arrows {%- endcomment -%}
+      <button class="fcs-nav fcs-nav--prev" data-fcs-prev aria-label="Previous">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6"/></svg>
+      </button>
+      <button class="fcs-nav fcs-nav--next" data-fcs-next aria-label="Next">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18L15 12L9 6"/></svg>
+      </button>
+    </div>
+
+    {%- if section.settings.shop_all_text != blank -%}
+      <div class="fcs-footer" data-fcs-el>
+        <a href="{{ col_obj.url }}" class="fcs-footer__link">
+          {{ section.settings.shop_all_text }} →
+        </a>
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    <div class="fcs-empty" data-fcs-el>
+      <p class="fcs-empty__text">Select a collection to display products.</p>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('fcs-{{ section.id }}');
+    if (!wrap) return;
+
+    /* Scroll reveal */
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('fcs-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    wrap.querySelectorAll('[data-fcs-el]').forEach(function(el){ obs.observe(el); });
+    wrap.querySelectorAll('[data-fcs-card]').forEach(function(el){ obs.observe(el); });
+
+    /* Carousel navigation */
+    var track = wrap.querySelector('[data-fcs-track]');
+    var prevBtn = wrap.querySelector('[data-fcs-prev]');
+    var nextBtn = wrap.querySelector('[data-fcs-next]');
+    if (!track) return;
+
+    var scrollAmt = 320;
+    if (prevBtn) prevBtn.addEventListener('click', function(){ track.scrollBy({ left: -scrollAmt, behavior: 'smooth' }); });
+    if (nextBtn) nextBtn.addEventListener('click', function(){ track.scrollBy({ left: scrollAmt, behavior: 'smooth' }); });
+
+    /* Autoplay */
+    {% if autoplay %}
+    var autoId;
+    function startAuto(){
+      autoId = setInterval(function(){
+        var maxScroll = track.scrollWidth - track.clientWidth;
+        if (track.scrollLeft >= maxScroll - 2) {
+          track.scrollTo({ left: 0, behavior: 'smooth' });
+        } else {
+          track.scrollBy({ left: scrollAmt, behavior: 'smooth' });
+        }
+      }, {{ speed }}000);
+    }
+    startAuto();
+    track.addEventListener('mouseenter', function(){ clearInterval(autoId); });
+    track.addEventListener('mouseleave', startAuto);
+    {% endif %}
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FC Spotlight",
+  "tag": "section",
+  "class": "fcs-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products in carousel",
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Featured"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "In The Spotlight"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Products that deserve center stage."
+    },
+    {
+      "type": "header",
+      "content": "Spotlight"
+    },
+    {
+      "type": "range",
+      "id": "spotlight_height",
+      "label": "Spotlight height",
+      "min": 300,
+      "max": 600,
+      "step": 20,
+      "default": 440,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max section width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Card image ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square 1:1" },
+        { "value": "4 / 5", "label": "Portrait 4:5" },
+        { "value": "3 / 4", "label": "Portrait 3:4" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay carousel",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay interval",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop All link text",
+      "default": "Browse Full Collection"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0c0c14"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#f0f0f5"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#8888a0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#7c6bf5"
+    },
+    {
+      "type": "color",
+      "id": "glow_color",
+      "label": "Glow color",
+      "default": "#6c5ce7"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#16162a"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge",
+      "default": "#ef4444"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - FC Spotlight",
+      "settings": {
+        "eyebrow": "Featured",
+        "heading": "In The Spotlight",
+        "subtext": "Products that deserve center stage.",
+        "spotlight_height": 440,
+        "products_limit": 8,
+        "autoplay": true,
+        "speed": 4,
+        "show_vendor": true,
+        "show_price": true,
+        "show_sale_badge": true,
+        "shop_all_text": "Browse Full Collection"
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,463 @@
+{% comment %}
+  SectionHub – Featured Collection Lookbook  (fcl-)
+  Editorial hero + vertical product strip
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign hero_pos     = section.settings.hero_position
+  assign img_ratio    = section.settings.image_ratio
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign btn_text     = section.settings.btn_text
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #fcl-{{ section.id }} {
+    --fcl-bg: {{ section.settings.bg_color }};
+    --fcl-heading-c: {{ section.settings.heading_color }};
+    --fcl-text-c: {{ section.settings.text_color }};
+    --fcl-accent: {{ section.settings.accent_color }};
+    --fcl-card-bg: {{ section.settings.card_bg }};
+    --fcl-badge-bg: {{ section.settings.badge_color }};
+    --fcl-overlay-o: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --fcl-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcl-heading-fw: {{ heading_font.weight }};
+    --fcl-heading-fs: {{ heading_font.style }};
+    --fcl-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcl-body-fw: {{ body_font.weight }};
+    --fcl-radius: {{ section.settings.card_radius }}px;
+    --fcl-gap: {{ section.settings.card_gap }}px;
+    --fcl-py: {{ section.settings.padding_top }}px;
+    --fcl-pb: {{ section.settings.padding_bottom }}px;
+    --fcl-px: {{ section.settings.padding_sides }}px;
+    --fcl-max-w: {{ section.settings.max_width }}px;
+    --fcl-strip-w: {{ section.settings.strip_width }}px;
+  }
+</style>
+
+<section id="fcl-{{ section.id }}" class="fcl-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="fcl-header" data-fcl-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="fcl-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcl-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="fcl-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if col_obj != blank and col_obj.products_count > 0 -%}
+    <div class="fcl-layout fcl-layout--{{ hero_pos }}">
+      {%- comment -%} Hero – first product {%- endcomment -%}
+      {%- assign hero_product = col_obj.products[0] -%}
+      <div class="fcl-hero" data-fcl-el>
+        <a href="{{ hero_product.url }}" class="fcl-hero__link" aria-label="{{ hero_product.title }}">
+          <div class="fcl-hero__media">
+            {%- if hero_product.featured_image -%}
+              <img
+                src="{{ hero_product.featured_image | image_url: width: 1200 }}"
+                srcset="{{ hero_product.featured_image | image_url: width: 600 }} 600w,
+                        {{ hero_product.featured_image | image_url: width: 900 }} 900w,
+                        {{ hero_product.featured_image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width:768px) 100vw, 55vw"
+                alt="{{ hero_product.featured_image.alt | default: hero_product.title | escape }}"
+                loading="lazy"
+                class="fcl-hero__img"
+              >
+            {%- else -%}
+              <div class="fcl-hero__placeholder">
+                {{ 'product-1' | placeholder_svg_tag: 'fcl-hero__svg' }}
+              </div>
+            {%- endif -%}
+            <div class="fcl-hero__gradient"></div>
+          </div>
+
+          <div class="fcl-hero__content">
+            {%- if show_vendor and hero_product.vendor != blank -%}
+              <span class="fcl-hero__vendor">{{ hero_product.vendor }}</span>
+            {%- endif -%}
+            <h3 class="fcl-hero__title">{{ hero_product.title }}</h3>
+            {%- if show_price -%}
+              <div class="fcl-hero__price">
+                {%- if hero_product.compare_at_price > hero_product.price -%}
+                  <span class="fcl-hero__price-old">{{ hero_product.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span class="fcl-hero__price-now">{{ hero_product.price | money }}</span>
+              </div>
+            {%- endif -%}
+            {%- if btn_text != blank -%}
+              <span class="fcl-hero__btn">{{ btn_text }} →</span>
+            {%- endif -%}
+          </div>
+
+          {%- if show_badge -%}
+            {%- if hero_product.compare_at_price > hero_product.price -%}
+              <span class="fcl-badge">Sale</span>
+            {%- endif -%}
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} Strip – remaining products {%- endcomment -%}
+      <div class="fcl-strip" data-fcl-strip>
+        {%- for product in col_obj.products limit: limit offset: 1 -%}
+          <a href="{{ product.url }}" class="fcl-card" data-fcl-card style="--fcl-delay: {{ forloop.index0 | times: 0.08 }}s" aria-label="{{ product.title }}">
+            <div class="fcl-card__media" style="aspect-ratio: {{ img_ratio }};">
+              {%- if product.featured_image -%}
+                <img
+                  src="{{ product.featured_image | image_url: width: 500 }}"
+                  alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                  loading="lazy"
+                  class="fcl-card__img"
+                >
+              {%- else -%}
+                <div class="fcl-card__placeholder">
+                  {{ 'product-1' | placeholder_svg_tag: 'fcl-card__svg' }}
+                </div>
+              {%- endif -%}
+
+              {%- if show_badge -%}
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="fcl-badge fcl-badge--sm">Sale</span>
+                {%- endif -%}
+              {%- endif -%}
+            </div>
+
+            <div class="fcl-card__info">
+              {%- if show_vendor and product.vendor != blank -%}
+                <span class="fcl-card__vendor">{{ product.vendor }}</span>
+              {%- endif -%}
+              <h4 class="fcl-card__title">{{ product.title }}</h4>
+              {%- if show_price -%}
+                <div class="fcl-card__price">
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="fcl-card__price-old">{{ product.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  <span class="fcl-card__price-now">{{ product.price | money }}</span>
+                </div>
+              {%- endif -%}
+            </div>
+          </a>
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- if section.settings.shop_all_text != blank -%}
+      <div class="fcl-footer" data-fcl-el>
+        <a href="{{ col_obj.url }}" class="fcl-footer__link">
+          {{ section.settings.shop_all_text }} <span class="fcl-footer__arrow">→</span>
+        </a>
+      </div>
+    {%- endif -%}
+  {%- else -%}
+    <div class="fcl-empty" data-fcl-el>
+      <p class="fcl-empty__text">Select a collection to display products.</p>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('fcl-{{ section.id }}');
+    if (!wrap) return;
+
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('fcl-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+
+    wrap.querySelectorAll('[data-fcl-el]').forEach(function(el){ obs.observe(el); });
+    wrap.querySelectorAll('[data-fcl-card]').forEach(function(el){ obs.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FC Lookbook",
+  "tag": "section",
+  "class": "fcl-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products in strip",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The Edit"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Lookbook"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Hand-picked pieces for the season."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "hero_position",
+      "label": "Hero position",
+      "options": [
+        { "value": "left", "label": "Hero left" },
+        { "value": "right", "label": "Hero right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "strip_width",
+      "label": "Strip width",
+      "min": 200,
+      "max": 420,
+      "step": 10,
+      "default": 300,
+      "unit": "px",
+      "info": "Width of each card in the strip"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max section width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "default": 1300,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Strip image ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square 1:1" },
+        { "value": "4 / 5", "label": "Portrait 4:5" },
+        { "value": "3 / 4", "label": "Portrait 3:4" },
+        { "value": "4 / 3", "label": "Landscape 4:3" }
+      ],
+      "default": "3 / 4"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Hero button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop All link text",
+      "default": "View Full Collection"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Hero overlay opacity",
+      "min": 10,
+      "max": 70,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f5f1ec"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#2c2418"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#6b5e50"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#b0784a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge color",
+      "default": "#c0392b"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - FC Lookbook",
+      "settings": {
+        "eyebrow": "The Edit",
+        "heading": "Our Lookbook",
+        "subtext": "Hand-picked pieces for the season.",
+        "hero_position": "left",
+        "products_limit": 6,
+        "show_vendor": true,
+        "show_price": true,
+        "show_sale_badge": true,
+        "btn_text": "Shop Now",
+        "shop_all_text": "View Full Collection"
+      }
+    }
+  ]
+}
+{% endschema %}

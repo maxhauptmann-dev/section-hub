@@ -1,0 +1,36 @@
+{
+  "id": "featured-collection-mosaic",
+  "name": "SS - FC Mosaic",
+  "description": "Dynamic mosaic grid featured collection where products are arranged in an asymmetric Pinterest-style masonry layout with varying tile sizes. The first product gets a large hero tile spanning two rows, while remaining products fill in organically around it. Each tile features gradient overlays, animated price reveals, hover image zoom, and optional vendor badges. Configurable tile gap, column count, image ratios, content positioning, and staggered entrance animations. Perfect for diverse product catalogs and visual merchandising.",
+  "category": ["Featured Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 23,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Mosaic",
+    "Masonry",
+    "Grid",
+    "Dynamic",
+    "Light",
+    "Products",
+    "Premium",
+    "Animation"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#f8f8f6",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
+}
