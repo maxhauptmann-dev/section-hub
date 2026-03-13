@@ -195,6 +195,7 @@
     var mode = wrap.dataset.ilfMode;
     var hasLightbox = wrap.dataset.ilfLightbox === 'true';
     var hasSpotlight = wrap.dataset.ilfSpotlight === 'true';
+    var cards = wrap.querySelectorAll('.ilf-card');
 
     /* --- Reveal --- */
     var revealEls = wrap.querySelectorAll('[data-ilf-reveal]');
@@ -212,19 +213,18 @@
       revealEls.forEach(function(el) { el.classList.add('ilf-visible'); });
     }
 
-    /* --- Scroll focus --- */
-    var cards = wrap.querySelectorAll('.ilf-card');
-    if (mode === 'scroll') {
+    /* --- Scroll focus (only needed for scroll mode) --- */
+    /* hover mode = pure CSS :hover, always mode = pure CSS via data-attr */
+    if (mode === 'scroll' && 'IntersectionObserver' in window) {
       var scrollObs = new IntersectionObserver(function(entries) {
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
             entry.target.classList.add('ilf-focused');
+            scrollObs.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.4 });
+      }, { threshold: 0.3, rootMargin: '0px 0px -60px 0px' });
       cards.forEach(function(c) { scrollObs.observe(c); });
-    } else if (mode === 'always') {
-      cards.forEach(function(c) { c.classList.add('ilf-focused'); });
     }
 
     /* --- Spotlight mouse-follow (rAF throttled) --- */

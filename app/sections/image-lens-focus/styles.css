@@ -117,16 +117,27 @@
   object-fit: cover;
   backface-visibility: hidden;
 
-  /* --- Unfocused default state --- */
+  /* --- Unfocused default state (hover + scroll modes) --- */
   filter: blur(var(--ilf-blur)) grayscale(0.8) brightness(0.85);
   transform: scale(1.06);
   transition: filter 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
               transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-/* --- Focused state (hover mode) --- */
-[data-ilf-mode="hover"] .ilf-card:hover .ilf-card__img,
-.ilf-card.ilf-focused .ilf-card__img {
+/* Always mode: no blur at all */
+[data-ilf-mode="always"] .ilf-card__img {
+  filter: blur(0px) grayscale(0) brightness(1);
+  transform: scale(1);
+}
+
+/* Hover mode: focus on hover */
+[data-ilf-mode="hover"] .ilf-card:hover .ilf-card__img {
+  filter: blur(0px) grayscale(0) brightness(1);
+  transform: scale(1);
+}
+
+/* Scroll mode: focus when scrolled into view (JS adds class) */
+[data-ilf-mode="scroll"] .ilf-card.ilf-focused .ilf-card__img {
   filter: blur(0px) grayscale(0) brightness(1);
   transform: scale(1);
 }
@@ -157,7 +168,8 @@
 }
 
 [data-ilf-mode="hover"] .ilf-card:hover .ilf-card__overlay,
-.ilf-card.ilf-focused .ilf-card__overlay {
+[data-ilf-mode="scroll"] .ilf-card.ilf-focused .ilf-card__overlay,
+[data-ilf-mode="always"] .ilf-card__overlay {
   opacity: 0.15;
 }
 
@@ -206,7 +218,8 @@
 }
 
 [data-ilf-mode="hover"] .ilf-card:hover .ilf-card__lens-icon,
-.ilf-card.ilf-focused .ilf-card__lens-icon {
+[data-ilf-mode="scroll"] .ilf-card.ilf-focused .ilf-card__lens-icon,
+[data-ilf-mode="always"] .ilf-card__lens-icon {
   opacity: 1;
   transform: scale(1);
 }
