@@ -1,0 +1,369 @@
+/* ===========================
+   FC Storyboard – styles.css
+   Horizontal filmstrip panels
+   =========================== */
+
+.fcb-wrap {
+  background: var(--fcb-bg);
+  padding: var(--fcb-py) 0 var(--fcb-pb);
+  overflow: hidden;
+  outline: none;
+}
+.fcb-wrap *, .fcb-wrap *::before, .fcb-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Header ──────────────────── */
+.fcb-header {
+  max-width: var(--fcb-max-w);
+  margin: 0 auto 40px;
+  text-align: center;
+  padding: 0 var(--fcb-px);
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.fcb-header.fcb-visible { opacity: 1; transform: translateY(0); }
+
+.fcb-header__eyebrow {
+  display: inline-block;
+  font-family: var(--fcb-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--fcb-accent);
+  margin-bottom: 10px;
+}
+.fcb-header__heading {
+  font-family: var(--fcb-heading-ff);
+  font-weight: var(--fcb-heading-fw);
+  font-style: var(--fcb-heading-fs);
+  font-size: clamp(28px, 5vw, 46px);
+  color: var(--fcb-heading-c);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.fcb-header__subtext {
+  font-family: var(--fcb-body-ff);
+  font-weight: var(--fcb-body-fw);
+  font-size: 15px;
+  color: var(--fcb-text-c);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Filmstrip container ─────── */
+.fcb-filmstrip {
+  position: relative;
+  max-width: var(--fcb-max-w);
+  margin: 0 auto;
+  padding: 0 var(--fcb-px);
+}
+
+.fcb-track {
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+}
+.fcb-track::-webkit-scrollbar { display: none; }
+
+/* ── Panel (each product frame) ─ */
+.fcb-panel {
+  flex: 0 0 calc(100% - 40px);
+  max-width: 820px;
+  height: var(--fcb-panel-h);
+  position: relative;
+  scroll-snap-align: center;
+  border-radius: var(--fcb-radius);
+  overflow: hidden;
+}
+
+/* Background image */
+.fcb-panel__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.fcb-panel__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 6s ease;
+}
+.fcb-panel:hover .fcb-panel__img {
+  transform: scale(1.04);
+}
+
+.fcb-panel__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #16162a;
+}
+.fcb-panel__svg { width: 100px; height: 100px; opacity: 0.12; }
+
+/* Gradient overlay */
+.fcb-panel__gradient {
+  position: absolute;
+  inset: 0;
+  background: var(--fcb-overlay-bg);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Sale badge */
+.fcb-badge {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  z-index: 5;
+  background: var(--fcb-badge-bg);
+  color: #fff;
+  font-family: var(--fcb-body-ff);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 5px 12px;
+  border-radius: 6px;
+}
+
+/* ── Glassmorphism info card ─── */
+.fcb-panel__card {
+  position: absolute;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 22px 26px;
+  max-width: 320px;
+  transform: translateY(8px);
+  opacity: 0.85;
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+.fcb-panel:hover .fcb-panel__card {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* Positioning variants */
+.fcb-panel__card--bl { bottom: 24px; left: 24px; }
+.fcb-panel__card--br { bottom: 24px; right: 24px; text-align: right; }
+.fcb-panel__card--tl { top: 24px; left: 24px; }
+.fcb-panel__card--tr { top: 24px; right: 24px; text-align: right; }
+
+.fcb-panel__counter {
+  display: inline-block;
+  font-family: var(--fcb-body-ff);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: var(--fcb-accent);
+  margin-bottom: 8px;
+  opacity: 0.7;
+}
+
+.fcb-panel__vendor {
+  display: block;
+  font-family: var(--fcb-body-ff);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--fcb-accent);
+  margin-bottom: 6px;
+}
+
+.fcb-panel__title {
+  font-family: var(--fcb-heading-ff);
+  font-weight: var(--fcb-heading-fw);
+  font-size: clamp(18px, 3vw, 24px);
+  color: #fff;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+
+.fcb-panel__price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.fcb-panel__card--br .fcb-panel__price,
+.fcb-panel__card--tr .fcb-panel__price {
+  justify-content: flex-end;
+}
+.fcb-panel__price-old {
+  font-family: var(--fcb-body-ff);
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  text-decoration: line-through;
+}
+.fcb-panel__price-now {
+  font-family: var(--fcb-heading-ff);
+  font-weight: 700;
+  font-size: 20px;
+  color: #fff;
+}
+
+.fcb-panel__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fcb-body-ff);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--fcb-bg);
+  background: var(--fcb-accent);
+  text-decoration: none;
+  padding: 8px 18px;
+  border-radius: 6px;
+  transition: filter 0.3s ease, gap 0.3s ease;
+}
+.fcb-panel__btn:hover {
+  filter: brightness(1.15);
+  gap: 10px;
+}
+.fcb-panel__arrow {
+  transition: transform 0.3s ease;
+}
+.fcb-panel__btn:hover .fcb-panel__arrow {
+  transform: translateX(3px);
+}
+
+/* ── Progress bar ────────────── */
+.fcb-progress {
+  width: 100%;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 3px;
+  margin-top: 18px;
+  overflow: hidden;
+}
+.fcb-progress__bar {
+  height: 100%;
+  width: 0%;
+  background: var(--fcb-accent);
+  border-radius: 3px;
+  transition: width 0.2s ease;
+}
+
+/* ── Controls ────────────────── */
+.fcb-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 18px;
+  margin-top: 18px;
+}
+
+.fcb-ctrl {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--fcb-heading-c);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease;
+}
+.fcb-ctrl:hover {
+  background: var(--fcb-accent);
+  border-color: var(--fcb-accent);
+  color: var(--fcb-bg);
+}
+
+.fcb-controls__count {
+  font-family: var(--fcb-body-ff);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fcb-text-c);
+  letter-spacing: 1px;
+  min-width: 50px;
+  text-align: center;
+}
+
+/* ── Footer ──────────────────── */
+.fcb-footer {
+  max-width: var(--fcb-max-w);
+  margin: 28px auto 0;
+  text-align: center;
+  padding: 0 var(--fcb-px);
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 0.6s ease 0.3s, transform 0.6s ease 0.3s;
+}
+.fcb-footer.fcb-visible { opacity: 1; transform: translateY(0); }
+
+.fcb-footer__link {
+  font-family: var(--fcb-body-ff);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--fcb-accent);
+  text-decoration: none;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  transition: letter-spacing 0.3s ease;
+}
+.fcb-footer__link:hover { letter-spacing: 2.5px; }
+
+/* ── Empty ───────────────────── */
+.fcb-empty {
+  text-align: center;
+  padding: 60px 24px;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+.fcb-empty.fcb-visible { opacity: 1; }
+.fcb-empty__text {
+  font-family: var(--fcb-body-ff);
+  font-size: 15px;
+  color: var(--fcb-text-c);
+}
+
+/* ── Responsive ──────────────── */
+@media (max-width: 768px) {
+  .fcb-panel {
+    flex: 0 0 calc(100% - 20px);
+    height: calc(var(--fcb-panel-h) * 0.75);
+  }
+  .fcb-panel__card {
+    max-width: none;
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    top: auto;
+    text-align: left;
+    padding: 16px 18px;
+  }
+  .fcb-panel__card--br,
+  .fcb-panel__card--tr,
+  .fcb-panel__card--tl {
+    top: auto;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    text-align: left;
+  }
+  .fcb-panel__card--br .fcb-panel__price,
+  .fcb-panel__card--tr .fcb-panel__price {
+    justify-content: flex-start;
+  }
+  .fcb-ctrl { width: 36px; height: 36px; }
+}

@@ -1,0 +1,36 @@
+{
+  "id": "featured-collection-runway",
+  "name": "SS - FC Runway",
+  "description": "Fashion runway-inspired featured collection where products appear in an alternating left-right zigzag layout like models walking a catwalk. Each product row features a large image on one side with editorial product details on the other, connected by an elegant center timeline with animated dots. Includes staggered scroll-triggered entrance animations, hover image zoom, sale badges, vendor tags, and a dramatic gradient divider line. Configurable image sizes, layout direction, animation intensity, typography, and full color control. Perfect for fashion, luxury, and editorial brands.",
+  "category": ["Featured Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 26,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Runway",
+    "Fashion",
+    "Timeline",
+    "Editorial",
+    "Premium",
+    "Products",
+    "Animation",
+    "Zigzag"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#faf9f7",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "featured-collection-coverflow",
+  "name": "SS - FC Coverflow",
+  "description": "Stunning 3D coverflow-style featured collection carousel with a large center-stage product flanked by perspective-rotated cards on each side. Clicking or swiping rotates products into the center with smooth CSS 3D transforms. The active product displays detailed info below with animated price, vendor, and CTA button. Features keyboard navigation, touch/drag support, auto-rotation, and configurable perspective depth. Dark gradient theme with subtle reflections. Perfect for electronics, sneakers, and high-end product showcases.",
+  "category": ["Featured Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 28,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Coverflow",
+    "3D",
+    "Carousel",
+    "Interactive",
+    "Dark",
+    "Premium",
+    "Products",
+    "Animation"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#0f0f1a",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
+}

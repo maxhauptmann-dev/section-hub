@@ -1,0 +1,36 @@
+{
+  "id": "featured-collection-storyboard",
+  "name": "SS - FC Storyboard",
+  "description": "Cinematic horizontal-scroll storyboard where each product occupies a full-width filmstrip panel with immersive parallax imagery and floating info cards. Users scroll horizontally through panels that snap into place, each featuring a large background product image with glassmorphism product detail overlays. Includes a filmstrip progress indicator, panel counter, smooth snap scrolling, keyboard arrow support, and auto-advance option. Configurable panel height, overlay position, text alignment, and full color customization. Perfect for storytelling brands, luxury collections, and immersive product experiences.",
+  "category": ["Featured Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 27,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Storyboard",
+    "Horizontal Scroll",
+    "Cinematic",
+    "Filmstrip",
+    "Premium",
+    "Products",
+    "Immersive",
+    "Animation"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#1a1a2e",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
+}

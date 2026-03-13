@@ -1,0 +1,503 @@
+{% comment %}
+  SectionHub – Featured Collection Coverflow  (fcc-)
+  3D coverflow carousel with perspective-rotated cards
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign autoplay     = section.settings.autoplay
+  assign speed        = section.settings.speed
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #fcc-{{ section.id }} {
+    --fcc-bg: {{ section.settings.bg_color }};
+    --fcc-heading-c: {{ section.settings.heading_color }};
+    --fcc-text-c: {{ section.settings.text_color }};
+    --fcc-accent: {{ section.settings.accent_color }};
+    --fcc-card-bg: {{ section.settings.card_bg }};
+    --fcc-badge-bg: {{ section.settings.badge_color }};
+    --fcc-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcc-heading-fw: {{ heading_font.weight }};
+    --fcc-heading-fs: {{ heading_font.style }};
+    --fcc-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcc-body-fw: {{ body_font.weight }};
+    --fcc-radius: {{ section.settings.card_radius }}px;
+    --fcc-card-w: {{ section.settings.card_width }}px;
+    --fcc-card-h: {{ section.settings.card_height }}px;
+    --fcc-py: {{ section.settings.padding_top }}px;
+    --fcc-pb: {{ section.settings.padding_bottom }}px;
+    --fcc-max-w: {{ section.settings.max_width }}px;
+  }
+</style>
+
+<section id="fcc-{{ section.id }}" class="fcc-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="fcc-header" data-fcc-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="fcc-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcc-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="fcc-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if col_obj != blank and col_obj.products_count > 0 -%}
+
+    <div class="fcc-stage" data-fcc-stage>
+      <div class="fcc-track" data-fcc-track>
+        {%- for product in col_obj.products limit: limit -%}
+          <div class="fcc-card" data-fcc-card data-fcc-idx="{{ forloop.index0 }}">
+            <a href="{{ product.url }}" class="fcc-card__link" aria-label="{{ product.title }}" tabindex="-1">
+              <div class="fcc-card__media">
+                {%- if product.featured_image -%}
+                  <img
+                    src="{{ product.featured_image | image_url: width: 600 }}"
+                    alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                    loading="lazy"
+                    class="fcc-card__img"
+                  >
+                {%- else -%}
+                  <div class="fcc-card__placeholder">
+                    {{ 'product-1' | placeholder_svg_tag: 'fcc-card__svg' }}
+                  </div>
+                {%- endif -%}
+                {%- if show_badge -%}
+                  {%- if product.compare_at_price > product.price -%}
+                    <span class="fcc-badge">Sale</span>
+                  {%- endif -%}
+                {%- endif -%}
+              </div>
+              <div class="fcc-card__reflection"></div>
+            </a>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Navigation {%- endcomment -%}
+      <button class="fcc-nav fcc-nav--prev" data-fcc-prev aria-label="Previous">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18L9 12L15 6"/></svg>
+      </button>
+      <button class="fcc-nav fcc-nav--next" data-fcc-next aria-label="Next">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18L15 12L9 6"/></svg>
+      </button>
+    </div>
+
+    {%- comment -%} Active product info panel {%- endcomment -%}
+    <div class="fcc-info" data-fcc-info>
+      {%- for product in col_obj.products limit: limit -%}
+        <div class="fcc-info__panel {% if forloop.first %}fcc-info__panel--active{% endif %}" data-fcc-panel="{{ forloop.index0 }}">
+          {%- if show_vendor and product.vendor != blank -%}
+            <span class="fcc-info__vendor">{{ product.vendor }}</span>
+          {%- endif -%}
+          <h3 class="fcc-info__title">
+            <a href="{{ product.url }}">{{ product.title }}</a>
+          </h3>
+          {%- if show_price -%}
+            <div class="fcc-info__price">
+              {%- if product.compare_at_price > product.price -%}
+                <span class="fcc-info__price-old">{{ product.compare_at_price | money }}</span>
+              {%- endif -%}
+              <span class="fcc-info__price-now">{{ product.price | money }}</span>
+            </div>
+          {%- endif -%}
+          <a href="{{ product.url }}" class="fcc-info__btn">{{ section.settings.btn_text }} →</a>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Dot indicators {%- endcomment -%}
+    <div class="fcc-dots" data-fcc-dots>
+      {%- for product in col_obj.products limit: limit -%}
+        <button class="fcc-dot {% if forloop.first %}fcc-dot--active{% endif %}" data-fcc-dot="{{ forloop.index0 }}" aria-label="Product {{ forloop.index }}"></button>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.shop_all_text != blank -%}
+      <div class="fcc-footer" data-fcc-el>
+        <a href="{{ col_obj.url }}" class="fcc-footer__link">{{ section.settings.shop_all_text }} →</a>
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    <div class="fcc-empty" data-fcc-el>
+      <p class="fcc-empty__text">Select a collection to display products.</p>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+(function(){
+  var wrap = document.getElementById('fcc-{{ section.id }}');
+  if (!wrap) return;
+
+  /* Scroll reveal */
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('fcc-visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  wrap.querySelectorAll('[data-fcc-el]').forEach(function(el){ obs.observe(el); });
+
+  /* Coverflow logic */
+  var cards = wrap.querySelectorAll('[data-fcc-card]');
+  var panels = wrap.querySelectorAll('[data-fcc-panel]');
+  var dots = wrap.querySelectorAll('[data-fcc-dot]');
+  var total = cards.length;
+  if (total === 0) return;
+
+  var current = 0;
+
+  function goTo(idx){
+    if (idx < 0) idx = total - 1;
+    if (idx >= total) idx = 0;
+    current = idx;
+
+    cards.forEach(function(card, i){
+      var offset = i - current;
+      var absOff = Math.abs(offset);
+      var tx = offset * 180;
+      var rY = offset < 0 ? 45 : (offset > 0 ? -45 : 0);
+      var sc = offset === 0 ? 1 : 0.75;
+      var z = 100 - absOff * 10;
+      var op = offset === 0 ? 1 : (absOff === 1 ? 0.7 : 0.4);
+
+      if (absOff > 3) { op = 0; }
+
+      card.style.transform = 'translateX(' + tx + 'px) scale(' + sc + ') rotateY(' + rY + 'deg)';
+      card.style.zIndex = z;
+      card.style.opacity = op;
+      card.style.pointerEvents = offset === 0 ? 'auto' : 'none';
+
+      var link = card.querySelector('.fcc-card__link');
+      if (link) link.tabIndex = offset === 0 ? 0 : -1;
+    });
+
+    panels.forEach(function(p, i){
+      p.classList.toggle('fcc-info__panel--active', i === current);
+    });
+    dots.forEach(function(d, i){
+      d.classList.toggle('fcc-dot--active', i === current);
+    });
+  }
+
+  goTo(0);
+
+  /* Navigation */
+  var prevBtn = wrap.querySelector('[data-fcc-prev]');
+  var nextBtn = wrap.querySelector('[data-fcc-next]');
+  if (prevBtn) prevBtn.addEventListener('click', function(){ goTo(current - 1); });
+  if (nextBtn) nextBtn.addEventListener('click', function(){ goTo(current + 1); });
+
+  /* Dot click */
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){
+      goTo(parseInt(d.getAttribute('data-fcc-dot'), 10));
+    });
+  });
+
+  /* Card click to select */
+  cards.forEach(function(card){
+    card.addEventListener('click', function(e){
+      var idx = parseInt(card.getAttribute('data-fcc-idx'), 10);
+      if (idx !== current) {
+        e.preventDefault();
+        goTo(idx);
+      }
+    });
+  });
+
+  /* Keyboard */
+  wrap.setAttribute('tabindex', '0');
+  wrap.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowLeft') { goTo(current - 1); e.preventDefault(); }
+    if (e.key === 'ArrowRight') { goTo(current + 1); e.preventDefault(); }
+  });
+
+  /* Touch swipe */
+  var startX = 0;
+  var stage = wrap.querySelector('[data-fcc-stage]');
+  if (stage) {
+    stage.addEventListener('touchstart', function(e){ startX = e.touches[0].clientX; }, { passive: true });
+    stage.addEventListener('touchend', function(e){
+      var diff = startX - e.changedTouches[0].clientX;
+      if (Math.abs(diff) > 40) {
+        goTo(current + (diff > 0 ? 1 : -1));
+      }
+    });
+  }
+
+  /* Autoplay */
+  {% if autoplay %}
+  var autoId;
+  function startAuto(){ autoId = setInterval(function(){ goTo(current + 1); }, {{ speed }}000); }
+  startAuto();
+  if (stage) {
+    stage.addEventListener('mouseenter', function(){ clearInterval(autoId); });
+    stage.addEventListener('mouseleave', startAuto);
+  }
+  {% endif %}
+})();
+</script>
+
+{% schema %}
+{
+  "name": "FC Coverflow",
+  "tag": "section",
+  "class": "fcc-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Discover"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Browse The Collection"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Swipe through and find your perfect match."
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 200,
+      "max": 400,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 280,
+      "max": 520,
+      "step": 10,
+      "default": 380,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max section width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Autoplay interval",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop All link text",
+      "default": "View Full Collection"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0f0f1a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#f0f0f8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#8888a0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6c8cff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card bg",
+      "default": "#1a1a30"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge",
+      "default": "#ef4444"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - FC Coverflow",
+      "settings": {
+        "eyebrow": "Discover",
+        "heading": "Browse The Collection",
+        "subtext": "Swipe through and find your perfect match.",
+        "products_limit": 7,
+        "autoplay": true,
+        "speed": 4,
+        "show_vendor": true,
+        "show_price": true,
+        "show_sale_badge": true,
+        "btn_text": "Shop Now",
+        "shop_all_text": "View Full Collection"
+      }
+    }
+  ]
+}
+{% endschema %}

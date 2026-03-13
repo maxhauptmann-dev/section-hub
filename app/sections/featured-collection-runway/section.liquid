@@ -1,0 +1,385 @@
+{% comment %}
+  SectionHub – Featured Collection Runway  (fcr-)
+  Fashion runway zigzag timeline with alternating product rows
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #fcr-{{ section.id }} {
+    --fcr-bg: {{ section.settings.bg_color }};
+    --fcr-heading-c: {{ section.settings.heading_color }};
+    --fcr-text-c: {{ section.settings.text_color }};
+    --fcr-accent: {{ section.settings.accent_color }};
+    --fcr-line-c: {{ section.settings.line_color }};
+    --fcr-card-bg: {{ section.settings.card_bg }};
+    --fcr-badge-bg: {{ section.settings.badge_color }};
+    --fcr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcr-heading-fw: {{ heading_font.weight }};
+    --fcr-heading-fs: {{ heading_font.style }};
+    --fcr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcr-body-fw: {{ body_font.weight }};
+    --fcr-radius: {{ section.settings.card_radius }}px;
+    --fcr-img-h: {{ section.settings.image_height }}px;
+    --fcr-py: {{ section.settings.padding_top }}px;
+    --fcr-pb: {{ section.settings.padding_bottom }}px;
+    --fcr-px: {{ section.settings.padding_sides }}px;
+    --fcr-max-w: {{ section.settings.max_width }}px;
+  }
+</style>
+
+<section id="fcr-{{ section.id }}" class="fcr-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="fcr-header" data-fcr-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="fcr-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="fcr-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="fcr-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- if col_obj != blank and col_obj.products_count > 0 -%}
+
+    <div class="fcr-timeline">
+      <div class="fcr-timeline__line"></div>
+
+      {%- for product in col_obj.products limit: limit -%}
+        {%- assign idx_mod = forloop.index0 | modulo: 2 -%}
+
+        <div class="fcr-row {% if idx_mod == 0 %}fcr-row--left{% else %}fcr-row--right{% endif %}" data-fcr-row>
+
+          {%- comment -%} Image side {%- endcomment -%}
+          <a href="{{ product.url }}" class="fcr-row__media" aria-label="{{ product.title }}">
+            {%- if product.featured_image -%}
+              <img
+                src="{{ product.featured_image | image_url: width: 700 }}"
+                alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                loading="lazy"
+                class="fcr-row__img"
+              >
+            {%- else -%}
+              <div class="fcr-row__placeholder">
+                {{ 'product-1' | placeholder_svg_tag: 'fcr-row__svg' }}
+              </div>
+            {%- endif -%}
+            {%- if show_badge -%}
+              {%- if product.compare_at_price > product.price -%}
+                <span class="fcr-badge">Sale</span>
+              {%- endif -%}
+            {%- endif -%}
+          </a>
+
+          {%- comment -%} Center dot {%- endcomment -%}
+          <div class="fcr-row__dot">
+            <span class="fcr-row__dot-inner"></span>
+            <span class="fcr-row__dot-num">{{ forloop.index }}</span>
+          </div>
+
+          {%- comment -%} Info side {%- endcomment -%}
+          <div class="fcr-row__info">
+            {%- if show_vendor and product.vendor != blank -%}
+              <span class="fcr-row__vendor">{{ product.vendor }}</span>
+            {%- endif -%}
+            <h3 class="fcr-row__title">
+              <a href="{{ product.url }}">{{ product.title }}</a>
+            </h3>
+            {%- if show_price -%}
+              <div class="fcr-row__price">
+                {%- if product.compare_at_price > product.price -%}
+                  <span class="fcr-row__price-old">{{ product.compare_at_price | money }}</span>
+                {%- endif -%}
+                <span class="fcr-row__price-now">{{ product.price | money }}</span>
+              </div>
+            {%- endif -%}
+            <a href="{{ product.url }}" class="fcr-row__btn">
+              {{ section.settings.btn_text }}
+              <span class="fcr-row__arrow">→</span>
+            </a>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.shop_all_text != blank -%}
+      <div class="fcr-footer" data-fcr-el>
+        <a href="{{ col_obj.url }}" class="fcr-footer__link">
+          <span class="fcr-footer__line"></span>
+          {{ section.settings.shop_all_text }}
+          <span class="fcr-footer__line"></span>
+        </a>
+      </div>
+    {%- endif -%}
+
+  {%- else -%}
+    <div class="fcr-empty" data-fcr-el>
+      <p class="fcr-empty__text">Select a collection to display products.</p>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('fcr-{{ section.id }}');
+    if (!wrap) return;
+    var obs = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) {
+          e.target.classList.add('fcr-visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    wrap.querySelectorAll('[data-fcr-el]').forEach(function(el){ obs.observe(el); });
+    wrap.querySelectorAll('[data-fcr-row]').forEach(function(el){ obs.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "FC Runway",
+  "tag": "section",
+  "class": "fcr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "The Collection"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "On The Runway"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Walk through our curated selection, one piece at a time."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image height",
+      "min": 250,
+      "max": 500,
+      "step": 10,
+      "default": 360,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Image radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max section width",
+      "min": 900,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "View Product"
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop All link text",
+      "default": "View Entire Collection"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#faf9f7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#5a5a5a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#b07d56"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Timeline line",
+      "default": "#d4c9bc"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Info card bg",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge",
+      "default": "#c0392b"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - FC Runway",
+      "settings": {
+        "eyebrow": "The Collection",
+        "heading": "On The Runway",
+        "subtext": "Walk through our curated selection, one piece at a time.",
+        "products_limit": 6,
+        "image_height": 360,
+        "show_vendor": true,
+        "show_price": true,
+        "show_sale_badge": true,
+        "btn_text": "View Product",
+        "shop_all_text": "View Entire Collection"
+      }
+    }
+  ]
+}
+{% endschema %}
