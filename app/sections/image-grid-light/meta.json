@@ -2,7 +2,7 @@
   "id": "image-grid-light",
   "name": "SS - Image Grid Light",
   "description": "Clean, modern image grid gallery with light theme. Add unlimited images with optional titles, captions, links, and hover overlays. Flexible 2–4 columns on desktop, auto-adjust on mobile. Features hover animations (zoom, fade, lift), border radius control, gap customization, aspect ratio options, and fully adjustable background/text colors. Perfect for portfolios, product showcases, editorial galleries, and brand stories. 70+ customization options.",
-  "category": ["Image", "Gallery", "Portfolio"],
+  "category": ["Images"],
   "version": "1.0.0",
   "price": {
     "type": "one_time",

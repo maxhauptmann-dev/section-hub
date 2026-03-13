@@ -1,0 +1,510 @@
+/* ============================================
+   Section Hub – Reveal Carousel
+   Prefix: irc-
+   ============================================ */
+
+.irc-wrap *, .irc-wrap *::before, .irc-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.irc-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--irc-bg, #f5f1eb);
+  color: var(--irc-text-color, #555);
+  font-family: var(--irc-body-ff, sans-serif);
+  font-weight: var(--irc-body-fw, 400);
+  font-style: var(--irc-body-fs, normal);
+  padding: var(--irc-py, 60px) var(--irc-px, 24px);
+  -webkit-font-smoothing: antialiased;
+  overflow: hidden;
+}
+
+/* ---- Section Header ---- */
+.irc-section-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+.irc-section-header.irc-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.irc-section-header__eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--irc-accent, #b8860b);
+  margin-bottom: 12px;
+}
+
+.irc-section-header__heading {
+  font-family: var(--irc-heading-ff, serif);
+  font-weight: var(--irc-heading-fw, 700);
+  font-style: var(--irc-heading-fs, normal);
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  line-height: 1.15;
+  color: var(--irc-heading-color, #1a1a1a);
+  margin-bottom: 16px;
+}
+
+.irc-section-header__subtext {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: var(--irc-text-color, #555);
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* ---- Stage ---- */
+.irc-stage {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.irc-viewport {
+  position: relative;
+  width: 100%;
+  height: var(--irc-slide-h, 70vh);
+  border-radius: var(--irc-radius, 12px);
+  overflow: hidden;
+  cursor: grab;
+}
+.irc-viewport:active { cursor: grabbing; }
+
+/* ---- Slides ---- */
+.irc-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 1;
+}
+
+.irc-slide--active {
+  opacity: 1;
+  visibility: visible;
+  z-index: 3;
+}
+
+.irc-slide--exit {
+  opacity: 1;
+  visibility: visible;
+  z-index: 2;
+}
+
+/* --- Curtain transition --- */
+.irc-wrap[data-irc-transition="curtain"] .irc-slide--active.irc-slide--enter {
+  clip-path: inset(0 100% 0 0);
+  animation: irc-curtain-in 0.8s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+.irc-wrap[data-irc-transition="curtain"][data-irc-dir="prev"] .irc-slide--active.irc-slide--enter {
+  clip-path: inset(0 0 0 100%);
+  animation: irc-curtain-in-rev 0.8s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+@keyframes irc-curtain-in {
+  from { clip-path: inset(0 100% 0 0); }
+  to   { clip-path: inset(0 0% 0 0); }
+}
+@keyframes irc-curtain-in-rev {
+  from { clip-path: inset(0 0 0 100%); }
+  to   { clip-path: inset(0 0 0 0%); }
+}
+
+/* --- Zoom fade transition --- */
+.irc-wrap[data-irc-transition="zoom"] .irc-slide--active.irc-slide--enter {
+  animation: irc-zoom-in 0.8s ease forwards;
+}
+.irc-wrap[data-irc-transition="zoom"] .irc-slide--exit {
+  animation: irc-zoom-out 0.8s ease forwards;
+}
+@keyframes irc-zoom-in {
+  from { opacity: 0; transform: scale(1.1); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes irc-zoom-out {
+  from { opacity: 1; transform: scale(1); }
+  to   { opacity: 0; transform: scale(0.95); }
+}
+
+/* --- Blur dissolve transition --- */
+.irc-wrap[data-irc-transition="blur"] .irc-slide--active.irc-slide--enter {
+  animation: irc-blur-in 0.8s ease forwards;
+}
+.irc-wrap[data-irc-transition="blur"] .irc-slide--exit {
+  animation: irc-blur-out 0.8s ease forwards;
+}
+@keyframes irc-blur-in {
+  from { opacity: 0; filter: blur(20px); }
+  to   { opacity: 1; filter: blur(0); }
+}
+@keyframes irc-blur-out {
+  from { opacity: 1; filter: blur(0); }
+  to   { opacity: 0; filter: blur(20px); }
+}
+
+/* --- Slide push transition --- */
+.irc-wrap[data-irc-transition="slide"] .irc-slide--active.irc-slide--enter {
+  animation: irc-push-in 0.7s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+.irc-wrap[data-irc-transition="slide"][data-irc-dir="prev"] .irc-slide--active.irc-slide--enter {
+  animation: irc-push-in-rev 0.7s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+.irc-wrap[data-irc-transition="slide"] .irc-slide--exit {
+  animation: irc-push-out 0.7s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+.irc-wrap[data-irc-transition="slide"][data-irc-dir="prev"] .irc-slide--exit {
+  animation: irc-push-out-rev 0.7s cubic-bezier(0.77, 0, 0.18, 1) forwards;
+}
+@keyframes irc-push-in {
+  from { transform: translateX(100%); opacity: 1; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes irc-push-in-rev {
+  from { transform: translateX(-100%); opacity: 1; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+@keyframes irc-push-out {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(-30%); opacity: 0; }
+}
+@keyframes irc-push-out-rev {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(30%); opacity: 0; }
+}
+
+/* ---- Slide media ---- */
+.irc-slide__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.irc-slide__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  will-change: transform;
+}
+
+.irc-slide__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e8e0d4 0%, #d4cabb 100%);
+  color: var(--irc-accent, #b8860b);
+}
+.irc-slide__placeholder svg {
+  width: 64px;
+  height: 64px;
+  opacity: 0.4;
+}
+
+.irc-slide__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, rgba(0,0,0,0) 50%);
+  opacity: var(--irc-overlay-opacity, 0.25);
+  pointer-events: none;
+}
+
+/* ---- Caption ---- */
+.irc-slide__caption {
+  position: absolute;
+  z-index: 5;
+  max-width: 520px;
+  padding: 32px;
+  background: var(--irc-caption-bg, #ffffff);
+  border-radius: var(--irc-radius, 12px);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.08);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s;
+}
+
+.irc-slide--active .irc-slide__caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.irc-slide__caption--bottom-left {
+  bottom: 32px;
+  left: 32px;
+}
+.irc-slide__caption--bottom-center {
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+}
+.irc-slide--active .irc-slide__caption--bottom-center {
+  transform: translateX(-50%) translateY(0);
+}
+.irc-slide__caption--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) translateY(20px);
+  text-align: center;
+}
+.irc-slide--active .irc-slide__caption--center {
+  transform: translate(-50%, -50%) translateY(0);
+}
+.irc-slide__caption--bottom-right {
+  bottom: 32px;
+  right: 32px;
+}
+
+.irc-slide__badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  background: var(--irc-accent, #b8860b);
+  color: #ffffff;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+
+.irc-slide__eyebrow {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--irc-accent, #b8860b);
+  margin-bottom: 8px;
+}
+
+.irc-slide__heading {
+  font-family: var(--irc-heading-ff, serif);
+  font-weight: var(--irc-heading-fw, 700);
+  font-style: var(--irc-heading-fs, normal);
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  line-height: 1.2;
+  color: var(--irc-heading-color, #1a1a1a);
+  margin-bottom: 8px;
+}
+
+.irc-slide__subtitle {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--irc-text-color, #555);
+  margin-bottom: 16px;
+}
+
+.irc-slide__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--irc-accent, #b8860b);
+  text-decoration: none;
+  border-bottom: 1px solid currentColor;
+  padding-bottom: 2px;
+  transition: gap 0.3s ease;
+}
+.irc-slide__btn:hover { gap: 12px; }
+.irc-slide__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---- Arrows ---- */
+.irc-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  background: var(--irc-caption-bg, #ffffff);
+  color: var(--irc-heading-color, #1a1a1a);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+  transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+.irc-arrow:hover {
+  background: var(--irc-accent, #b8860b);
+  color: #fff;
+  transform: translateY(-50%) scale(1.08);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.15);
+}
+.irc-arrow svg { width: 20px; height: 20px; }
+.irc-arrow--prev { left: 20px; }
+.irc-arrow--next { right: 20px; }
+
+/* ---- Counter ---- */
+.irc-counter {
+  position: absolute;
+  top: 24px;
+  right: 24px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.3);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---- Progress bar ---- */
+.irc-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: rgba(255,255,255,0.2);
+  z-index: 10;
+  border-radius: 0 0 var(--irc-radius, 12px) var(--irc-radius, 12px);
+  overflow: hidden;
+}
+.irc-progress__bar {
+  height: 100%;
+  background: var(--irc-accent, #b8860b);
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+/* ---- Filmstrip ---- */
+.irc-filmstrip {
+  max-width: 1400px;
+  margin: 20px auto 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.irc-filmstrip::-webkit-scrollbar { display: none; }
+
+.irc-filmstrip__track {
+  display: flex;
+  gap: 12px;
+  padding: 8px 4px;
+  justify-content: center;
+}
+
+.irc-filmstrip__thumb {
+  flex-shrink: 0;
+  position: relative;
+  width: 80px;
+  height: 56px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  background: var(--irc-filmstrip-bg, #fff);
+  cursor: pointer;
+  transition: border-color 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+  padding: 0;
+}
+.irc-filmstrip__thumb:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.irc-filmstrip__thumb--active {
+  border-color: var(--irc-filmstrip-border, #b8860b);
+  box-shadow: 0 4px 16px rgba(184, 134, 11, 0.2);
+}
+
+.irc-filmstrip__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.irc-filmstrip__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #e8e0d4;
+  color: var(--irc-accent, #b8860b);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.irc-filmstrip__border {
+  position: absolute;
+  inset: 0;
+  border-radius: 4px;
+  pointer-events: none;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 749px) {
+  .irc-viewport {
+    height: 50vh;
+  }
+
+  .irc-slide__caption {
+    max-width: calc(100% - 32px);
+    padding: 20px;
+    bottom: 16px !important;
+    left: 16px !important;
+    right: auto;
+  }
+  .irc-slide__caption--bottom-center,
+  .irc-slide__caption--center {
+    transform: none !important;
+  }
+  .irc-slide--active .irc-slide__caption--bottom-center,
+  .irc-slide--active .irc-slide__caption--center {
+    transform: none !important;
+  }
+
+  .irc-slide__heading {
+    font-size: 1.15rem;
+  }
+
+  .irc-arrow {
+    width: 38px;
+    height: 38px;
+  }
+  .irc-arrow--prev { left: 12px; }
+  .irc-arrow--next { right: 12px; }
+  .irc-arrow svg { width: 16px; height: 16px; }
+
+  .irc-filmstrip__thumb {
+    width: 60px;
+    height: 42px;
+  }
+
+  .irc-filmstrip__track {
+    justify-content: flex-start;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .irc-counter {
+    top: 16px;
+    right: 16px;
+    font-size: 0.75rem;
+  }
+
+  .irc-section-header {
+    margin-bottom: 32px;
+  }
+}

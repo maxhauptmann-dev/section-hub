@@ -1,0 +1,706 @@
+{% comment %}
+  Section Hub – Reveal Carousel v1.0
+  Cinematic carousel with curtain-reveal transitions,
+  filmstrip thumbnails, parallax hover, editorial captions.
+  Prefix: irc-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign autoplay = section.settings.autoplay
+  assign auto_speed = section.settings.autoplay_speed
+  assign transition = section.settings.transition_style
+  assign slide_h = section.settings.slide_height
+  assign caption_pos = section.settings.caption_position
+  assign show_arrows = section.settings.show_arrows
+  assign show_filmstrip = section.settings.show_filmstrip
+  assign show_counter = section.settings.show_counter
+  assign show_progress = section.settings.show_progress
+  assign parallax_hover = section.settings.parallax_hover
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .irc-wrap--{{ section.id }} {
+    --irc-bg: {{ section.settings.bg_color }};
+    --irc-accent: {{ section.settings.accent_color }};
+    --irc-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --irc-heading-fw: {{ hf.weight }};
+    --irc-heading-fs: {{ hf.style }};
+    --irc-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --irc-body-fw: {{ bf.weight }};
+    --irc-body-fs: {{ bf.style }};
+    --irc-heading-color: {{ section.settings.heading_color }};
+    --irc-text-color: {{ section.settings.text_color }};
+    --irc-caption-bg: {{ section.settings.caption_bg }};
+    --irc-overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};
+    --irc-filmstrip-bg: {{ section.settings.filmstrip_bg }};
+    --irc-filmstrip-border: {{ section.settings.filmstrip_border }};
+    --irc-slide-h: {{ slide_h }}vh;
+    --irc-radius: {{ section.settings.card_radius }}px;
+    --irc-py: {{ py }}px;
+    --irc-px: {{ px }}px;
+  }
+</style>
+
+<section class="irc-wrap irc-wrap--{{ section.id }}"
+         data-section-id="{{ section.id }}"
+         data-irc-autoplay="{{ autoplay }}"
+         data-irc-speed="{{ auto_speed }}"
+         data-irc-transition="{{ transition }}"
+         data-irc-parallax="{{ parallax_hover }}">
+
+  {%- comment -%} Section header {%- endcomment -%}
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="irc-section-header" data-irc-reveal>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="irc-section-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="irc-section-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="irc-section-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Main carousel {%- endcomment -%}
+  <div class="irc-stage">
+    <div class="irc-viewport" data-irc-viewport>
+      {%- for block in section.blocks -%}
+        <div class="irc-slide{% if forloop.first %} irc-slide--active{% endif %}"
+             data-irc-slide="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Slide image {%- endcomment -%}
+          <div class="irc-slide__media">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 2000 }}"
+                srcset="{{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1600 }} 1600w, {{ block.settings.image | image_url: width: 2000 }} 2000w"
+                sizes="100vw"
+                alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                class="irc-slide__img"
+                data-irc-img
+              >
+            {%- else -%}
+              <div class="irc-slide__placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {%- endif -%}
+            <div class="irc-slide__overlay"></div>
+          </div>
+
+          {%- comment -%} Caption {%- endcomment -%}
+          {%- if block.settings.heading != blank or block.settings.subtitle != blank or block.settings.btn_text != blank -%}
+            <div class="irc-slide__caption irc-slide__caption--{{ caption_pos }}">
+              {%- if block.settings.badge != blank -%}
+                <span class="irc-slide__badge">{{ block.settings.badge }}</span>
+              {%- endif -%}
+              {%- if block.settings.eyebrow != blank -%}
+                <span class="irc-slide__eyebrow">{{ block.settings.eyebrow }}</span>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="irc-slide__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.subtitle != blank -%}
+                <p class="irc-slide__subtitle">{{ block.settings.subtitle }}</p>
+              {%- endif -%}
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="irc-slide__btn">
+                  {{ block.settings.btn_text }}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} Navigation arrows {%- endcomment -%}
+    {%- if show_arrows -%}
+      <button class="irc-arrow irc-arrow--prev" data-irc-prev aria-label="Previous slide">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="irc-arrow irc-arrow--next" data-irc-next aria-label="Next slide">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+    {%- endif -%}
+
+    {%- comment -%} Counter {%- endcomment -%}
+    {%- if show_counter -%}
+      <div class="irc-counter" data-irc-counter>
+        <span class="irc-counter__current">01</span>
+        <span class="irc-counter__sep">&mdash;</span>
+        <span class="irc-counter__total">{{ section.blocks.size | prepend: '00' | slice: -2, 2 }}</span>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Progress bar {%- endcomment -%}
+    {%- if show_progress and autoplay -%}
+      <div class="irc-progress">
+        <div class="irc-progress__bar" data-irc-progress></div>
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Filmstrip thumbnails {%- endcomment -%}
+  {%- if show_filmstrip -%}
+    <div class="irc-filmstrip" data-irc-filmstrip>
+      <div class="irc-filmstrip__track">
+        {%- for block in section.blocks -%}
+          <button class="irc-filmstrip__thumb{% if forloop.first %} irc-filmstrip__thumb--active{% endif %}"
+                  data-irc-thumb="{{ forloop.index0 }}"
+                  aria-label="Go to slide {{ forloop.index }}">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 160 }}"
+                alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                loading="lazy"
+                class="irc-filmstrip__img"
+              >
+            {%- else -%}
+              <div class="irc-filmstrip__placeholder">
+                <span>{{ forloop.index }}</span>
+              </div>
+            {%- endif -%}
+            <div class="irc-filmstrip__border"></div>
+          </button>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var sid = '{{ section.id }}';
+    var wrap = document.querySelector('.irc-wrap--' + sid);
+    if (!wrap) return;
+
+    var slides = wrap.querySelectorAll('[data-irc-slide]');
+    var total = slides.length;
+    if (total < 1) return;
+
+    var currentIdx = 0;
+    var autoplayOn = wrap.getAttribute('data-irc-autoplay') === 'true';
+    var speed = (parseInt(wrap.getAttribute('data-irc-speed')) || 5) * 1000;
+    var transType = wrap.getAttribute('data-irc-transition') || 'curtain';
+    var parallaxOn = wrap.getAttribute('data-irc-parallax') === 'true';
+    var timer = null;
+    var isAnimating = false;
+
+    var thumbs = wrap.querySelectorAll('[data-irc-thumb]');
+    var counterCur = wrap.querySelector('.irc-counter__current');
+    var progressBar = wrap.querySelector('[data-irc-progress]');
+    var prevBtn = wrap.querySelector('[data-irc-prev]');
+    var nextBtn = wrap.querySelector('[data-irc-next]');
+    var viewport = wrap.querySelector('[data-irc-viewport]');
+
+    function goTo(idx) {
+      if (isAnimating) return;
+      if (idx < 0) idx = total - 1;
+      if (idx >= total) idx = 0;
+      if (idx === currentIdx) return;
+
+      isAnimating = true;
+
+      var oldSlide = slides[currentIdx];
+      var newSlide = slides[idx];
+
+      /* Remove previous states */
+      slides.forEach(function(s) {
+        s.classList.remove('irc-slide--exit', 'irc-slide--enter');
+      });
+
+      /* Apply transition classes */
+      oldSlide.classList.add('irc-slide--exit');
+      oldSlide.classList.remove('irc-slide--active');
+      newSlide.classList.add('irc-slide--enter', 'irc-slide--active');
+
+      /* Set direction attribute for curtain */
+      var dir = idx > currentIdx ? 'next' : 'prev';
+      wrap.setAttribute('data-irc-dir', dir);
+
+      currentIdx = idx;
+
+      /* Update thumbs */
+      thumbs.forEach(function(t) { t.classList.remove('irc-filmstrip__thumb--active'); });
+      if (thumbs[currentIdx]) thumbs[currentIdx].classList.add('irc-filmstrip__thumb--active');
+
+      /* Counter */
+      if (counterCur) {
+        var num = currentIdx + 1;
+        counterCur.textContent = num < 10 ? '0' + num : '' + num;
+      }
+
+      /* Progress */
+      restartProgress();
+
+      /* Clear animation state */
+      setTimeout(function() {
+        slides.forEach(function(s) {
+          s.classList.remove('irc-slide--exit', 'irc-slide--enter');
+        });
+        isAnimating = false;
+      }, 900);
+    }
+
+    function restartProgress() {
+      if (!progressBar) return;
+      progressBar.style.transition = 'none';
+      progressBar.style.transform = 'scaleX(0)';
+      void progressBar.offsetWidth;
+      if (autoplayOn) {
+        progressBar.style.transition = 'transform ' + speed + 'ms linear';
+        progressBar.style.transform = 'scaleX(1)';
+      }
+    }
+
+    function startAutoplay() {
+      stopAutoplay();
+      if (!autoplayOn) return;
+      restartProgress();
+      timer = setInterval(function() { goTo(currentIdx + 1); }, speed);
+    }
+
+    function stopAutoplay() {
+      if (timer) { clearInterval(timer); timer = null; }
+    }
+
+    /* Arrow click */
+    if (prevBtn) prevBtn.addEventListener('click', function() { stopAutoplay(); goTo(currentIdx - 1); startAutoplay(); });
+    if (nextBtn) nextBtn.addEventListener('click', function() { stopAutoplay(); goTo(currentIdx + 1); startAutoplay(); });
+
+    /* Thumb click */
+    thumbs.forEach(function(t) {
+      t.addEventListener('click', function() {
+        var i = parseInt(this.getAttribute('data-irc-thumb'));
+        stopAutoplay();
+        goTo(i);
+        startAutoplay();
+      });
+    });
+
+    /* Parallax hover on viewport */
+    if (parallaxOn && viewport) {
+      viewport.addEventListener('mousemove', function(e) {
+        var rect = viewport.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        var activeImg = slides[currentIdx].querySelector('[data-irc-img]');
+        if (activeImg) {
+          activeImg.style.transform = 'scale(1.05) translate(' + (x * -12) + 'px, ' + (y * -12) + 'px)';
+        }
+      });
+      viewport.addEventListener('mouseleave', function() {
+        var activeImg = slides[currentIdx].querySelector('[data-irc-img]');
+        if (activeImg) {
+          activeImg.style.transform = 'scale(1) translate(0, 0)';
+        }
+      });
+    }
+
+    /* Touch swipe */
+    var touchStart = 0;
+    if (viewport) {
+      viewport.addEventListener('touchstart', function(e) {
+        touchStart = e.touches[0].clientX;
+        stopAutoplay();
+      }, { passive: true });
+      viewport.addEventListener('touchend', function(e) {
+        var diff = touchStart - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) {
+          if (diff > 0) goTo(currentIdx + 1);
+          else goTo(currentIdx - 1);
+        }
+        startAutoplay();
+      }, { passive: true });
+    }
+
+    /* Keyboard */
+    wrap.setAttribute('tabindex', '0');
+    wrap.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowLeft') { stopAutoplay(); goTo(currentIdx - 1); startAutoplay(); }
+      if (e.key === 'ArrowRight') { stopAutoplay(); goTo(currentIdx + 1); startAutoplay(); }
+    });
+
+    /* Scroll reveal */
+    var revealEls = wrap.querySelectorAll('[data-irc-reveal]');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('irc-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.15 });
+      revealEls.forEach(function(el) { observer.observe(el); });
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('irc-visible'); });
+    }
+
+    /* Init */
+    startAutoplay();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Reveal Carousel",
+  "tag": "section",
+  "class": "irc-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Portfolio"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Works"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Explore our curated collection of standout projects and creative highlights."
+    },
+    {
+      "type": "header",
+      "content": "Carousel settings"
+    },
+    {
+      "type": "select",
+      "id": "transition_style",
+      "label": "Transition style",
+      "options": [
+        { "value": "curtain", "label": "Curtain reveal" },
+        { "value": "zoom", "label": "Zoom fade" },
+        { "value": "blur", "label": "Blur dissolve" },
+        { "value": "slide", "label": "Slide push" }
+      ],
+      "default": "curtain"
+    },
+    {
+      "type": "range",
+      "id": "slide_height",
+      "label": "Slide height",
+      "min": 40,
+      "max": 90,
+      "step": 5,
+      "default": 70,
+      "unit": "vh"
+    },
+    {
+      "type": "select",
+      "id": "caption_position",
+      "label": "Caption position",
+      "options": [
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-center", "label": "Bottom center" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "bottom-left"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay interval",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "parallax_hover",
+      "label": "Parallax on hover",
+      "default": true,
+      "info": "Subtle parallax movement when hovering the image"
+    },
+    {
+      "type": "header",
+      "content": "Navigation"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filmstrip",
+      "label": "Show filmstrip",
+      "default": true,
+      "info": "Thumbnail navigation bar below the carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show slide counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "default": 25,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f5f1eb"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#b8860b"
+    },
+    {
+      "type": "color",
+      "id": "caption_bg",
+      "label": "Caption background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "filmstrip_bg",
+      "label": "Filmstrip background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "filmstrip_border",
+      "label": "Filmstrip active border",
+      "default": "#b8860b"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Slide Title"
+        },
+        {
+          "type": "textarea",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Reveal Carousel",
+      "settings": {
+        "eyebrow": "Portfolio",
+        "heading": "Featured Works",
+        "subtext": "Explore our curated collection of standout projects and creative highlights.",
+        "transition_style": "curtain",
+        "slide_height": 70,
+        "caption_position": "bottom-left",
+        "autoplay": true,
+        "autoplay_speed": 5,
+        "parallax_hover": true,
+        "show_arrows": true,
+        "show_filmstrip": true,
+        "show_counter": true,
+        "show_progress": true,
+        "overlay_opacity": 25,
+        "card_radius": 12,
+        "bg_color": "#f5f1eb",
+        "heading_color": "#1a1a1a",
+        "accent_color": "#b8860b",
+        "caption_bg": "#ffffff"
+      },
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "badge": "Featured",
+            "eyebrow": "Architecture",
+            "heading": "The Glass Pavilion",
+            "subtitle": "A stunning fusion of light, geometry, and modern materials.",
+            "btn_text": "View Project"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "Interior Design",
+            "heading": "Minimal Living",
+            "subtitle": "Clean lines and warm textures define this curated space."
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "badge": "New",
+            "eyebrow": "Photography",
+            "heading": "Golden Hour Series",
+            "subtitle": "Captured at the perfect moment where light meets landscape.",
+            "btn_text": "Explore"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "Branding",
+            "heading": "Artisan Identity",
+            "subtitle": "Crafting a visual language for handmade luxury goods."
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "eyebrow": "Editorial",
+            "heading": "Desert Bloom",
+            "subtitle": "An editorial series exploring nature in extreme environments.",
+            "btn_text": "Read Story"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

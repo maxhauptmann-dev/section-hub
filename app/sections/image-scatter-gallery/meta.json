@@ -1,0 +1,50 @@
+{
+  "id": "image-scatter-gallery",
+  "name": "SS - Scatter Gallery",
+  "description": "Creative scattered polaroid-style image gallery with floating cards, random tilt rotations, and pin-board aesthetic. Each image appears as a polaroid card with optional handwritten-style captions, tape decorations, and drop shadows. Features staggered scroll-reveal animations, hover lift with depth effect, optional lightbox, magnetic cursor interaction, and layout modes (scattered, grid, masonry). Full customization of rotation range, card sizes, shadow depth, background texture, and typography. 75+ options. Perfect for creative studios, wedding galleries, travel diaries, and mood boards.",
+  "category": ["Images"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 16,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Image",
+    "Gallery",
+    "Scatter",
+    "Polaroid",
+    "Creative",
+    "Pin Board",
+    "Lightbox",
+    "Fun",
+    "Premium"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#faf8f5",
+  "previews": [
+    {
+      "src": "/previews/image-scatter-gallery/default.webp",
+      "alt": "Scatter Gallery - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

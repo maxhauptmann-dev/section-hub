@@ -1,0 +1,664 @@
+{% comment %}
+  Section Hub – Scatter Gallery v1.0
+  Creative scattered polaroid-style gallery with floating cards,
+  random rotations, hover depth effects, optional lightbox,
+  and staggered scroll-reveal animations.
+  Prefix: isg-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign layout = section.settings.layout_mode
+  assign cols = section.settings.columns
+  assign gap = section.settings.grid_gap
+  assign rotation = section.settings.max_rotation
+  assign shadow_depth = section.settings.shadow_depth
+  assign show_tape = section.settings.show_tape
+  assign show_pin = section.settings.show_pin
+  assign enable_lightbox = section.settings.enable_lightbox
+  assign card_padding = section.settings.card_padding
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .isg-wrap--{{ section.id }} {
+    --isg-bg: {{ section.settings.bg_color }};
+    --isg-accent: {{ section.settings.accent_color }};
+    --isg-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --isg-heading-fw: {{ hf.weight }};
+    --isg-heading-fs: {{ hf.style }};
+    --isg-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --isg-body-fw: {{ bf.weight }};
+    --isg-body-fs: {{ bf.style }};
+    --isg-heading-color: {{ section.settings.heading_color }};
+    --isg-text-color: {{ section.settings.text_color }};
+    --isg-card-bg: {{ section.settings.card_bg }};
+    --isg-card-padding: {{ card_padding }}px;
+    --isg-gap: {{ gap }}px;
+    --isg-cols: {{ cols }};
+    --isg-shadow: {{ shadow_depth }};
+    --isg-tape-color: {{ section.settings.tape_color }};
+    --isg-pin-color: {{ section.settings.pin_color }};
+    --isg-py: {{ py }}px;
+    --isg-px: {{ px }}px;
+  }
+</style>
+
+<section class="isg-wrap isg-wrap--{{ section.id }}"
+         data-section-id="{{ section.id }}"
+         data-isg-layout="{{ layout }}"
+         data-isg-rotation="{{ rotation }}"
+         data-isg-lightbox="{{ enable_lightbox }}">
+
+  <div class="isg-container">
+
+    {%- comment -%} Header {%- endcomment -%}
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="isg-header" data-isg-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="isg-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="isg-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="isg-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Gallery {%- endcomment -%}
+    <div class="isg-grid isg-grid--{{ layout }}" data-isg-grid>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign card_rot = block.settings.custom_rotation
+        -%}
+        <div class="isg-card{% if show_tape %} isg-card--tape{% endif %}{% if show_pin %} isg-card--pin{% endif %}"
+             style="--isg-card-rot: {{ card_rot }}deg;"
+             data-isg-reveal
+             data-isg-index="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Pin decoration {%- endcomment -%}
+          {%- if show_pin -%}
+            <div class="isg-card__pin">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><circle cx="12" cy="10" r="6" fill="var(--isg-pin-color, #e74c3c)"/><circle cx="12" cy="10" r="2.5" fill="rgba(255,255,255,0.6)"/><path d="M12 16 L12 24" stroke="var(--isg-pin-color, #e74c3c)" stroke-width="1.5" fill="none" opacity="0.4"/></svg>
+            </div>
+          {%- endif -%}
+
+          {%- comment -%} Tape decoration {%- endcomment -%}
+          {%- if show_tape -%}
+            <div class="isg-card__tape isg-card__tape--{{ block.settings.tape_style }}"></div>
+          {%- endif -%}
+
+          {%- comment -%} Image {%- endcomment -%}
+          <div class="isg-card__media">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 800 }}"
+                srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 800 }} 800w"
+                sizes="(max-width: 749px) 90vw, 33vw"
+                alt="{{ block.settings.image.alt | default: block.settings.caption | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                class="isg-card__img"
+              >
+            {%- else -%}
+              <div class="isg-card__placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Lightbox trigger {%- endcomment -%}
+            {%- if enable_lightbox -%}
+              <button class="isg-card__zoom" data-isg-open="{{ forloop.index0 }}" aria-label="Open lightbox">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+              </button>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Caption area (polaroid bottom) {%- endcomment -%}
+          <div class="isg-card__bottom">
+            {%- if block.settings.caption != blank -%}
+              <p class="isg-card__caption">{{ block.settings.caption }}</p>
+            {%- endif -%}
+            {%- if block.settings.date != blank -%}
+              <span class="isg-card__date">{{ block.settings.date }}</span>
+            {%- endif -%}
+            {%- if block.settings.sticker != blank -%}
+              <span class="isg-card__sticker">{{ block.settings.sticker }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Optional link {%- endcomment -%}
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" class="isg-card__link" aria-label="{{ block.settings.caption | default: 'View image' | escape }}"></a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_link != blank -%}
+      <div class="isg-cta" data-isg-reveal>
+        <a href="{{ section.settings.cta_link }}" class="isg-btn">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Lightbox {%- endcomment -%}
+  {%- if enable_lightbox -%}
+    <div class="isg-lightbox" data-isg-lightbox aria-hidden="true">
+      <div class="isg-lightbox__backdrop"></div>
+      <button class="isg-lightbox__close" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button class="isg-lightbox__arrow isg-lightbox__arrow--prev" aria-label="Previous" data-isg-lb-prev>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="isg-lightbox__arrow isg-lightbox__arrow--next" aria-label="Next" data-isg-lb-next>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+      <div class="isg-lightbox__stage">
+        <img class="isg-lightbox__img" src="" alt="">
+      </div>
+      <div class="isg-lightbox__info">
+        <span class="isg-lightbox__caption"></span>
+        <span class="isg-lightbox__counter"></span>
+      </div>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    var sid = '{{ section.id }}';
+    var wrap = document.querySelector('.isg-wrap--' + sid);
+    if (!wrap) return;
+
+    /* Scroll reveal with stagger */
+    var revealEls = wrap.querySelectorAll('[data-isg-reveal]');
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            var idx = parseInt(entry.target.getAttribute('data-isg-index')) || 0;
+            var delay = idx * 80;
+            setTimeout(function() {
+              entry.target.classList.add('isg-visible');
+            }, delay);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      revealEls.forEach(function(el) { observer.observe(el); });
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('isg-visible'); });
+    }
+
+    /* Hover depth/tilt */
+    var cards = wrap.querySelectorAll('.isg-card');
+    cards.forEach(function(card) {
+      card.addEventListener('mouseenter', function() {
+        this.style.zIndex = '10';
+      });
+      card.addEventListener('mouseleave', function() {
+        this.style.zIndex = '';
+        this.style.transform = 'rotate(var(--isg-card-rot, 0deg))';
+      });
+      card.addEventListener('mousemove', function(e) {
+        var rect = this.getBoundingClientRect();
+        var x = (e.clientX - rect.left) / rect.width - 0.5;
+        var y = (e.clientY - rect.top) / rect.height - 0.5;
+        var tiltX = y * -8;
+        var tiltY = x * 8;
+        this.style.transform = 'rotate(0deg) perspective(600px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) translateY(-8px) scale(1.03)';
+      });
+    });
+
+    /* Lightbox */
+    var lbEnabled = wrap.getAttribute('data-isg-lightbox') === 'true';
+    if (!lbEnabled) return;
+
+    var lightbox = wrap.querySelector('[data-isg-lightbox]');
+    if (!lightbox) return;
+    var lbImg = lightbox.querySelector('.isg-lightbox__img');
+    var lbCaption = lightbox.querySelector('.isg-lightbox__caption');
+    var lbCounter = lightbox.querySelector('.isg-lightbox__counter');
+    var lbClose = lightbox.querySelector('.isg-lightbox__close');
+    var lbPrev = lightbox.querySelector('[data-isg-lb-prev]');
+    var lbNext = lightbox.querySelector('[data-isg-lb-next]');
+
+    var images = [];
+    wrap.querySelectorAll('.isg-card').forEach(function(c) {
+      var img = c.querySelector('.isg-card__img');
+      var cap = c.querySelector('.isg-card__caption');
+      images.push({
+        src: img ? img.src.replace(/width=\d+/, 'width=1600') : '',
+        alt: img ? img.alt : '',
+        caption: cap ? cap.textContent : ''
+      });
+    });
+
+    var lbIdx = 0;
+
+    function openLB(idx) {
+      lbIdx = idx;
+      updateLB();
+      lightbox.classList.add('isg-lightbox--open');
+      lightbox.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLB() {
+      lightbox.classList.remove('isg-lightbox--open');
+      lightbox.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function updateLB() {
+      if (lbIdx < 0) lbIdx = images.length - 1;
+      if (lbIdx >= images.length) lbIdx = 0;
+      lbImg.src = images[lbIdx].src;
+      lbImg.alt = images[lbIdx].alt;
+      if (lbCaption) lbCaption.textContent = images[lbIdx].caption;
+      if (lbCounter) lbCounter.textContent = (lbIdx + 1) + ' / ' + images.length;
+    }
+
+    /* Triggers */
+    wrap.querySelectorAll('[data-isg-open]').forEach(function(btn) {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        openLB(parseInt(this.getAttribute('data-isg-open')));
+      });
+    });
+
+    lbClose.addEventListener('click', closeLB);
+    lightbox.querySelector('.isg-lightbox__backdrop').addEventListener('click', closeLB);
+    lbPrev.addEventListener('click', function() { lbIdx--; updateLB(); });
+    lbNext.addEventListener('click', function() { lbIdx++; updateLB(); });
+
+    /* Keyboard */
+    document.addEventListener('keydown', function(e) {
+      if (!lightbox.classList.contains('isg-lightbox--open')) return;
+      if (e.key === 'Escape') closeLB();
+      if (e.key === 'ArrowLeft') { lbIdx--; updateLB(); }
+      if (e.key === 'ArrowRight') { lbIdx++; updateLB(); }
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Scatter Gallery",
+  "tag": "section",
+  "class": "isg-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Memories"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Scattered Moments"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "A creative collection of our favorite snapshots, pinned together like a mood board."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout style",
+      "options": [
+        { "value": "scatter", "label": "Scattered (rotated)" },
+        { "value": "grid", "label": "Neat grid" },
+        { "value": "masonry", "label": "Masonry flow" }
+      ],
+      "default": "scatter"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "range",
+      "id": "max_rotation",
+      "label": "Max rotation",
+      "min": 0,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "unit": "deg",
+      "info": "Maximum random tilt for scattered layout"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Card spacing",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card inner padding",
+      "min": 8,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tape",
+      "label": "Show washi tape",
+      "default": true,
+      "info": "Decorative tape on top of each polaroid"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_pin",
+      "label": "Show push pin",
+      "default": false,
+      "info": "Pin icon on top of each card"
+    },
+    {
+      "type": "select",
+      "id": "shadow_depth",
+      "label": "Shadow depth",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "subtle", "label": "Subtle" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable lightbox",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#faf8f5"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "tape_color",
+      "label": "Tape color",
+      "default": "#f0e6d3"
+    },
+    {
+      "type": "color",
+      "id": "pin_color",
+      "label": "Push pin color",
+      "default": "#e74c3c"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "photo",
+      "name": "Photo",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "caption",
+          "label": "Caption",
+          "default": "A beautiful moment"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date label"
+        },
+        {
+          "type": "text",
+          "id": "sticker",
+          "label": "Sticker emoji",
+          "info": "Add a fun emoji sticker"
+        },
+        {
+          "type": "range",
+          "id": "custom_rotation",
+          "label": "Card rotation",
+          "min": -8,
+          "max": 8,
+          "step": 1,
+          "default": 0,
+          "unit": "deg"
+        },
+        {
+          "type": "select",
+          "id": "tape_style",
+          "label": "Tape placement",
+          "options": [
+            { "value": "top-left", "label": "Top left" },
+            { "value": "top-center", "label": "Top center" },
+            { "value": "top-right", "label": "Top right" },
+            { "value": "cross", "label": "Cross (two strips)" }
+          ],
+          "default": "top-center"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Scatter Gallery",
+      "settings": {
+        "eyebrow": "Memories",
+        "heading": "Scattered Moments",
+        "subtext": "A creative collection of our favorite snapshots, pinned together like a mood board.",
+        "layout_mode": "scatter",
+        "columns": "3",
+        "max_rotation": 4,
+        "grid_gap": 32,
+        "card_padding": 12,
+        "show_tape": true,
+        "show_pin": false,
+        "shadow_depth": "medium",
+        "enable_lightbox": true,
+        "bg_color": "#faf8f5",
+        "heading_color": "#1a1a1a",
+        "card_bg": "#ffffff",
+        "accent_color": "#e67e22",
+        "tape_color": "#f0e6d3"
+      },
+      "blocks": [
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "Summer breeze",
+            "date": "Jun 2025",
+            "sticker": "☀️",
+            "custom_rotation": -3,
+            "tape_style": "top-left"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "Mountain trails",
+            "date": "Aug 2025",
+            "custom_rotation": 2,
+            "tape_style": "top-center"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "City lights",
+            "sticker": "✨",
+            "custom_rotation": -1,
+            "tape_style": "top-right"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "Ocean waves",
+            "date": "Jul 2025",
+            "custom_rotation": 4,
+            "tape_style": "cross"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "Golden hour",
+            "sticker": "🌅",
+            "custom_rotation": -2,
+            "tape_style": "top-left"
+          }
+        },
+        {
+          "type": "photo",
+          "settings": {
+            "caption": "Studio session",
+            "date": "Sep 2025",
+            "custom_rotation": 3,
+            "tape_style": "top-center"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,50 @@
+{
+  "id": "image-reveal-carousel",
+  "name": "SS - Reveal Carousel",
+  "description": "Cinematic image carousel with dramatic curtain-reveal transitions. Each slide features a wipe/clip animation that reveals images with stunning visual impact. Includes filmstrip thumbnail navigation, parallax hover effect, autoplay with progress indicator, slide counter, and rich editorial captions with badge/eyebrow/heading/subtitle/CTA. Choose from 4 transition styles: curtain, zoom, blur, and slide. Full color/typography/layout customization with 80+ options. Perfect for luxury brands, fashion editorials, real estate showcases, and portfolio highlights.",
+  "category": ["Images"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 17,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Image",
+    "Gallery",
+    "Carousel",
+    "Reveal",
+    "Cinematic",
+    "Parallax",
+    "Filmstrip",
+    "Editorial",
+    "Premium"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f5f1eb",
+  "previews": [
+    {
+      "src": "/previews/image-reveal-carousel/default.webp",
+      "alt": "Reveal Carousel - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
