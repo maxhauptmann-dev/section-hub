@@ -1,0 +1,380 @@
+/* ============================================
+   Section Hub – Video Marquee Loop
+   Prefix: vml-
+   ============================================ */
+
+/* ---- Reset / Base ---- */
+.vml-wrap {
+  position: relative;
+  background: var(--vml-bg, #0a0a0a);
+  color: var(--vml-text-color, #c8c8c8);
+  font-family: var(--vml-body-ff, sans-serif);
+  font-weight: var(--vml-body-fw, 400);
+  font-style: var(--vml-body-fs, normal);
+  overflow: hidden;
+  padding: var(--vml-py, 80px) 0;
+}
+.vml-wrap *, .vml-wrap *::before, .vml-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---- Ambient glow ---- */
+.vml-glow {
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(120px);
+  opacity: 0.15;
+  z-index: 0;
+}
+.vml-glow--1 {
+  width: 500px;
+  height: 500px;
+  background: var(--vml-accent, #e0c67e);
+  top: -150px;
+  right: -100px;
+}
+.vml-glow--2 {
+  width: 400px;
+  height: 400px;
+  background: var(--vml-accent-2, #d4a853);
+  bottom: -120px;
+  left: -100px;
+}
+
+/* ---- Diagonal dividers ---- */
+.vml-divider-top,
+.vml-divider-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 15;
+  line-height: 0;
+}
+.vml-divider-top {
+  top: -1px;
+}
+.vml-divider-bottom {
+  bottom: -1px;
+}
+.vml-divider-top svg,
+.vml-divider-bottom svg {
+  width: 100%;
+  height: 60px;
+  display: block;
+}
+
+/* ---- Fade edges (left/right vignette) ---- */
+.vml-fade {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 120px;
+  z-index: 10;
+  pointer-events: none;
+}
+.vml-fade--left {
+  left: 0;
+  background: linear-gradient(to right, var(--vml-bg, #0a0a0a), transparent);
+}
+.vml-fade--right {
+  right: 0;
+  background: linear-gradient(to left, var(--vml-bg, #0a0a0a), transparent);
+}
+
+/* ---- Text overlay ---- */
+.vml-overlay {
+  position: relative;
+  z-index: 12;
+  text-align: center;
+  padding: 0 40px 40px;
+  max-width: 700px;
+  margin: 0 auto;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+}
+.vml-overlay.vml-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.vml-overlay--top-left,
+.vml-overlay--bottom-left {
+  text-align: left;
+  margin-left: 40px;
+  margin-right: auto;
+}
+.vml-overlay--bottom-right {
+  text-align: right;
+  margin-left: auto;
+  margin-right: 40px;
+}
+.vml-overlay__eyebrow {
+  display: inline-block;
+  font-family: var(--vml-body-ff, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--vml-accent, #e0c67e);
+  margin-bottom: 12px;
+}
+.vml-overlay__heading {
+  font-family: var(--vml-heading-ff, serif);
+  font-weight: var(--vml-heading-fw, 700);
+  font-style: var(--vml-heading-fs, normal);
+  font-size: clamp(2rem, 5vw, 4rem);
+  line-height: 1.1;
+  color: var(--vml-heading-color, #fff);
+  margin-bottom: 16px;
+}
+.vml-overlay__subtext {
+  font-size: clamp(0.95rem, 1.2vw, 1.15rem);
+  line-height: 1.65;
+  color: var(--vml-text-color, #c8c8c8);
+  margin-bottom: 24px;
+  max-width: 540px;
+}
+.vml-overlay--center .vml-overlay__subtext {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---- Scrolling text stripe ---- */
+.vml-stripe {
+  position: relative;
+  z-index: 6;
+  overflow: hidden;
+  padding: 12px 0;
+  margin-bottom: 24px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+.vml-stripe__track {
+  display: flex;
+  gap: 0;
+  white-space: nowrap;
+  animation: vml-stripe-scroll 20s linear infinite;
+}
+.vml-stripe__item {
+  font-family: var(--vml-heading-ff, serif);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--vml-text-color, #c8c8c8);
+  opacity: 0.5;
+  padding: 0 16px;
+}
+.vml-stripe__dot {
+  color: var(--vml-accent, #e0c67e);
+  opacity: 0.4;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+}
+
+@keyframes vml-stripe-scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ---- Marquee ---- */
+.vml-marquee {
+  display: flex;
+  width: max-content;
+  position: relative;
+  z-index: 5;
+  margin-bottom: var(--vml-tile-gap, 16px);
+}
+.vml-marquee:last-of-type {
+  margin-bottom: 0;
+}
+.vml-marquee__track {
+  display: flex;
+  gap: var(--vml-tile-gap, 16px);
+  padding-right: var(--vml-tile-gap, 16px);
+  animation: vml-scroll-left var(--vml-speed, 35s) linear infinite;
+}
+.vml-marquee--reverse .vml-marquee__track {
+  animation-name: vml-scroll-right;
+}
+.vml-marquee--paused .vml-marquee__track {
+  animation-play-state: paused;
+}
+
+@keyframes vml-scroll-left {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+@keyframes vml-scroll-right {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+/* ---- Tile ---- */
+.vml-tile {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--vml-tile-w, 480px);
+  height: var(--vml-tile-h, 360px);
+  border-radius: var(--vml-tile-radius, 12px);
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.4s ease;
+}
+.vml-tile:hover {
+  transform: scale(1.03);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.5);
+}
+
+.vml-tile__media {
+  position: absolute;
+  inset: 0;
+}
+.vml-tile__media video,
+.vml-tile__media img,
+.vml-tile__media svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+/* Video initially paused — show poster frame */
+.vml-tile__media video {
+  opacity: 0.85;
+  transition: opacity 0.4s ease;
+}
+.vml-tile:hover .vml-tile__media video {
+  opacity: 1;
+}
+
+/* Badge (top-left) */
+.vml-tile__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 3;
+  padding: 4px 12px;
+  font-family: var(--vml-body-ff, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 100px;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.3s, transform 0.3s;
+}
+.vml-tile:hover .vml-tile__badge {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Info bar (bottom) */
+.vml-tile__info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 3;
+  padding: 40px 18px 16px;
+  background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 100%);
+}
+.vml-tile__label {
+  font-family: var(--vml-heading-ff, serif);
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Fullcover link */
+.vml-tile__link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+/* ---- CTA button ---- */
+.vml-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  font-family: var(--vml-body-ff, sans-serif);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 100px;
+  transition: background 0.3s, color 0.3s, transform 0.25s;
+  cursor: pointer;
+  border: none;
+}
+.vml-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s;
+}
+.vml-btn:hover svg {
+  transform: translateX(4px);
+}
+.vml-btn--primary {
+  background: var(--vml-accent, #e0c67e);
+  color: #0a0a0a;
+}
+.vml-btn--primary:hover {
+  background: var(--vml-accent-2, #d4a853);
+  transform: translateY(-1px);
+}
+
+/* ============================================
+   Mobile (≤ 749px)
+   ============================================ */
+@media screen and (max-width: 749px) {
+  .vml-wrap {
+    padding: calc(var(--vml-py, 80px) * 0.6) 0;
+  }
+  .vml-overlay {
+    padding: 0 20px 28px;
+  }
+  .vml-overlay--top-left,
+  .vml-overlay--bottom-left,
+  .vml-overlay--bottom-right {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+  .vml-overlay__heading {
+    font-size: clamp(1.6rem, 7vw, 2.4rem);
+  }
+  .vml-tile {
+    width: calc(var(--vml-tile-w, 480px) * 0.65);
+    height: calc(var(--vml-tile-h, 360px) * 0.65);
+  }
+  .vml-fade {
+    width: 60px;
+  }
+  .vml-glow--1 {
+    width: 300px;
+    height: 300px;
+  }
+  .vml-glow--2 {
+    width: 250px;
+    height: 250px;
+  }
+  .vml-stripe__item {
+    font-size: 11px;
+    padding: 0 10px;
+  }
+  .vml-tile__badge {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

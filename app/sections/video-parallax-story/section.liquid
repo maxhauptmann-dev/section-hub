@@ -1,0 +1,850 @@
+{% comment %}
+  Section Hub – Video Parallax Story v1.0
+  Immersive parallax section: sticky video backdrop with
+  scroll-triggered editorial content chapters floating over it.
+  Supports Shopify video, YouTube/Vimeo, MP4 URL.
+  Prefix: vps-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign card_bg       = section.settings.card_bg
+  assign card_opacity  = section.settings.card_bg_opacity
+  assign card_style    = section.settings.card_style
+  assign card_radius   = section.settings.card_radius
+  assign card_width    = section.settings.card_width
+  assign card_align    = section.settings.card_alignment
+  assign video_height  = section.settings.video_height
+  assign obj_fit       = section.settings.object_fit
+  assign show_glow     = section.settings.show_glow
+  assign autoplay_vid  = section.settings.autoplay_video
+  assign loop_vid      = section.settings.loop_video
+  assign show_controls = section.settings.show_controls
+  assign show_play_btn = section.settings.show_play_btn
+  assign show_progress = section.settings.show_progress_bar
+  assign gradient_dir  = section.settings.gradient_direction
+  assign chapter_gap   = section.settings.chapter_gap
+  assign px            = section.settings.section_padding_x
+  assign corner_tag    = section.settings.corner_tag
+
+  assign has_shopify_video = false
+  assign has_embed_video = false
+  assign has_mp4 = false
+  if section.settings.shopify_video != blank
+    assign has_shopify_video = true
+  endif
+  if section.settings.embed_url != blank
+    assign has_embed_video = true
+  endif
+  if section.settings.video_url != blank
+    assign has_mp4 = true
+  endif
+  assign has_any_video = false
+  if has_shopify_video or has_embed_video or has_mp4
+    assign has_any_video = true
+  endif
+
+  assign ov_r = overlay_color | color_extract: 'red'
+  assign ov_g = overlay_color | color_extract: 'green'
+  assign ov_b = overlay_color | color_extract: 'blue'
+  assign ov_a_decimal = overlay_opacity | times: 0.01
+
+  assign card_r = card_bg | color_extract: 'red'
+  assign card_g = card_bg | color_extract: 'green'
+  assign card_b = card_bg | color_extract: 'blue'
+  assign card_a_decimal = card_opacity | times: 0.01
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .vps-wrap--{{ section.id }} {
+    --vps-bg: {{ bg_color }};
+    --vps-accent: {{ accent }};
+    --vps-accent-2: {{ accent_2 }};
+    --vps-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --vps-heading-fw: {{ heading_font.weight }};
+    --vps-heading-fs: {{ heading_font.style }};
+    --vps-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --vps-body-fw: {{ body_font.weight }};
+    --vps-body-fs: {{ body_font.style }};
+    --vps-heading-color: {{ heading_color }};
+    --vps-text-color: {{ text_color }};
+    --vps-card-bg: rgba({{ card_r }}, {{ card_g }}, {{ card_b }}, {{ card_a_decimal }});
+    --vps-card-radius: {{ card_radius }}px;
+    --vps-card-width: {{ card_width }}px;
+    --vps-video-h: {{ video_height }}vh;
+    --vps-chapter-gap: {{ chapter_gap }}vh;
+    --vps-px: {{ px }}px;
+  }
+</style>
+
+<section class="vps-wrap vps-wrap--{{ section.id }}" data-section-id="{{ section.id }}"{% if autoplay_vid %} data-vps-autoplay{% endif %}>
+
+  {%- if show_glow -%}
+    <div class="vps-glow vps-glow--1"></div>
+    <div class="vps-glow vps-glow--2"></div>
+  {%- endif -%}
+
+  {%- comment -%} Sticky video viewport {%- endcomment -%}
+  <div class="vps-sticky-viewport">
+    <div class="vps-video-frame vps-video-frame--{{ obj_fit }}">
+      {%- if has_shopify_video -%}
+        {%- assign sv = section.settings.shopify_video -%}
+        {{ sv | video_tag: playsinline: true, muted: true, loop: loop_vid, controls: show_controls, preload: 'metadata' }}
+
+      {%- elsif has_embed_video -%}
+        {%- assign ev = section.settings.embed_url -%}
+        {%- if ev.type == 'youtube' -%}
+          {%- assign yt_thumb = 'https://img.youtube.com/vi/' | append: ev.id | append: '/maxresdefault.jpg' -%}
+          {%- if section.settings.poster != blank -%}
+            {%- assign yt_thumb = section.settings.poster | image_url: width: 1920 -%}
+          {%- endif -%}
+          <div class="vps-embed" data-vps-embed data-video-type="youtube" data-video-id="{{ ev.id }}">
+            <img class="vps-embed__poster" src="{{ yt_thumb }}" alt="{{ section.settings.intro_heading | escape }}" loading="eager">
+            <div class="vps-embed__iframe" data-vps-iframe-wrap style="display:none;"></div>
+          </div>
+        {%- elsif ev.type == 'vimeo' -%}
+          {%- assign vm_poster = '' -%}
+          {%- if section.settings.poster != blank -%}
+            {%- assign vm_poster = section.settings.poster | image_url: width: 1920 -%}
+          {%- endif -%}
+          <div class="vps-embed" data-vps-embed data-video-type="vimeo" data-video-id="{{ ev.id }}">
+            {%- if vm_poster != '' -%}
+              <img class="vps-embed__poster" src="{{ vm_poster }}" alt="{{ section.settings.intro_heading | escape }}" loading="eager">
+            {%- endif -%}
+            <div class="vps-embed__iframe" data-vps-iframe-wrap style="display:none;"></div>
+          </div>
+        {%- endif -%}
+
+      {%- elsif has_mp4 -%}
+        <video
+          playsinline
+          muted
+          {% if loop_vid %}loop{% endif %}
+          {% if show_controls %}controls{% endif %}
+          preload="metadata"
+          poster="{% if section.settings.poster != blank %}{{ section.settings.poster | image_url: width: 1920 }}{% endif %}"
+        >
+          <source src="{{ section.settings.video_url }}" type="video/mp4">
+        </video>
+
+      {%- elsif section.settings.poster != blank -%}
+        <img
+          src="{{ section.settings.poster | image_url: width: 1920 }}"
+          alt="{{ section.settings.intro_heading | escape }}"
+          loading="eager"
+          width="{{ section.settings.poster.width }}"
+          height="{{ section.settings.poster.height }}"
+        >
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag }}
+      {%- endif -%}
+
+      {%- comment -%} Overlay gradient {%- endcomment -%}
+      <div class="vps-overlay vps-overlay--{{ gradient_dir }}" style="--vps-ov-rgba: rgba({{ ov_r }}, {{ ov_g }}, {{ ov_b }}, {{ ov_a_decimal }});"></div>
+
+      {%- comment -%} Play button {%- endcomment -%}
+      {%- if has_any_video and show_play_btn -%}
+        <button class="vps-play" data-vps-play aria-label="Play video">
+          <svg data-vps-icon-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg data-vps-icon-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+        </button>
+      {%- endif -%}
+
+      {%- comment -%} Video progress bar (bottom) {%- endcomment -%}
+      {%- if show_progress and has_any_video -%}
+        <div class="vps-progress">
+          <div class="vps-progress__bar" data-vps-progress></div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Corner tag {%- endcomment -%}
+      {%- if corner_tag != blank -%}
+        <div class="vps-corner-tag">{{ corner_tag }}</div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Scrolling chapter panels {%- endcomment -%}
+  <div class="vps-chapters vps-chapters--{{ card_align }}">
+    {%- comment -%} Intro chapter (section-level) {%- endcomment -%}
+    {%- if section.settings.intro_heading != blank or section.settings.intro_text != blank -%}
+      <div class="vps-chapter vps-chapter--intro" data-vps-chapter>
+        <div class="vps-chapter__card vps-chapter__card--{{ card_style }}">
+          {%- if section.settings.intro_eyebrow != blank -%}
+            <span class="vps-chapter__eyebrow">{{ section.settings.intro_eyebrow }}</span>
+          {%- endif -%}
+          {%- if section.settings.intro_heading != blank -%}
+            <h2 class="vps-chapter__heading vps-chapter__heading--xl">{{ section.settings.intro_heading }}</h2>
+          {%- endif -%}
+          {%- if section.settings.intro_text != blank -%}
+            <p class="vps-chapter__text">{{ section.settings.intro_text }}</p>
+          {%- endif -%}
+          {%- if section.settings.intro_btn_text != blank -%}
+            <a href="{{ section.settings.intro_btn_link | default: '#' }}" class="vps-btn vps-btn--primary">
+              {{ section.settings.intro_btn_text }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Block chapters {%- endcomment -%}
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'chapter' -%}
+        {%- assign chp_align_override = block.settings.alignment -%}
+        <div class="vps-chapter{% if chp_align_override != 'default' %} vps-chapter--align-{{ chp_align_override }}{% endif %}" data-vps-chapter {{ block.shopify_attributes }}>
+          <div class="vps-chapter__card vps-chapter__card--{{ card_style }}">
+            {%- if block.settings.icon != blank -%}
+              <div class="vps-chapter__icon">
+                <img src="{{ block.settings.icon | image_url: width: 80 }}" alt="" width="40" height="40" loading="lazy">
+              </div>
+            {%- endif -%}
+            {%- if block.settings.eyebrow != blank -%}
+              <span class="vps-chapter__eyebrow">{{ block.settings.eyebrow }}</span>
+            {%- endif -%}
+            {%- if block.settings.heading != blank -%}
+              <h3 class="vps-chapter__heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="vps-chapter__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+
+            {%- comment -%} Optional stat counters {%- endcomment -%}
+            {%- if block.settings.stat_1_value != blank -%}
+              <div class="vps-chapter__stats">
+                {%- if block.settings.stat_1_value != blank -%}
+                  <div class="vps-chapter__stat">
+                    <span class="vps-chapter__stat-val">{{ block.settings.stat_1_value }}</span>
+                    {%- if block.settings.stat_1_label != blank -%}
+                      <span class="vps-chapter__stat-label">{{ block.settings.stat_1_label }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.stat_2_value != blank -%}
+                  <div class="vps-chapter__stat">
+                    <span class="vps-chapter__stat-val">{{ block.settings.stat_2_value }}</span>
+                    {%- if block.settings.stat_2_label != blank -%}
+                      <span class="vps-chapter__stat-label">{{ block.settings.stat_2_label }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.stat_3_value != blank -%}
+                  <div class="vps-chapter__stat">
+                    <span class="vps-chapter__stat-val">{{ block.settings.stat_3_value }}</span>
+                    {%- if block.settings.stat_3_label != blank -%}
+                      <span class="vps-chapter__stat-label">{{ block.settings.stat_3_label }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.btn_text != blank -%}
+              <a href="{{ block.settings.btn_link | default: '#' }}" class="vps-btn vps-btn--primary">
+                {{ block.settings.btn_text }}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+            {%- endif -%}
+          </div>
+        </div>
+
+      {%- elsif block.type == 'divider' -%}
+        <div class="vps-chapter vps-chapter--divider" {{ block.shopify_attributes }}>
+          <div class="vps-divider">
+            {%- if block.settings.divider_label != blank -%}
+              <span class="vps-divider__label">{{ block.settings.divider_label }}</span>
+            {%- endif -%}
+            <span class="vps-divider__line"></span>
+          </div>
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+  (function() {
+    var wrap = document.querySelector('.vps-wrap--{{ section.id }}');
+    if (!wrap) return;
+
+    var autoplayEnabled = wrap.hasAttribute('data-vps-autoplay');
+    var playBtn = wrap.querySelector('[data-vps-play]');
+    var progressBar = wrap.querySelector('[data-vps-progress]');
+    var chapters = wrap.querySelectorAll('[data-vps-chapter]');
+
+    /* Chapter scroll-reveal */
+    var chapterObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('vps-chapter--visible');
+        }
+      });
+    }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+
+    chapters.forEach(function(ch) { chapterObs.observe(ch); });
+
+    /* Helper: set play button state */
+    function setBtnState(playing) {
+      if (!playBtn) return;
+      var iconPlay = playBtn.querySelector('[data-vps-icon-play]');
+      var iconPause = playBtn.querySelector('[data-vps-icon-pause]');
+      if (playing) {
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconPause) iconPause.style.display = '';
+        playBtn.classList.add('vps-play--playing');
+      } else {
+        if (iconPlay) iconPlay.style.display = '';
+        if (iconPause) iconPause.style.display = 'none';
+        playBtn.classList.remove('vps-play--playing');
+      }
+    }
+
+    /* Autoplay via IntersectionObserver */
+    if (autoplayEnabled) {
+      var autoObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          var video = wrap.querySelector('.vps-video-frame video');
+          if (!video) return;
+          if (e.isIntersecting) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        });
+      }, { threshold: 0.3 });
+      autoObs.observe(wrap);
+    }
+
+    /* Play / pause click */
+    if (playBtn) {
+      playBtn.addEventListener('click', function() {
+        /* YouTube / Vimeo embed */
+        var embedWrap = wrap.querySelector('[data-vps-embed]');
+        if (embedWrap) {
+          var iframeWrap = embedWrap.querySelector('[data-vps-iframe-wrap]');
+          var posterImg = embedWrap.querySelector('.vps-embed__poster');
+          if (iframeWrap && iframeWrap.style.display === 'none') {
+            var vType = embedWrap.dataset.videoType;
+            var vId = embedWrap.dataset.videoId;
+            var iframeSrc = '';
+            if (vType === 'youtube') {
+              iframeSrc = 'https://www.youtube.com/embed/' + vId + '?autoplay=1&mute=1&loop=1&playlist=' + vId + '&controls=0&modestbranding=1&rel=0';
+            } else if (vType === 'vimeo') {
+              iframeSrc = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&loop=1&background=1';
+            }
+            if (iframeSrc) {
+              iframeWrap.innerHTML = '<iframe src="' + iframeSrc + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+              iframeWrap.style.display = '';
+              iframeWrap.style.position = 'absolute';
+              iframeWrap.style.inset = '0';
+              iframeWrap.style.width = '100%';
+              iframeWrap.style.height = '100%';
+              iframeWrap.style.zIndex = '1';
+              if (posterImg) posterImg.style.display = 'none';
+              setBtnState(true);
+            }
+          }
+          return;
+        }
+
+        /* MP4 or Shopify hosted video */
+        var video = wrap.querySelector('.vps-video-frame video');
+        if (video) {
+          if (video.paused) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        }
+      });
+    }
+
+    /* Progress bar */
+    function updateProgress() {
+      var video = wrap.querySelector('.vps-video-frame video');
+      if (video && progressBar && !video.paused && video.duration) {
+        var pct = (video.currentTime / video.duration) * 100;
+        progressBar.style.width = pct + '%';
+      }
+      requestAnimationFrame(updateProgress);
+    }
+    if (progressBar) updateProgress();
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Story",
+  "tag": "section",
+  "class": "vps-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video source"
+    },
+    {
+      "type": "video",
+      "id": "shopify_video",
+      "label": "Shopify video",
+      "info": "Upload or select a video from your Shopify media library."
+    },
+    {
+      "type": "video_url",
+      "id": "embed_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "YouTube / Vimeo URL",
+      "info": "Used when no Shopify video is set."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "MP4 URL",
+      "info": "Direct link to an MP4 file. Used as final fallback."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster / fallback image"
+    },
+    {
+      "type": "header",
+      "content": "Playback"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_video",
+      "label": "Autoplay (muted)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "loop_video",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show native controls",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_play_btn",
+      "label": "Show play / pause button",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress_bar",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Intro chapter"
+    },
+    {
+      "type": "text",
+      "id": "intro_eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Story"
+    },
+    {
+      "type": "text",
+      "id": "intro_heading",
+      "label": "Heading",
+      "default": "Built for the bold"
+    },
+    {
+      "type": "textarea",
+      "id": "intro_text",
+      "label": "Text",
+      "default": "Scroll through our journey — each chapter tells a piece of the bigger picture."
+    },
+    {
+      "type": "text",
+      "id": "intro_btn_text",
+      "label": "Button text",
+      "default": "Watch the film"
+    },
+    {
+      "type": "url",
+      "id": "intro_btn_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Corner tag"
+    },
+    {
+      "type": "text",
+      "id": "corner_tag",
+      "label": "Corner tag text",
+      "default": "Brand film 2025",
+      "info": "Small label in the top-right corner of the video."
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "glass", "label": "Glassmorphism" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "transparent", "label": "Transparent" }
+      ],
+      "default": "glass"
+    },
+    {
+      "type": "select",
+      "id": "card_alignment",
+      "label": "Card alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" },
+        { "value": "alternate", "label": "Alternate" }
+      ],
+      "default": "alternate"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card max width",
+      "min": 300,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "range",
+      "id": "card_bg_opacity",
+      "label": "Card background opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 60
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "video_height",
+      "label": "Video height",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 100
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Video fit",
+      "options": [
+        { "value": "cover", "label": "Cover" },
+        { "value": "contain", "label": "Contain" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "chapter_gap",
+      "label": "Space between chapters",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "unit": "vh",
+      "default": 40
+    },
+    {
+      "type": "select",
+      "id": "gradient_direction",
+      "label": "Overlay gradient direction",
+      "options": [
+        { "value": "full", "label": "Full overlay" },
+        { "value": "bottom", "label": "Bottom fade" },
+        { "value": "top", "label": "Top fade" },
+        { "value": "radial", "label": "Radial vignette" }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#e0c67e"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2",
+      "default": "#d4a853"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#c8c8c8"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Ambient glow",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chapter",
+      "name": "Chapter",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon",
+          "label": "Icon image",
+          "info": "Optional small icon shown above the eyebrow (40×40)."
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Chapter"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The next chapter"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "A story worth telling — in images, in motion, and in purpose."
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment override",
+          "options": [
+            { "value": "default", "label": "Default (section)" },
+            { "value": "left", "label": "Left" },
+            { "value": "center", "label": "Center" },
+            { "value": "right", "label": "Right" }
+          ],
+          "default": "default"
+        },
+        {
+          "type": "header",
+          "content": "Stats"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_value",
+          "label": "Stat 1 value",
+          "info": "e.g. 120K+"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_label",
+          "label": "Stat 1 label",
+          "info": "e.g. Happy Customers"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_value",
+          "label": "Stat 2 value"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_label",
+          "label": "Stat 2 label"
+        },
+        {
+          "type": "text",
+          "id": "stat_3_value",
+          "label": "Stat 3 value"
+        },
+        {
+          "type": "text",
+          "id": "stat_3_label",
+          "label": "Stat 3 label"
+        }
+      ]
+    },
+    {
+      "type": "divider",
+      "name": "Divider",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "text",
+          "id": "divider_label",
+          "label": "Divider label",
+          "info": "Optional text in the center of the divider line."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Story",
+      "blocks": [
+        {
+          "type": "chapter",
+          "settings": {
+            "eyebrow": "Chapter 01",
+            "heading": "Where it all started",
+            "text": "Every great story begins with a single step — ours was born from a passion for craftsmanship and purpose.",
+            "stat_1_value": "2018",
+            "stat_1_label": "Founded"
+          }
+        },
+        {
+          "type": "divider",
+          "settings": {
+            "divider_label": "The Journey"
+          }
+        },
+        {
+          "type": "chapter",
+          "settings": {
+            "eyebrow": "Chapter 02",
+            "heading": "Growing together",
+            "text": "From a small team to a global community — every milestone shaped who we are today.",
+            "stat_1_value": "50K+",
+            "stat_1_label": "Community",
+            "stat_2_value": "30+",
+            "stat_2_label": "Countries"
+          }
+        },
+        {
+          "type": "chapter",
+          "settings": {
+            "eyebrow": "Chapter 03",
+            "heading": "What comes next",
+            "text": "The future is unwritten. Join us as we continue to push boundaries and redefine the standard.",
+            "btn_text": "Join us"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,646 @@
+{% comment %}
+  Section Hub – Video Marquee Loop v1.0
+  Experimental editorial section with a continuously scrolling
+  horizontal strip of video tiles and large typography overlay.
+  Supports Shopify video, YouTube/Vimeo, MP4 URL per tile.
+  Prefix: vml-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign tile_radius   = section.settings.tile_radius
+  assign tile_height   = section.settings.tile_height
+  assign tile_width    = section.settings.tile_width
+  assign tile_gap      = section.settings.tile_gap
+  assign scroll_speed  = section.settings.scroll_speed
+  assign scroll_dir    = section.settings.scroll_direction
+  assign hover_pause   = section.settings.hover_pause
+  assign hover_play    = section.settings.hover_play_video
+  assign show_overlay  = section.settings.show_text_overlay
+  assign overlay_pos   = section.settings.overlay_position
+  assign show_glow     = section.settings.show_glow
+  assign show_divider  = section.settings.show_diagonal_divider
+  assign divider_color = section.settings.divider_color
+  assign show_row_2    = section.settings.show_second_row
+  assign row2_reverse  = section.settings.reverse_second_row
+  assign stripe_label  = section.settings.stripe_label
+  assign show_stripe   = section.settings.show_stripe
+  assign px            = section.settings.section_padding_y
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .vml-wrap--{{ section.id }} {
+    --vml-bg: {{ bg_color }};
+    --vml-accent: {{ accent }};
+    --vml-accent-2: {{ accent_2 }};
+    --vml-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --vml-heading-fw: {{ heading_font.weight }};
+    --vml-heading-fs: {{ heading_font.style }};
+    --vml-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --vml-body-fw: {{ body_font.weight }};
+    --vml-body-fs: {{ body_font.style }};
+    --vml-heading-color: {{ heading_color }};
+    --vml-text-color: {{ text_color }};
+    --vml-tile-radius: {{ tile_radius }}px;
+    --vml-tile-h: {{ tile_height }}px;
+    --vml-tile-w: {{ tile_width }}px;
+    --vml-tile-gap: {{ tile_gap }}px;
+    --vml-speed: {{ scroll_speed }}s;
+    --vml-py: {{ px }}px;
+    --vml-divider-color: {{ divider_color }};
+  }
+</style>
+
+<section class="vml-wrap vml-wrap--{{ section.id }}" data-section-id="{{ section.id }}" data-vml-hover-pause="{{ hover_pause }}" data-vml-hover-play="{{ hover_play }}">
+
+  {%- if show_glow -%}
+    <div class="vml-glow vml-glow--1"></div>
+    <div class="vml-glow vml-glow--2"></div>
+  {%- endif -%}
+
+  {%- comment -%} Top diagonal divider {%- endcomment -%}
+  {%- if show_divider -%}
+    <div class="vml-divider-top">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><polygon points="0,60 1440,0 1440,60" fill="var(--vml-bg)"/></svg>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Text overlay (editorial mega typography) {%- endcomment -%}
+  {%- if show_overlay -%}
+    {%- if section.settings.overlay_heading != blank or section.settings.overlay_subtext != blank -%}
+      <div class="vml-overlay vml-overlay--{{ overlay_pos }}" data-vml-reveal>
+        {%- if section.settings.overlay_eyebrow != blank -%}
+          <span class="vml-overlay__eyebrow">{{ section.settings.overlay_eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.overlay_heading != blank -%}
+          <h2 class="vml-overlay__heading">{{ section.settings.overlay_heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.overlay_subtext != blank -%}
+          <p class="vml-overlay__subtext">{{ section.settings.overlay_subtext }}</p>
+        {%- endif -%}
+        {%- if section.settings.overlay_btn_text != blank -%}
+          <a href="{{ section.settings.overlay_btn_link | default: '#' }}" class="vml-btn vml-btn--primary">
+            {{ section.settings.overlay_btn_text }}
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+
+  {%- comment -%} Scrolling text stripe {%- endcomment -%}
+  {%- if show_stripe and stripe_label != blank -%}
+    <div class="vml-stripe" aria-hidden="true">
+      <div class="vml-stripe__track">
+        {%- for i in (1..12) -%}
+          <span class="vml-stripe__item">{{ stripe_label }}</span>
+          <span class="vml-stripe__dot">✦</span>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Marquee Row 1 {%- endcomment -%}
+  <div class="vml-marquee{% if scroll_dir == 'right' %} vml-marquee--reverse{% endif %}" data-vml-marquee>
+    {%- for copy in (1..2) -%}
+      <div class="vml-marquee__track"{% if copy == 2 %} aria-hidden="true"{% endif %} data-vml-track>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'video_tile' -%}
+            {%- liquid
+              assign t_has_shopify = false
+              assign t_has_embed = false
+              assign t_has_mp4 = false
+              if block.settings.shopify_video != blank
+                assign t_has_shopify = true
+              endif
+              if block.settings.embed_url != blank
+                assign t_has_embed = true
+              endif
+              if block.settings.video_url != blank
+                assign t_has_mp4 = true
+              endif
+            -%}
+            <div class="vml-tile" data-vml-tile {{ block.shopify_attributes }}>
+              <div class="vml-tile__media">
+                {%- if t_has_shopify -%}
+                  {{ block.settings.shopify_video | video_tag: playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata' }}
+                {%- elsif t_has_mp4 -%}
+                  <video playsinline muted loop preload="metadata"{% if block.settings.poster != blank %} poster="{{ block.settings.poster | image_url: width: 960 }}"{% endif %}>
+                    <source src="{{ block.settings.video_url }}" type="video/mp4">
+                  </video>
+                {%- elsif block.settings.poster != blank -%}
+                  <img src="{{ block.settings.poster | image_url: width: 960 }}" alt="{{ block.settings.label | escape }}" loading="lazy" width="{{ block.settings.poster.width }}" height="{{ block.settings.poster.height }}">
+                {%- else -%}
+                  {{ 'lifestyle-1' | placeholder_svg_tag }}
+                {%- endif -%}
+              </div>
+              {%- if block.settings.category != blank -%}
+                <span class="vml-tile__badge">{{ block.settings.category }}</span>
+              {%- endif -%}
+              {%- if block.settings.label != blank -%}
+                <div class="vml-tile__info">
+                  <span class="vml-tile__label">{{ block.settings.label }}</span>
+                </div>
+              {%- endif -%}
+              {%- if block.settings.link != blank -%}
+                <a href="{{ block.settings.link }}" class="vml-tile__link" aria-label="{{ block.settings.label | escape }}"></a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endfor -%}
+  </div>
+
+  {%- comment -%} Marquee Row 2 (optional, reversed) {%- endcomment -%}
+  {%- if show_row_2 -%}
+    <div class="vml-marquee{% if row2_reverse %} vml-marquee--reverse{% endif %}{% unless row2_reverse %} vml-marquee--forward{% endunless %}" data-vml-marquee>
+      {%- for copy in (1..2) -%}
+        <div class="vml-marquee__track"{% if copy == 2 %} aria-hidden="true"{% endif %} data-vml-track>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'video_tile' -%}
+              {%- liquid
+                assign t_has_shopify = false
+                assign t_has_embed = false
+                assign t_has_mp4 = false
+                if block.settings.shopify_video != blank
+                  assign t_has_shopify = true
+                endif
+                if block.settings.embed_url != blank
+                  assign t_has_embed = true
+                endif
+                if block.settings.video_url != blank
+                  assign t_has_mp4 = true
+                endif
+              -%}
+              <div class="vml-tile" data-vml-tile {{ block.shopify_attributes }}>
+                <div class="vml-tile__media">
+                  {%- if t_has_shopify -%}
+                    {{ block.settings.shopify_video | video_tag: playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata' }}
+                  {%- elsif t_has_mp4 -%}
+                    <video playsinline muted loop preload="metadata"{% if block.settings.poster != blank %} poster="{{ block.settings.poster | image_url: width: 960 }}"{% endif %}>
+                      <source src="{{ block.settings.video_url }}" type="video/mp4">
+                    </video>
+                  {%- elsif block.settings.poster != blank -%}
+                    <img src="{{ block.settings.poster | image_url: width: 960 }}" alt="{{ block.settings.label | escape }}" loading="lazy" width="{{ block.settings.poster.width }}" height="{{ block.settings.poster.height }}">
+                  {%- else -%}
+                    {{ 'lifestyle-1' | placeholder_svg_tag }}
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.category != blank -%}
+                  <span class="vml-tile__badge">{{ block.settings.category }}</span>
+                {%- endif -%}
+                {%- if block.settings.label != blank -%}
+                  <div class="vml-tile__info">
+                    <span class="vml-tile__label">{{ block.settings.label }}</span>
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}" class="vml-tile__link" aria-label="{{ block.settings.label | escape }}"></a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Bottom diagonal divider {%- endcomment -%}
+  {%- if show_divider -%}
+    <div class="vml-divider-bottom">
+      <svg viewBox="0 0 1440 60" preserveAspectRatio="none"><polygon points="0,0 1440,0 0,60" fill="var(--vml-bg)"/></svg>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Fade edges {%- endcomment -%}
+  <div class="vml-fade vml-fade--left"></div>
+  <div class="vml-fade vml-fade--right"></div>
+
+</section>
+
+<script>
+  (function() {
+    var wrap = document.querySelector('.vml-wrap--{{ section.id }}');
+    if (!wrap) return;
+
+    var hoverPause = wrap.dataset.vmlHoverPause === 'true';
+    var hoverPlay = wrap.dataset.vmlHoverPlay === 'true';
+    var marquees = wrap.querySelectorAll('[data-vml-marquee]');
+
+    /* Scroll reveal */
+    var revealEls = wrap.querySelectorAll('[data-vml-reveal]');
+    var revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vml-visible');
+        revealObs.unobserve(e.target);
+      });
+    }, { threshold: 0.15 });
+    revealEls.forEach(function(el) { revealObs.observe(el); });
+
+    /* Pause marquee on hover */
+    if (hoverPause) {
+      marquees.forEach(function(m) {
+        m.addEventListener('mouseenter', function() {
+          m.classList.add('vml-marquee--paused');
+        });
+        m.addEventListener('mouseleave', function() {
+          m.classList.remove('vml-marquee--paused');
+        });
+      });
+    }
+
+    /* Hover-to-play on tiles */
+    if (hoverPlay) {
+      var tiles = wrap.querySelectorAll('[data-vml-tile]');
+      tiles.forEach(function(tile) {
+        var video = tile.querySelector('video');
+        if (!video) return;
+        tile.addEventListener('mouseenter', function() {
+          video.currentTime = 0;
+          video.play().catch(function(){});
+        });
+        tile.addEventListener('mouseleave', function() {
+          video.pause();
+          video.currentTime = 0;
+        });
+      });
+    }
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Marquee",
+  "tag": "section",
+  "class": "vml-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Marquee"
+    },
+    {
+      "type": "range",
+      "id": "tile_height",
+      "label": "Tile height",
+      "min": 200,
+      "max": 600,
+      "step": 20,
+      "unit": "px",
+      "default": 360
+    },
+    {
+      "type": "range",
+      "id": "tile_width",
+      "label": "Tile width",
+      "min": 250,
+      "max": 700,
+      "step": 10,
+      "unit": "px",
+      "default": 480
+    },
+    {
+      "type": "range",
+      "id": "tile_gap",
+      "label": "Tile gap",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "tile_radius",
+      "label": "Tile corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "scroll_speed",
+      "label": "Scroll speed",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "unit": "s",
+      "default": 35,
+      "info": "Duration for one full loop (lower = faster)."
+    },
+    {
+      "type": "select",
+      "id": "scroll_direction",
+      "label": "Scroll direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_pause",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_play_video",
+      "label": "Play video on tile hover",
+      "default": true,
+      "info": "Plays the video when hovering over a tile."
+    },
+    {
+      "type": "header",
+      "content": "Second row"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_second_row",
+      "label": "Show second row",
+      "default": true,
+      "info": "Duplicates the tiles in a second row."
+    },
+    {
+      "type": "checkbox",
+      "id": "reverse_second_row",
+      "label": "Reverse second row",
+      "default": true,
+      "info": "Second row scrolls in opposite direction."
+    },
+    {
+      "type": "header",
+      "content": "Text overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_text_overlay",
+      "label": "Show text overlay",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "overlay_position",
+      "label": "Overlay position",
+      "options": [
+        { "value": "center", "label": "Center" },
+        { "value": "top-left", "label": "Top left" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-right", "label": "Bottom right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "text",
+      "id": "overlay_eyebrow",
+      "label": "Eyebrow",
+      "default": "Showreel 2025"
+    },
+    {
+      "type": "text",
+      "id": "overlay_heading",
+      "label": "Heading",
+      "default": "Our Work in Motion"
+    },
+    {
+      "type": "textarea",
+      "id": "overlay_subtext",
+      "label": "Subtext",
+      "default": "A curated collection of campaigns, brand films, and creative projects."
+    },
+    {
+      "type": "text",
+      "id": "overlay_btn_text",
+      "label": "Button text",
+      "default": "View all projects"
+    },
+    {
+      "type": "url",
+      "id": "overlay_btn_link",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Text stripe"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stripe",
+      "label": "Show scrolling text stripe",
+      "default": true,
+      "info": "Decorative ticker between overlay and marquee."
+    },
+    {
+      "type": "text",
+      "id": "stripe_label",
+      "label": "Stripe text",
+      "default": "Featured Work"
+    },
+    {
+      "type": "header",
+      "content": "Dividers"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_diagonal_divider",
+      "label": "Show diagonal dividers",
+      "default": false,
+      "info": "Adds angled top/bottom edge for a dynamic look."
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#e0c67e"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2",
+      "default": "#d4a853"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#c8c8c8"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Ambient glow",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_tile",
+      "name": "Video Tile",
+      "limit": 12,
+      "settings": [
+        {
+          "type": "video",
+          "id": "shopify_video",
+          "label": "Shopify video"
+        },
+        {
+          "type": "video_url",
+          "id": "embed_url",
+          "accept": ["youtube", "vimeo"],
+          "label": "YouTube / Vimeo URL",
+          "info": "Used when no Shopify video is set."
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "MP4 URL",
+          "info": "Direct MP4 link. Final fallback."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Tile label",
+          "default": "Project",
+          "info": "Shown at the bottom of the tile."
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category tag",
+          "default": "Campaign",
+          "info": "Small badge in the top-left corner."
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Tile link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Marquee",
+      "settings": {
+        "overlay_eyebrow": "Showreel 2025",
+        "overlay_heading": "Our Work in Motion",
+        "overlay_subtext": "A curated collection of campaigns, brand films, and creative projects.",
+        "overlay_btn_text": "View all projects",
+        "stripe_label": "Featured Work"
+      },
+      "blocks": [
+        {
+          "type": "video_tile",
+          "settings": {
+            "label": "Horizon Campaign",
+            "category": "Brand Film"
+          }
+        },
+        {
+          "type": "video_tile",
+          "settings": {
+            "label": "Studio Sessions",
+            "category": "Behind the Scenes"
+          }
+        },
+        {
+          "type": "video_tile",
+          "settings": {
+            "label": "Summer Edit",
+            "category": "Campaign"
+          }
+        },
+        {
+          "type": "video_tile",
+          "settings": {
+            "label": "Making of Series",
+            "category": "Documentary"
+          }
+        },
+        {
+          "type": "video_tile",
+          "settings": {
+            "label": "Product Launch",
+            "category": "Commercial"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
