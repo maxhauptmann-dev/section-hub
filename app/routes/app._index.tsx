@@ -75,7 +75,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     storeScore = savedAnalysis.storeScore;
     activeCount = savedAnalysis.activeCount;
     totalTypes = savedAnalysis.totalTypes;
-    analyzedAt = savedAnalysis.analyzedAt.toISOString();
+    analyzedAt = savedAnalysis.analyzedAt ? savedAnalysis.analyzedAt.toISOString() : null;
     try {
       missingCritical = JSON.parse(savedAnalysis.missingCritical);
       missingHigh = JSON.parse(savedAnalysis.missingHigh);
@@ -144,15 +144,153 @@ export default function DashboardPage() {
         .sh-steps{display:grid;grid-template-columns:1fr;gap:10px}
         @media(min-width:640px){.sh-steps{grid-template-columns:repeat(3,1fr)}}
         .sh-two-col{display:grid;grid-template-columns:1fr;gap:12px}
-        @media(min-width:640px){.sh-two-col{grid-template-columns:1fr 1fr;gap:16px}}
+        @media(min-width:640px){.sh-two-col{grid-template-columns:3fr 2fr;gap:16px}}
         .sh-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
         @media(min-width:640px){.sh-actions{grid-template-columns:repeat(5,1fr);gap:12px}}
-        .sh-action-card{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px 10px;cursor:pointer;text-align:center;transition:box-shadow .15s,border-color .15s}
-        .sh-action-card:hover{box-shadow:0 4px 12px rgba(0,0,0,.08);border-color:#c7d2fe}
         .sh-tips{display:grid;grid-template-columns:1fr 1fr;gap:8px}
         @media(min-width:640px){.sh-tips{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}}
         .sh-discount-pills{display:flex;gap:8px;flex-wrap:wrap}
         .sh-discount-pill{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:8px 14px;text-align:center;flex:1;min-width:80px}
+
+        @keyframes sh-gradient-move{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes sh-pulse-soft{0%,100%{box-shadow:0 2px 16px rgba(99,102,241,0.08)}50%{box-shadow:0 4px 28px rgba(99,102,241,0.16)}}
+        @keyframes sh-score-pop{0%{transform:scale(0.8);opacity:0}100%{transform:scale(1);opacity:1}}
+        @keyframes sh-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        @keyframes sh-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        @keyframes sh-ring-fill{0%{stroke-dashoffset:251}100%{stroke-dashoffset:var(--sh-ring-target)}}
+        @keyframes sh-fade-up{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+        @keyframes sh-icon-bounce{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+
+        .sh-score-card{
+          position:relative;overflow:hidden;border-radius:16px;padding:24px;
+          background:linear-gradient(-45deg,#eef2ff,#e0e7ff,#c7d2fe,#ddd6fe);
+          background-size:300% 300%;
+          animation:sh-gradient-move 10s ease infinite, sh-pulse-soft 5s ease-in-out infinite;
+          min-height:180px;
+        }
+        .sh-score-card::before{
+          content:'';position:absolute;top:-40%;right:-40%;width:80%;height:80%;
+          background:radial-gradient(circle,rgba(99,102,241,0.12) 0%,transparent 70%);
+          pointer-events:none;
+        }
+        .sh-score-card::after{
+          content:'';position:absolute;bottom:-30%;left:-20%;width:60%;height:60%;
+          background:radial-gradient(circle,rgba(139,92,246,0.08) 0%,transparent 70%);
+          pointer-events:none;
+        }
+
+        .sh-premium-card{
+          position:relative;overflow:hidden;border-radius:16px;padding:24px;
+          background:linear-gradient(-45deg,#ecfdf5,#d1fae5,#a7f3d0,#bbf7d0);
+          background-size:300% 300%;
+          animation:sh-gradient-move 8s ease infinite;
+          min-height:180px;
+        }
+        .sh-premium-card::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.4) 50%,transparent 60%);
+          background-size:200% 200%;
+          animation:sh-shimmer 4s ease-in-out infinite;
+          pointer-events:none;
+        }
+        .sh-premium-card::after{
+          content:'';position:absolute;top:-40%;right:-20%;width:60%;height:80%;
+          background:radial-gradient(circle,rgba(52,211,153,0.12) 0%,transparent 70%);
+          pointer-events:none;
+        }
+
+        .sh-glass-stat{
+          background:rgba(255,255,255,0.55);
+          backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+          border:1px solid rgba(255,255,255,0.7);
+          border-radius:12px;padding:12px 14px;text-align:center;
+          transition:all .25s cubic-bezier(.4,0,.2,1);
+          box-shadow:0 1px 4px rgba(0,0,0,0.04);
+        }
+        .sh-glass-stat:hover{background:rgba(255,255,255,0.75);transform:translateY(-3px);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+
+        .sh-glass-inner{
+          background:rgba(255,255,255,0.65);
+          backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+          border:1px solid rgba(255,255,255,0.8);
+          border-radius:14px;padding:18px 20px;
+          box-shadow:0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .sh-score-ring{animation:sh-score-pop .6s cubic-bezier(.68,-.55,.27,1.55) both;animation-delay:.2s}
+        .sh-score-ring circle.sh-ring-progress{
+          animation:sh-ring-fill 1.5s ease-out both;animation-delay:.5s;
+          stroke-linecap:round;
+        }
+
+        .sh-badge-glow{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+        .sh-badge-critical{background:rgba(239,68,68,0.12);color:#b91c1c;border:1px solid rgba(239,68,68,0.25)}
+        .sh-badge-warning{background:rgba(245,158,11,0.12);color:#92400e;border:1px solid rgba(245,158,11,0.25)}
+        .sh-badge-success{background:rgba(22,163,74,0.12);color:#15803d;border:1px solid rgba(22,163,74,0.25)}
+
+        .sh-crown{display:inline-block;animation:sh-float 3s ease-in-out infinite;font-size:28px}
+
+        .sh-action-card{
+          background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:14px 10px;
+          cursor:pointer;text-align:center;
+          transition:all .25s cubic-bezier(.4,0,.2,1);
+          animation:sh-fade-up .5s ease both;
+        }
+        .sh-action-card:nth-child(1){animation-delay:.05s}
+        .sh-action-card:nth-child(2){animation-delay:.1s}
+        .sh-action-card:nth-child(3){animation-delay:.15s}
+        .sh-action-card:nth-child(4){animation-delay:.2s}
+        .sh-action-card:nth-child(5){animation-delay:.25s}
+        .sh-action-card:hover{
+          box-shadow:0 8px 24px rgba(99,102,241,.1);
+          border-color:#c7d2fe;
+          transform:translateY(-4px);
+        }
+        .sh-action-card:hover .sh-action-icon{animation:sh-icon-bounce .4s ease}
+
+        .sh-action-icon{font-size:26px;transition:transform .2s ease;display:inline-block}
+
+        .sh-try-banner{
+          position:relative;overflow:hidden;border-radius:12px;padding:16px 20px;
+          background:linear-gradient(-45deg,#eff6ff,#dbeafe,#bfdbfe,#dbeafe);
+          background-size:300% 300%;
+          animation:sh-gradient-move 8s ease infinite;
+          transition:all .25s ease;
+        }
+        .sh-try-banner:hover{box-shadow:0 6px 20px rgba(59,130,246,.12);transform:translateY(-2px)}
+        .sh-try-banner::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.5) 50%,transparent 60%);
+          background-size:200% 200%;animation:sh-shimmer 5s ease-in-out infinite;pointer-events:none;
+        }
+
+        .sh-section-row{
+          display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;
+          transition:all .2s ease;border-radius:8px;margin:0 -8px;padding-left:8px;padding-right:8px;
+        }
+        .sh-section-row:hover{background:#f8fafc;transform:translateX(4px)}
+
+        .sh-tip-card{
+          display:flex;align-items:center;gap:8px;
+          padding:8px 12px;background:#fffbeb;border-radius:10px;
+          border:1px solid #fde68a;cursor:pointer;
+          transition:all .2s ease;
+        }
+        .sh-tip-card:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(245,158,11,.1);background:#fef3c7}
+
+        .sh-upgrade-banner{
+          position:relative;overflow:hidden;border-radius:12px;padding:20px 24px;
+          background:linear-gradient(-45deg,#f5f3ff,#ede9fe,#ddd6fe,#e9d5ff);
+          background-size:300% 300%;
+          animation:sh-gradient-move 8s ease infinite;
+          transition:all .25s ease;
+        }
+        .sh-upgrade-banner:hover{box-shadow:0 6px 20px rgba(139,92,246,.12);transform:translateY(-2px)}
+        .sh-upgrade-banner::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.4) 50%,transparent 60%);
+          background-size:200% 200%;animation:sh-shimmer 4s ease-in-out infinite;pointer-events:none;
+        }
       `}</style>
       <div style={{ maxWidth: "100%", overflowX: "hidden" }}>
       <BlockStack gap="500">
@@ -250,71 +388,74 @@ export default function DashboardPage() {
         {/* ═══ STORE SCORE + PREMIUM (returning users) ═══ */}
         {!isNewUser && (
           <div className="sh-two-col">
-            <Card>
-              <BlockStack gap="300">
-                <InlineStack align="space-between" blockAlign="center">
-                  <InlineStack gap="200" blockAlign="center">
-                    <span style={{ fontSize: 20 }}>{hasAnalysis ? scoreEmoji : "📊"}</span>
-                    <Text as="h2" variant="headingMd">Store Score</Text>
-                  </InlineStack>
-                  {hasAnalysis && (
-                    <Badge tone={storeScore >= 80 ? "success" : storeScore >= 50 ? "warning" : "critical"}>{scoreLabel}</Badge>
-                  )}
-                </InlineStack>
-
-                {/* No analysis yet */}
-                {!hasAnalysis && (
-                  <Box padding="400" background="bg-surface-secondary" borderRadius="200">
-                    <BlockStack gap="300" inlineAlign="center">
-                      <Text as="p" variant="bodySm" tone="subdued">
-                        Run your first analysis to see your store score
-                      </Text>
-                      <Button variant="primary" onClick={() => navigate("/app/analyzer")}>
-                        Analyze Now
-                      </Button>
-                    </BlockStack>
-                  </Box>
-                )}
-
-                {/* Has analysis results */}
-                {hasAnalysis && (
+            {/* ── STORE SCORE ── */}
+            <div className="sh-score-card" onClick={() => navigate("/app/analyzer")} onKeyDown={() => {}} role="button" tabIndex={0} style={{ cursor: "pointer" }}>
+              <div style={{ position: "relative", zIndex: 1 }}>
+                {!hasAnalysis ? (
+                  <div className="sh-glass-inner" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "24px 20px" }}>
+                    <span style={{ fontSize: 40 }}>📊</span>
+                    <span style={{ color: "#475569", fontSize: 14 }}>Run your first analysis to see your score</span>
+                    <Button variant="primary" onClick={() => navigate("/app/analyzer")}>Analyze Now</Button>
+                  </div>
+                ) : (
                   <>
-                    <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                      <div style={{
-                        width: 60, height: 60, borderRadius: "50%",
-                        background: `conic-gradient(${scoreColor} ${storeScore * 3.6}deg, #e5e7eb ${storeScore * 3.6}deg)`,
-                        display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-                      }}>
-                        <div style={{
-                          width: 46, height: 46, borderRadius: "50%", background: "white",
-                          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                        }}>
-                          <span style={{ fontSize: 17, fontWeight: 800, color: scoreColor }}>{storeScore}</span>
-                          <span style={{ fontSize: 8, color: "#6b7280" }}>/ 100</span>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+                      <div>
+                        <span style={{ color: "#4f46e5", fontSize: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: 1.2 }}>Store Score</span>
+                        <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>
+                          {analyzedAt ? `Updated ${formatAnalyzedAt(analyzedAt)}` : ""}
                         </div>
                       </div>
-                      <BlockStack gap="100">
-                        <Text as="p" variant="bodySm" tone="subdued">{`${activeCount} of ${totalTypes} pages optimized`}</Text>
-                        <InlineStack gap="100" wrap>
-                          {missingCritical.length > 0 && <Badge tone="critical" size="small">{`${missingCritical.length} critical`}</Badge>}
-                          {missingHigh.length > 0 && <Badge tone="warning" size="small">{`${missingHigh.length} high`}</Badge>}
-                        </InlineStack>
-                        {analyzedAt && (
-                          <Text as="p" variant="bodySm" tone="subdued">
-                            Updated {formatAnalyzedAt(analyzedAt)}
-                          </Text>
-                        )}
-                      </BlockStack>
+                      <span className={`sh-badge-glow ${storeScore >= 80 ? 'sh-badge-success' : storeScore >= 50 ? 'sh-badge-warning' : 'sh-badge-critical'}`}>
+                        {scoreLabel}
+                      </span>
                     </div>
-                    <InlineStack gap="200" align="space-between">
-                      <Button size="slim" onClick={() => navigate("/app/analyzer")} icon={undefined}>
-                        🔄 Re-analyze
-                      </Button>
-                    </InlineStack>
+
+                    <div className="sh-glass-inner">
+                      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+                        <div className="sh-score-ring" style={{ position: "relative", width: 90, height: 90, flexShrink: 0 }}>
+                          <svg width="90" height="90" viewBox="0 0 90 90" style={{ transform: "rotate(-90deg)" }}>
+                            <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(99,102,241,0.15)" strokeWidth="7" />
+                            <circle
+                              className="sh-ring-progress"
+                              cx="45" cy="45" r="38" fill="none"
+                              stroke={storeScore >= 80 ? "#22c55e" : storeScore >= 50 ? "#eab308" : "#ef4444"}
+                              strokeWidth="7"
+                              strokeDasharray="251"
+                              strokeDashoffset="251"
+                              style={{ "--sh-ring-target": `${251 - (storeScore / 100) * 251}` } as React.CSSProperties}
+                            />
+                          </svg>
+                          <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
+                            <span style={{ fontSize: 28, fontWeight: 800, color: "#1e1b4b", lineHeight: 1 }}>{storeScore}</span>
+                            <span style={{ fontSize: 10, color: "#6b7280" }}>/ 100</span>
+                          </div>
+                        </div>
+
+                        <div style={{ flex: 1 }}>
+                          <div style={{ color: "#334155", fontSize: 14, fontWeight: 500, marginBottom: 10 }}>
+                            {activeCount} of {totalTypes} pages optimized
+                          </div>
+                          <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                            {missingCritical.length > 0 && (
+                              <span className="sh-badge-glow sh-badge-critical">🔴 {missingCritical.length} critical</span>
+                            )}
+                            {missingHigh.length > 0 && (
+                              <span className="sh-badge-glow sh-badge-warning">🟡 {missingHigh.length} high</span>
+                            )}
+                          </div>
+                          <div style={{ marginTop: 12 }}>
+                            <Button size="slim" variant="primary" onClick={() => navigate("/app/analyzer")}>
+                              🔄 Re-analyze
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </>
                 )}
-              </BlockStack>
-            </Card>
+              </div>
+            </div>
 
             {!isPremium ? (
               <Card padding="0">
@@ -341,28 +482,35 @@ export default function DashboardPage() {
                 </div>
               </Card>
             ) : (
-              <Card>
-                <BlockStack gap="400">
-                  <InlineStack gap="200" blockAlign="center">
-                    <span style={{ fontSize: 22 }}>👑</span>
-                    <Text as="h2" variant="headingMd">Premium Active</Text>
-                    <Badge tone="success">Active</Badge>
-                  </InlineStack>
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
-                    {[
-                      { label: "Owned", value: `${totalOwned}`, icon: "📦" },
-                      { label: "Available", value: `${totalAvailable}`, icon: "🔍" },
-                      { label: "Free/mo", value: "5", icon: "🎁" },
-                      { label: "Blocks", value: "All 16", icon: "⚡" },
-                    ].map((stat) => (
-                      <div key={stat.label} style={{ background: "#f9fafb", borderRadius: 10, padding: "10px 14px", textAlign: "center" }}>
-                        <Text as="p" variant="bodySm" tone="subdued">{stat.icon} {stat.label}</Text>
-                        <Text as="p" variant="headingSm">{stat.value}</Text>
+              <div className="sh-premium-card">
+                <div style={{ position: "relative", zIndex: 1 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 14 }}>
+                    <span className="sh-crown">👑</span>
+                    <div>
+                      <span style={{ color: "#047857", fontSize: 12, fontWeight: 700, textTransform: "uppercase" as const, letterSpacing: 1.2 }}>Premium</span>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 2 }}>
+                        <span style={{ color: "#1e293b", fontSize: 16, fontWeight: 700 }}>Active</span>
+                        <span className="sh-badge-glow sh-badge-success">✓</span>
                       </div>
-                    ))}
+                    </div>
                   </div>
-                </BlockStack>
-              </Card>
+                  <div className="sh-glass-inner" style={{ padding: 12 }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
+                      {[
+                        { label: "Owned", value: `${totalOwned}`, icon: "📦" },
+                        { label: "Available", value: `${totalAvailable}`, icon: "🔍" },
+                        { label: "Free/mo", value: "5", icon: "🎁" },
+                        { label: "Blocks", value: "All 16", icon: "⚡" },
+                      ].map((stat) => (
+                        <div key={stat.label} className="sh-glass-stat">
+                          <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>{stat.icon} {stat.label}</div>
+                          <div style={{ color: "#047857", fontSize: 20, fontWeight: 700 }}>{stat.value}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
             )}
           </div>
         )}
@@ -378,7 +526,7 @@ export default function DashboardPage() {
           ].map((a) => (
             <div key={a.title} className="sh-action-card" onClick={() => navigate(a.url)} onKeyDown={() => {}} role="button" tabIndex={0}>
               <BlockStack gap="100" inlineAlign="center">
-                <span style={{ fontSize: 26 }}>{a.icon}</span>
+                <span className="sh-action-icon">{a.icon}</span>
                 <Text as="p" variant="headingSm">{a.title}</Text>
                 <Text as="p" variant="bodySm" tone="subdued">{a.subtitle}</Text>
               </BlockStack>
@@ -387,29 +535,24 @@ export default function DashboardPage() {
         </div>
 
         {/* ═══ TRY BEFORE YOU BUY ═══ */}
-        <Card padding="0">
-          <div style={{
-            background: "linear-gradient(135deg, #0c4a6e 0%, #0369a1 40%, #0ea5e9 100%)",
-            borderRadius: 12, padding: "16px 20px",
-          }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-              <div style={{
-                width: 40, height: 40, borderRadius: 10,
-                background: "rgba(255,255,255,0.15)",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: 20, flexShrink: 0,
-              }}>✨</div>
-              <div style={{ flex: 1, minWidth: 120 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                  <Text as="h2" variant="headingSm"><span style={{ color: "white" }}>Try Before You Buy</span></Text>
-                  <Badge tone="info">24h Free</Badge>
-                </div>
-                <Text as="p" variant="bodySm"><span style={{ color: "rgba(255,255,255,0.8)" }}>Preview any section in a demo theme</span></Text>
+        <div className="sh-try-banner" onClick={() => navigate("/app/explore")} onKeyDown={() => {}} role="button" tabIndex={0} style={{ cursor: "pointer" }}>
+          <div className="sh-glass-inner" style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <div style={{
+              width: 40, height: 40, borderRadius: 10,
+              background: "rgba(59,130,246,0.12)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: 20, flexShrink: 0,
+            }}>✨</div>
+            <div style={{ flex: 1, minWidth: 120 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                <Text as="h2" variant="headingSm">Try Before You Buy</Text>
+                <Badge tone="info">24h Free</Badge>
               </div>
-              <Button size="slim" onClick={() => navigate("/app/explore")}>Browse Sections</Button>
+              <Text as="p" variant="bodySm" tone="subdued">Preview any section in a demo theme</Text>
             </div>
+            <Button size="slim" onClick={() => navigate("/app/explore")}>Browse Sections</Button>
           </div>
-        </Card>
+        </div>
 
         {/* ═══ MY SECTIONS ═══ */}
         <Card>
@@ -434,7 +577,7 @@ export default function DashboardPage() {
                   <div key={section.id}>
                     {index > 0 && <Divider />}
                     <div
-                      style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 0", cursor: "pointer" }}
+                      className="sh-section-row"
                       onClick={() => navigate(`/app/section?id=${section.id}`)}
                       onKeyDown={() => {}} role="button" tabIndex={0}
                     >
@@ -468,11 +611,8 @@ export default function DashboardPage() {
               </InlineStack>
               <div className="sh-tips">
                 {[...missingCritical, ...missingHigh].slice(0, 4).map((item) => (
-                  <div key={item.key} style={{
-                    display: "flex", alignItems: "center", gap: 8,
-                    padding: "8px 12px", background: "#fef9f0", borderRadius: 10,
-                    border: "1px solid #fde68a", cursor: "pointer",
-                  }} onClick={() => navigate("/app/explore")} onKeyDown={() => {}} role="button" tabIndex={0}>
+                  <div key={item.key} className="sh-tip-card"
+                    onClick={() => navigate("/app/explore")} onKeyDown={() => {}} role="button" tabIndex={0}>
                     <span style={{ fontSize: 16 }}>{item.icon}</span>
                     <Text as="p" variant="bodySm" fontWeight="semibold">{item.label}</Text>
                   </div>
@@ -485,21 +625,16 @@ export default function DashboardPage() {
 
         {/* ═══ PREMIUM UPGRADE CTA ═══ */}
         {!isPremium && (
-          <Card padding="0">
-            <div style={{
-              background: "linear-gradient(135deg, #7c3aed 0%, #6366f1 50%, #8b5cf6 100%)",
-              borderRadius: 12, padding: "20px 24px",
-            }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
-                <span style={{ fontSize: 28 }}>👑</span>
-                <div style={{ flex: 1, minWidth: 160 }}>
-                  <Text as="h2" variant="headingMd"><span style={{ color: "white" }}>Unlock All Sections</span></Text>
-                  <Text as="p" variant="bodySm"><span style={{ color: "rgba(255,255,255,0.8)" }}>Get every section with Premium – €8/mo, cancel anytime</span></Text>
-                </div>
-                <Button variant="primary" onClick={() => navigate("/app/premium")}>Upgrade to Premium →</Button>
+          <div className="sh-upgrade-banner" onClick={() => navigate("/app/premium")} onKeyDown={() => {}} role="button" tabIndex={0} style={{ cursor: "pointer" }}>
+            <div className="sh-glass-inner" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+              <span className="sh-crown">👑</span>
+              <div style={{ flex: 1, minWidth: 160 }}>
+                <Text as="h2" variant="headingMd">Unlock All Sections</Text>
+                <Text as="p" variant="bodySm" tone="subdued">Get every section with Premium – €8/mo, cancel anytime</Text>
               </div>
+              <Button variant="primary" onClick={() => navigate("/app/premium")}>Upgrade to Premium →</Button>
             </div>
-          </Card>
+          </div>
         )}
 
         {/* ═══ FOOTER ═══ */}

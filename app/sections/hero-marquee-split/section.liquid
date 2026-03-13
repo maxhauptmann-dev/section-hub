@@ -1,0 +1,774 @@
+{% comment %}
+  Section Hub – Hero Marquee Split v1.0
+  Bold split-screen hero with rotating diagonal marquee band,
+  oversized heading, floating tags, rule accents, stagger reveals.
+  Prefix: shms-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font   = section.settings.heading_font
+  assign body_font      = section.settings.body_font
+
+  assign bg_color       = section.settings.bg_color
+  assign height         = section.settings.height
+  assign height_m       = section.settings.height_mobile
+  assign text_align     = section.settings.text_align
+
+  assign left_bg        = section.settings.left_bg_color
+  assign right_bg       = section.settings.right_bg_color
+  assign left_image     = section.settings.left_image
+  assign right_image    = section.settings.right_image
+  assign left_overlay   = section.settings.left_overlay_color
+  assign left_ov_op     = section.settings.left_overlay_opacity
+  assign right_overlay  = section.settings.right_overlay_color
+  assign right_ov_op    = section.settings.right_overlay_opacity
+
+  assign band_show      = section.settings.show_marquee_band
+  assign band_text      = section.settings.band_text
+  assign band_bg        = section.settings.band_bg
+  assign band_text_c    = section.settings.band_text_color
+  assign band_dot_c     = section.settings.band_dot_color
+  assign band_angle     = section.settings.band_angle
+  assign band_speed     = section.settings.band_speed
+  assign band_font_size = section.settings.band_font_size
+  assign band_py        = section.settings.band_padding
+  assign band_reverse   = section.settings.band_reverse
+
+  assign show_tag       = section.settings.show_tag
+  assign tag_text       = section.settings.tag_text
+  assign tag_bg         = section.settings.tag_bg
+  assign tag_color      = section.settings.tag_color
+  assign tag_dot        = section.settings.tag_dot_color
+  assign tag_border     = section.settings.tag_border_color
+
+  assign show_hr        = section.settings.show_hr
+  assign hr_color       = section.settings.hr_color
+  assign hr_width       = section.settings.hr_width
+
+  assign heading        = section.settings.heading
+  assign heading_line2  = section.settings.heading_line2
+  assign heading_style  = section.settings.heading_style
+  assign heading_color  = section.settings.heading_color
+  assign outline_w      = section.settings.outline_width
+
+  assign subheading     = section.settings.subheading
+  assign sub_color      = section.settings.subheading_color
+
+  assign btn1_text      = section.settings.btn1_text
+  assign btn1_link      = section.settings.btn1_link
+  assign btn1_style     = section.settings.btn1_style
+  assign btn1_bg        = section.settings.btn1_bg
+  assign btn1_text_c    = section.settings.btn1_text_color
+  assign btn1_arrow     = section.settings.btn1_show_arrow
+  assign btn_radius     = section.settings.btn_radius
+
+  assign btn2_text      = section.settings.btn2_text
+  assign btn2_link      = section.settings.btn2_link
+  assign btn2_style     = section.settings.btn2_style
+  assign btn2_color     = section.settings.btn2_color
+  assign btn2_border    = section.settings.btn2_border_color
+  assign btn2_arrow     = section.settings.btn2_show_arrow
+
+  assign float_left     = section.settings.float_label_left
+  assign float_right    = section.settings.float_label_right
+  assign float_color    = section.settings.float_label_color
+
+  assign show_scroll    = section.settings.show_scroll
+  assign scroll_color   = section.settings.scroll_color
+  assign scroll_text    = section.settings.scroll_text
+
+  assign anim_style     = section.settings.reveal_animation
+-%}
+
+{%- comment -%} Compute overlay rgba values {%- endcomment -%}
+{%- assign lo_r = left_overlay | color_extract: 'red' -%}
+{%- assign lo_g = left_overlay | color_extract: 'green' -%}
+{%- assign lo_b = left_overlay | color_extract: 'blue' -%}
+{%- assign lo_a = left_ov_op | divided_by: 100.0 -%}
+{%- assign ro_r = right_overlay | color_extract: 'red' -%}
+{%- assign ro_g = right_overlay | color_extract: 'green' -%}
+{%- assign ro_b = right_overlay | color_extract: 'blue' -%}
+{%- assign ro_a = right_ov_op | divided_by: 100.0 -%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shms-wrap--{{ section.id }} {
+    --shms-bg: {{ bg_color }};
+    --shms-height: {{ height }}vh;
+    --shms-height-m: {{ height_m }}vh;
+    --shms-text-align: {{ text_align }};
+
+    --shms-left-bg: {{ left_bg }};
+    --shms-right-bg: {{ right_bg }};
+
+    --shms-band-bg: {{ band_bg }};
+    --shms-band-text: {{ band_text_c }};
+    --shms-band-dot: {{ band_dot_c }};
+    --shms-band-angle: {{ band_angle }}deg;
+    --shms-band-speed: {{ band_speed }}s;
+    --shms-band-font: {{ band_font_size }}px;
+    --shms-band-py: {{ band_py }}px;
+
+    --shms-tag-bg: {{ tag_bg }};
+    --shms-tag-color: {{ tag_color }};
+    --shms-tag-dot: {{ tag_dot }};
+    --shms-tag-border: {{ tag_border }};
+
+    --shms-hr-color: {{ hr_color }};
+    --shms-hr-width: {{ hr_width }}px;
+
+    --shms-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shms-heading-fw: {{ heading_font.weight }};
+    --shms-heading-fs: {{ heading_font.style }};
+    --shms-heading-color: {{ heading_color }};
+    --shms-outline-w: {{ outline_w }}px;
+
+    --shms-sub-color: {{ sub_color }};
+
+    --shms-btn1-bg: {{ btn1_bg }};
+    --shms-btn1-text: {{ btn1_text_c }};
+    --shms-btn2-color: {{ btn2_color }};
+    --shms-btn2-border: {{ btn2_border }};
+    --shms-btn-radius: {{ btn_radius }}px;
+
+    --shms-float-color: {{ float_color }};
+    --shms-scroll-color: {{ scroll_color }};
+
+    --shms-content-align-items: {% if text_align == 'center' %}center{% elsif text_align == 'right' %}flex-end{% else %}flex-start{% endif %};
+  }
+</style>
+
+<section class="shms-wrap shms-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- comment -%} Left panel {%- endcomment -%}
+  <div class="shms-panel shms-panel--left">
+    {%- if left_image != blank -%}
+      <div class="shms-panel__image">
+        <img
+          src="{{ left_image | image_url: width: 1600 }}"
+          srcset="{{ left_image | image_url: width: 600 }} 600w,
+                  {{ left_image | image_url: width: 1000 }} 1000w,
+                  {{ left_image | image_url: width: 1600 }} 1600w"
+          sizes="50vw"
+          alt="{{ left_image.alt | escape }}"
+          loading="eager"
+          fetchpriority="high"
+          width="{{ left_image.width }}"
+          height="{{ left_image.height }}"
+        >
+      </div>
+    {%- endif -%}
+    <div class="shms-panel__overlay" style="background: rgba({{ lo_r }},{{ lo_g }},{{ lo_b }},{{ lo_a }});"></div>
+
+    {%- if float_left != blank -%}
+      <div class="shms-float-label shms-float-label--bl shms-reveal shms-reveal--d5">{{ float_left }}</div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Right panel {%- endcomment -%}
+  <div class="shms-panel shms-panel--right">
+    {%- if right_image != blank -%}
+      <div class="shms-panel__image">
+        <img
+          src="{{ right_image | image_url: width: 1600 }}"
+          srcset="{{ right_image | image_url: width: 600 }} 600w,
+                  {{ right_image | image_url: width: 1000 }} 1000w,
+                  {{ right_image | image_url: width: 1600 }} 1600w"
+          sizes="50vw"
+          alt="{{ right_image.alt | escape }}"
+          loading="eager"
+          width="{{ right_image.width }}"
+          height="{{ right_image.height }}"
+        >
+      </div>
+    {%- endif -%}
+    <div class="shms-panel__overlay" style="background: rgba({{ ro_r }},{{ ro_g }},{{ ro_b }},{{ ro_a }});"></div>
+
+    {%- if float_right != blank -%}
+      <div class="shms-float-label shms-float-label--br shms-reveal shms-reveal--d5">{{ float_right }}</div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Diagonal marquee band {%- endcomment -%}
+  {%- if band_show and band_text != blank -%}
+    <div class="shms-marquee-band">
+      <div class="shms-marquee-track{% if band_reverse %} shms-marquee-track--reverse{% endif %}">
+        {%- for i in (1..12) -%}
+          <span class="shms-marquee-item">
+            <span class="shms-marquee-dot"></span>
+            {{ band_text }}
+          </span>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Content overlay {%- endcomment -%}
+  <div class="shms-content" data-align="{{ text_align }}" style="--shms-text-align: {{ text_align }}; text-align: {{ text_align }};">
+
+    {%- if show_tag and tag_text != blank -%}
+      <div class="shms-tag shms-reveal shms-reveal--d1">
+        <span class="shms-tag__icon"></span>
+        {{ tag_text }}
+      </div>
+    {%- endif -%}
+
+    {%- if show_hr -%}
+      <hr class="shms-hr shms-{% if anim_style == 'clip' %}clip-in{% else %}reveal{% endif %} shms-reveal--d2">
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <h2 class="shms-heading{% if heading_style == 'outline' %} shms-heading--outline{% elsif heading_style == 'mixed' %} shms-heading--mixed{% endif %} shms-{% if anim_style == 'scale' %}scale-in{% else %}reveal{% endif %} shms-reveal--d3">
+        {{ heading }}
+        {%- if heading_line2 != blank -%}
+          <br>
+          {%- if heading_style == 'mixed' -%}
+            <span>{{ heading_line2 }}</span>
+          {%- else -%}
+            {{ heading_line2 }}
+          {%- endif -%}
+        {%- endif -%}
+      </h2>
+    {%- endif -%}
+
+    {%- if subheading != blank -%}
+      <p class="shms-subheading shms-reveal shms-reveal--d4">{{ subheading }}</p>
+    {%- endif -%}
+
+    {%- if btn1_text != blank or btn2_text != blank -%}
+      <div class="shms-buttons shms-reveal shms-reveal--d5">
+        {%- if btn1_text != blank -%}
+          <a href="{{ btn1_link | default: '#' }}" class="shms-btn shms-btn--{{ btn1_style }}">
+            {{ btn1_text }}
+            {%- if btn1_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+        {%- if btn2_text != blank -%}
+          <a href="{{ btn2_link | default: '#' }}" class="shms-btn shms-btn--{{ btn2_style }}">
+            {{ btn2_text }}
+            {%- if btn2_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Scroll indicator {%- endcomment -%}
+  {%- if show_scroll -%}
+    <div class="shms-scroll shms-reveal shms-reveal--d5">
+      <div class="shms-scroll__line"></div>
+      {%- if scroll_text != blank -%}
+        <span class="shms-scroll__text">{{ scroll_text }}</span>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "SS - Hero Marquee Split",
+  "tag": "section",
+  "class": "shms-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Section height (desktop)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Section height (mobile)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Left panel"
+    },
+    {
+      "type": "color",
+      "id": "left_bg_color",
+      "label": "Left background color",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "image_picker",
+      "id": "left_image",
+      "label": "Left image"
+    },
+    {
+      "type": "color",
+      "id": "left_overlay_color",
+      "label": "Left overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "left_overlay_opacity",
+      "label": "Left overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 30,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Right panel"
+    },
+    {
+      "type": "color",
+      "id": "right_bg_color",
+      "label": "Right background color",
+      "default": "#f2efe9"
+    },
+    {
+      "type": "image_picker",
+      "id": "right_image",
+      "label": "Right image"
+    },
+    {
+      "type": "color",
+      "id": "right_overlay_color",
+      "label": "Right overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "right_overlay_opacity",
+      "label": "Right overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 10,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Marquee band"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_marquee_band",
+      "label": "Show marquee band",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "band_text",
+      "label": "Marquee text",
+      "default": "New Season — Shop Now — Free Shipping"
+    },
+    {
+      "type": "color",
+      "id": "band_bg",
+      "label": "Band background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "band_text_color",
+      "label": "Band text color",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "color",
+      "id": "band_dot_color",
+      "label": "Band dot color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "range",
+      "id": "band_angle",
+      "label": "Band rotation angle",
+      "min": -8,
+      "max": 8,
+      "step": 1,
+      "default": -3,
+      "unit": "°"
+    },
+    {
+      "type": "range",
+      "id": "band_speed",
+      "label": "Marquee speed",
+      "min": 8,
+      "max": 50,
+      "step": 2,
+      "default": 20,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "band_font_size",
+      "label": "Band font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "band_padding",
+      "label": "Band vertical padding",
+      "min": 6,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "band_reverse",
+      "label": "Reverse marquee direction",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow tag"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tag",
+      "label": "Show tag",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "tag_text",
+      "label": "Tag text",
+      "default": "Spring 2025"
+    },
+    {
+      "type": "color",
+      "id": "tag_bg",
+      "label": "Tag background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "tag_color",
+      "label": "Tag text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tag_dot_color",
+      "label": "Tag dot color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "color",
+      "id": "tag_border_color",
+      "label": "Tag border color",
+      "default": "#333333"
+    },
+    {
+      "type": "header",
+      "content": "Decorative line"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_hr",
+      "label": "Show horizontal line",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "hr_color",
+      "label": "Line color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "range",
+      "id": "hr_width",
+      "label": "Line width",
+      "min": 30,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading line 1",
+      "default": "Define Your"
+    },
+    {
+      "type": "text",
+      "id": "heading_line2",
+      "label": "Heading line 2",
+      "default": "Own Style"
+    },
+    {
+      "type": "select",
+      "id": "heading_style",
+      "label": "Heading style",
+      "options": [
+        { "value": "solid", "label": "Solid fill" },
+        { "value": "outline", "label": "Outline stroke" },
+        { "value": "mixed", "label": "Line 1 solid, line 2 outline" }
+      ],
+      "default": "mixed"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "outline_width",
+      "label": "Outline stroke width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "unit": "px",
+      "info": "Only used for outline/mixed styles."
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "A curated collection of bold statements and timeless pieces. Made for those who dare to stand out."
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#aaaaaa"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "reveal_animation",
+      "label": "Reveal animation style",
+      "options": [
+        { "value": "slide", "label": "Slide up" },
+        { "value": "clip", "label": "Clip reveal" },
+        { "value": "scale", "label": "Scale in" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "underline", "label": "Underline" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "ghost", "label": "Glass ghost" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "btn1_bg",
+      "label": "Button 1 background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn1_text_color",
+      "label": "Button 1 text color",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn1_show_arrow",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text",
+      "default": "Lookbook"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "underline", "label": "Underline" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "ghost", "label": "Glass ghost" }
+      ],
+      "default": "underline"
+    },
+    {
+      "type": "color",
+      "id": "btn2_color",
+      "label": "Button 2 text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border_color",
+      "label": "Button 2 border color",
+      "default": "#666666"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn2_show_arrow",
+      "label": "Show arrow icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Floating labels"
+    },
+    {
+      "type": "text",
+      "id": "float_label_left",
+      "label": "Bottom-left label",
+      "default": "Vol. 04 — Editorial"
+    },
+    {
+      "type": "text",
+      "id": "float_label_right",
+      "label": "Bottom-right label",
+      "default": "Photography by Studio X"
+    },
+    {
+      "type": "color",
+      "id": "float_label_color",
+      "label": "Label color",
+      "default": "#777777"
+    },
+    {
+      "type": "header",
+      "content": "Scroll indicator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll",
+      "label": "Show scroll indicator",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "scroll_text",
+      "label": "Scroll text",
+      "default": "Scroll"
+    },
+    {
+      "type": "color",
+      "id": "scroll_color",
+      "label": "Scroll indicator color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Marquee Split"
+    }
+  ]
+}
+{% endschema %}

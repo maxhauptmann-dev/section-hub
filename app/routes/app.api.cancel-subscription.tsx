@@ -40,7 +40,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     );
 
     const json = await response.json();
-    console.log("Subscription cancel response:", JSON.stringify(json, null, 2));
 
     const result = json.data?.appSubscriptionCancel;
 

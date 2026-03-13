@@ -1,0 +1,50 @@
+{
+  "id": "scroll-counter-reveal",
+  "name": "SS - Counter Reveal",
+  "description": "Dramatic scroll-triggered stats section where numbers count up as they enter the viewport. Each stat block reveals with staggered animation. Features customizable number formatting (suffix/prefix), reveal directions, gradient backgrounds, accent lines, decorative shapes, and optional background image with parallax. 60+ settings for maximum flexibility.",
+  "category": ["Hero", "Scroll Triggered"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Counter",
+    "Statistics",
+    "Numbers",
+    "Animation",
+    "Reveal",
+    "Count Up",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0f172a",
+  "previews": [
+    {
+      "src": "/previews/scroll-counter-reveal/default.webp",
+      "alt": "Scroll Counter Reveal - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

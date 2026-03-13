@@ -1,0 +1,50 @@
+{
+  "id": "scroll-highlight-text",
+  "name": "SS - Highlight Text",
+  "description": "Apple-inspired scroll-triggered text where words gradually highlight from muted to vivid as the user scrolls. Sticky full-viewport experience with large editorial typography, gradient word coloring, and optional background image with parallax. Multiple text blocks that reveal sequentially. 50+ settings.",
+  "category": ["Hero", "Scroll Triggered"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Text",
+    "Highlight",
+    "Apple",
+    "Editorial",
+    "Typography",
+    "Sticky",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/scroll-highlight-text/default.webp",
+      "alt": "Scroll Highlight Text - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

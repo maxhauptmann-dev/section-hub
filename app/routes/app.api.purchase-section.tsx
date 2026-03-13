@@ -83,7 +83,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             currencyCode: section.price?.currency || "EUR",
           },
           returnUrl,
-          test: true, // TEST MODE – set to false for production
+          test: false,
         },
       },
     );

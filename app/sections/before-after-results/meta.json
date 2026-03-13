@@ -1,0 +1,53 @@
+{
+  "id": "before-after-results",
+  "name": "Before / After Results Slideshow",
+  "description": "A high-converting slideshow combining a before/after drag-slider with rich text content: colored heading highlights, icon bullet lists, review/rating blocks, and CTA buttons. Multiple slides with dot navigation. Fully customizable fonts, colors, layout direction, card background, and rating display. Perfect for product results, transformations, and social proof.",
+  "category": ["Conversion", "Image", "before and after", "Social Proof"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 12,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Before After",
+    "Slider",
+    "Comparison",
+    "Slideshow",
+    "Reviews",
+    "Rating",
+    "Bullets",
+    "Social Proof",
+    "Conversion",
+    "Mobile First"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f9f5ef",
+  "previews": [
+    {
+      "src": "/previews/before-after-results/default.webp",
+      "alt": "Before / After Results Slideshow",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-09",
+  "updatedAt": "2026-03-09",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-09",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

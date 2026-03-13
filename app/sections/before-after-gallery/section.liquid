@@ -1,0 +1,1032 @@
+{%- comment -%}
+  Section Hub — Before / After Gallery v1
+  Interactive gallery grid with unlimited before/after image pairs.
+  Hover/tap to reveal the "after" image with smooth transitions.
+  Click to open fullscreen lightbox with drag-slider.
+  Optional category filter tabs, flexible grid columns, multiple
+  reveal animations, and full color/font customization.
+{%- endcomment -%}
+
+{%- assign sid = section.id -%}
+{%- assign hf = section.settings.heading_font -%}
+{%- assign bf = section.settings.body_font -%}
+{{ hf | font_face: font_display: 'swap' }}
+{{ bf | font_face: font_display: 'swap' }}
+
+<style>
+/* ── Reset ── */
+#bag-{{ sid }},#bag-{{ sid }} *,#bag-{{ sid }} *::before,#bag-{{ sid }} *::after{box-sizing:border-box;}
+
+/* ── Root ── */
+#bag-{{ sid }}{
+  --c-bg:{{ section.settings.bg_color }};
+  --c-card:{{ section.settings.card_bg }};
+  --c-text:{{ section.settings.text_color }};
+  --c-muted:{{ section.settings.muted_color }};
+  --c-accent:{{ section.settings.accent_color }};
+  --c-badge-bg:{{ section.settings.badge_bg }};
+  --c-badge-text:{{ section.settings.badge_text }};
+  --c-filter-bg:{{ section.settings.filter_bg }};
+  --c-filter-active:{{ section.settings.filter_active_bg }};
+  --c-filter-text:{{ section.settings.filter_text }};
+  --c-filter-active-text:{{ section.settings.filter_active_text }};
+  --c-overlay:{{ section.settings.overlay_color }};
+  --c-overlay-text:{{ section.settings.overlay_text }};
+  --c-handle:{{ section.settings.slider_handle_color }};
+  --c-line:{{ section.settings.slider_line_color }};
+  --r-card:{{ section.settings.card_radius }}px;
+  --mw:{{ section.settings.max_width }}px;
+  --cols:{{ section.settings.columns_mobile }};
+  --gap:{{ section.settings.grid_gap }}px;
+  --font-heading:{{ hf.family }},{{ hf.fallback_families }};
+  --font-body:{{ bf.family }},{{ bf.fallback_families }};
+  --font-h-style:{{ hf.style }};
+  --font-b-style:{{ bf.style }};
+  background:var(--c-bg);color:var(--c-text);
+  padding:{{ section.settings.pt_mobile }}px 0 {{ section.settings.pb_mobile }}px;
+  font-family:var(--font-body);font-style:var(--font-b-style);
+  -webkit-font-smoothing:antialiased;
+}
+@media(min-width:750px){
+  #bag-{{ sid }}{
+    padding:{{ section.settings.pt }}px 0 {{ section.settings.pb }}px;
+    --cols:{{ section.settings.columns }};
+  }
+}
+
+/* ── Container ── */
+#bag-{{ sid }} .bag-wrap{width:90%;max-width:var(--mw);margin:0 auto;}
+
+/* ── Header ── */
+#bag-{{ sid }} .bag-header{
+  text-align:{{ section.settings.header_alignment }};
+  margin-bottom:{{ section.settings.header_mb }}px;
+}
+#bag-{{ sid }} .bag-title{
+  font-family:var(--font-heading);font-style:var(--font-h-style);
+  font-weight:{{ section.settings.heading_weight }};
+  font-size:{{ section.settings.heading_size_mobile }}px;
+  letter-spacing:{{ section.settings.heading_letter_spacing }}em;
+  line-height:1.15;color:var(--c-text);margin:0 0 8px;
+}
+@media(min-width:750px){
+  #bag-{{ sid }} .bag-title{font-size:{{ section.settings.heading_size }}px;}
+}
+#bag-{{ sid }} .bag-title-accent{color:var(--c-accent);}
+#bag-{{ sid }} .bag-subtitle{
+  font-family:var(--font-body);
+  font-size:{{ section.settings.subtitle_size }}px;
+  color:var(--c-muted);line-height:1.5;margin:0;
+  max-width:600px;
+  {% if section.settings.header_alignment == 'center' %}margin-left:auto;margin-right:auto;{% endif %}
+}
+
+/* ── Filters ── */
+#bag-{{ sid }} .bag-filters{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-bottom:28px;
+  {% if section.settings.header_alignment == 'center' %}justify-content:center;{% endif %}
+}
+#bag-{{ sid }} .bag-filter{
+  font-family:var(--font-body);font-size:14px;font-weight:600;
+  padding:8px 20px;border-radius:100px;border:none;cursor:pointer;
+  background:var(--c-filter-bg);color:var(--c-filter-text);
+  transition:all .25s ease;letter-spacing:.01em;
+}
+#bag-{{ sid }} .bag-filter:hover{opacity:.8;}
+#bag-{{ sid }} .bag-filter.active{
+  background:var(--c-filter-active);color:var(--c-filter-active-text);
+  box-shadow:0 2px 12px rgba(0,0,0,.1);
+}
+
+/* ── Grid ── */
+#bag-{{ sid }} .bag-grid{
+  display:grid;
+  grid-template-columns:repeat(var(--cols),1fr);
+  gap:var(--gap);
+}
+
+/* ── Card ── */
+#bag-{{ sid }} .bag-card{
+  position:relative;overflow:hidden;
+  border-radius:var(--r-card);
+  background:var(--c-card);
+  cursor:pointer;
+  {% if section.settings.card_shadow %}box-shadow:0 4px 24px rgba(0,0,0,.08);{% endif %}
+  {% if section.settings.card_border %}border:1px solid {{ section.settings.card_border_color }};{% endif %}
+  transition:transform .3s ease,box-shadow .3s ease;
+}
+#bag-{{ sid }} .bag-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,.12);
+}
+#bag-{{ sid }} .bag-card.bag-hidden{display:none;}
+
+/* Images */
+#bag-{{ sid }} .bag-card-images{
+  position:relative;
+  aspect-ratio:{{ section.settings.aspect_ratio }};
+  overflow:hidden;
+}
+#bag-{{ sid }} .bag-card-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;
+  transition:opacity {{ section.settings.reveal_speed }}ms {{ section.settings.reveal_easing }};
+}
+#bag-{{ sid }} .bag-card-img-after{
+  opacity:0;z-index:2;
+}
+
+/* Reveal: fade */
+{%- if section.settings.reveal_type == 'fade' -%}
+#bag-{{ sid }} .bag-card:hover .bag-card-img-after,
+#bag-{{ sid }} .bag-card.touched .bag-card-img-after{opacity:1;}
+{%- endif -%}
+
+/* Reveal: slide-left */
+{%- if section.settings.reveal_type == 'slide' -%}
+#bag-{{ sid }} .bag-card-img-after{
+  opacity:1;
+  clip-path:inset(0 100% 0 0);
+  transition:clip-path {{ section.settings.reveal_speed }}ms {{ section.settings.reveal_easing }};
+}
+#bag-{{ sid }} .bag-card:hover .bag-card-img-after,
+#bag-{{ sid }} .bag-card.touched .bag-card-img-after{
+  clip-path:inset(0 0 0 0);
+}
+{%- endif -%}
+
+/* Reveal: zoom */
+{%- if section.settings.reveal_type == 'zoom' -%}
+#bag-{{ sid }} .bag-card-img-after{
+  opacity:0;transform:scale(1.15);
+  transition:opacity {{ section.settings.reveal_speed }}ms {{ section.settings.reveal_easing }},
+             transform {{ section.settings.reveal_speed }}ms {{ section.settings.reveal_easing }};
+}
+#bag-{{ sid }} .bag-card:hover .bag-card-img-after,
+#bag-{{ sid }} .bag-card.touched .bag-card-img-after{
+  opacity:1;transform:scale(1);
+}
+{%- endif -%}
+
+/* Reveal: split */
+{%- if section.settings.reveal_type == 'split' -%}
+#bag-{{ sid }} .bag-card-img-after{
+  opacity:1;
+  clip-path:inset(0 50% 0 50%);
+  transition:clip-path {{ section.settings.reveal_speed }}ms {{ section.settings.reveal_easing }};
+}
+#bag-{{ sid }} .bag-card:hover .bag-card-img-after,
+#bag-{{ sid }} .bag-card.touched .bag-card-img-after{
+  clip-path:inset(0 0 0 0);
+}
+{%- endif -%}
+
+/* Badges */
+#bag-{{ sid }} .bag-badges{
+  position:absolute;top:12px;left:12px;z-index:5;
+  display:flex;gap:6px;pointer-events:none;
+}
+#bag-{{ sid }} .bag-badge{
+  font-family:var(--font-body);font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:6px;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1;
+  background:var(--c-badge-bg);color:var(--c-badge-text);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+}
+#bag-{{ sid }} .bag-badge-before{background:var(--c-badge-bg);color:var(--c-badge-text);}
+#bag-{{ sid }} .bag-badge-after{
+  opacity:0;
+  transition:opacity {{ section.settings.reveal_speed }}ms ease;
+}
+#bag-{{ sid }} .bag-card:hover .bag-badge-before,
+#bag-{{ sid }} .bag-card.touched .bag-badge-before{opacity:0;}
+#bag-{{ sid }} .bag-card:hover .bag-badge-after,
+#bag-{{ sid }} .bag-card.touched .bag-badge-after{opacity:1;}
+
+/* Hover icon */
+#bag-{{ sid }} .bag-hover-icon{
+  position:absolute;top:50%;left:50%;z-index:6;
+  transform:translate(-50%,-50%) scale(.8);
+  width:48px;height:48px;border-radius:50%;
+  background:rgba(0,0,0,.5);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;transition:opacity .25s ease,transform .25s ease;
+  pointer-events:none;backdrop-filter:blur(4px);
+}
+#bag-{{ sid }} .bag-card:hover .bag-hover-icon{
+  opacity:1;transform:translate(-50%,-50%) scale(1);
+}
+
+/* Card text */
+#bag-{{ sid }} .bag-card-info{
+  padding:{{ section.settings.card_text_padding }}px;
+}
+#bag-{{ sid }} .bag-card-name{
+  font-family:var(--font-heading);font-style:var(--font-h-style);
+  font-weight:700;font-size:15px;line-height:1.3;
+  color:var(--c-text);margin:0 0 2px;
+}
+#bag-{{ sid }} .bag-card-desc{
+  font-family:var(--font-body);font-size:13px;
+  color:var(--c-muted);line-height:1.4;margin:0;
+}
+#bag-{{ sid }} .bag-card-cat{
+  font-family:var(--font-body);font-size:11px;font-weight:600;
+  color:var(--c-accent);text-transform:uppercase;letter-spacing:.06em;
+  margin:0 0 4px;
+}
+
+/* ── Lightbox ── */
+#bag-{{ sid }} .bag-lb{
+  display:none;position:fixed;inset:0;z-index:99999;
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  align-items:center;justify-content:center;padding:24px;
+  opacity:0;transition:opacity .3s ease;
+}
+#bag-{{ sid }} .bag-lb.open{display:flex;opacity:1;}
+#bag-{{ sid }} .bag-lb-inner{
+  position:relative;max-width:900px;width:100%;
+  border-radius:16px;overflow:hidden;
+  box-shadow:0 20px 60px rgba(0,0,0,.4);
+  aspect-ratio:{{ section.settings.aspect_ratio }};
+  cursor:ew-resize;touch-action:pan-y;user-select:none;
+}
+#bag-{{ sid }} .bag-lb-img{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;display:block;pointer-events:none;
+}
+#bag-{{ sid }} .bag-lb-before{z-index:2;clip-path:inset(0 50% 0 0);}
+#bag-{{ sid }} .bag-lb-handle{
+  position:absolute;top:0;bottom:0;left:50%;z-index:5;
+  transform:translateX(-50%);width:3px;
+  display:flex;flex-direction:column;align-items:center;
+  pointer-events:none;
+}
+#bag-{{ sid }} .bag-lb-handle-line{flex:1;width:3px;background:var(--c-line);opacity:.9;}
+#bag-{{ sid }} .bag-lb-handle-knob{
+  width:48px;height:48px;flex-shrink:0;
+  border-radius:50%;background:var(--c-handle);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:auto;cursor:ew-resize;
+  box-shadow:0 2px 16px rgba(0,0,0,.3);
+}
+#bag-{{ sid }} .bag-lb-handle-knob svg{width:22px;height:22px;color:#111;}
+#bag-{{ sid }} .bag-lb-close{
+  position:absolute;top:16px;right:16px;z-index:10;
+  width:40px;height:40px;border-radius:50%;border:none;
+  background:rgba(0,0,0,.5);color:#fff;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);transition:background .2s;
+}
+#bag-{{ sid }} .bag-lb-close:hover{background:rgba(0,0,0,.7);}
+#bag-{{ sid }} .bag-lb-label{
+  position:absolute;z-index:6;bottom:16px;
+  font-family:var(--font-body);font-size:12px;font-weight:700;
+  padding:5px 14px;border-radius:8px;letter-spacing:.06em;
+  text-transform:uppercase;background:rgba(0,0,0,.5);color:#fff;
+  backdrop-filter:blur(6px);pointer-events:none;
+}
+#bag-{{ sid }} .bag-lb-label-before{left:16px;}
+#bag-{{ sid }} .bag-lb-label-after{right:16px;}
+
+/* Info panel under lightbox slider */
+#bag-{{ sid }} .bag-lb-info{
+  position:absolute;bottom:0;left:0;right:0;z-index:6;
+  padding:20px 24px;
+  background:linear-gradient(0deg,rgba(0,0,0,.6),transparent);
+  pointer-events:none;
+}
+#bag-{{ sid }} .bag-lb-info-name{
+  font-family:var(--font-heading);font-weight:700;
+  font-size:18px;color:#fff;margin:0;
+}
+#bag-{{ sid }} .bag-lb-info-desc{
+  font-family:var(--font-body);font-size:14px;
+  color:rgba(255,255,255,.75);margin:4px 0 0;
+}
+
+/* Stagger animation */
+@keyframes bag-fade-up-{{ sid }}{
+  0%{opacity:0;transform:translateY(18px);}
+  100%{opacity:1;transform:translateY(0);}
+}
+#bag-{{ sid }} .bag-card{
+  opacity:0;
+  animation:bag-fade-up-{{ sid }} .5s ease forwards;
+}
+#bag-{{ sid }} .bag-card:nth-child(1){animation-delay:.05s;}
+#bag-{{ sid }} .bag-card:nth-child(2){animation-delay:.1s;}
+#bag-{{ sid }} .bag-card:nth-child(3){animation-delay:.15s;}
+#bag-{{ sid }} .bag-card:nth-child(4){animation-delay:.2s;}
+#bag-{{ sid }} .bag-card:nth-child(5){animation-delay:.25s;}
+#bag-{{ sid }} .bag-card:nth-child(6){animation-delay:.3s;}
+#bag-{{ sid }} .bag-card:nth-child(7){animation-delay:.35s;}
+#bag-{{ sid }} .bag-card:nth-child(8){animation-delay:.4s;}
+#bag-{{ sid }} .bag-card:nth-child(9){animation-delay:.45s;}
+#bag-{{ sid }} .bag-card:nth-child(10){animation-delay:.5s;}
+#bag-{{ sid }} .bag-card:nth-child(11){animation-delay:.55s;}
+#bag-{{ sid }} .bag-card:nth-child(12){animation-delay:.6s;}
+</style>
+
+<section id="bag-{{ sid }}">
+  <div class="bag-wrap">
+
+    {%- comment -%}── Header ──{%- endcomment -%}
+    {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+      <div class="bag-header">
+        {%- if section.settings.title != blank -%}
+          <{{ section.settings.heading_tag }} class="bag-title">
+            {%- if section.settings.title_prefix != blank -%}
+              {{ section.settings.title_prefix }}&#32;
+            {%- endif -%}
+            {%- if section.settings.title_highlight != blank -%}
+              <span class="bag-title-accent">{{ section.settings.title_highlight }}</span>
+              {%- if section.settings.title_suffix != blank -%}
+                &#32;{{ section.settings.title_suffix }}
+              {%- endif -%}
+            {%- else -%}
+              {{ section.settings.title }}
+            {%- endif -%}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="bag-subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}── Category Filters ──{%- endcomment -%}
+    {%- if section.settings.show_filters -%}
+      {%- assign all_cats = '' -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'pair' and block.settings.category != blank -%}
+          {%- unless all_cats contains block.settings.category -%}
+            {%- if all_cats != '' -%}{%- assign all_cats = all_cats | append: '|||' -%}{%- endif -%}
+            {%- assign all_cats = all_cats | append: block.settings.category -%}
+          {%- endunless -%}
+        {%- endif -%}
+      {%- endfor -%}
+      {%- assign cat_arr = all_cats | split: '|||' -%}
+      {%- if cat_arr.size > 1 -%}
+        <div class="bag-filters">
+          <button class="bag-filter active" data-filter="all">{{ section.settings.filter_all_label }}</button>
+          {%- for cat in cat_arr -%}
+            <button class="bag-filter" data-filter="{{ cat | handle }}">{{ cat }}</button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%}── Grid ──{%- endcomment -%}
+    <div class="bag-grid">
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'pair' -%}
+          <div class="bag-card"
+               data-cat="{{ block.settings.category | handle }}"
+               data-before-url="{%- if block.settings.image_before != blank -%}{{ block.settings.image_before | image_url: width: 1200 }}{%- endif -%}"
+               data-after-url="{%- if block.settings.image_after != blank -%}{{ block.settings.image_after | image_url: width: 1200 }}{%- endif -%}"
+               data-name="{{ block.settings.title | escape }}"
+               data-desc="{{ block.settings.description | escape }}"
+               {{ block.shopify_attributes }}>
+
+            <div class="bag-card-images">
+              {%- if block.settings.image_before != blank -%}
+                {{ block.settings.image_before | image_url: width: 800 | image_tag:
+                  class: 'bag-card-img bag-card-img-before',
+                  loading: 'lazy',
+                  widths: '300,500,800',
+                  sizes: '(max-width:749px) 45vw, 30vw'
+                }}
+              {%- else -%}
+                <div class="bag-card-img bag-card-img-before" style="background:#ddd;"></div>
+              {%- endif -%}
+
+              {%- if block.settings.image_after != blank -%}
+                {{ block.settings.image_after | image_url: width: 800 | image_tag:
+                  class: 'bag-card-img bag-card-img-after',
+                  loading: 'lazy',
+                  widths: '300,500,800',
+                  sizes: '(max-width:749px) 45vw, 30vw'
+                }}
+              {%- else -%}
+                <div class="bag-card-img bag-card-img-after" style="background:#ccc;"></div>
+              {%- endif -%}
+
+              {%- if section.settings.show_badges -%}
+                <div class="bag-badges">
+                  <span class="bag-badge bag-badge-before">{{ section.settings.label_before }}</span>
+                  <span class="bag-badge bag-badge-after">{{ section.settings.label_after }}</span>
+                </div>
+              {%- endif -%}
+
+              {%- if section.settings.show_lightbox -%}
+                <div class="bag-hover-icon">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.title != blank or block.settings.description != blank -%}
+              <div class="bag-card-info">
+                {%- if block.settings.category != blank and section.settings.show_card_category -%}
+                  <p class="bag-card-cat">{{ block.settings.category }}</p>
+                {%- endif -%}
+                {%- if block.settings.title != blank -%}
+                  <p class="bag-card-name">{{ block.settings.title }}</p>
+                {%- endif -%}
+                {%- if block.settings.description != blank -%}
+                  <p class="bag-card-desc">{{ block.settings.description }}</p>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%}── Lightbox ──{%- endcomment -%}
+    {%- if section.settings.show_lightbox -%}
+      <div class="bag-lb" data-lightbox>
+        <button class="bag-lb-close" data-lb-close aria-label="Close">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+        <div class="bag-lb-inner" data-lb-slider>
+          <img class="bag-lb-img bag-lb-after" src="" alt="After" data-lb-after>
+          <img class="bag-lb-img bag-lb-before" src="" alt="Before" data-lb-before>
+          <span class="bag-lb-label bag-lb-label-before">{{ section.settings.label_before }}</span>
+          <span class="bag-lb-label bag-lb-label-after">{{ section.settings.label_after }}</span>
+          <div class="bag-lb-handle" data-lb-handle>
+            <div class="bag-lb-handle-line"></div>
+            <div class="bag-lb-handle-knob">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l-4 6 4 6"/><path d="M15 6l4 6-4 6"/></svg>
+            </div>
+            <div class="bag-lb-handle-line"></div>
+          </div>
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.getElementById('bag-{{ sid }}');
+  if(!root) return;
+
+  /* ── Touch reveal (mobile) ── */
+  var cards = root.querySelectorAll('.bag-card');
+  cards.forEach(function(c){
+    c.addEventListener('touchstart',function(){
+      c.classList.add('touched');
+    });
+    c.addEventListener('touchend',function(){
+      setTimeout(function(){c.classList.remove('touched');},600);
+    });
+  });
+
+  /* ── Category filters ── */
+  var filters = root.querySelectorAll('.bag-filter');
+  if(filters.length){
+    filters.forEach(function(f){
+      f.addEventListener('click',function(){
+        filters.forEach(function(b){b.classList.remove('active');});
+        f.classList.add('active');
+        var cat = f.getAttribute('data-filter');
+        cards.forEach(function(c){
+          if(cat==='all'||c.getAttribute('data-cat')===cat){
+            c.classList.remove('bag-hidden');
+          }else{
+            c.classList.add('bag-hidden');
+          }
+        });
+      });
+    });
+  }
+
+  /* ── Lightbox ── */
+  var lb = root.querySelector('[data-lightbox]');
+  if(!lb) return;
+  var lbSlider = lb.querySelector('[data-lb-slider]');
+  var lbBefore = lb.querySelector('[data-lb-before]');
+  var lbAfter = lb.querySelector('[data-lb-after]');
+  var lbHandle = lb.querySelector('[data-lb-handle]');
+  var lbClose = lb.querySelector('[data-lb-close]');
+  var dragging = false;
+
+  cards.forEach(function(c){
+    c.addEventListener('click',function(e){
+      if(e.target.closest('.bag-filter')) return;
+      var bUrl = c.getAttribute('data-before-url');
+      var aUrl = c.getAttribute('data-after-url');
+      if(!bUrl||!aUrl) return;
+      lbBefore.src=bUrl;
+      lbAfter.src=aUrl;
+      lbBefore.style.clipPath='inset(0 50% 0 0)';
+      lbHandle.style.left='50%';
+      lb.classList.add('open');
+      document.body.style.overflow='hidden';
+    });
+  });
+
+  function closeLb(){
+    lb.classList.remove('open');
+    document.body.style.overflow='';
+  }
+  lbClose.addEventListener('click',closeLb);
+  lb.addEventListener('click',function(e){
+    if(e.target===lb) closeLb();
+  });
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'&&lb.classList.contains('open')) closeLb();
+  });
+
+  /* Drag slider in lightbox */
+  function setLbPos(cx){
+    var r=lbSlider.getBoundingClientRect();
+    var p=Math.max(2,Math.min(98,((cx-r.left)/r.width)*100));
+    lbBefore.style.clipPath='inset(0 '+(100-p)+'% 0 0)';
+    lbHandle.style.left=p+'%';
+  }
+  lbSlider.addEventListener('mousedown',function(e){
+    e.preventDefault();dragging=true;setLbPos(e.clientX);
+  });
+  lbSlider.addEventListener('touchstart',function(e){
+    dragging=true;setLbPos(e.touches[0].clientX);
+  },{passive:true});
+  window.addEventListener('mousemove',function(e){
+    if(dragging){e.preventDefault();setLbPos(e.clientX);}
+  });
+  window.addEventListener('touchmove',function(e){
+    if(dragging) setLbPos(e.touches[0].clientX);
+  },{passive:true});
+  window.addEventListener('mouseup',function(){dragging=false;});
+  window.addEventListener('touchend',function(){dragging=false;});
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Before / After Gallery",
+  "tag": "section",
+  "class": "section-hub--before-after-gallery",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "Real Results"
+    },
+    {
+      "type": "text",
+      "id": "title_prefix",
+      "label": "Text before highlight"
+    },
+    {
+      "type": "text",
+      "id": "title_highlight",
+      "label": "Highlighted text",
+      "default": "Real Results"
+    },
+    {
+      "type": "text",
+      "id": "title_suffix",
+      "label": "Text after highlight"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "See the incredible transformations our customers have achieved"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "header_mb",
+      "label": "Header bottom margin",
+      "min": 16, "max": 80, "step": 4, "default": 44, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns — desktop",
+      "min": 2, "max": 4, "step": 1, "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns — mobile",
+      "min": 1, "max": 3, "step": 1, "default": 2
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Gap",
+      "min": 8, "max": 32, "step": 2, "default": 16, "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1/1",  "label": "Square (1:1)" },
+        { "value": "4/3",  "label": "Landscape (4:3)" },
+        { "value": "3/4",  "label": "Portrait (3:4)" },
+        { "value": "3/2",  "label": "Photo (3:2)" },
+        { "value": "2/3",  "label": "Tall portrait (2:3)" },
+        { "value": "16/9", "label": "Widescreen (16:9)" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 700, "max": 1600, "step": 20, "default": 1200, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Reveal Effect"
+    },
+    {
+      "type": "select",
+      "id": "reveal_type",
+      "label": "Hover reveal animation",
+      "options": [
+        { "value": "fade",  "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom",  "label": "Zoom" },
+        { "value": "split", "label": "Curtain split" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "range",
+      "id": "reveal_speed",
+      "label": "Reveal speed",
+      "min": 200, "max": 1000, "step": 50, "default": 500, "unit": "ms"
+    },
+    {
+      "type": "select",
+      "id": "reveal_easing",
+      "label": "Reveal easing",
+      "options": [
+        { "value": "ease",              "label": "Ease" },
+        { "value": "ease-in-out",       "label": "Ease in-out" },
+        { "value": "cubic-bezier(.4,0,.2,1)", "label": "Smooth" },
+        { "value": "cubic-bezier(.2,.8,.2,1)", "label": "Bounce" }
+      ],
+      "default": "cubic-bezier(.4,0,.2,1)"
+    },
+    {
+      "type": "header",
+      "content": "Labels & Badges"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badges",
+      "label": "Show before/after badges",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "label_before",
+      "label": "Before label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "label_after",
+      "label": "After label",
+      "default": "After"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_card_category",
+      "label": "Show category on cards",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Filter Tabs"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show category filters",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "filter_all_label",
+      "label": "All filter label",
+      "default": "All"
+    },
+    {
+      "type": "header",
+      "content": "Lightbox"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_lightbox",
+      "label": "Enable fullscreen lightbox",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0, "max": 32, "step": 2, "default": 14, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_text_padding",
+      "label": "Card text padding",
+      "min": 0, "max": 24, "step": 2, "default": 14, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "card_border",
+      "label": "Card border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "options": [
+        { "value": "-0.04", "label": "Tighter" },
+        { "value": "-0.02", "label": "Tight" },
+        { "value": "0",     "label": "Normal" },
+        { "value": "0.02",  "label": "Wide" }
+      ],
+      "default": "-0.02"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size — desktop",
+      "min": 24, "max": 64, "step": 1, "default": 40, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size — mobile",
+      "min": 20, "max": 44, "step": 1, "default": 28, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 13, "max": 20, "step": 1, "default": 16, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#888888"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / highlight",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "filter_bg",
+      "label": "Filter pill background",
+      "default": "#f3f4f6"
+    },
+    {
+      "type": "color",
+      "id": "filter_text",
+      "label": "Filter pill text",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "filter_active_bg",
+      "label": "Filter active background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "filter_active_text",
+      "label": "Filter active text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text",
+      "label": "Overlay text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slider_handle_color",
+      "label": "Lightbox handle",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slider_line_color",
+      "label": "Lightbox line",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "pt",
+      "label": "Top padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 60, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pb",
+      "label": "Bottom padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 60, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pt_mobile",
+      "label": "Top padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pb_mobile",
+      "label": "Bottom padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "pair",
+      "name": "Before / After Pair",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_before",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_after",
+          "label": "After image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Client Transformation"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description",
+          "default": "4 weeks of treatment"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category",
+          "default": "Skin Care",
+          "info": "Used for filter tabs"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before / After Gallery",
+      "blocks": [
+        { "type": "pair", "settings": { "title": "Treatment A", "description": "Week 4 results", "category": "Skin Care" } },
+        { "type": "pair", "settings": { "title": "Treatment B", "description": "Week 8 results", "category": "Hair" } },
+        { "type": "pair", "settings": { "title": "Treatment C", "description": "Week 6 results", "category": "Skin Care" } },
+        { "type": "pair", "settings": { "title": "Treatment D", "description": "Week 3 results", "category": "Body" } },
+        { "type": "pair", "settings": { "title": "Treatment E", "description": "Week 12 results", "category": "Hair" } },
+        { "type": "pair", "settings": { "title": "Treatment F", "description": "Week 5 results", "category": "Body" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

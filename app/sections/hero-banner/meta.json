@@ -2,7 +2,7 @@
   "id": "hero-banner",
   "name": "Hero Banner",
   "description": "Full-width hero banner with dual image/video slides that auto-alternate on a timer, bold heading, two CTA buttons, and autoplay video support. Perfect for sales, launches, and landing pages.",
-  "category": "Free",
+  "category": ["Free", "Video"],
   "version": "1.1.0",
   "price": {
     "type": "free",

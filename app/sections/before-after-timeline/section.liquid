@@ -1,0 +1,1102 @@
+{%- comment -%}
+  Section Hub — Before / After Timeline v1
+  A vertical journey timeline showing transformation progress.
+  Each step block has its own mini before/after slider, label, description.
+  An animated progress line ties them together. Steps alternate left/right on desktop.
+  Fully customizable fonts, colors, layout, and animations.
+{%- endcomment -%}
+
+{%- assign sid = section.id -%}
+{%- assign hf = section.settings.heading_font -%}
+{%- assign bf = section.settings.body_font -%}
+{{ hf | font_face: font_display: 'swap' }}
+{{ bf | font_face: font_display: 'swap' }}
+
+<style>
+/* ── Reset ── */
+#bat-{{ sid }},#bat-{{ sid }} *,#bat-{{ sid }} *::before,#bat-{{ sid }} *::after{box-sizing:border-box;}
+
+/* ── Root ── */
+#bat-{{ sid }}{
+  --c-bg:{{ section.settings.bg_color }};
+  --c-card:{{ section.settings.card_bg }};
+  --c-text:{{ section.settings.text_color }};
+  --c-muted:{{ section.settings.muted_color }};
+  --c-accent:{{ section.settings.accent_color }};
+  --c-line:{{ section.settings.timeline_color }};
+  --c-dot:{{ section.settings.dot_color }};
+  --c-dot-active:{{ section.settings.dot_active_color }};
+  --c-badge-bg:{{ section.settings.badge_bg }};
+  --c-badge-text:{{ section.settings.badge_text_color }};
+  --c-handle:{{ section.settings.handle_color }};
+  --c-handle-line:{{ section.settings.handle_line_color }};
+  --c-handle-icon:{{ section.settings.handle_icon_color }};
+  --c-btn-bg:{{ section.settings.button_bg }};
+  --c-btn-text:{{ section.settings.button_text_color }};
+  --c-btn-hover:{{ section.settings.button_hover_bg }};
+  --c-counter:{{ section.settings.counter_color }};
+  --r-card:{{ section.settings.card_radius }}px;
+  --r-img:{{ section.settings.image_radius }}px;
+  --r-btn:{{ section.settings.button_radius }}px;
+  --mw:{{ section.settings.max_width }}px;
+  --handle-size:{{ section.settings.handle_size }}px;
+  --dot-size:{{ section.settings.dot_size }}px;
+  --line-w:{{ section.settings.timeline_width }}px;
+  --font-heading:{{ hf.family }},{{ hf.fallback_families }};
+  --font-body:{{ bf.family }},{{ bf.fallback_families }};
+  --font-h-style:{{ hf.style }};
+  --font-b-style:{{ bf.style }};
+  background:var(--c-bg);color:var(--c-text);
+  padding:{{ section.settings.pt_mobile }}px 0 {{ section.settings.pb_mobile }}px;
+  font-family:var(--font-body);font-style:var(--font-b-style);
+  -webkit-font-smoothing:antialiased;
+}
+@media(min-width:750px){
+  #bat-{{ sid }}{padding:{{ section.settings.pt }}px 0 {{ section.settings.pb }}px;}
+}
+
+/* ── Container ── */
+#bat-{{ sid }} .bat-wrap{width:90%;max-width:var(--mw);margin:0 auto;}
+
+/* ── Header ── */
+#bat-{{ sid }} .bat-header{
+  text-align:{{ section.settings.header_alignment }};
+  margin-bottom:{{ section.settings.header_mb }}px;
+}
+#bat-{{ sid }} .bat-title{
+  font-family:var(--font-heading);font-style:var(--font-h-style);
+  font-weight:{{ section.settings.heading_weight }};
+  font-size:{{ section.settings.heading_size_mobile }}px;
+  letter-spacing:{{ section.settings.heading_letter_spacing }}em;
+  line-height:1.15;color:var(--c-text);margin:0 0 8px;
+}
+@media(min-width:750px){
+  #bat-{{ sid }} .bat-title{font-size:{{ section.settings.heading_size }}px;}
+}
+#bat-{{ sid }} .bat-title-accent{color:var(--c-accent);}
+#bat-{{ sid }} .bat-subtitle{
+  font-family:var(--font-body);
+  font-size:{{ section.settings.subtitle_size }}px;
+  color:var(--c-muted);line-height:1.5;margin:0;
+  max-width:620px;
+  {% if section.settings.header_alignment == 'center' %}margin-left:auto;margin-right:auto;{% endif %}
+}
+
+/* ── Timeline ── */
+#bat-{{ sid }} .bat-timeline{
+  position:relative;
+  padding-left:32px;
+}
+
+/* Vertical line */
+#bat-{{ sid }} .bat-timeline::before{
+  content:'';position:absolute;
+  left:calc(var(--dot-size) / 2 + 3px);top:0;
+  width:var(--line-w);height:100%;
+  background:var(--c-line);
+  border-radius:calc(var(--line-w) / 2);
+}
+
+/* ── Animated progress fill ── */
+#bat-{{ sid }} .bat-progress{
+  position:absolute;
+  left:calc(var(--dot-size) / 2 + 3px);top:0;
+  width:var(--line-w);height:0;
+  background:var(--c-dot-active);
+  border-radius:calc(var(--line-w) / 2);
+  transition:height .6s cubic-bezier(.4,0,.2,1);
+  z-index:1;
+}
+
+/* ── Desktop: zigzag ── */
+@media(min-width:900px){
+  {%- if section.settings.layout == 'zigzag' -%}
+  #bat-{{ sid }} .bat-timeline{
+    padding-left:0;
+  }
+  #bat-{{ sid }} .bat-timeline::before{
+    left:50%;transform:translateX(-50%);
+  }
+  #bat-{{ sid }} .bat-progress{
+    left:50%;transform:translateX(-50%);
+  }
+  {%- endif -%}
+}
+
+/* ── Step ── */
+#bat-{{ sid }} .bat-step{
+  position:relative;
+  padding:0 0 {{ section.settings.step_gap }}px 40px;
+  opacity:0;transform:translateY(24px);
+  transition:opacity .5s ease,transform .5s ease;
+}
+#bat-{{ sid }} .bat-step.visible{opacity:1;transform:translateY(0);}
+#bat-{{ sid }} .bat-step:last-child{padding-bottom:0;}
+
+/* ── Desktop zigzag positioning ── */
+@media(min-width:900px){
+  {%- if section.settings.layout == 'zigzag' -%}
+  #bat-{{ sid }} .bat-step{
+    width:50%;padding:0 40px {{ section.settings.step_gap }}px 0;
+    margin-left:0;
+  }
+  #bat-{{ sid }} .bat-step:nth-child(even){
+    margin-left:50%;padding:0 0 {{ section.settings.step_gap }}px 40px;
+  }
+  {%- endif -%}
+}
+
+/* ── Dot ── */
+#bat-{{ sid }} .bat-dot{
+  position:absolute;
+  left:-{{ section.settings.dot_size | divided_by: 2 | plus: 5 }}px;
+  top:0;
+  width:var(--dot-size);height:var(--dot-size);
+  border-radius:50%;
+  background:var(--c-dot);
+  border:3px solid var(--c-bg);
+  box-shadow:0 0 0 2px var(--c-line);
+  z-index:2;
+  transition:background .4s ease,box-shadow .4s ease,transform .4s ease;
+}
+#bat-{{ sid }} .bat-step.visible .bat-dot{
+  background:var(--c-dot-active);
+  box-shadow:0 0 0 2px var(--c-dot-active),0 0 12px {{ section.settings.dot_active_color }}44;
+  transform:scale(1.1);
+}
+
+/* Dot counter */
+#bat-{{ sid }} .bat-dot-num{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-heading);font-weight:800;
+  font-size:calc(var(--dot-size) * .4);
+  color:var(--c-counter);
+  line-height:1;
+}
+
+/* ── Desktop zigzag dots ── */
+@media(min-width:900px){
+  {%- if section.settings.layout == 'zigzag' -%}
+  #bat-{{ sid }} .bat-dot{
+    left:auto;
+    right:calc(-1 * var(--dot-size) / 2 - 4px);
+  }
+  #bat-{{ sid }} .bat-step:nth-child(even) .bat-dot{
+    right:auto;
+    left:calc(-1 * var(--dot-size) / 2 - 4px);
+  }
+  {%- endif -%}
+}
+
+/* ── Step Card ── */
+#bat-{{ sid }} .bat-card{
+  background:var(--c-card);
+  border-radius:var(--r-card);
+  overflow:hidden;
+  {% if section.settings.card_shadow %}box-shadow:0 4px 24px rgba(0,0,0,.07);{% endif %}
+  {% if section.settings.card_border %}border:1px solid {{ section.settings.card_border_color }};{% endif %}
+}
+
+/* ── Mini before/after slider ── */
+#bat-{{ sid }} .bat-slider{
+  position:relative;overflow:hidden;
+  border-radius:var(--r-img) var(--r-img) 0 0;
+  aspect-ratio:{{ section.settings.aspect_ratio }};
+  background:#e8e8e8;
+  cursor:ew-resize;touch-action:pan-y;
+  user-select:none;-webkit-user-select:none;
+}
+#bat-{{ sid }} .bat-slider-img{
+  position:absolute;inset:0;width:100%;height:100%;
+}
+#bat-{{ sid }} .bat-slider-img img{
+  width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;
+}
+#bat-{{ sid }} .bat-slider-before{z-index:2;clip-path:inset(0 50% 0 0);}
+#bat-{{ sid }} .bat-slider-after{z-index:1;}
+
+/* Mini labels */
+#bat-{{ sid }} .bat-slider-label{
+  position:absolute;z-index:4;bottom:10px;
+  font-family:var(--font-body);font-size:10px;font-weight:700;
+  padding:3px 10px;border-radius:6px;letter-spacing:.05em;text-transform:uppercase;
+  background:var(--c-badge-bg);color:var(--c-badge-text);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  pointer-events:none;line-height:1;
+}
+#bat-{{ sid }} .bat-slider-label-before{left:10px;}
+#bat-{{ sid }} .bat-slider-label-after{right:10px;}
+
+/* Mini handle */
+#bat-{{ sid }} .bat-handle{
+  position:absolute;top:0;bottom:0;left:50%;z-index:5;
+  transform:translateX(-50%);width:2px;
+  display:flex;flex-direction:column;align-items:center;
+  pointer-events:none;
+}
+#bat-{{ sid }} .bat-handle-line{flex:1;width:2px;background:var(--c-handle-line);opacity:.85;}
+#bat-{{ sid }} .bat-handle-knob{
+  width:var(--handle-size);height:var(--handle-size);flex-shrink:0;
+  border-radius:50%;background:var(--c-handle);
+  display:flex;align-items:center;justify-content:center;
+  pointer-events:auto;cursor:ew-resize;
+  box-shadow:0 2px 10px rgba(0,0,0,.25);
+}
+#bat-{{ sid }} .bat-handle-knob svg{
+  width:calc(var(--handle-size)*.44);height:calc(var(--handle-size)*.44);
+  color:var(--c-handle-icon);pointer-events:none;
+}
+
+/* ── Step info ── */
+#bat-{{ sid }} .bat-card-info{
+  padding:{{ section.settings.card_padding }}px;
+}
+#bat-{{ sid }} .bat-step-badge{
+  display:inline-block;
+  font-family:var(--font-body);font-size:11px;font-weight:700;
+  padding:4px 12px;border-radius:100px;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1;
+  background:{{ section.settings.step_badge_bg }};
+  color:{{ section.settings.step_badge_text }};
+  margin-bottom:10px;
+}
+#bat-{{ sid }} .bat-step-title{
+  font-family:var(--font-heading);font-style:var(--font-h-style);
+  font-weight:{{ section.settings.heading_weight }};
+  font-size:{{ section.settings.step_title_size }}px;
+  letter-spacing:{{ section.settings.heading_letter_spacing }}em;
+  line-height:1.2;color:var(--c-text);margin:0 0 6px;
+}
+#bat-{{ sid }} .bat-step-desc{
+  font-family:var(--font-body);font-size:{{ section.settings.step_desc_size }}px;
+  color:var(--c-muted);line-height:1.55;margin:0;
+}
+
+/* ── Stats row ── */
+#bat-{{ sid }} .bat-stats{
+  display:flex;gap:12px;flex-wrap:wrap;margin-top:12px;
+}
+#bat-{{ sid }} .bat-stat{
+  background:{{ section.settings.stat_bg }};
+  border-radius:8px;padding:8px 14px;
+  flex:1;min-width:80px;text-align:center;
+}
+#bat-{{ sid }} .bat-stat-val{
+  font-family:var(--font-heading);font-weight:800;
+  font-size:20px;color:var(--c-accent);line-height:1;margin:0;
+}
+#bat-{{ sid }} .bat-stat-label{
+  font-family:var(--font-body);font-size:11px;
+  color:var(--c-muted);margin:3px 0 0;line-height:1;
+}
+
+/* ── CTA ── */
+#bat-{{ sid }} .bat-cta{
+  text-align:{{ section.settings.header_alignment }};
+  margin-top:{{ section.settings.cta_mt }}px;
+}
+#bat-{{ sid }} .bat-btn{
+  display:inline-block;
+  font-family:var(--font-body);font-weight:700;
+  font-size:{{ section.settings.button_size }}px;
+  padding:{{ section.settings.button_py }}px {{ section.settings.button_px }}px;
+  border-radius:var(--r-btn);
+  background:var(--c-btn-bg);color:var(--c-btn-text);
+  text-decoration:none;border:none;cursor:pointer;
+  transition:background .2s,transform .15s;
+  line-height:1;letter-spacing:.02em;
+}
+#bat-{{ sid }} .bat-btn:hover{
+  background:var(--c-btn-hover);
+  transform:translateY(-2px);
+}
+
+/* ── Intro swing for sliders ── */
+@keyframes bat-swing-{{ sid }}{
+  0%{clip-path:inset(0 50% 0 0);}
+  35%{clip-path:inset(0 22% 0 0);}
+  65%{clip-path:inset(0 72% 0 0);}
+  100%{clip-path:inset(0 50% 0 0);}
+}
+@keyframes bat-swing-h-{{ sid }}{
+  0%{left:50%;}35%{left:78%;}65%{left:28%;}100%{left:50%;}
+}
+#bat-{{ sid }} .bat-slider.intro .bat-slider-before{
+  animation:bat-swing-{{ sid }} 1.4s cubic-bezier(.4,0,.2,1) both;
+}
+#bat-{{ sid }} .bat-slider.intro .bat-handle{
+  animation:bat-swing-h-{{ sid }} 1.4s cubic-bezier(.4,0,.2,1) both;
+}
+</style>
+
+<section id="bat-{{ sid }}">
+  <div class="bat-wrap">
+
+    {%- comment -%}── Header ──{%- endcomment -%}
+    {%- if section.settings.title != blank or section.settings.subtitle != blank -%}
+      <div class="bat-header">
+        {%- if section.settings.title != blank -%}
+          <{{ section.settings.heading_tag }} class="bat-title">
+            {%- if section.settings.title_prefix != blank -%}
+              {{ section.settings.title_prefix }}&#32;
+            {%- endif -%}
+            {%- if section.settings.title_highlight != blank -%}
+              <span class="bat-title-accent">{{ section.settings.title_highlight }}</span>
+              {%- if section.settings.title_suffix != blank -%}
+                &#32;{{ section.settings.title_suffix }}
+              {%- endif -%}
+            {%- else -%}
+              {{ section.settings.title }}
+            {%- endif -%}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="bat-subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%}── Timeline ──{%- endcomment -%}
+    <div class="bat-timeline">
+      <div class="bat-progress" data-progress></div>
+
+      {%- assign step_index = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'step' -%}
+          {%- assign step_index = step_index | plus: 1 -%}
+          <div class="bat-step" data-step {{ block.shopify_attributes }}>
+
+            <div class="bat-dot">
+              {%- if section.settings.show_step_numbers -%}
+                <span class="bat-dot-num">{{ step_index }}</span>
+              {%- endif -%}
+            </div>
+
+            <div class="bat-card">
+              {%- comment -%}── Mini Slider ──{%- endcomment -%}
+              <div class="bat-slider" data-mini-slider>
+                <div class="bat-slider-img bat-slider-after">
+                  {%- if block.settings.image_after != blank -%}
+                    {{ block.settings.image_after | image_url: width: 900 | image_tag:
+                      loading: 'lazy',
+                      widths: '400,600,900',
+                      sizes: '(max-width:749px) 85vw, 42vw'
+                    }}
+                  {%- else -%}
+                    <div style="width:100%;height:100%;background:#e0e0e0;display:flex;align-items:center;justify-content:center;">{{ 'image' | placeholder_svg_tag }}</div>
+                  {%- endif -%}
+                  {%- if section.settings.show_slider_labels -%}
+                    <span class="bat-slider-label bat-slider-label-after">{{ section.settings.label_after }}</span>
+                  {%- endif -%}
+                </div>
+                <div class="bat-slider-img bat-slider-before" data-before>
+                  {%- if block.settings.image_before != blank -%}
+                    {{ block.settings.image_before | image_url: width: 900 | image_tag:
+                      loading: 'lazy',
+                      widths: '400,600,900',
+                      sizes: '(max-width:749px) 85vw, 42vw'
+                    }}
+                  {%- else -%}
+                    <div style="width:100%;height:100%;background:#c8c8c8;display:flex;align-items:center;justify-content:center;">{{ 'image' | placeholder_svg_tag }}</div>
+                  {%- endif -%}
+                  {%- if section.settings.show_slider_labels -%}
+                    <span class="bat-slider-label bat-slider-label-before">{{ section.settings.label_before }}</span>
+                  {%- endif -%}
+                </div>
+                <div class="bat-handle" data-handle>
+                  <div class="bat-handle-line"></div>
+                  <div class="bat-handle-knob">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M9 6l-4 6 4 6"/><path d="M15 6l4 6-4 6"/>
+                    </svg>
+                  </div>
+                  <div class="bat-handle-line"></div>
+                </div>
+              </div>
+
+              {%- comment -%}── Info ──{%- endcomment -%}
+              <div class="bat-card-info">
+                {%- if block.settings.badge != blank -%}
+                  <span class="bat-step-badge">{{ block.settings.badge }}</span>
+                {%- endif -%}
+                {%- if block.settings.title != blank -%}
+                  <h3 class="bat-step-title">{{ block.settings.title }}</h3>
+                {%- endif -%}
+                {%- if block.settings.description != blank -%}
+                  <p class="bat-step-desc">{{ block.settings.description }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.stat1_value != blank or block.settings.stat2_value != blank or block.settings.stat3_value != blank -%}
+                  <div class="bat-stats">
+                    {%- if block.settings.stat1_value != blank -%}
+                      <div class="bat-stat">
+                        <p class="bat-stat-val">{{ block.settings.stat1_value }}</p>
+                        <p class="bat-stat-label">{{ block.settings.stat1_label }}</p>
+                      </div>
+                    {%- endif -%}
+                    {%- if block.settings.stat2_value != blank -%}
+                      <div class="bat-stat">
+                        <p class="bat-stat-val">{{ block.settings.stat2_value }}</p>
+                        <p class="bat-stat-label">{{ block.settings.stat2_label }}</p>
+                      </div>
+                    {%- endif -%}
+                    {%- if block.settings.stat3_value != blank -%}
+                      <div class="bat-stat">
+                        <p class="bat-stat-val">{{ block.settings.stat3_value }}</p>
+                        <p class="bat-stat-label">{{ block.settings.stat3_label }}</p>
+                      </div>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%}── CTA ──{%- endcomment -%}
+    {%- if section.settings.cta_text != blank -%}
+      <div class="bat-cta">
+        <a class="bat-btn" href="{{ section.settings.cta_link | default: '#' }}">{{ section.settings.cta_text }}</a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.getElementById('bat-{{ sid }}');
+  if(!root) return;
+
+  /* ── IntersectionObserver for steps ── */
+  var steps = root.querySelectorAll('[data-step]');
+  var progress = root.querySelector('[data-progress]');
+  var timeline = root.querySelector('.bat-timeline');
+
+  if(typeof IntersectionObserver !== 'undefined' && steps.length){
+    var observer = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('visible');
+          /* Intro swing on mini slider */
+          var sl = e.target.querySelector('[data-mini-slider]');
+          if(sl && !sl.classList.contains('intro-done')){
+            sl.classList.add('intro');
+            sl.classList.add('intro-done');
+            setTimeout(function(){sl.classList.remove('intro');},1500);
+          }
+          /* Update progress bar */
+          updateProgress();
+        }
+      });
+    },{threshold:0.2,rootMargin:'0px 0px -60px 0px'});
+    steps.forEach(function(s){observer.observe(s);});
+  }
+
+  function updateProgress(){
+    if(!progress||!timeline||!steps.length) return;
+    var visibleSteps = root.querySelectorAll('.bat-step.visible');
+    if(!visibleSteps.length) return;
+    var last = visibleSteps[visibleSteps.length-1];
+    var tlRect = timeline.getBoundingClientRect();
+    var lastRect = last.getBoundingClientRect();
+    var dotSize = parseFloat(getComputedStyle(root).getPropertyValue('--dot-size'))||20;
+    var h = (lastRect.top - tlRect.top) + dotSize/2;
+    progress.style.height = Math.max(0, h) + 'px';
+  }
+
+  /* ── Mini slider drag ── */
+  var sliders = root.querySelectorAll('[data-mini-slider]');
+  sliders.forEach(function(sl){
+    var before = sl.querySelector('[data-before]');
+    var handle = sl.querySelector('[data-handle]');
+    if(!before||!handle) return;
+    var dragging = false;
+
+    function setPos(cx){
+      var r=sl.getBoundingClientRect();
+      var p=Math.max(2,Math.min(98,((cx-r.left)/r.width)*100));
+      before.style.clipPath='inset(0 '+(100-p)+'% 0 0)';
+      handle.style.left=p+'%';
+    }
+    sl.addEventListener('mousedown',function(e){
+      e.preventDefault();sl.classList.remove('intro');
+      dragging=true;setPos(e.clientX);
+    });
+    sl.addEventListener('touchstart',function(e){
+      sl.classList.remove('intro');
+      dragging=true;setPos(e.touches[0].clientX);
+    },{passive:true});
+
+    function onMove(e){
+      if(!dragging)return;
+      if(e.cancelable) e.preventDefault();
+      setPos(e.touches?e.touches[0].clientX:e.clientX);
+    }
+    function onUp(){dragging=false;}
+
+    window.addEventListener('mousemove',onMove);
+    window.addEventListener('touchmove',onMove,{passive:false});
+    window.addEventListener('mouseup',onUp);
+    window.addEventListener('touchend',onUp);
+  });
+
+  /* Recalc progress on scroll */
+  window.addEventListener('scroll',updateProgress,{passive:true});
+  window.addEventListener('resize',updateProgress);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Before / After Timeline",
+  "tag": "section",
+  "class": "section-hub--before-after-timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Title",
+      "default": "The Journey"
+    },
+    {
+      "type": "text",
+      "id": "title_prefix",
+      "label": "Text before highlight"
+    },
+    {
+      "type": "text",
+      "id": "title_highlight",
+      "label": "Highlighted text",
+      "default": "The Journey"
+    },
+    {
+      "type": "text",
+      "id": "title_suffix",
+      "label": "Text after highlight",
+      "default": "to Results"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Follow the transformation progress step by step"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "header_alignment",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "header_mb",
+      "label": "Header bottom margin",
+      "min": 16, "max": 80, "step": 4, "default": 48, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Desktop layout",
+      "options": [
+        { "value": "linear", "label": "Linear (left-aligned)" },
+        { "value": "zigzag", "label": "Zigzag (alternating)" }
+      ],
+      "default": "zigzag"
+    },
+    {
+      "type": "range",
+      "id": "step_gap",
+      "label": "Gap between steps",
+      "min": 24, "max": 80, "step": 4, "default": 48, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 600, "max": 1400, "step": 20, "default": 900, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_step_numbers",
+      "label": "Show step numbers in dots",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Before/After Slider"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "1/1",  "label": "Square (1:1)" },
+        { "value": "4/3",  "label": "Landscape (4:3)" },
+        { "value": "3/4",  "label": "Portrait (3:4)" },
+        { "value": "3/2",  "label": "Photo (3:2)" },
+        { "value": "16/9", "label": "Widescreen (16:9)" }
+      ],
+      "default": "4/3"
+    },
+    {
+      "type": "range",
+      "id": "handle_size",
+      "label": "Handle size",
+      "min": 28, "max": 52, "step": 2, "default": 36, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_slider_labels",
+      "label": "Show before/after labels",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "label_before",
+      "label": "Before label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "label_after",
+      "label": "After label",
+      "default": "After"
+    },
+    {
+      "type": "header",
+      "content": "Timeline"
+    },
+    {
+      "type": "range",
+      "id": "timeline_width",
+      "label": "Line width",
+      "min": 2, "max": 6, "step": 1, "default": 3, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "label": "Dot size",
+      "min": 20, "max": 48, "step": 2, "default": 32, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0, "max": 32, "step": 2, "default": 16, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image corner radius (top)",
+      "min": 0, "max": 32, "step": 2, "default": 16, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card text padding",
+      "min": 12, "max": 32, "step": 2, "default": 20, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "card_border",
+      "label": "Card border",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "card_border_color",
+      "label": "Card border color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "header",
+      "content": "Step Text"
+    },
+    {
+      "type": "range",
+      "id": "step_title_size",
+      "label": "Step title size",
+      "min": 16, "max": 30, "step": 1, "default": 20, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "step_desc_size",
+      "label": "Step description size",
+      "min": 13, "max": 18, "step": 1, "default": 14, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "CTA Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text",
+      "default": "Start Your Journey"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "range",
+      "id": "button_size",
+      "label": "Button font size",
+      "min": 13, "max": 20, "step": 1, "default": 16, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_py",
+      "label": "Button vertical padding",
+      "min": 8, "max": 20, "step": 1, "default": 14, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_px",
+      "label": "Button horizontal padding",
+      "min": 16, "max": 48, "step": 2, "default": 32, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button radius",
+      "min": 0, "max": 30, "step": 2, "default": 10, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "cta_mt",
+      "label": "CTA top margin",
+      "min": 16, "max": 80, "step": 4, "default": 48, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "options": [
+        { "value": "-0.04", "label": "Tighter" },
+        { "value": "-0.02", "label": "Tight" },
+        { "value": "0",     "label": "Normal" },
+        { "value": "0.02",  "label": "Wide" }
+      ],
+      "default": "-0.02"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size — desktop",
+      "min": 24, "max": 64, "step": 1, "default": 40, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size — mobile",
+      "min": 20, "max": 44, "step": 1, "default": 28, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "subtitle_size",
+      "label": "Subtitle size",
+      "min": 13, "max": 20, "step": 1, "default": 16, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#777777"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "timeline_color",
+      "label": "Timeline line",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot (inactive)",
+      "default": "#d4d4d4"
+    },
+    {
+      "type": "color",
+      "id": "dot_active_color",
+      "label": "Dot (active)",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "counter_color",
+      "label": "Step number",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Slider label background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Slider label text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Slider handle",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "handle_line_color",
+      "label": "Slider line",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "handle_icon_color",
+      "label": "Handle icon",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "step_badge_bg",
+      "label": "Step badge background",
+      "default": "#f3e8ff"
+    },
+    {
+      "type": "color",
+      "id": "step_badge_text",
+      "label": "Step badge text",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "color",
+      "id": "stat_bg",
+      "label": "Stat chip background",
+      "default": "#f5f3ff"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "button_hover_bg",
+      "label": "Button hover",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "pt",
+      "label": "Top padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 60, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pb",
+      "label": "Bottom padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 60, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pt_mobile",
+      "label": "Top padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "pb_mobile",
+      "label": "Bottom padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Timeline Step",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_before",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_after",
+          "label": "After image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge / timeframe",
+          "default": "Week 1"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Starting Point"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Beginning of the transformation journey. First visible changes starting to appear."
+        },
+        {
+          "type": "text",
+          "id": "stat1_value",
+          "label": "Stat 1 — value",
+          "default": "+15%"
+        },
+        {
+          "type": "text",
+          "id": "stat1_label",
+          "label": "Stat 1 — label",
+          "default": "Improvement"
+        },
+        {
+          "type": "text",
+          "id": "stat2_value",
+          "label": "Stat 2 — value"
+        },
+        {
+          "type": "text",
+          "id": "stat2_label",
+          "label": "Stat 2 — label"
+        },
+        {
+          "type": "text",
+          "id": "stat3_value",
+          "label": "Stat 3 — value"
+        },
+        {
+          "type": "text",
+          "id": "stat3_label",
+          "label": "Stat 3 — label"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before / After Timeline",
+      "blocks": [
+        { "type": "step", "settings": { "badge": "Week 1", "title": "Starting Point", "description": "Day one — documenting the starting condition before any treatment begins.", "stat1_value": "Day 1", "stat1_label": "Start" } },
+        { "type": "step", "settings": { "badge": "Week 4", "title": "First Results", "description": "Noticeable improvements after 4 weeks of consistent treatment.", "stat1_value": "+35%", "stat1_label": "Improvement", "stat2_value": "92%", "stat2_label": "Satisfaction" } },
+        { "type": "step", "settings": { "badge": "Week 8", "title": "Major Progress", "description": "Significant transformation visible. Continued progress with optimized routine.", "stat1_value": "+68%", "stat1_label": "Improvement", "stat2_value": "4.8★", "stat2_label": "Rating" } },
+        { "type": "step", "settings": { "badge": "Week 12", "title": "Final Results", "description": "Complete transformation achieved. Stunning before and after comparison.", "stat1_value": "+95%", "stat1_label": "Improvement", "stat2_value": "100%", "stat2_label": "Recommend", "stat3_value": "#1", "stat3_label": "Rated" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

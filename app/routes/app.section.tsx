@@ -651,7 +651,9 @@ export default function SectionDetailPage() {
                           }} />
                           <BlockStack gap="100">
                             <Text as="p" variant="headingSm">{s.name}</Text>
-                            <Text as="p" variant="bodySm" tone="subdued">{s.category}</Text>
+                            <Text as="p" variant="bodySm" tone="subdued">
+                              {Array.isArray(s.category) ? s.category.join(" · ") : s.category}
+                            </Text>
                           </BlockStack>
                         </InlineStack>
                         <Badge tone={s.price.type === "free" ? "success" : "info"}>

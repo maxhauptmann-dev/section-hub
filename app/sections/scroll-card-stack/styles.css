@@ -1,0 +1,346 @@
+/* ============================================
+   SS - Scroll Card Stack
+   Prefix: shcs-
+   ============================================ */
+.shcs-wrap *,
+.shcs-wrap *::before,
+.shcs-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.shcs-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--shcs-bg, #0f0f0f);
+}
+
+/* Scroll container */
+.shcs-scroll {
+  position: relative;
+}
+
+/* Sticky viewport */
+.shcs-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: var(--shcs-perspective, 1200px);
+}
+
+/* Background decorations */
+.shcs-bg-grid {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(var(--shcs-grid-color, rgba(255,255,255,0.03)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--shcs-grid-color, rgba(255,255,255,0.03)) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+}
+
+.shcs-glow {
+  position: absolute;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.shcs-glow--1 {
+  background: var(--shcs-accent, #6366f1);
+  top: 20%;
+  left: 10%;
+  animation: shcs-drift 14s ease-in-out infinite;
+}
+
+.shcs-glow--2 {
+  background: var(--shcs-accent-2, #ec4899);
+  bottom: 15%;
+  right: 10%;
+  animation: shcs-drift 18s ease-in-out infinite reverse;
+}
+
+@keyframes shcs-drift {
+  0%, 100% { transform: translate(0, 0); }
+  50% { transform: translate(40px, -30px); }
+}
+
+/* ---- Card deck ---- */
+.shcs-deck {
+  position: relative;
+  z-index: 5;
+  width: var(--shcs-card-w, 680px);
+  max-width: 90vw;
+  height: var(--shcs-card-h, 440px);
+  max-height: 70vh;
+}
+
+.shcs-card {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--shcs-radius, 16px);
+  overflow: hidden;
+  will-change: transform, opacity;
+  transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.7s ease;
+  transform-origin: center bottom;
+  backface-visibility: hidden;
+}
+
+/* Card image */
+.shcs-card__media {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.shcs-card__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.shcs-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Card content */
+.shcs-card__body {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: var(--shcs-card-px, 36px);
+}
+
+.shcs-card__tag {
+  display: inline-block;
+  font-family: var(--shcs-body-ff);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #ffffff;
+  background: var(--shcs-accent, #6366f1);
+  padding: 5px 12px;
+  border-radius: 4px;
+  margin-bottom: 12px;
+  align-self: flex-start;
+}
+
+.shcs-card__heading {
+  font-family: var(--shcs-heading-ff);
+  font-weight: var(--shcs-heading-fw);
+  font-style: var(--shcs-heading-fs);
+  font-size: clamp(22px, 3vw, 36px);
+  line-height: 1.1;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.shcs-card__desc {
+  font-family: var(--shcs-body-ff);
+  font-weight: var(--shcs-body-fw);
+  font-size: 14px;
+  line-height: 1.5;
+  color: rgba(255,255,255,0.75);
+  max-width: 400px;
+  margin-bottom: 20px;
+}
+
+.shcs-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  font-family: var(--shcs-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 2px solid transparent;
+  border-radius: var(--shcs-btn-radius, 8px);
+  transition: all 0.3s ease;
+  align-self: flex-start;
+}
+
+.shcs-card__btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.shcs-card__btn:hover svg {
+  transform: translateX(4px);
+}
+
+.shcs-card__btn--solid {
+  background: var(--shcs-accent, #6366f1);
+  color: #ffffff;
+}
+.shcs-card__btn--solid:hover {
+  box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.shcs-card__btn--outline {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.3);
+}
+.shcs-card__btn--outline:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.6);
+}
+
+.shcs-card__btn--glass {
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.15);
+  backdrop-filter: blur(10px);
+}
+.shcs-card__btn--glass:hover {
+  background: rgba(255,255,255,0.2);
+  border-color: rgba(255,255,255,0.3);
+}
+
+/* ---- Header / footer texts ---- */
+.shcs-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  text-align: center;
+  padding: 50px 40px 20px;
+}
+
+.shcs-header__eyebrow {
+  font-family: var(--shcs-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: var(--shcs-accent, #6366f1);
+  margin-bottom: 10px;
+}
+
+.shcs-header__heading {
+  font-family: var(--shcs-heading-ff);
+  font-weight: var(--shcs-heading-fw);
+  font-style: var(--shcs-heading-fs);
+  font-size: clamp(24px, 4vw, 48px);
+  line-height: 1.1;
+  color: var(--shcs-heading-color, #ffffff);
+}
+
+/* Progress bar at bottom */
+.shcs-progress-bar {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 15;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.shcs-progress-pip {
+  width: 24px;
+  height: 3px;
+  border-radius: 2px;
+  background: rgba(255,255,255,0.15);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  transition: all 0.4s ease;
+}
+
+.shcs-progress-pip--active {
+  width: 40px;
+  background: var(--shcs-accent, #6366f1);
+}
+
+/* Counter */
+.shcs-counter {
+  position: absolute;
+  bottom: 32px;
+  right: 40px;
+  z-index: 15;
+  font-family: var(--shcs-body-ff);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255,255,255,0.4);
+  letter-spacing: 0.05em;
+}
+
+.shcs-counter__current {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+/* Side label */
+.shcs-side-label {
+  position: absolute;
+  top: 50%;
+  right: 24px;
+  z-index: 15;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center center;
+  font-family: var(--shcs-body-ff);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.15);
+  white-space: nowrap;
+}
+
+/* ---- Responsive ---- */
+@media screen and (max-width: 749px) {
+  .shcs-deck {
+    width: 92vw;
+    height: 60vh;
+    max-height: none;
+  }
+
+  .shcs-card__body {
+    padding: 24px;
+  }
+
+  .shcs-header {
+    padding: 30px 20px 10px;
+  }
+
+  .shcs-progress-bar {
+    bottom: 18px;
+  }
+
+  .shcs-counter {
+    bottom: 18px;
+    right: 20px;
+  }
+
+  .shcs-side-label {
+    display: none;
+  }
+}

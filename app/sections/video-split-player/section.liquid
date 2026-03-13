@@ -77,8 +77,9 @@
     {%- endif -%}
 
     {%- for block in section.blocks -%}
+      {%- assign is_odd = forloop.index0 | modulo: 2 -%}
       <div
-        class="shvp-split{% if layout == 'right' %} shvp-split--reversed{% elsif layout == 'stacked' %} shvp-split--stacked{% elsif layout == 'alternate' and forloop.index0 | modulo: 2 == 1 %} shvp-split--reversed{% endif %}{% if forloop.first %} shvp-split--active{% else %} shvp-split--hidden{% endif %}"
+        class="shvp-split{% if layout == 'right' %} shvp-split--reversed{% elsif layout == 'stacked' %} shvp-split--stacked{% elsif layout == 'alternate' and is_odd == 1 %} shvp-split--reversed{% endif %}{% if forloop.first %} shvp-split--active{% else %} shvp-split--hidden{% endif %}"
         data-shvp-reveal
         data-shvp-pair="{{ forloop.index0 }}"
         {% unless forloop.first %}style="display:none;"{% endunless %}

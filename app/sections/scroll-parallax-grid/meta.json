@@ -1,0 +1,50 @@
+{
+  "id": "scroll-parallax-grid",
+  "name": "SS - Parallax Grid",
+  "description": "Stunning scroll-triggered masonry gallery where each image floats at a different parallax depth. Cards reveal with stagger, tilt on hover, show cinematic overlays with gradient badges, and feature smooth zoom transitions. Multiple layout modes (masonry, columns, alternating sizes). 60+ settings.",
+  "category": ["Hero", "Scroll Triggered"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Gallery",
+    "Parallax",
+    "Masonry",
+    "Image",
+    "Zoom",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#111111",
+  "previews": [
+    {
+      "src": "/previews/scroll-parallax-grid/default.webp",
+      "alt": "Scroll Parallax Grid - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

@@ -1,0 +1,1141 @@
+{%- comment -%}
+  Section Hub — Before / After Image Comparison v3
+  Fully customizable: image focal point, layout direction, label styles,
+  CTA button, slider start position, handle size, and more.
+{%- endcomment -%}
+
+{%- assign sid = section.id -%}
+{%- assign layout = section.settings.layout_style -%}
+{%- assign text_align = section.settings.text_alignment -%}
+{%- assign label_style = section.settings.label_style -%}
+{%- assign show_labels = true -%}
+{%- if label_style == 'hidden' -%}{%- assign show_labels = false -%}{%- endif -%}
+
+{%- comment -%} Font loading {%- endcomment -%}
+{%- assign heading_font = section.settings.heading_font -%}
+{%- assign body_font = section.settings.body_font -%}
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ body_font | font_face: font_display: 'swap' }}
+
+<style>
+/* ── Reset ── */
+#sba-{{ sid }}, #sba-{{ sid }} *, #sba-{{ sid }} *::before, #sba-{{ sid }} *::after { box-sizing: border-box; }
+
+/* ── Section ── */
+#sba-{{ sid }} {
+  --c-bg: {{ section.settings.bg_color }};
+  --c-text: {{ section.settings.text_color }};
+  --c-muted: {{ section.settings.muted_color }};
+  --c-accent: {{ section.settings.accent_color }};
+  --c-act: {{ section.settings.accent_text_color }};
+  --c-handle: {{ section.settings.slider_color }};
+  --c-btn-bg: {{ section.settings.button_bg }};
+  --c-btn-text: {{ section.settings.button_text_color }};
+  --r-img: {{ section.settings.image_radius }}px;
+  --r-btn: {{ section.settings.button_radius }}px;
+  --mw: {{ section.settings.max_width }}px;
+  --handle-size: {{ section.settings.handle_size }}px;
+  --line-w: {{ section.settings.handle_line_width }}px;
+  --slider-start: {{ section.settings.slider_start }}%;
+  --font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+  --font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+  --font-heading-weight: {{ heading_font.weight }};
+  --font-body-weight: {{ body_font.weight }};
+  --font-heading-style: {{ heading_font.style }};
+  --font-body-style: {{ body_font.style }};
+
+  background: var(--c-bg);
+  color: var(--c-text);
+  padding: {{ section.settings.padding_top_mobile }}px 0 {{ section.settings.padding_bottom_mobile }}px;
+  font-family: var(--font-body);
+  font-style: var(--font-body-style);
+  -webkit-font-smoothing: antialiased;
+}
+@media(min-width:750px){
+  #sba-{{ sid }} {
+    padding: {{ section.settings.padding_top }}px 0 {{ section.settings.padding_bottom }}px;
+  }
+}
+
+/* ── Wrap ── */
+#sba-{{ sid }} .sba-wrap {
+  width: {% if section.settings.full_width %}100%{% else %}90%{% endif %};
+  max-width: var(--mw);
+  margin: 0 auto;
+  {% if section.settings.full_width %}padding: 0 20px;{% endif %}
+}
+@media(min-width:750px){
+  #sba-{{ sid }} .sba-wrap {
+    {% if section.settings.full_width %}padding: 0 40px;{% endif %}
+  }
+}
+
+/* ── Heading ── */
+#sba-{{ sid }} .sba-heading {
+  text-align: center;
+  font-size: {{ section.settings.heading_size_mobile }}px;
+  font-family: var(--font-heading);
+  font-weight: {{ section.settings.heading_weight | default: 'var(--font-heading-weight)' }};
+  font-style: var(--font-heading-style);
+  line-height: 1.15;
+  letter-spacing: {{ section.settings.heading_letter_spacing }}em;
+  margin: 0 0 8px;
+  padding: 0;
+  color: var(--c-text);
+}
+@media(min-width:750px){
+  #sba-{{ sid }} .sba-heading {
+    font-size: {{ section.settings.heading_size }}px;
+  }
+}
+
+/* ── Subheading ── */
+#sba-{{ sid }} .sba-subheading {
+  text-align: center;
+  font-size: {{ section.settings.body_size }}px;
+  font-family: var(--font-body);
+  font-style: var(--font-body-style);
+  color: var(--c-muted);
+  margin: 0 0 28px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* ── Tabs ── */
+#sba-{{ sid }} .sba-tabs {
+  display: flex;
+  justify-content: center;
+  margin: 0 0 28px;
+}
+#sba-{{ sid }} .sba-tabs-pill {
+  display: inline-flex;
+  position: relative;
+  background: {{ section.settings.tab_bg }};
+  border: 1.5px solid {{ section.settings.tab_border }};
+  border-radius: 999px;
+  padding: 4px;
+}
+#sba-{{ sid }} .sba-tabs-indicator {
+  position: absolute;
+  top: 4px; left: 4px;
+  height: calc(100% - 8px);
+  border-radius: 999px;
+  background: var(--c-accent);
+  transition: transform .3s cubic-bezier(.4,0,.2,1), width .3s cubic-bezier(.4,0,.2,1);
+  pointer-events: none;
+  z-index: 0;
+}
+#sba-{{ sid }} .sba-tab {
+  position: relative; z-index: 1;
+  border: none; background: transparent;
+  padding: 9px 22px;
+  font-size: 13px; font-weight: 600;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--c-text);
+  transition: color .25s;
+  white-space: nowrap;
+  font-family: var(--font-body);
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+#sba-{{ sid }} .sba-tab.active { color: var(--c-act); }
+
+/* ── Panels ── */
+#sba-{{ sid }} .sba-panel { display: none; }
+#sba-{{ sid }} .sba-panel.active {
+  display: block;
+  animation: sba-in-{{ sid }} .35s ease both;
+}
+@keyframes sba-in-{{ sid }} {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Layout ── */
+#sba-{{ sid }} .sba-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+@media(min-width:750px){
+  #sba-{{ sid }} .sba-layout {
+    gap: {{ section.settings.desktop_gap }}px;
+  }
+  #sba-{{ sid }} .sba-layout--text-left {
+    flex-direction: row-reverse;
+    align-items: center;
+  }
+  #sba-{{ sid }} .sba-layout--text-right {
+    flex-direction: row;
+    align-items: center;
+  }
+  #sba-{{ sid }} .sba-layout--slider-only {
+    flex-direction: column;
+    max-width: {{ section.settings.slider_only_max_width }}px;
+    margin: 0 auto;
+  }
+  #sba-{{ sid }} .sba-layout--text-left .sba-slider-col,
+  #sba-{{ sid }} .sba-layout--text-right .sba-slider-col {
+    flex: 1;
+    min-width: 0;
+  }
+  #sba-{{ sid }} .sba-layout--text-left .sba-text-col,
+  #sba-{{ sid }} .sba-layout--text-right .sba-text-col {
+    flex: 0 0 {{ section.settings.text_column_width }}%;
+    max-width: {{ section.settings.text_column_width }}%;
+  }
+}
+
+/* ── Slider ── */
+#sba-{{ sid }} .sba-slider {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--r-img);
+  aspect-ratio: {{ section.settings.aspect_ratio }};
+  background: #e8e8e8;
+  cursor: ew-resize;
+  touch-action: pan-y;
+  user-select: none;
+  -webkit-user-select: none;
+  {% if section.settings.slider_shadow %}box-shadow: 0 8px 32px rgba(0,0,0,.12);{% endif %}
+  {% if section.settings.slider_border %}border: 1px solid rgba(0,0,0,.08);{% endif %}
+}
+
+/* ── Images ── */
+#sba-{{ sid }} .sba-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+#sba-{{ sid }} .sba-img img,
+#sba-{{ sid }} .sba-img .sba-placeholder {
+  width: 100%;
+  height: 100%;
+  object-fit: {{ section.settings.image_fit }};
+  object-position: var(--img-pos, center center);
+  display: block;
+  pointer-events: none;
+}
+#sba-{{ sid }} .sba-img-after  { z-index: 1; }
+#sba-{{ sid }} .sba-img-before {
+  z-index: 2;
+  clip-path: inset(0 calc(100% - var(--slider-start)) 0 0);
+}
+
+/* ── Labels ── */
+{%- if label_style == 'pill' -%}
+#sba-{{ sid }} .sba-label {
+  position: absolute;
+  top: 14px; z-index: 4;
+  padding: 5px 14px;
+  border-radius: 10px;
+  font-size: {{ section.settings.label_size }}px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  background: {{ section.settings.label_bg }};
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: {{ section.settings.label_text_color }};
+  pointer-events: none;
+  line-height: 1;
+}
+{%- elsif label_style == 'minimal' -%}
+#sba-{{ sid }} .sba-label {
+  position: absolute;
+  bottom: 14px; z-index: 4;
+  padding: 2px 0;
+  font-size: {{ section.settings.label_size }}px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: #fff;
+  text-shadow: 0 1px 4px rgba(0,0,0,.5);
+  pointer-events: none;
+  line-height: 1;
+  background: none;
+}
+{%- endif -%}
+#sba-{{ sid }} .sba-label-before { left: 14px; }
+#sba-{{ sid }} .sba-label-after  { right: 14px; }
+
+/* ── Handle ── */
+#sba-{{ sid }} .sba-handle {
+  position: absolute;
+  top: 0; bottom: 0;
+  left: var(--slider-start);
+  z-index: 5;
+  transform: translateX(-50%);
+  width: var(--line-w);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+#sba-{{ sid }} .sba-handle-line {
+  flex: 1;
+  width: var(--line-w);
+  background: var(--c-handle);
+  opacity: .9;
+}
+#sba-{{ sid }} .sba-handle-knob {
+  width: var(--handle-size);
+  height: var(--handle-size);
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--c-handle);
+  color: var(--c-accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: ew-resize;
+  box-shadow: 0 2px 14px rgba(0,0,0,.22);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+#sba-{{ sid }} .sba-slider.dragging .sba-handle-knob,
+#sba-{{ sid }} .sba-handle-knob:hover {
+  transform: scale(1.12);
+  box-shadow: 0 4px 22px rgba(0,0,0,.3);
+}
+#sba-{{ sid }} .sba-handle-knob svg {
+  width: calc(var(--handle-size) * 0.44);
+  height: calc(var(--handle-size) * 0.44);
+  pointer-events: none;
+}
+
+/* ── Disclaimer ── */
+#sba-{{ sid }} .sba-disclaimer {
+  text-align: center;
+  font-size: 11px;
+  color: var(--c-muted);
+  margin: 10px 0 0;
+  line-height: 1.5;
+}
+
+/* ── Text column ── */
+#sba-{{ sid }} .sba-text-col {
+  text-align: {{ text_align }};
+}
+@media(min-width:750px){
+  #sba-{{ sid }} .sba-layout--slider-only .sba-text-col {
+    text-align: center;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+}
+#sba-{{ sid }} .sba-title {
+  font-size: {{ section.settings.title_size_mobile }}px;
+  font-family: var(--font-heading);
+  font-weight: {{ section.settings.heading_weight | default: 'var(--font-heading-weight)' }};
+  font-style: var(--font-heading-style);
+  line-height: 1.2;
+  letter-spacing: {{ section.settings.heading_letter_spacing }}em;
+  margin: 0 0 6px;
+  color: var(--c-text);
+}
+@media(min-width:750px){
+  #sba-{{ sid }} .sba-title { font-size: {{ section.settings.title_size }}px; }
+}
+#sba-{{ sid }} .sba-subtitle {
+  font-size: {{ section.settings.body_size }}px;
+  font-family: var(--font-body);
+  font-style: var(--font-body-style);
+  color: var(--c-muted);
+  margin: 0 0 14px;
+  font-weight: 400;
+}
+#sba-{{ sid }} .sba-desc {
+  font-size: {{ section.settings.body_size }}px;
+  font-family: var(--font-body);
+  font-style: var(--font-body-style);
+  line-height: 1.65;
+  color: var(--c-text);
+}
+#sba-{{ sid }} .sba-desc p { margin: 0 0 .75em; }
+#sba-{{ sid }} .sba-desc p:last-child { margin-bottom: 0; }
+
+/* ── CTA Button ── */
+#sba-{{ sid }} .sba-btn {
+  display: inline-block;
+  margin-top: 20px;
+  padding: 13px 32px;
+  font-size: {{ section.settings.body_size }}px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--r-btn);
+  background: var(--c-btn-bg);
+  color: var(--c-btn-text);
+  border: none;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  font-family: var(--font-body);
+  font-style: var(--font-body-style);
+  line-height: 1;
+  letter-spacing: .01em;
+}
+#sba-{{ sid }} .sba-btn:hover {
+  opacity: .88;
+  transform: translateY(-1px);
+}
+
+/* ── Intro animation ── */
+@keyframes sba-swing-b-{{ sid }} {
+  0%   { clip-path: inset(0 calc(100% - var(--slider-start)) 0 0); }
+  35%  { clip-path: inset(0 22% 0 0); }
+  65%  { clip-path: inset(0 72% 0 0); }
+  100% { clip-path: inset(0 calc(100% - var(--slider-start)) 0 0); }
+}
+@keyframes sba-swing-h-{{ sid }} {
+  0%   { left: var(--slider-start); }
+  35%  { left: 78%; }
+  65%  { left: 28%; }
+  100% { left: var(--slider-start); }
+}
+#sba-{{ sid }} .sba-slider.intro .sba-img-before {
+  animation: sba-swing-b-{{ sid }} 1.6s cubic-bezier(.4,0,.2,1) both;
+}
+#sba-{{ sid }} .sba-slider.intro .sba-handle {
+  animation: sba-swing-h-{{ sid }} 1.6s cubic-bezier(.4,0,.2,1) both;
+}
+</style>
+
+<section id="sba-{{ sid }}" aria-label="{{ section.settings.heading | default: 'Before & After' }}">
+  <div class="sba-wrap">
+
+    {%- if section.settings.heading != blank -%}
+      <h2 class="sba-heading">{{ section.settings.heading }}</h2>
+    {%- endif -%}
+    {%- if section.settings.subheading != blank -%}
+      <p class="sba-subheading">{{ section.settings.subheading }}</p>
+    {%- endif -%}
+
+    {%- if section.blocks.size > 1 -%}
+      <div class="sba-tabs" role="tablist">
+        <div class="sba-tabs-pill">
+          <div class="sba-tabs-indicator" id="sba-ind-{{ sid }}"></div>
+          {%- for block in section.blocks -%}
+            <button
+              class="sba-tab{% if forloop.first %} active{% endif %}"
+              role="tab" type="button"
+              aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+              aria-controls="sba-p-{{ sid }}-{{ forloop.index0 }}"
+              data-i="{{ forloop.index0 }}"
+            >{{ block.settings.tab_label | default: block.settings.title | default: 'Tab' }}</button>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    <div>
+      {%- for block in section.blocks -%}
+        {%- assign img_pos = block.settings.image_position | default: 'center center' -%}
+        <div
+          class="sba-panel{% if forloop.first %} active{% endif %}"
+          id="sba-p-{{ sid }}-{{ forloop.index0 }}"
+          role="tabpanel"
+          style="--img-pos: {{ img_pos }};"
+          {{ block.shopify_attributes }}
+        >
+          <div class="sba-layout sba-layout--{{ layout }}">
+
+            <div class="sba-slider-col">
+              <div class="sba-slider" data-slider tabindex="-1">
+
+                {%- comment -%} AFTER image (bottom layer) {%- endcomment -%}
+                <div class="sba-img sba-img-after">
+                  {%- if block.settings.image_after != blank -%}
+                    {{ block.settings.image_after | image_url: width: 1400 | image_tag:
+                      loading: 'lazy',
+                      widths: '400,700,1000,1400',
+                      sizes: '(max-width:749px) 92vw, 60vw'
+                    }}
+                  {%- else -%}
+                    <div class="sba-placeholder" style="background:#e0e0e0;display:flex;align-items:center;justify-content:center;">
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if show_labels -%}
+                    <span class="sba-label sba-label-after">{{ block.settings.label_after | default: section.settings.default_label_after }}</span>
+                  {%- endif -%}
+                </div>
+
+                {%- comment -%} BEFORE image (top layer, clipped) {%- endcomment -%}
+                <div class="sba-img sba-img-before" data-before>
+                  {%- if block.settings.image_before != blank -%}
+                    {{ block.settings.image_before | image_url: width: 1400 | image_tag:
+                      loading: 'lazy',
+                      widths: '400,700,1000,1400',
+                      sizes: '(max-width:749px) 92vw, 60vw'
+                    }}
+                  {%- else -%}
+                    <div class="sba-placeholder" style="background:#c8c8c8;display:flex;align-items:center;justify-content:center;">
+                      {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if show_labels -%}
+                    <span class="sba-label sba-label-before">{{ block.settings.label_before | default: section.settings.default_label_before }}</span>
+                  {%- endif -%}
+                </div>
+
+                {%- comment -%} Handle {%- endcomment -%}
+                <div class="sba-handle" data-handle tabindex="0" role="slider"
+                     aria-valuenow="{{ section.settings.slider_start }}"
+                     aria-valuemin="0" aria-valuemax="100"
+                     aria-label="Drag to compare">
+                  <div class="sba-handle-line"></div>
+                  <div class="sba-handle-knob">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <path d="M9 6l-4 6 4 6"/><path d="M15 6l4 6-4 6"/>
+                    </svg>
+                  </div>
+                  <div class="sba-handle-line"></div>
+                </div>
+
+              </div>
+              {%- if block.settings.disclaimer != blank -%}
+                <p class="sba-disclaimer">{{ block.settings.disclaimer }}</p>
+              {%- endif -%}
+            </div>
+
+            {%- unless layout == 'slider-only' and block.settings.title == blank and block.settings.subtitle == blank and block.settings.description == blank and block.settings.button_label == blank -%}
+            <div class="sba-text-col">
+              {%- if block.settings.title != blank -%}
+                <p class="sba-title">{{ block.settings.title }}</p>
+              {%- endif -%}
+              {%- if block.settings.subtitle != blank -%}
+                <p class="sba-subtitle">{{ block.settings.subtitle }}</p>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <div class="sba-desc">{{ block.settings.description }}</div>
+              {%- endif -%}
+              {%- if block.settings.button_label != blank -%}
+                <a class="sba-btn" href="{{ block.settings.button_link | default: '#' }}">
+                  {{ block.settings.button_label }}
+                </a>
+              {%- endif -%}
+            </div>
+            {%- endunless -%}
+
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.getElementById('sba-{{ sid }}');
+  if (!root) return;
+  var startPct = {{ section.settings.slider_start }};
+
+  /* ── Tabs ── */
+  var tabs = Array.from(root.querySelectorAll('.sba-tab'));
+  var panels = Array.from(root.querySelectorAll('.sba-panel'));
+  var ind = root.querySelector('.sba-tabs-indicator');
+
+  function posInd(tab) {
+    if (!ind || !tab) return;
+    ind.style.width = tab.offsetWidth + 'px';
+    ind.style.transform = 'translateX(' + tab.offsetLeft + 'px)';
+  }
+  function activateTab(i) {
+    tabs.forEach(function(t, j) {
+      var on = i === j;
+      t.classList.toggle('active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    panels.forEach(function(p, j) {
+      var on = i === j;
+      p.classList.toggle('active', on);
+      if (on) setTimeout(function(){ initSlider(p.querySelector('[data-slider]')); }, 10);
+    });
+    posInd(tabs[i]);
+  }
+  tabs.forEach(function(t) {
+    t.addEventListener('click', function() { activateTab(+t.dataset.i); });
+  });
+  if (tabs.length) {
+    requestAnimationFrame(function() { posInd(tabs[0]); });
+    window.addEventListener('resize', function() {
+      var a = root.querySelector('.sba-tab.active');
+      posInd(a);
+    }, { passive: true });
+  }
+
+  /* ── Slider ── */
+  function initSlider(sl) {
+    if (!sl || sl._ok) return;
+    sl._ok = true;
+    var before = sl.querySelector('[data-before]');
+    var handle = sl.querySelector('[data-handle]');
+    if (!before || !handle) return;
+    var dragging = false;
+
+    if (typeof IntersectionObserver !== 'undefined') {
+      var io = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+          sl.classList.add('intro');
+          io.disconnect();
+          setTimeout(function() { sl.classList.remove('intro'); }, 1700);
+        }
+      }, { threshold: 0.3 });
+      io.observe(sl);
+    }
+
+    function setPos(clientX) {
+      var r = sl.getBoundingClientRect();
+      var pct = Math.max(2, Math.min(98, ((clientX - r.left) / r.width) * 100));
+      before.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+      handle.style.left = pct + '%';
+      handle.setAttribute('aria-valuenow', Math.round(pct));
+    }
+    function down(e) {
+      e.preventDefault();
+      sl.classList.remove('intro');
+      dragging = true;
+      sl.classList.add('dragging');
+      setPos(e.touches ? e.touches[0].clientX : e.clientX);
+    }
+    function move(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      setPos(e.touches ? e.touches[0].clientX : e.clientX);
+    }
+    function up() {
+      if (!dragging) return;
+      dragging = false;
+      sl.classList.remove('dragging');
+    }
+
+    sl.addEventListener('mousedown', down);
+    sl.addEventListener('touchstart', down, { passive: false });
+    window.addEventListener('mousemove', move, { passive: false });
+    window.addEventListener('touchmove', move, { passive: false });
+    window.addEventListener('mouseup', up);
+    window.addEventListener('touchend', up);
+
+    handle.addEventListener('keydown', function(e) {
+      var cur = parseFloat(handle.style.left) || startPct;
+      var step = e.shiftKey ? 10 : 3;
+      var r = sl.getBoundingClientRect();
+      if (e.key === 'ArrowLeft')  { e.preventDefault(); setPos(r.left + r.width * Math.max(2,  cur - step) / 100); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); setPos(r.left + r.width * Math.min(98, cur + step) / 100); }
+    });
+  }
+
+  var first = root.querySelector('.sba-panel.active [data-slider]');
+  if (first) setTimeout(function(){ initSlider(first); }, 50);
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Before / After Comparison",
+  "tag": "section",
+  "class": "section-hub--before-after",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "See the Difference"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real results from real customers"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Desktop layout",
+      "options": [
+        { "value": "text-right", "label": "Image left, text right" },
+        { "value": "text-left", "label": "Text left, image right" },
+        { "value": "slider-only", "label": "Slider only (text below)" }
+      ],
+      "default": "text-right"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "text_column_width",
+      "label": "Text column width — desktop",
+      "min": 20, "max": 45, "step": 1, "default": 28, "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "desktop_gap",
+      "label": "Gap between slider & text — desktop",
+      "min": 16, "max": 80, "step": 4, "default": 48, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "full_width",
+      "label": "Full-width section",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 700, "max": 1600, "step": 20, "default": 1100, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "slider_only_max_width",
+      "label": "Slider max width (slider-only layout)",
+      "min": 400, "max": 900, "step": 20, "default": 680, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Aspect ratio",
+      "options": [
+        { "value": "1/1",  "label": "Square (1:1)" },
+        { "value": "4/3",  "label": "Landscape (4:3)" },
+        { "value": "3/4",  "label": "Portrait (3:4)" },
+        { "value": "3/2",  "label": "Photo (3:2)" },
+        { "value": "2/3",  "label": "Tall portrait (2:3)" },
+        { "value": "16/9", "label": "Widescreen (16:9)" },
+        { "value": "9/16", "label": "Vertical video (9:16)" }
+      ],
+      "default": "3/4"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "cover", "label": "Cover (fill, may crop)" },
+        { "value": "contain", "label": "Contain (full image, may letterbox)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Corner radius",
+      "min": 0, "max": 40, "step": 2, "default": 16, "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_shadow",
+      "label": "Slider shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "slider_border",
+      "label": "Slider border",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Slider"
+    },
+    {
+      "type": "range",
+      "id": "slider_start",
+      "label": "Slider start position",
+      "min": 10, "max": 90, "step": 5, "default": 50, "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "handle_size",
+      "label": "Handle size",
+      "min": 32, "max": 64, "step": 2, "default": 46, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "handle_line_width",
+      "label": "Handle line width",
+      "min": 1, "max": 6, "step": 1, "default": 2, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "select",
+      "id": "label_style",
+      "label": "Label style",
+      "options": [
+        { "value": "pill", "label": "Pill (blurred background)" },
+        { "value": "minimal", "label": "Minimal (text only)" },
+        { "value": "hidden", "label": "Hidden" }
+      ],
+      "default": "pill"
+    },
+    {
+      "type": "text",
+      "id": "default_label_before",
+      "label": "Default before label",
+      "default": "Before"
+    },
+    {
+      "type": "text",
+      "id": "default_label_after",
+      "label": "Default after label",
+      "default": "After"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label font size",
+      "min": 10, "max": 16, "step": 1, "default": 12, "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "label_bg",
+      "label": "Label background",
+      "default": "#000000",
+      "info": "Opacity is applied automatically"
+    },
+    {
+      "type": "color",
+      "id": "label_text_color",
+      "label": "Label text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "options": [
+        { "value": "-0.04", "label": "Tighter (−0.04em)" },
+        { "value": "-0.03", "label": "Tight (−0.03em)" },
+        { "value": "-0.02", "label": "Slightly tight (−0.02em)" },
+        { "value": "0",     "label": "Normal" },
+        { "value": "0.02",  "label": "Slightly wide (0.02em)" },
+        { "value": "0.05",  "label": "Wide (0.05em)" },
+        { "value": "0.1",   "label": "Very wide (0.1em)" }
+      ],
+      "default": "-0.03"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size — desktop",
+      "min": 20, "max": 64, "step": 1, "default": 36, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size — mobile",
+      "min": 18, "max": 44, "step": 1, "default": 28, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title — desktop",
+      "min": 16, "max": 44, "step": 1, "default": 26, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title — mobile",
+      "min": 14, "max": 32, "step": 1, "default": 22, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Body text size",
+      "min": 12, "max": 20, "step": 1, "default": 15, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#888888"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Active tab background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "accent_text_color",
+      "label": "Active tab text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "slider_color",
+      "label": "Slider handle color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg",
+      "label": "Tab pill background",
+      "default": "#f3f3f3"
+    },
+    {
+      "type": "color",
+      "id": "tab_border",
+      "label": "Tab pill border",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "color",
+      "id": "button_bg",
+      "label": "Button background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "Button corner radius",
+      "min": 0, "max": 30, "step": 2, "default": 8, "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 56, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom padding — desktop",
+      "min": 0, "max": 120, "step": 4, "default": 56, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom padding — mobile",
+      "min": 0, "max": 80, "step": 4, "default": 40, "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "comparison",
+      "name": "Comparison",
+      "settings": [
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label",
+          "default": "Weeks 1-4"
+        },
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_before",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_after",
+          "label": "After image"
+        },
+        {
+          "type": "select",
+          "id": "image_position",
+          "label": "Image focal point",
+          "options": [
+            { "value": "center top", "label": "Top" },
+            { "value": "center center", "label": "Center" },
+            { "value": "center bottom", "label": "Bottom" },
+            { "value": "left center", "label": "Left" },
+            { "value": "right center", "label": "Right" },
+            { "value": "left top", "label": "Top left" },
+            { "value": "right top", "label": "Top right" },
+            { "value": "left bottom", "label": "Bottom left" },
+            { "value": "right bottom", "label": "Bottom right" }
+          ],
+          "default": "center center"
+        },
+        {
+          "type": "header",
+          "content": "Labels"
+        },
+        {
+          "type": "text",
+          "id": "label_before",
+          "label": "Before label",
+          "info": "Leave empty to use section default"
+        },
+        {
+          "type": "text",
+          "id": "label_after",
+          "label": "After label",
+          "info": "Leave empty to use section default"
+        },
+        {
+          "type": "header",
+          "content": "Text"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Weeks 1-4"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle",
+          "default": "3 treatments per week"
+        },
+        {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description",
+          "default": "<p>Experience a noticeable improvement within just a few weeks of regular use.</p>"
+        },
+        {
+          "type": "text",
+          "id": "disclaimer",
+          "label": "Disclaimer",
+          "default": "*Individual results may vary based on usage."
+        },
+        {
+          "type": "header",
+          "content": "Button"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Before / After Comparison",
+      "blocks": [
+        {
+          "type": "comparison",
+          "settings": {
+            "tab_label": "Weeks 1-4",
+            "title": "Weeks 1-4",
+            "subtitle": "3 treatments per week",
+            "description": "<p>Experience a noticeable improvement within just a few weeks of regular use.</p>",
+            "disclaimer": "*Individual results may vary based on usage.",
+            "button_label": "Shop Now",
+            "image_position": "center center"
+          }
+        },
+        {
+          "type": "comparison",
+          "settings": {
+            "tab_label": "Weeks 4-8",
+            "title": "Weeks 4-8",
+            "subtitle": "2 treatments per week",
+            "description": "<p>Significant results become visible. Continue for long-lasting effects.</p>",
+            "disclaimer": "*Individual results may vary based on usage.",
+            "button_label": "Shop Now",
+            "image_position": "center center"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

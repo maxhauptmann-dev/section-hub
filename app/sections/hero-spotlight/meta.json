@@ -1,0 +1,50 @@
+{
+  "id": "hero-spotlight",
+  "name": "SS - Hero Spotlight",
+  "description": "Dramatic dark hero with a radial spotlight that follows the cursor, vertical side text element, oversized display heading with character-level animation, noise texture, gradient mesh accents, and a minimal bottom info bar. 80+ customization options for a bold, editorial-style hero.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Spotlight",
+    "Cursor",
+    "Dark",
+    "Editorial",
+    "Dramatic",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#050505",
+  "previews": [
+    {
+      "src": "/previews/hero-spotlight/default.webp",
+      "alt": "Hero Spotlight - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

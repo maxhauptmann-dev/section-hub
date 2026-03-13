@@ -1,6 +1,6 @@
 import prisma from "../db.server";
 
-const API_VERSION = "2024-10";
+const API_VERSION = "2025-10";
 
 /**
  * Create a one-time app purchase for a section.

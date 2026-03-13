@@ -1,0 +1,796 @@
+{% comment %}
+  SS - Hero Reveal
+  Scroll-triggered hero with image expanding from contained to fullscreen.
+  Sticky text overlay, split-color heading, counter stats, corner marks.
+  Prefix: shrv-
+{% endcomment %}
+
+{%- assign shrv_bg = section.settings.bg_color -%}
+{%- assign shrv_text = section.settings.text_color -%}
+{%- assign shrv_align = section.settings.text_align -%}
+{%- assign shrv_max_w = section.settings.content_max_width -%}
+{%- assign shrv_scroll_h = section.settings.scroll_height -%}
+
+{%- assign shrv_image = section.settings.hero_image -%}
+{%- assign shrv_start_w = section.settings.start_width -%}
+{%- assign shrv_start_h = section.settings.start_height -%}
+{%- assign shrv_frame_radius = section.settings.frame_radius -%}
+{%- assign shrv_img_overlay = section.settings.image_overlay_color -%}
+{%- assign shrv_img_overlay_opacity = section.settings.image_overlay_opacity -%}
+{%- assign shrv_shadow_style = section.settings.frame_shadow -%}
+
+{%- assign shrv_text_fade = section.settings.text_fade_on_scroll -%}
+{%- assign shrv_text_position = section.settings.text_position -%}
+
+{%- assign shrv_corners = section.settings.show_corners -%}
+{%- assign shrv_corner_color = section.settings.corner_color -%}
+{%- assign shrv_corner_offset = section.settings.corner_offset -%}
+
+{%- assign shrv_divider = section.settings.show_divider_line -%}
+
+{%- assign shrv_eyebrow = section.settings.eyebrow_text -%}
+{%- assign shrv_eyebrow_color = section.settings.eyebrow_color -%}
+
+{%- assign shrv_heading = section.settings.heading -%}
+{%- assign shrv_heading_c1 = section.settings.heading_color -%}
+{%- assign shrv_heading_c2 = section.settings.accent_color -%}
+{%- assign shrv_accent_text = section.settings.accent_text -%}
+{%- assign shrv_heading_font = section.settings.heading_font -%}
+
+{%- assign shrv_desc = section.settings.description -%}
+{%- assign shrv_desc_color = section.settings.description_color -%}
+
+{%- assign shrv_btn1_text = section.settings.btn1_text -%}
+{%- assign shrv_btn1_link = section.settings.btn1_link -%}
+{%- assign shrv_btn1_style = section.settings.btn1_style -%}
+{%- assign shrv_btn1_bg = section.settings.btn1_bg -%}
+{%- assign shrv_btn1_color = section.settings.btn1_text_color -%}
+{%- assign shrv_btn1_arrow = section.settings.btn1_show_arrow -%}
+{%- assign shrv_btn_radius = section.settings.btn_radius -%}
+
+{%- assign shrv_btn2_text = section.settings.btn2_text -%}
+{%- assign shrv_btn2_link = section.settings.btn2_link -%}
+{%- assign shrv_btn2_style = section.settings.btn2_style -%}
+{%- assign shrv_btn2_color = section.settings.btn2_text_color -%}
+{%- assign shrv_btn2_border = section.settings.btn2_border_color -%}
+{%- assign shrv_btn2_arrow = section.settings.btn2_show_arrow -%}
+
+{%- assign shrv_stats = section.settings.show_stats -%}
+{%- assign shrv_stats_style = section.settings.stats_style -%}
+{%- assign shrv_stats_bg = section.settings.stats_bg -%}
+{%- assign shrv_stats_radius = section.settings.stats_radius -%}
+{%- assign shrv_stats_gap = section.settings.stats_gap -%}
+{%- assign shrv_stat_num_c = section.settings.stat_number_color -%}
+{%- assign shrv_stat_lbl_c = section.settings.stat_label_color -%}
+{%- assign shrv_stat_div_c = section.settings.stat_divider_color -%}
+
+{%- assign shrv_stat1_num = section.settings.stat1_number -%}
+{%- assign shrv_stat1_lbl = section.settings.stat1_label -%}
+{%- assign shrv_stat2_num = section.settings.stat2_number -%}
+{%- assign shrv_stat2_lbl = section.settings.stat2_label -%}
+{%- assign shrv_stat3_num = section.settings.stat3_number -%}
+{%- assign shrv_stat3_lbl = section.settings.stat3_label -%}
+{%- assign shrv_stat4_num = section.settings.stat4_number -%}
+{%- assign shrv_stat4_lbl = section.settings.stat4_label -%}
+
+{%- assign shrv_anim = section.settings.reveal_animation -%}
+
+{%- comment -%} Compute overlay rgba {%- endcomment -%}
+{%- assign shrv_overlay_r = shrv_img_overlay | color_extract: 'red' -%}
+{%- assign shrv_overlay_g = shrv_img_overlay | color_extract: 'green' -%}
+{%- assign shrv_overlay_b = shrv_img_overlay | color_extract: 'blue' -%}
+{%- assign shrv_overlay_a = shrv_img_overlay_opacity | divided_by: 100.0 -%}
+
+{%- comment -%} Shadow map {%- endcomment -%}
+{%- case shrv_shadow_style -%}
+  {%- when 'none' -%}
+    {%- assign shrv_shadow_val = 'none' -%}
+  {%- when 'soft' -%}
+    {%- assign shrv_shadow_val = '0 20px 60px rgba(0,0,0,0.12)' -%}
+  {%- when 'medium' -%}
+    {%- assign shrv_shadow_val = '0 25px 80px rgba(0,0,0,0.2)' -%}
+  {%- when 'heavy' -%}
+    {%- assign shrv_shadow_val = '0 30px 100px rgba(0,0,0,0.35)' -%}
+{%- endcase -%}
+
+<style>
+  {{ shrv_heading_font | font_face: font_display: 'swap' }}
+
+  .shrv-wrap--{{ section.id }} {
+    --shrv-bg: {{ shrv_bg }};
+    --shrv-text: {{ shrv_text }};
+    --shrv-align: {{ shrv_align }};
+    --shrv-max-w: {{ shrv_max_w }}px;
+    --shrv-scroll-h: {{ shrv_scroll_h }}vh;
+
+    --shrv-start-w: {{ shrv_start_w }}%;
+    --shrv-start-h: {{ shrv_start_h }}%;
+    --shrv-frame-radius: {{ shrv_frame_radius }}px;
+    --shrv-img-overlay: rgba({{ shrv_overlay_r }}, {{ shrv_overlay_g }}, {{ shrv_overlay_b }}, {{ shrv_overlay_a }});
+    --shrv-shadow: {{ shrv_shadow_val }};
+
+    --shrv-corner-color: {{ shrv_corner_color }};
+    --shrv-corner-offset: {{ shrv_corner_offset }}px;
+
+    --shrv-eyebrow-color: {{ shrv_eyebrow_color }};
+
+    --shrv-heading-ff: {{ shrv_heading_font.family }}, {{ shrv_heading_font.fallback_families }};
+    --shrv-heading-fw: {{ shrv_heading_font.weight }};
+    --shrv-heading-fs: {{ shrv_heading_font.style }};
+    --shrv-heading-c1: {{ shrv_heading_c1 }};
+    --shrv-heading-c2: {{ shrv_heading_c2 }};
+
+    --shrv-desc-color: {{ shrv_desc_color }};
+
+    --shrv-btn1-bg: {{ shrv_btn1_bg }};
+    --shrv-btn1-text: {{ shrv_btn1_color }};
+    --shrv-btn2-text-c: {{ shrv_btn2_color }};
+    --shrv-btn2-border-c: {{ shrv_btn2_border }};
+    --shrv-btn-radius: {{ shrv_btn_radius }}px;
+
+    --shrv-stats-bg: {{ shrv_stats_bg }};
+    --shrv-stats-radius: {{ shrv_stats_radius }}px;
+    --shrv-stats-gap: {{ shrv_stats_gap }}px;
+    --shrv-stat-number-c: {{ shrv_stat_num_c }};
+    --shrv-stat-label-c: {{ shrv_stat_lbl_c }};
+    --shrv-stat-divider: {{ shrv_stat_div_c }};
+  }
+</style>
+
+<section class="shrv-wrap shrv-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  <div class="shrv-scroll-container" data-shrv-scroll
+       data-shrv-fade="{{ shrv_text_fade }}"
+       data-shrv-start-w="{{ shrv_start_w }}"
+       data-shrv-start-h="{{ shrv_start_h }}"
+       data-shrv-radius="{{ shrv_frame_radius }}"
+       data-shrv-text-pos="{{ shrv_text_position }}">
+
+    <div class="shrv-sticky">
+
+      {%- comment -%} Reveal image {%- endcomment -%}
+      <div class="shrv-image-window">
+        <div class="shrv-image-frame" data-shrv-frame>
+          {%- if shrv_image != blank -%}
+            <img
+              src="{{ shrv_image | image_url: width: 2400 }}"
+              srcset="{{ shrv_image | image_url: width: 800 }} 800w,
+                      {{ shrv_image | image_url: width: 1200 }} 1200w,
+                      {{ shrv_image | image_url: width: 1800 }} 1800w,
+                      {{ shrv_image | image_url: width: 2400 }} 2400w"
+              sizes="100vw"
+              alt="{{ shrv_image.alt | escape }}"
+              loading="eager"
+              fetchpriority="high"
+              width="{{ shrv_image.width }}"
+              height="{{ shrv_image.height }}"
+            >
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'shrv-placeholder' }}
+          {%- endif -%}
+          <div class="shrv-image-overlay"></div>
+        </div>
+      </div>
+
+      {%- comment -%} Corner marks {%- endcomment -%}
+      {%- if shrv_corners -%}
+        <div class="shrv-corners">
+          <div class="shrv-corner shrv-corner--tl"></div>
+          <div class="shrv-corner shrv-corner--tr"></div>
+          <div class="shrv-corner shrv-corner--bl"></div>
+          <div class="shrv-corner shrv-corner--br"></div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Text overlay {%- endcomment -%}
+      <div class="shrv-content" data-shrv-content style="--shrv-align: {{ shrv_align }}; max-width: {{ shrv_max_w }}px;">
+
+        {%- if shrv_divider -%}
+          <hr class="shrv-divider-line shrv-fade-in shrv-fade-in--d1">
+        {%- endif -%}
+
+        {%- if shrv_eyebrow != blank -%}
+          <p class="shrv-eyebrow shrv-fade-in shrv-fade-in--d1">{{ shrv_eyebrow }}</p>
+        {%- endif -%}
+
+        {%- if shrv_heading != blank -%}
+          <h2 class="shrv-heading shrv-{% if shrv_anim == 'clip' %}clip-reveal{% elsif shrv_anim == 'scale' %}scale-in{% else %}fade-in{% endif %} shrv-fade-in--d2">
+            {{ shrv_heading }}
+            {%- if shrv_accent_text != blank -%}
+              <span class="shrv-heading__accent">{{ shrv_accent_text }}</span>
+            {%- endif -%}
+          </h2>
+        {%- endif -%}
+
+        {%- if shrv_desc != blank -%}
+          <p class="shrv-description shrv-fade-in shrv-fade-in--d3">{{ shrv_desc }}</p>
+        {%- endif -%}
+
+        {%- if shrv_btn1_text != blank or shrv_btn2_text != blank -%}
+          <div class="shrv-buttons shrv-fade-in shrv-fade-in--d4">
+            {%- if shrv_btn1_text != blank -%}
+              <a href="{{ shrv_btn1_link | default: '#' }}" class="shrv-btn shrv-btn--{{ shrv_btn1_style }}">
+                {{ shrv_btn1_text }}
+                {%- if shrv_btn1_arrow -%}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                {%- endif -%}
+              </a>
+            {%- endif -%}
+
+            {%- if shrv_btn2_text != blank -%}
+              <a href="{{ shrv_btn2_link | default: '#' }}" class="shrv-btn shrv-btn--{{ shrv_btn2_style }}">
+                {{ shrv_btn2_text }}
+                {%- if shrv_btn2_arrow -%}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                {%- endif -%}
+              </a>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+      </div>
+
+      {%- comment -%} Stats bar {%- endcomment -%}
+      {%- if shrv_stats -%}
+        <div class="shrv-stats shrv-stats--{{ shrv_stats_style }} shrv-fade-in shrv-fade-in--d5" data-shrv-stats>
+          {%- if shrv_stat1_num != blank -%}
+            <div class="shrv-stat">
+              <div class="shrv-stat__number">{{ shrv_stat1_num }}</div>
+              {%- if shrv_stat1_lbl != blank -%}<div class="shrv-stat__label">{{ shrv_stat1_lbl }}</div>{%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if shrv_stat2_num != blank -%}
+            <div class="shrv-stat">
+              <div class="shrv-stat__number">{{ shrv_stat2_num }}</div>
+              {%- if shrv_stat2_lbl != blank -%}<div class="shrv-stat__label">{{ shrv_stat2_lbl }}</div>{%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if shrv_stat3_num != blank -%}
+            <div class="shrv-stat">
+              <div class="shrv-stat__number">{{ shrv_stat3_num }}</div>
+              {%- if shrv_stat3_lbl != blank -%}<div class="shrv-stat__label">{{ shrv_stat3_lbl }}</div>{%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if shrv_stat4_num != blank -%}
+            <div class="shrv-stat">
+              <div class="shrv-stat__number">{{ shrv_stat4_num }}</div>
+              {%- if shrv_stat4_lbl != blank -%}<div class="shrv-stat__label">{{ shrv_stat4_lbl }}</div>{%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+  (function() {
+    const section = document.querySelector('.shrv-wrap--{{ section.id }}');
+    if (!section) return;
+
+    const scrollContainer = section.querySelector('[data-shrv-scroll]');
+    const frame = section.querySelector('[data-shrv-frame]');
+    const content = section.querySelector('[data-shrv-content]');
+    const stats = section.querySelector('[data-shrv-stats]');
+
+    if (!scrollContainer || !frame) return;
+
+    const fadeText = scrollContainer.dataset.shrvFade === 'true';
+    const startW = parseFloat(scrollContainer.dataset.shrvStartW) || 40;
+    const startH = parseFloat(scrollContainer.dataset.shrvStartH) || 55;
+    const startRadius = parseFloat(scrollContainer.dataset.shrvRadius) || 16;
+    const textPos = scrollContainer.dataset.shrvTextPos || 'over';
+
+    let ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        const rect = scrollContainer.getBoundingClientRect();
+        const scrollH = scrollContainer.offsetHeight - window.innerHeight;
+        const scrolled = Math.max(0, -rect.top);
+        const progress = Math.min(scrolled / scrollH, 1);
+
+        // Expand image from start dimensions to 100%
+        const w = startW + (100 - startW) * progress;
+        const h = startH + (100 - startH) * progress;
+        const radius = startRadius * (1 - progress);
+
+        frame.style.width = w + '%';
+        frame.style.height = h + '%';
+        frame.style.borderRadius = radius + 'px';
+
+        // Fade text on scroll
+        if (fadeText && content) {
+          const textOpacity = Math.max(1 - progress * 2.5, 0);
+          content.style.opacity = textOpacity;
+          if (textPos === 'over') {
+            content.style.transform = 'translateY(' + (progress * -40) + 'px)';
+          }
+        }
+
+        // Fade stats slightly later
+        if (stats) {
+          const statsOpacity = Math.max(1 - (progress - 0.3) * 3, 0);
+          stats.style.opacity = Math.max(statsOpacity, 0);
+        }
+
+        ticking = false;
+      });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Hero Reveal",
+  "tag": "section",
+  "class": "shrv-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#faf9f6"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Default text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 500,
+      "max": 1200,
+      "step": 50,
+      "default": 800,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "scroll_height",
+      "label": "Scroll distance (controls expand speed)",
+      "min": 150,
+      "max": 400,
+      "step": 25,
+      "default": 250,
+      "unit": "vh"
+    },
+    {
+      "type": "header",
+      "content": "Hero image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "range",
+      "id": "start_width",
+      "label": "Image start width",
+      "min": 20,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "start_height",
+      "label": "Image start height",
+      "min": 30,
+      "max": 90,
+      "step": 5,
+      "default": 55,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "frame_radius",
+      "label": "Image corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "image_overlay_color",
+      "label": "Image overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "image_overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "default": 15,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "frame_shadow",
+      "label": "Image frame shadow",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "heavy", "label": "Heavy" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Scroll behavior"
+    },
+    {
+      "type": "checkbox",
+      "id": "text_fade_on_scroll",
+      "label": "Fade text on scroll",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",
+      "options": [
+        { "value": "over", "label": "Over image" },
+        { "value": "above", "label": "Above image" }
+      ],
+      "default": "over"
+    },
+    {
+      "type": "header",
+      "content": "Decorative corners"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_corners",
+      "label": "Show corner marks",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "corner_color",
+      "label": "Corner color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "corner_offset",
+      "label": "Corner offset",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Text content"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider_line",
+      "label": "Show divider line above text",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow_text",
+      "label": "Eyebrow text",
+      "default": "Spring / Summer 2025"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#888888"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Art of"
+    },
+    {
+      "type": "text",
+      "id": "accent_text",
+      "label": "Heading accent text (italic color)",
+      "default": "Modern Living"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent text color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description text",
+      "default": "A carefully curated experience of timeless design and contemporary elegance. Scroll to unveil our world."
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "reveal_animation",
+      "label": "Text entrance animation",
+      "options": [
+        { "value": "fade", "label": "Fade up" },
+        { "value": "clip", "label": "Clip reveal" },
+        { "value": "scale", "label": "Scale in" }
+      ],
+      "default": "fade"
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Shop Collection"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "ghost", "label": "Ghost (underline)" },
+        { "value": "accent", "label": "Accent color" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "btn1_bg",
+      "label": "Button 1 background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn1_text_color",
+      "label": "Button 1 text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn1_show_arrow",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "pill", "label": "Pill" },
+        { "value": "ghost", "label": "Ghost (underline)" },
+        { "value": "accent", "label": "Accent color" }
+      ],
+      "default": "ghost"
+    },
+    {
+      "type": "color",
+      "id": "btn2_text_color",
+      "label": "Button 2 text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border_color",
+      "label": "Button 2 border color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn2_show_arrow",
+      "label": "Show arrow icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Stats bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Show stats bar",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "stats_style",
+      "label": "Stats bar style",
+      "options": [
+        { "value": "glass", "label": "Glass blur" },
+        { "value": "solid", "label": "Solid background" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "stats_bg",
+      "label": "Stats background (solid mode)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "stats_radius",
+      "label": "Stats border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "stats_gap",
+      "label": "Stats item spacing",
+      "min": 20,
+      "max": 80,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "stat_number_color",
+      "label": "Stat number color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "stat_label_color",
+      "label": "Stat label color",
+      "default": "#999999"
+    },
+    {
+      "type": "color",
+      "id": "stat_divider_color",
+      "label": "Stat divider color",
+      "default": "#e5e5e5"
+    },
+    {
+      "type": "text",
+      "id": "stat1_number",
+      "label": "Stat 1 number",
+      "default": "250+"
+    },
+    {
+      "type": "text",
+      "id": "stat1_label",
+      "label": "Stat 1 label",
+      "default": "Products"
+    },
+    {
+      "type": "text",
+      "id": "stat2_number",
+      "label": "Stat 2 number",
+      "default": "18K"
+    },
+    {
+      "type": "text",
+      "id": "stat2_label",
+      "label": "Stat 2 label",
+      "default": "Customers"
+    },
+    {
+      "type": "text",
+      "id": "stat3_number",
+      "label": "Stat 3 number",
+      "default": "4.9"
+    },
+    {
+      "type": "text",
+      "id": "stat3_label",
+      "label": "Stat 3 label",
+      "default": "Rating"
+    },
+    {
+      "type": "text",
+      "id": "stat4_number",
+      "label": "Stat 4 number",
+      "default": "12"
+    },
+    {
+      "type": "text",
+      "id": "stat4_label",
+      "label": "Stat 4 label",
+      "default": "Countries"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Reveal"
+    }
+  ]
+}
+{% endschema %}

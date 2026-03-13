@@ -4,14 +4,12 @@ import { useFetcher } from "react-router";
 import type { LoaderFunctionArgs } from "react-router";
 import {
   Page,
-  Layout,
   Card,
   Text,
   BlockStack,
   InlineStack,
   Button,
   Badge,
-  Divider,
   TextField,
   Select,
   Banner,
@@ -138,33 +136,24 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div>
+    <div className="sh-help-faq-item">
       <button
         onClick={() => setOpen(!open)}
-        style={{
-          width: "100%",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          padding: "14px 0",
-          border: "none",
-          background: "transparent",
-          cursor: "pointer",
-          textAlign: "left",
-        }}
+        className="sh-help-faq-btn"
       >
         <Text as="p" variant="bodyMd" fontWeight="semibold">{question}</Text>
         <span style={{
-          fontSize: 18,
-          color: "#6b7280",
+          fontSize: 14,
+          color: open ? "#6366f1" : "#94a3b8",
           transform: open ? "rotate(180deg)" : "rotate(0)",
-          transition: "transform 0.2s ease",
+          transition: "transform 0.25s ease, color 0.25s ease",
+          flexShrink: 0,
         }}>
           ▾
         </span>
       </button>
-      {open && (
-        <div style={{ paddingBottom: 14, paddingLeft: 4 }}>
+      <div className={`sh-help-faq-answer ${open ? 'open' : ''}`}>
+        <div style={{ padding: "0 4px 14px 4px" }}>
           <Text as="p" variant="bodySm" tone="subdued">
             {answer.split("\n").map((line, i) => (
               <span key={i}>
@@ -174,7 +163,7 @@ function FaqItem({ question, answer }: { question: string; answer: string }) {
             ))}
           </Text>
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -250,34 +239,198 @@ export default function HelpcenterPage() {
   return (
     <Page
       title="Help Center"
-      subtitle="Guides, FAQs, and support for Section Hub"
       backAction={{ onAction: () => navigate("/app") }}
     >
-      <BlockStack gap="600">
+      <style>{`
+        @keyframes sh-gradient-move{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+        @keyframes sh-shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        @keyframes sh-fade-up{0%{opacity:0;transform:translateY(14px)}100%{opacity:1;transform:translateY(0)}}
+        @keyframes sh-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        @keyframes sh-pulse-soft{0%,100%{box-shadow:0 2px 16px rgba(99,102,241,0.08)}50%{box-shadow:0 4px 28px rgba(99,102,241,0.16)}}
 
-        {/* ── Hero ── */}
-        <Card padding="0">
-          <div style={{
-            background: isPremium
-              ? "linear-gradient(135deg, #312e81 0%, #4f46e5 50%, #6366f1 100%)"
-              : "linear-gradient(135deg, #059669 0%, #10b981 50%, #34d399 100%)",
-            borderRadius: 12,
-            padding: "32px 36px",
-          }}>
-            <BlockStack gap="300">
-              <Text as="h1" variant="headingXl">
-                <span style={{ color: "white" }}>
-                  {isPremium ? "Premium Support 👑" : "How can we help you? 👋"}
-                </span>
-              </Text>
-              <Text as="p" variant="bodyLg">
-                <span style={{ color: "rgba(255,255,255,0.9)" }}>
-                  {isPremium
-                    ? "As a Premium member, we personally handle your requests within 24–48 hours."
-                    : "Find answers below or contact us directly — we usually reply within a few hours."}
-                </span>
-              </Text>
-              <InlineStack gap="200">
+        .sh-help-hero{
+          position:relative;overflow:hidden;border-radius:16px;padding:28px 24px;
+          background-size:300% 300%;
+          animation:sh-gradient-move 8s ease infinite, sh-pulse-soft 5s ease-in-out infinite;
+        }
+        .sh-help-hero.premium{background:linear-gradient(-45deg,#ede9fe,#ddd6fe,#c4b5fd,#e9d5ff)}
+        .sh-help-hero.free{background:linear-gradient(-45deg,#ecfdf5,#d1fae5,#a7f3d0,#bbf7d0)}
+        .sh-help-hero::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.5) 50%,transparent 60%);
+          background-size:200% 200%;animation:sh-shimmer 4s ease-in-out infinite;pointer-events:none;
+        }
+        .sh-help-hero::after{
+          content:'';position:absolute;top:-40%;right:-20%;width:60%;height:80%;
+          background:radial-gradient(circle,rgba(99,102,241,0.1) 0%,transparent 70%);
+          pointer-events:none;
+        }
+
+        .sh-help-glass{
+          background:rgba(255,255,255,0.65);
+          backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+          border:1px solid rgba(255,255,255,0.8);
+          border-radius:14px;padding:18px 20px;
+          box-shadow:0 2px 12px rgba(0,0,0,0.04);
+        }
+
+        .sh-help-glass-stat{
+          background:rgba(255,255,255,0.55);
+          backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+          border:1px solid rgba(255,255,255,0.7);
+          border-radius:12px;padding:14px 16px;text-align:center;
+          transition:all .25s cubic-bezier(.4,0,.2,1);
+          box-shadow:0 1px 4px rgba(0,0,0,0.04);
+          flex:1;min-width:100px;
+        }
+        .sh-help-glass-stat:hover{background:rgba(255,255,255,0.8);transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.08)}
+
+        .sh-help-guide-grid{display:grid;grid-template-columns:1fr;gap:14px}
+        @media(min-width:640px){.sh-help-guide-grid{grid-template-columns:repeat(3,1fr)}}
+
+        .sh-help-guide{
+          border-radius:14px;border:1px solid #e5e7eb;background:#fff;
+          padding:20px;cursor:pointer;
+          transition:all .3s cubic-bezier(.4,0,.2,1);
+          animation:sh-fade-up .5s ease both;
+        }
+        .sh-help-guide:nth-child(1){animation-delay:.05s}
+        .sh-help-guide:nth-child(2){animation-delay:.1s}
+        .sh-help-guide:nth-child(3){animation-delay:.15s}
+        .sh-help-guide:hover{
+          box-shadow:0 8px 28px rgba(0,0,0,0.08);
+          border-color:#c7d2fe;
+          transform:translateY(-3px);
+        }
+        .sh-help-guide:hover .sh-help-guide-icon{transform:scale(1.1)}
+
+        .sh-help-guide-icon{
+          width:48px;height:48px;border-radius:14px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:24px;flex-shrink:0;
+          transition:transform .2s ease;
+        }
+
+        .sh-help-step-num{
+          width:22px;height:22px;border-radius:50%;
+          background:linear-gradient(135deg,#6366f1,#4f46e5);
+          color:white;font-size:11px;font-weight:700;
+          display:flex;align-items:center;justify-content:center;flex-shrink:0;
+        }
+
+        .sh-help-faq-card{
+          border-radius:14px;border:1px solid #e5e7eb;background:#fff;
+          overflow:hidden;
+          transition:all .25s cubic-bezier(.4,0,.2,1);
+          animation:sh-fade-up .5s ease both;
+        }
+        .sh-help-faq-card:nth-child(1){animation-delay:.05s}
+        .sh-help-faq-card:nth-child(2){animation-delay:.1s}
+        .sh-help-faq-card:nth-child(3){animation-delay:.15s}
+        .sh-help-faq-card:nth-child(4){animation-delay:.2s}
+        .sh-help-faq-card:nth-child(5){animation-delay:.25s}
+        .sh-help-faq-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.06);border-color:#ddd6fe}
+
+        .sh-help-faq-header{
+          display:flex;align-items:center;gap:10px;padding:16px 20px;
+          border-bottom:1px solid #f1f5f9;
+        }
+        .sh-help-faq-header-icon{
+          width:36px;height:36px;border-radius:10px;
+          display:flex;align-items:center;justify-content:center;
+          font-size:18px;flex-shrink:0;
+          background:linear-gradient(135deg,#f5f3ff,#ede9fe);
+        }
+
+        .sh-help-faq-item{border-bottom:1px solid #f8fafc}
+        .sh-help-faq-item:last-child{border-bottom:none}
+
+        .sh-help-faq-btn{
+          width:100%;display:flex;justify-content:space-between;align-items:center;
+          padding:14px 20px;border:none;background:transparent;cursor:pointer;text-align:left;
+          transition:background .2s ease;
+        }
+        .sh-help-faq-btn:hover{background:#fafbfc}
+
+        .sh-help-faq-answer{
+          max-height:0;overflow:hidden;
+          transition:max-height .3s ease;
+          padding:0 20px;
+        }
+        .sh-help-faq-answer.open{max-height:500px}
+
+        .sh-help-contact{
+          position:relative;overflow:hidden;border-radius:16px;
+          background:linear-gradient(-45deg,#f8fafc,#f1f5f9,#e2e8f0,#f1f5f9);
+          background-size:300% 300%;
+          animation:sh-gradient-move 12s ease infinite;
+          padding:4px;
+        }
+        .sh-help-contact-inner{
+          background:rgba(255,255,255,0.85);border-radius:12px;padding:24px;
+          backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+        }
+
+        .sh-help-premium-banner{
+          background:linear-gradient(135deg,#f5f3ff 0%,#ede9fe 100%);
+          border:1px solid #ddd6fe;border-radius:12px;padding:14px 18px;
+          display:flex;align-items:center;gap:12px;
+          transition:all .2s ease;
+        }
+        .sh-help-premium-banner:hover{box-shadow:0 4px 12px rgba(139,92,246,.08)}
+
+        .sh-help-contact-grid{display:grid;grid-template-columns:1fr;gap:16px}
+        @media(min-width:640px){.sh-help-contact-grid{grid-template-columns:1fr 1fr}}
+
+        .sh-help-links{
+          position:relative;overflow:hidden;border-radius:16px;padding:20px;
+          background:linear-gradient(-45deg,#eef2ff,#e0e7ff,#c7d2fe,#ddd6fe);
+          background-size:300% 300%;
+          animation:sh-gradient-move 10s ease infinite;
+          transition:all .25s ease;
+        }
+        .sh-help-links::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.4) 50%,transparent 60%);
+          background-size:200% 200%;animation:sh-shimmer 4s ease-in-out infinite;pointer-events:none;
+        }
+
+        .sh-help-icon-float{animation:sh-float 3s ease-in-out infinite;display:inline-block}
+
+        .sh-help-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:600}
+        .sh-help-badge-premium{background:rgba(139,92,246,0.12);color:#7c3aed;border:1px solid rgba(139,92,246,0.25)}
+        .sh-help-badge-success{background:rgba(22,163,74,0.12);color:#15803d;border:1px solid rgba(22,163,74,0.25)}
+        .sh-help-badge-info{background:rgba(99,102,241,0.1);color:#4338ca;border:1px solid rgba(99,102,241,0.2)}
+      `}</style>
+
+      <div style={{ maxWidth: "100%", overflowX: "hidden" }}>
+      <BlockStack gap="500">
+
+        {/* ═══ HERO ═══ */}
+        <div className={`sh-help-hero ${isPremium ? 'premium' : 'free'}`}>
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div className="sh-help-glass" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                <div style={{
+                  width: 52, height: 52, borderRadius: 14,
+                  background: isPremium ? "rgba(139,92,246,0.15)" : "rgba(16,185,129,0.15)",
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: 28, flexShrink: 0,
+                }}>
+                  <span className="sh-help-icon-float">{isPremium ? "👑" : "💬"}</span>
+                </div>
+                <div>
+                  <div style={{ fontSize: 20, fontWeight: 700, color: "#1e1b4b" }}>
+                    {isPremium ? "Premium Support" : "Help Center"}
+                  </div>
+                  <div style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>
+                    {isPremium
+                      ? "We personally handle your requests within 24–48h"
+                      : "Guides, FAQs, and support for Section Hub"}
+                  </div>
+                </div>
+              </div>
+              <div style={{ display: "flex", gap: 8 }}>
                 <Button onClick={() => {
                   const el = document.getElementById("contact-section");
                   el?.scrollIntoView({ behavior: "smooth" });
@@ -290,213 +443,245 @@ export default function HelpcenterPage() {
                 }}>
                   Browse FAQs ↓
                 </Button>
-              </InlineStack>
-            </BlockStack>
-          </div>
-        </Card>
+              </div>
+            </div>
 
-        {/* ── Quick Start Guides ── */}
-        <BlockStack gap="300">
-          <Text as="h2" variant="headingLg">Quick Start Guides</Text>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16 }}>
-            {QUICK_GUIDES.map((guide, idx) => (
-              <Card key={guide.title}>
-                <div
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setExpandedGuide(expandedGuide === idx ? null : idx)}
-                  onKeyDown={() => {}}
-                  role="button"
-                  tabIndex={0}
-                >
-                  <BlockStack gap="300">
-                    <InlineStack gap="200" blockAlign="center">
-                      <span style={{ fontSize: 24 }}>{guide.icon}</span>
-                      <Text as="h3" variant="headingSm">{guide.title}</Text>
-                    </InlineStack>
-
-                    {expandedGuide === idx ? (
-                      <BlockStack gap="200">
-                        {guide.steps.map((step, i) => (
-                          <InlineStack key={i} gap="200" blockAlign="start">
-                            <div style={{
-                              width: 22, height: 22, borderRadius: "50%",
-                              background: "#059669", color: "white",
-                              display: "flex", alignItems: "center", justifyContent: "center",
-                              fontSize: 11, fontWeight: 700, flexShrink: 0, marginTop: 1,
-                            }}>{i + 1}</div>
-                            <Text as="p" variant="bodySm">{step}</Text>
-                          </InlineStack>
-                        ))}
-                      </BlockStack>
-                    ) : (
-                      <Text as="p" variant="bodySm" tone="subdued">
-                        {guide.steps.length} steps — click to expand
-                      </Text>
-                    )}
-                  </BlockStack>
+            {/* Quick stat pills */}
+            <div style={{ display: "flex", gap: 10, marginTop: 14, flexWrap: "wrap" }}>
+              {[
+                { icon: "📚", label: "FAQ Topics", value: `${FAQ_SECTIONS.length}` },
+                { icon: "📋", label: "Guides", value: `${QUICK_GUIDES.length}` },
+                { icon: "❓", label: "Questions", value: `${FAQ_SECTIONS.reduce((a, s) => a + s.items.length, 0)}` },
+                { icon: "⚡", label: "Response", value: isPremium ? "24-48h" : "< 24h" },
+              ].map((s) => (
+                <div key={s.label} className="sh-help-glass-stat">
+                  <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>{s.icon} {s.label}</div>
+                  <div style={{ color: isPremium ? "#7c3aed" : "#047857", fontSize: 18, fontWeight: 700 }}>{s.value}</div>
                 </div>
-              </Card>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* ═══ QUICK START GUIDES ═══ */}
+        <BlockStack gap="300">
+          <InlineStack gap="200" blockAlign="center">
+            <span style={{ fontSize: 18 }}>🚀</span>
+            <Text as="h2" variant="headingMd">Quick Start Guides</Text>
+          </InlineStack>
+
+          <div className="sh-help-guide-grid">
+            {QUICK_GUIDES.map((guide, idx) => (
+              <div
+                key={guide.title}
+                className="sh-help-guide"
+                onClick={() => setExpandedGuide(expandedGuide === idx ? null : idx)}
+                onKeyDown={() => {}}
+                role="button"
+                tabIndex={0}
+              >
+                <BlockStack gap="300">
+                  <InlineStack gap="300" blockAlign="center">
+                    <div className="sh-help-guide-icon" style={{
+                      background: idx === 0 ? "linear-gradient(135deg,#eff6ff,#dbeafe)" :
+                                  idx === 1 ? "linear-gradient(135deg,#f5f3ff,#ede9fe)" :
+                                  "linear-gradient(135deg,#ecfdf5,#d1fae5)",
+                    }}>
+                      {guide.icon}
+                    </div>
+                    <div style={{ flex: 1 }}>
+                      <Text as="h3" variant="headingSm">{guide.title}</Text>
+                      <div style={{ marginTop: 2 }}>
+                        <span className="sh-help-badge sh-help-badge-info">
+                          {guide.steps.length} steps
+                        </span>
+                      </div>
+                    </div>
+                    <span style={{
+                      fontSize: 14, color: "#94a3b8",
+                      transform: expandedGuide === idx ? "rotate(180deg)" : "rotate(0)",
+                      transition: "transform 0.25s ease",
+                    }}>▾</span>
+                  </InlineStack>
+
+                  {expandedGuide === idx && (
+                    <BlockStack gap="200">
+                      {guide.steps.map((step, i) => (
+                        <InlineStack key={i} gap="200" blockAlign="start">
+                          <div className="sh-help-step-num">{i + 1}</div>
+                          <Text as="p" variant="bodySm">{step}</Text>
+                        </InlineStack>
+                      ))}
+                    </BlockStack>
+                  )}
+                </BlockStack>
+              </div>
             ))}
           </div>
         </BlockStack>
 
-        {/* ── FAQ ── */}
+        {/* ═══ FAQ ═══ */}
         <div id="faq-section">
           <BlockStack gap="400">
-            <Text as="h2" variant="headingLg">Frequently Asked Questions</Text>
+            <InlineStack gap="200" blockAlign="center">
+              <span style={{ fontSize: 18 }}>❓</span>
+              <Text as="h2" variant="headingMd">Frequently Asked Questions</Text>
+              <Badge>{`${FAQ_SECTIONS.reduce((a, s) => a + s.items.length, 0)} questions`}</Badge>
+            </InlineStack>
 
-            {FAQ_SECTIONS.map((section) => (
-              <Card key={section.title}>
-                <BlockStack gap="0">
-                  <InlineStack gap="200" blockAlign="center">
-                    <span style={{ fontSize: 20 }}>{section.icon}</span>
-                    <Text as="h3" variant="headingMd">{section.title}</Text>
-                    <Badge>{`${section.items.length}`}</Badge>
-                  </InlineStack>
-                  <div style={{ marginTop: 8 }}>
-                    {section.items.map((item, i) => (
-                      <div key={i}>
-                        {i > 0 && <Divider />}
-                        <FaqItem question={item.q} answer={item.a} />
-                      </div>
-                    ))}
+            {FAQ_SECTIONS.map((section, sIdx) => (
+              <div key={section.title} className="sh-help-faq-card" style={{ animationDelay: `${sIdx * 0.05}s` }}>
+                <div className="sh-help-faq-header">
+                  <div className="sh-help-faq-header-icon">{section.icon}</div>
+                  <div style={{ flex: 1 }}>
+                    <Text as="h3" variant="headingSm">{section.title}</Text>
                   </div>
-                </BlockStack>
-              </Card>
+                  <span className="sh-help-badge sh-help-badge-info">{section.items.length}</span>
+                </div>
+                <div>
+                  {section.items.map((item, i) => (
+                    <FaqItem key={i} question={item.q} answer={item.a} />
+                  ))}
+                </div>
+              </div>
             ))}
           </BlockStack>
         </div>
 
-        {/* ── Contact Support ── */}
+        {/* ═══ CONTACT SUPPORT ═══ */}
         <div id="contact-section">
-          <Card>
-            <BlockStack gap="400">
-              <InlineStack gap="200" blockAlign="center">
-                <span style={{ fontSize: 24 }}>{isPremium ? "�" : "�💬"}</span>
-                <Text as="h2" variant="headingLg">
-                  {isPremium ? "Premium Support" : "Contact Support"}
-                </Text>
-                {isPremium && <Badge tone="success">Priority</Badge>}
-              </InlineStack>
-
-              {isPremium && (
-                <div style={{
-                  background: "linear-gradient(135deg, #f5f3ff 0%, #ede9fe 100%)",
-                  border: "1px solid #ddd6fe",
-                  borderRadius: 10,
-                  padding: "14px 18px",
-                }}>
-                  <Text as="p" variant="bodySm">
-                    <span style={{ color: "#4f46e5", fontWeight: 600 }}>🛠️ Hands-On Support included with Premium</span>
-                  </Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Need a tweak to a section or running into an issue? We personally handle your request within 24–48 hours depending on scope. It's like having your own section developer.
-                  </Text>
-                </div>
-              )}
-
-              {showSuccess && (
-                <Banner
-                  title="Message sent!"
-                  tone="success"
-                  onDismiss={() => setShowSuccess(false)}
-                >
-                  We received your message and will get back to you soon.
-                </Banner>
-              )}
-
-              {fetcher.data?.error && (
-                <Banner title="Could not send message" tone="critical">
-                  {fetcher.data.error}. Please try again or email us directly at {SUPPORT_EMAIL}.
-                </Banner>
-              )}
-
-              <Text as="p" variant="bodySm" tone="subdued">
-                {isPremium
-                  ? "Describe what you need — a customization, a fix, or anything else. We'll take care of it."
-                  : "Send us a message directly from here — no email client needed. We usually respond within a few hours."}
+          <BlockStack gap="300">
+            <InlineStack gap="200" blockAlign="center">
+              <span style={{ fontSize: 18 }}>{isPremium ? "👑" : "💬"}</span>
+              <Text as="h2" variant="headingMd">
+                {isPremium ? "Premium Support" : "Contact Support"}
               </Text>
+              {isPremium && <span className="sh-help-badge sh-help-badge-premium">Priority</span>}
+            </InlineStack>
 
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
-                <TextField
-                  label="Your Name"
-                  value={contactName}
-                  onChange={setContactName}
-                  placeholder="John Smith"
-                  autoComplete="name"
-                />
-                <Select
-                  label="Topic"
-                  options={[
-                    { label: "General Question", value: "general" },
-                    { label: "Bug Report", value: "bug" },
-                    { label: "Feature Request", value: "feature" },
-                    { label: "Billing / Refund", value: "billing" },
-                    { label: "Section Help", value: "section" },
-                    ...(isPremium ? [{ label: "🛠️ Customization Request", value: "customization" }] : []),
-                  ]}
-                  value={contactTopic}
-                  onChange={setContactTopic}
-                />
+            <div className="sh-help-contact">
+              <div className="sh-help-contact-inner">
+                <BlockStack gap="400">
+
+                  {isPremium && (
+                    <div className="sh-help-premium-banner">
+                      <span style={{ fontSize: 20 }}>🛠️</span>
+                      <div>
+                        <Text as="p" variant="bodySm" fontWeight="semibold">
+                          <span style={{ color: "#4f46e5" }}>Hands-On Support included</span>
+                        </Text>
+                        <Text as="p" variant="bodySm" tone="subdued">
+                          Need a tweak or running into an issue? We handle it within 24–48h. Like having your own section developer.
+                        </Text>
+                      </div>
+                    </div>
+                  )}
+
+                  {showSuccess && (
+                    <Banner
+                      title="Message sent!"
+                      tone="success"
+                      onDismiss={() => setShowSuccess(false)}
+                    >
+                      We received your message and will get back to you soon.
+                    </Banner>
+                  )}
+
+                  {fetcher.data?.error && (
+                    <Banner title="Could not send message" tone="critical">
+                      {fetcher.data.error}. Please try again or email us directly at {SUPPORT_EMAIL}.
+                    </Banner>
+                  )}
+
+                  <Text as="p" variant="bodySm" tone="subdued">
+                    {isPremium
+                      ? "Describe what you need — a customization, a fix, or anything else."
+                      : "Send us a message directly. We usually respond within a few hours."}
+                  </Text>
+
+                  <div className="sh-help-contact-grid">
+                    <TextField
+                      label="Your Name"
+                      value={contactName}
+                      onChange={setContactName}
+                      placeholder="John Smith"
+                      autoComplete="name"
+                    />
+                    <Select
+                      label="Topic"
+                      options={[
+                        { label: "General Question", value: "general" },
+                        { label: "Bug Report", value: "bug" },
+                        { label: "Feature Request", value: "feature" },
+                        { label: "Billing / Refund", value: "billing" },
+                        { label: "Section Help", value: "section" },
+                        ...(isPremium ? [{ label: "🛠️ Customization Request", value: "customization" }] : []),
+                      ]}
+                      value={contactTopic}
+                      onChange={setContactTopic}
+                    />
+                  </div>
+
+                  <TextField
+                    label="Message"
+                    value={contactMessage}
+                    onChange={setContactMessage}
+                    multiline={4}
+                    placeholder="Describe your issue or question..."
+                    autoComplete="off"
+                  />
+
+                  <InlineStack gap="300" blockAlign="center">
+                    <Button
+                      variant="primary"
+                      onClick={handleSubmit}
+                      disabled={!contactMessage.trim() || isSubmitting}
+                      loading={isSubmitting}
+                    >
+                      {isSubmitting ? "Sending..." : isPremium ? "Send Premium Request →" : "Send Message →"}
+                    </Button>
+                    <Text as="p" variant="bodySm" tone="subdued">
+                      {isPremium
+                        ? "👑 We'll handle your request within 24–48h"
+                        : "📧 We'll reply to your store's Shopify email"}
+                    </Text>
+                  </InlineStack>
+                </BlockStack>
               </div>
-
-              <TextField
-                label="Message"
-                value={contactMessage}
-                onChange={setContactMessage}
-                multiline={4}
-                placeholder="Describe your issue or question..."
-                autoComplete="off"
-              />
-
-              <InlineStack gap="300" blockAlign="center">
-                <Button
-                  variant="primary"
-                  onClick={handleSubmit}
-                  disabled={!contactMessage.trim() || isSubmitting}
-                  loading={isSubmitting}
-                >
-                  {isSubmitting ? "Sending..." : isPremium ? "Send Premium Request →" : "Send Message →"}
-                </Button>
-                <Text as="p" variant="bodySm" tone="subdued">
-                  {isPremium
-                    ? "👑 Premium · We'll handle your request within 24–48h"
-                    : "📧 We'll reply to your store's Shopify email"}
-                </Text>
-              </InlineStack>
-            </BlockStack>
-          </Card>
+            </div>
+          </BlockStack>
         </div>
 
-        {/* ── Quick Links ── */}
-        <Layout>
-          <Layout.Section>
-            <Card>
-              <InlineStack align="space-between" blockAlign="center" wrap>
-                <BlockStack gap="100">
-                  <Text as="h2" variant="headingMd">Need more help?</Text>
-                  <Text as="p" variant="bodySm" tone="subdued">
-                    Explore the app or reach out to us
-                  </Text>
-                </BlockStack>
-                <InlineStack gap="200">
-                  <Button onClick={() => navigate("/app/analyzer")}>Run Store Analyzer</Button>
-                  <Button onClick={() => navigate("/app/explore")}>Browse Sections</Button>
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      const el = document.getElementById("contact-section");
-                      el?.scrollIntoView({ behavior: "smooth" });
-                    }}
-                  >
-                    {isPremium ? "Premium Support" : "Contact Support"}
-                  </Button>
-                </InlineStack>
-              </InlineStack>
-            </Card>
-          </Layout.Section>
-        </Layout>
+        {/* ═══ QUICK LINKS ═══ */}
+        <div className="sh-help-links">
+          <div className="sh-help-glass" style={{ display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", position: "relative", zIndex: 1 }}>
+            <span className="sh-help-icon-float" style={{ fontSize: 24 }}>🔍</span>
+            <div style={{ flex: 1, minWidth: 160 }}>
+              <Text as="h2" variant="headingSm">Need more help?</Text>
+              <Text as="p" variant="bodySm" tone="subdued">Explore the app or reach out to us</Text>
+            </div>
+            <InlineStack gap="200">
+              <Button size="slim" onClick={() => navigate("/app/analyzer")}>Run Analyzer</Button>
+              <Button size="slim" onClick={() => navigate("/app/explore")}>Browse Sections</Button>
+              <Button size="slim" variant="primary" onClick={() => {
+                const el = document.getElementById("contact-section");
+                el?.scrollIntoView({ behavior: "smooth" });
+              }}>
+                {isPremium ? "Premium Support" : "Contact"}
+              </Button>
+            </InlineStack>
+          </div>
+        </div>
+
+        {/* ═══ FOOTER ═══ */}
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", justifyContent: "center", padding: "4px 0 12px" }}>
+          <Button url="/app/explore" variant="primary" size="slim">Explore Sections</Button>
+          <Button url="/app/premium" size="slim">Premium</Button>
+          <Button url="/app/suggest" variant="plain" size="slim">Suggest a Feature</Button>
+        </div>
+
       </BlockStack>
+      </div>
     </Page>
   );
 }

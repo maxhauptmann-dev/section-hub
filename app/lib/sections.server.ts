@@ -120,15 +120,18 @@ export function getSectionWithFiles(sectionId: string): SectionWithFiles | null 
     const meta = JSON.parse(metaContent) as SectionMeta;
 
     const liquidPath = path.join(sectionDir, meta.files.liquid);
-    const cssPath = path.join(sectionDir, meta.files.css);
 
     const liquidContent = fs.existsSync(liquidPath)
       ? fs.readFileSync(liquidPath, "utf-8")
       : "";
 
-    const cssContent = fs.existsSync(cssPath)
-      ? fs.readFileSync(cssPath, "utf-8")
-      : "";
+    let cssContent = "";
+    if (meta.files.css) {
+      const cssPath = path.join(sectionDir, meta.files.css);
+      cssContent = fs.existsSync(cssPath)
+        ? fs.readFileSync(cssPath, "utf-8")
+        : "";
+    }
 
     const result: SectionWithFiles = { ...meta, liquidContent, cssContent };
     _cachedSectionFiles.set(sectionId, result);

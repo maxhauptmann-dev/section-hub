@@ -1,0 +1,86 @@
+{
+  "id": "header-aurora",
+  "name": "SS - Header Aurora",
+  "description": "Stunning header with animated aurora gradient border, full-screen overlay navigation, split-reveal menu animation, customizable gradient mesh background, scroll-reactive effects, and comprehensive design controls. A truly unique header experience.",
+  "category": "Header",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Navigation",
+    "Mega Menu",
+    "Aurora",
+    "Gradient",
+    "Animated",
+    "Full-Screen Menu",
+    "Overlay",
+    "Premium",
+    "Sticky",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/header-aurora/default.webp",
+      "alt": "Header Aurora – Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/header-aurora/menu.webp",
+      "alt": "Header Aurora – Full-Screen Menu",
+      "label": "Full-Screen Menu"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "features": [
+    "Animated aurora gradient border (customizable colors & speed)",
+    "Full-screen overlay navigation with staggered animations",
+    "Standard dropdown mega menu mode or full-screen overlay mode",
+    "Gradient mesh background effect",
+    "Scroll-reactive header opacity/blur transition",
+    "Multiple layout modes: left-aligned, centered, split",
+    "Google Fonts support for all text areas",
+    "Search, account, cart icons with customizable badge",
+    "CTA button with glow effect on hover",
+    "Sticky, scroll-up, or transparent overlay modes",
+    "Extensive color customization with gradient support",
+    "Mobile drawer with smooth animations",
+    "Featured images & promotional text in mega menu",
+    "Section margin, padding, border, and roundness controls",
+    "Custom CSS support"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

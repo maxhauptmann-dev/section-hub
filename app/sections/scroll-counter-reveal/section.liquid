@@ -1,0 +1,687 @@
+{% comment %}
+  Section Hub – Scroll Counter Reveal v1.0
+  Dramatic scroll-triggered stats / counter section.
+  Numbers count up when entering viewport, cards reveal with staggered animation.
+  Prefix: shcr-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign columns       = section.settings.columns
+  assign reveal_dir    = section.settings.reveal_direction
+  assign stagger       = section.settings.stagger_delay
+  assign count_dur     = section.settings.count_duration
+  assign show_strip    = section.settings.show_gradient_strip
+  assign strip_pos     = section.settings.strip_position
+  assign strip_h       = section.settings.strip_height
+  assign show_shapes   = section.settings.show_bg_shapes
+  assign show_accent_l = section.settings.show_accent_line
+  assign show_dividers = section.settings.show_dividers
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign number_color  = section.settings.number_color
+  assign card_bg       = section.settings.card_bg
+  assign card_border   = section.settings.card_border
+  assign card_radius   = section.settings.card_radius
+  assign card_py       = section.settings.card_padding_y
+  assign card_px       = section.settings.card_padding_x
+  assign section_py    = section.settings.section_padding_y
+  assign section_px    = section.settings.section_padding_x
+  assign gap           = section.settings.grid_gap
+  assign bg_image      = section.settings.bg_image
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_op    = section.settings.overlay_opacity
+  assign btn_style     = section.settings.cta_style
+  assign btn_bg        = section.settings.cta_bg
+  assign btn_text_c    = section.settings.cta_text_color
+  assign btn_radius    = section.settings.cta_radius
+-%}
+
+{%- assign ov_r = overlay_color | color_extract: 'red' -%}
+{%- assign ov_g = overlay_color | color_extract: 'green' -%}
+{%- assign ov_b = overlay_color | color_extract: 'blue' -%}
+{%- assign ov_a = overlay_op | divided_by: 100.0 -%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shcr-wrap--{{ section.id }} {
+    --shcr-bg: {{ bg_color }};
+    --shcr-accent: {{ accent }};
+    --shcr-accent-2: {{ accent_2 }};
+    --shcr-bg-overlay: rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a }});
+    --shcr-strip-h: {{ strip_h }}px;
+
+    --shcr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shcr-heading-fw: {{ heading_font.weight }};
+    --shcr-heading-fs: {{ heading_font.style }};
+    --shcr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --shcr-body-fw: {{ body_font.weight }};
+    --shcr-body-fs: {{ body_font.style }};
+
+    --shcr-heading-color: {{ heading_color }};
+    --shcr-text-color: {{ text_color }};
+    --shcr-number-color: {{ number_color }};
+    --shcr-card-bg: {{ card_bg }};
+    --shcr-card-border: {{ card_border }};
+    --shcr-card-radius: {{ card_radius }}px;
+    --shcr-card-py: {{ card_py }}px;
+    --shcr-card-px: {{ card_px }}px;
+    --shcr-py: {{ section_py }}px;
+    --shcr-px: {{ section_px }}px;
+    --shcr-gap: {{ gap }}px;
+    --shcr-btn-bg: {{ btn_bg }};
+    --shcr-btn-text: {{ btn_text_c }};
+    --shcr-btn-radius: {{ btn_radius }}px;
+  }
+</style>
+
+<section class="shcr-wrap shcr-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if bg_image != blank -%}
+    <div class="shcr-bg-image">
+      <img
+        src="{{ bg_image | image_url: width: 1920 }}"
+        alt=""
+        loading="lazy"
+        width="{{ bg_image.width }}"
+        height="{{ bg_image.height }}"
+      >
+    </div>
+  {%- endif -%}
+
+  {%- if show_strip -%}
+    <div class="shcr-gradient-strip{% if strip_pos == 'bottom' %} shcr-gradient-strip--bottom{% endif %}"></div>
+  {%- endif -%}
+
+  <div class="shcr-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="shcr-header" data-shcr-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="shcr-header__eyebrow">{{ section.settings.eyebrow }}</div>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="shcr-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="shcr-header__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="shcr-grid shcr-grid--{{ columns }}">
+      {%- for block in section.blocks -%}
+        <div
+          class="shcr-stat shcr-stat--reveal-{{ reveal_dir }}{% if show_dividers %} shcr-stat--divider{% endif %}"
+          data-shcr-reveal
+          data-shcr-delay="{{ forloop.index0 | times: stagger }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if show_accent_l -%}
+            <div class="shcr-stat__accent-line"></div>
+          {%- endif -%}
+
+          {%- if show_shapes -%}
+            <div class="shcr-stat__shape"></div>
+          {%- endif -%}
+
+          {%- if block.settings.icon_image != blank -%}
+            <div class="shcr-stat__icon">
+              <img
+                src="{{ block.settings.icon_image | image_url: width: 80 }}"
+                alt="{{ block.settings.label | escape }}"
+                width="40"
+                height="40"
+                loading="lazy"
+              >
+            </div>
+          {%- endif -%}
+
+          <div class="shcr-stat__number-wrap">
+            {%- if block.settings.prefix != blank -%}
+              <span class="shcr-stat__prefix">{{ block.settings.prefix }}</span>
+            {%- endif -%}
+            <span
+              class="shcr-stat__number"
+              data-shcr-count
+              data-shcr-target="{{ block.settings.number }}"
+              data-shcr-duration="{{ count_dur }}"
+            >0</span>
+            {%- if block.settings.suffix != blank -%}
+              <span class="shcr-stat__suffix">{{ block.settings.suffix }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- if block.settings.label != blank -%}
+            <div class="shcr-stat__label">{{ block.settings.label }}</div>
+          {%- endif -%}
+
+          {%- if block.settings.description != blank -%}
+            <p class="shcr-stat__desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_text != blank -%}
+      <div class="shcr-cta" data-shcr-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="shcr-cta__btn shcr-cta__btn--{{ btn_style }}">
+          {{ section.settings.cta_text }}
+          {%- if section.settings.cta_show_arrow -%}
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          {%- endif -%}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shcr-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var revealEls = section.querySelectorAll('[data-shcr-reveal]');
+    var countEls = section.querySelectorAll('[data-shcr-count]');
+    var counted = new Set();
+
+    function animateCount(el) {
+      var target = parseFloat(el.dataset.shcrTarget) || 0;
+      var duration = parseInt(el.dataset.shcrDuration) || 2000;
+      var start = performance.now();
+      var isDecimal = target % 1 !== 0;
+
+      function tick(now) {
+        var elapsed = now - start;
+        var progress = Math.min(elapsed / duration, 1);
+        var eased = 1 - Math.pow(1 - progress, 3);
+        var current = eased * target;
+
+        if (isDecimal) {
+          el.textContent = current.toFixed(1);
+        } else {
+          el.textContent = Math.round(current).toLocaleString();
+        }
+
+        if (progress < 1) {
+          requestAnimationFrame(tick);
+        }
+      }
+      requestAnimationFrame(tick);
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+
+        var el = entry.target;
+        var delay = parseInt(el.dataset.shcrDelay) || 0;
+
+        setTimeout(function() {
+          el.classList.add('shcr-visible');
+        }, delay);
+
+        /* Trigger counters inside this element */
+        var counters = el.querySelectorAll('[data-shcr-count]');
+        counters.forEach(function(c) {
+          if (counted.has(c)) return;
+          counted.add(c);
+          setTimeout(function() {
+            animateCount(c);
+          }, delay);
+        });
+
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -60px 0px' });
+
+    revealEls.forEach(function(el) { observer.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Counter Reveal",
+  "tag": "section",
+  "class": "shcr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "By the Numbers"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Impact in Numbers"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Real results, real progress. Here's what we've achieved together so far."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2 columns" },
+        { "value": "3", "label": "3 columns" },
+        { "value": "4", "label": "4 columns" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 160,
+      "step": 10,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "header",
+      "content": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Image overlay color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 85,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#3b82f6"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (gradient)",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading & number font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Card styling"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "rgba(255,255,255,0.04)"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border color",
+      "default": "rgba(255,255,255,0.06)"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_y",
+      "label": "Card vertical padding",
+      "min": 20,
+      "max": 80,
+      "step": 10,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_x",
+      "label": "Card horizontal padding",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accent_line",
+      "label": "Show accent line on cards",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bg_shapes",
+      "label": "Show glow shape behind numbers",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dividers",
+      "label": "Show vertical dividers between stats",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Gradient strip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_gradient_strip",
+      "label": "Show gradient strip",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "strip_position",
+      "label": "Strip position",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "top"
+    },
+    {
+      "type": "range",
+      "id": "strip_height",
+      "label": "Strip height",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "reveal_direction",
+      "label": "Card reveal direction",
+      "options": [
+        { "value": "up", "label": "Slide up" },
+        { "value": "down", "label": "Slide down" },
+        { "value": "left", "label": "Slide left" },
+        { "value": "right", "label": "Slide right" },
+        { "value": "scale", "label": "Scale up" },
+        { "value": "fade", "label": "Fade only" }
+      ],
+      "default": "up"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger delay between cards",
+      "min": 0,
+      "max": 400,
+      "step": 50,
+      "default": 150,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Count-up duration",
+      "min": 500,
+      "max": 4000,
+      "step": 250,
+      "default": 2000,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "View Full Report"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "underline", "label": "Underline" }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "color",
+      "id": "cta_bg",
+      "label": "CTA background",
+      "default": "#3b82f6"
+    },
+    {
+      "type": "color",
+      "id": "cta_text_color",
+      "label": "CTA text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "cta_radius",
+      "label": "CTA border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "cta_show_arrow",
+      "label": "Show arrow on CTA",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat Block",
+      "settings": [
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Number prefix",
+          "info": "e.g. $ or €"
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Target number",
+          "default": "500",
+          "info": "The number to count up to. Use integers or one decimal (e.g. 4.9)."
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Number suffix",
+          "default": "+",
+          "info": "e.g. +, %, K, M"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Stat label",
+          "default": "Happy Customers"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Short description",
+          "default": "Customers worldwide who trust and love our products."
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image (optional)",
+          "info": "Small square icon. 80x80px recommended."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Counter Reveal",
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "number": "12000",
+            "suffix": "+",
+            "label": "Happy Customers",
+            "description": "Trusted by thousands of customers across 50+ countries worldwide."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "98",
+            "suffix": "%",
+            "label": "Satisfaction Rate",
+            "description": "Our customers consistently rate their experience as excellent."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "250",
+            "suffix": "+",
+            "label": "Products Launched",
+            "description": "Innovative products designed and crafted with care and precision."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "prefix": "$",
+            "number": "4.9",
+            "suffix": "M",
+            "label": "Revenue Generated",
+            "description": "Helping our partners achieve measurable business growth."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

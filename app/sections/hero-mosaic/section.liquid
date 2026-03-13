@@ -1,0 +1,857 @@
+{% comment %}
+  Section Hub – Hero Mosaic v1.0
+  Asymmetric image mosaic hero with animated hover zoom,
+  floating text overlay, marquee badge strip, and reveal animations.
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+
+  assign layout        = section.settings.layout
+  assign height        = section.settings.height
+  assign height_m      = section.settings.height_mobile
+  assign gap           = section.settings.gap
+  assign gap_m         = section.settings.gap_mobile
+  assign radius        = section.settings.image_radius
+  assign max_width     = section.settings.max_width
+
+  assign bg_color      = section.settings.bg_color
+  assign heading       = section.settings.heading
+  assign heading_color = section.settings.heading_color
+  assign heading_size  = section.settings.heading_size
+  assign heading_size_m = section.settings.heading_size_mobile
+  assign subheading    = section.settings.subheading
+  assign sub_color     = section.settings.subheading_color
+  assign sub_size      = section.settings.subheading_size
+  assign kicker        = section.settings.kicker
+  assign kicker_color  = section.settings.kicker_color
+  assign kicker_size   = section.settings.kicker_size
+  assign text_position = section.settings.text_position
+
+  assign use_gradient_heading = section.settings.use_gradient_heading
+  assign grad_from     = section.settings.heading_grad_from
+  assign grad_to       = section.settings.heading_grad_to
+  assign grad_angle    = section.settings.heading_grad_angle
+
+  assign btn1_text     = section.settings.btn1_text
+  assign btn1_link     = section.settings.btn1_link
+  assign btn1_style    = section.settings.btn1_style
+  assign btn2_text     = section.settings.btn2_text
+  assign btn2_link     = section.settings.btn2_link
+  assign btn2_style    = section.settings.btn2_style
+  assign btn_bg        = section.settings.btn_bg
+  assign btn_text      = section.settings.btn_text
+  assign btn_bg_hover  = section.settings.btn_bg_hover
+  assign btn_text_hover = section.settings.btn_text_hover
+  assign btn_radius    = section.settings.btn_radius
+
+  assign hover_effect  = section.settings.hover_effect
+  assign hover_zoom    = section.settings.hover_zoom
+  assign overlay_on_hover = section.settings.overlay_on_hover
+  assign overlay_color = section.settings.image_overlay_color
+  assign overlay_opacity = section.settings.image_overlay_opacity
+
+  assign show_marquee  = section.settings.show_marquee
+  assign marquee_text  = section.settings.marquee_text
+  assign marquee_bg    = section.settings.marquee_bg
+  assign marquee_color = section.settings.marquee_color
+  assign marquee_speed = section.settings.marquee_speed
+  assign marquee_size  = section.settings.marquee_font_size
+  assign marquee_angle = section.settings.marquee_angle
+
+  assign animate       = section.settings.animate
+  assign animate_style = section.settings.animate_style
+
+  assign pt            = section.settings.padding_top
+  assign pb            = section.settings.padding_bottom
+  assign pt_m          = section.settings.padding_top_mobile
+  assign pb_m          = section.settings.padding_bottom_mobile
+  assign custom_css    = section.settings.custom_css
+
+  assign image_1 = section.settings.image_1
+  assign image_2 = section.settings.image_2
+  assign image_3 = section.settings.image_3
+  assign image_4 = section.settings.image_4
+  assign image_5 = section.settings.image_5
+  assign link_1  = section.settings.link_1
+  assign link_2  = section.settings.link_2
+  assign link_3  = section.settings.link_3
+  assign link_4  = section.settings.link_4
+  assign link_5  = section.settings.link_5
+  assign label_1 = section.settings.label_1
+  assign label_2 = section.settings.label_2
+  assign label_3 = section.settings.label_3
+  assign label_4 = section.settings.label_4
+  assign label_5 = section.settings.label_5
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #shmo-{{ section.id }} {
+    --shmo-bg: {{ bg_color }};
+    --shmo-gap: {{ gap }}px;
+    --shmo-gap-m: {{ gap_m }}px;
+    --shmo-radius: {{ radius }}px;
+    --shmo-height: {{ height }}vh;
+    --shmo-height-m: {{ height_m }}vh;
+    --shmo-max-w: {{ max_width }}px;
+
+    --shmo-heading-size: {{ heading_size }}px;
+    --shmo-heading-size-m: {{ heading_size_m }}px;
+    --shmo-heading-color: {{ heading_color }};
+    --shmo-sub-size: {{ sub_size }}px;
+    --shmo-sub-color: {{ sub_color }};
+    --shmo-kicker-size: {{ kicker_size }}px;
+    --shmo-kicker-color: {{ kicker_color }};
+
+    --shmo-grad-from: {{ grad_from }};
+    --shmo-grad-to: {{ grad_to }};
+    --shmo-grad-angle: {{ grad_angle }}deg;
+
+    --shmo-btn-bg: {{ btn_bg }};
+    --shmo-btn-text: {{ btn_text }};
+    --shmo-btn-bg-hover: {{ btn_bg_hover }};
+    --shmo-btn-text-hover: {{ btn_text_hover }};
+    --shmo-btn-radius: {{ btn_radius }}px;
+
+    --shmo-hover-zoom: {{ hover_zoom }};
+    --shmo-img-overlay: {{ overlay_color }};
+    --shmo-img-overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};
+
+    --shmo-marquee-bg: {{ marquee_bg }};
+    --shmo-marquee-color: {{ marquee_color }};
+    --shmo-marquee-speed: {{ marquee_speed }}s;
+    --shmo-marquee-size: {{ marquee_size }}px;
+    --shmo-marquee-angle: {{ marquee_angle }}deg;
+
+    --shmo-pt: {{ pt }}px;
+    --shmo-pb: {{ pb }}px;
+    --shmo-pt-m: {{ pt_m }}px;
+    --shmo-pb-m: {{ pb_m }}px;
+
+    --shmo-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shmo-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+  }
+
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="shmo-{{ section.id }}" class="shmo-hero{% if animate %} shmo-hero--animate shmo-hero--{{ animate_style }}{% endif %}">
+
+  {%- comment -%} Marquee Strip {%- endcomment -%}
+  {%- if show_marquee and marquee_text != blank -%}
+    <div class="shmo-marquee">
+      <div class="shmo-marquee__track">
+        {%- for i in (1..12) -%}
+          <span class="shmo-marquee__item">{{ marquee_text }}</span>
+          <span class="shmo-marquee__sep">✦</span>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+  <div class="shmo-wrap">
+    {%- comment -%} Text Column {%- endcomment -%}
+    <div class="shmo-text shmo-text--{{ text_position }}" data-shmo-reveal>
+      {%- if kicker != blank -%}
+        <p class="shmo-kicker">{{ kicker }}</p>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <h2 class="shmo-heading{% if use_gradient_heading %} shmo-heading--gradient{% endif %}">
+          {{ heading }}
+        </h2>
+      {%- endif -%}
+      {%- if subheading != blank -%}
+        <p class="shmo-sub">{{ subheading }}</p>
+      {%- endif -%}
+      {%- if btn1_text != blank or btn2_text != blank -%}
+        <div class="shmo-btns">
+          {%- if btn1_text != blank -%}
+            <a href="{{ btn1_link }}" class="shmo-btn shmo-btn--{{ btn1_style }}">
+              {{ btn1_text }}
+              {%- if btn1_style == 'solid-arrow' or btn1_style == 'outline-arrow' -%}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+          {%- if btn2_text != blank -%}
+            <a href="{{ btn2_link }}" class="shmo-btn shmo-btn--{{ btn2_style }}">
+              {{ btn2_text }}
+              {%- if btn2_style == 'solid-arrow' or btn2_style == 'outline-arrow' -%}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Mosaic Grid {%- endcomment -%}
+    <div class="shmo-grid shmo-grid--{{ layout }}">
+      {%- assign images = '' | split: ',' -%}
+      {%- assign links  = '' | split: ',' -%}
+      {%- assign labels = '' | split: ',' -%}
+
+      {%- if image_1 != blank -%}{%- assign images = images | push: image_1 -%}{%- assign links = links | push: link_1 -%}{%- assign labels = labels | push: label_1 -%}{%- endif -%}
+      {%- if image_2 != blank -%}{%- assign images = images | push: image_2 -%}{%- assign links = links | push: link_2 -%}{%- assign labels = labels | push: label_2 -%}{%- endif -%}
+      {%- if image_3 != blank -%}{%- assign images = images | push: image_3 -%}{%- assign links = links | push: link_3 -%}{%- assign labels = labels | push: label_3 -%}{%- endif -%}
+      {%- if image_4 != blank -%}{%- assign images = images | push: image_4 -%}{%- assign links = links | push: link_4 -%}{%- assign labels = labels | push: label_4 -%}{%- endif -%}
+      {%- if image_5 != blank -%}{%- assign images = images | push: image_5 -%}{%- assign links = links | push: link_5 -%}{%- assign labels = labels | push: label_5 -%}{%- endif -%}
+
+      {%- for img in images -%}
+        {%- assign lbl = labels[forloop.index0] -%}
+        {%- assign lnk = links[forloop.index0] -%}
+        <div class="shmo-tile shmo-tile--{{ forloop.index }} shmo-tile--{{ hover_effect }}" data-shmo-reveal>
+          {%- if lnk != blank -%}<a href="{{ lnk }}" class="shmo-tile__link">{%- endif -%}
+            <div class="shmo-tile__img-wrap">
+              <img
+                src="{{ img | image_url: width: 1200 }}"
+                alt="{{ img.alt | default: lbl | default: 'Mosaic image' }}"
+                class="shmo-tile__img"
+                loading="{% if forloop.index <= 2 %}eager{% else %}lazy{% endif %}"
+                width="1200"
+                height="{{ 1200 | divided_by: img.aspect_ratio }}"
+              >
+              {%- if overlay_on_hover -%}
+                <div class="shmo-tile__overlay"></div>
+              {%- endif -%}
+            </div>
+            {%- if lbl != blank -%}
+              <span class="shmo-tile__label">{{ lbl }}</span>
+            {%- endif -%}
+          {%- if lnk != blank -%}</a>{%- endif -%}
+        </div>
+      {%- endfor -%}
+
+      {%- comment -%} Placeholder tiles if no images set {%- endcomment -%}
+      {%- if images.size == 0 -%}
+        {%- for i in (1..4) -%}
+          <div class="shmo-tile shmo-tile--{{ i }} shmo-tile--{{ hover_effect }}" data-shmo-reveal>
+            <div class="shmo-tile__img-wrap">
+              {{ 'collection-' | append: i | placeholder_svg_tag: 'shmo-tile__placeholder' }}
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Bottom Marquee {%- endcomment -%}
+  {%- if show_marquee and marquee_text != blank -%}
+    <div class="shmo-marquee shmo-marquee--bottom">
+      <div class="shmo-marquee__track shmo-marquee__track--reverse">
+        {%- for i in (1..12) -%}
+          <span class="shmo-marquee__item">{{ marquee_text }}</span>
+          <span class="shmo-marquee__sep">✦</span>
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  (function(){
+    const root = document.getElementById('shmo-{{ section.id }}');
+    if(!root) return;
+
+    /* ── Intersection Observer for reveal ── */
+    {% if animate %}
+    const reveals = root.querySelectorAll('[data-shmo-reveal]');
+    if(reveals.length){
+      const obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('shmo-revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.1, rootMargin:'0px 0px -40px 0px'});
+      reveals.forEach(function(el,i){
+        el.style.transitionDelay = (i * 0.1) + 's';
+        obs.observe(el);
+      });
+    }
+    {% endif %}
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Hero Mosaic",
+  "class": "shmo-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Grid layout",
+      "options": [
+        { "value": "asymmetric", "label": "Asymmetric (editorial)" },
+        { "value": "masonry", "label": "Masonry (Pinterest)" },
+        { "value": "overlap", "label": "Overlap (layered)" },
+        { "value": "grid-2", "label": "2 Column Grid" }
+      ],
+      "default": "asymmetric"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Min height (desktop)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Min height (mobile)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 1000,
+      "max": 1800,
+      "step": 50,
+      "unit": "px",
+      "default": 1400
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Grid gap",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Grid gap - mobile",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "unit": "px",
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Image border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 8
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#f5f1eb"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top - mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom - mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "select",
+      "id": "text_position",
+      "label": "Text position",
+      "options": [
+        { "value": "left", "label": "Left of grid" },
+        { "value": "overlay", "label": "Overlay on grid" },
+        { "value": "top", "label": "Above grid" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker",
+      "default": "Curated Collection"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Kicker font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "kicker_color",
+      "label": "Kicker color",
+      "default": "#999999"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Art of Living Well"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading font size",
+      "min": 28,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 56
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading font size - mobile",
+      "min": 24,
+      "max": 60,
+      "step": 2,
+      "unit": "px",
+      "default": 36
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_heading",
+      "label": "Gradient heading",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "heading_grad_from",
+      "label": "Gradient from",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "heading_grad_to",
+      "label": "Gradient to",
+      "default": "#764ba2"
+    },
+    {
+      "type": "range",
+      "id": "heading_grad_angle",
+      "label": "Gradient angle",
+      "min": 0,
+      "max": 360,
+      "step": 15,
+      "unit": "°",
+      "default": 135
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Explore our hand-picked selection of timeless pieces designed for everyday elegance."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Subheading font size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 17
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Subheading color",
+      "default": "#666666"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "solid-arrow", "label": "Solid + Arrow" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "outline-arrow", "label": "Outline + Arrow" }
+      ],
+      "default": "solid-arrow"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "solid-arrow", "label": "Solid + Arrow" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "outline-arrow", "label": "Outline + Arrow" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Background - hover",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover",
+      "label": "Text - hover",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Images"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_1",
+      "label": "Image 1 (large)"
+    },
+    {
+      "type": "url",
+      "id": "link_1",
+      "label": "Link 1"
+    },
+    {
+      "type": "text",
+      "id": "label_1",
+      "label": "Label 1",
+      "default": "Spring"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_2",
+      "label": "Image 2"
+    },
+    {
+      "type": "url",
+      "id": "link_2",
+      "label": "Link 2"
+    },
+    {
+      "type": "text",
+      "id": "label_2",
+      "label": "Label 2",
+      "default": "Summer"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_3",
+      "label": "Image 3"
+    },
+    {
+      "type": "url",
+      "id": "link_3",
+      "label": "Link 3"
+    },
+    {
+      "type": "text",
+      "id": "label_3",
+      "label": "Label 3",
+      "default": "Autumn"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_4",
+      "label": "Image 4"
+    },
+    {
+      "type": "url",
+      "id": "link_4",
+      "label": "Link 4"
+    },
+    {
+      "type": "text",
+      "id": "label_4",
+      "label": "Label 4",
+      "default": "Winter"
+    },
+    {
+      "type": "image_picker",
+      "id": "image_5",
+      "label": "Image 5"
+    },
+    {
+      "type": "url",
+      "id": "link_5",
+      "label": "Link 5"
+    },
+    {
+      "type": "text",
+      "id": "label_5",
+      "label": "Label 5"
+    },
+    {
+      "type": "header",
+      "content": "Image hover effects"
+    },
+    {
+      "type": "select",
+      "id": "hover_effect",
+      "label": "Hover effect",
+      "options": [
+        { "value": "zoom", "label": "Zoom" },
+        { "value": "lift", "label": "Lift + Shadow" },
+        { "value": "brightness", "label": "Brightness" },
+        { "value": "grayscale", "label": "Grayscale → Color" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "zoom"
+    },
+    {
+      "type": "range",
+      "id": "hover_zoom",
+      "label": "Zoom scale",
+      "min": 1,
+      "max": 1.3,
+      "step": 0.1,
+      "default": 1.1
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_on_hover",
+      "label": "Show overlay on hover",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "image_overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "image_overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Marquee strip"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_marquee",
+      "label": "Show marquee",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "marquee_text",
+      "label": "Marquee text",
+      "default": "New Arrivals — Free Shipping on All Orders — Shop Now"
+    },
+    {
+      "type": "color",
+      "id": "marquee_bg",
+      "label": "Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "marquee_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "marquee_font_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "Speed (seconds)",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "marquee_angle",
+      "label": "Rotation angle",
+      "min": -5,
+      "max": 5,
+      "step": 1,
+      "unit": "°",
+      "default": -2,
+      "info": "Tilt the marquee strip for a dynamic look."
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate",
+      "label": "Animate on scroll",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "animate_style",
+      "label": "Animation style",
+      "options": [
+        { "value": "fade-up", "label": "Fade up" },
+        { "value": "fade-in", "label": "Fade in" },
+        { "value": "scale-up", "label": "Scale up" }
+      ],
+      "default": "fade-up"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Mosaic"
+    }
+  ]
+}
+{% endschema %}

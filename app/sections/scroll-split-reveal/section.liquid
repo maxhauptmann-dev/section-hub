@@ -1,0 +1,593 @@
+{% comment %}
+  Section Hub – Scroll Split Reveal v1.0
+  Cinematic split-screen scroll experience. Two panels reveal
+  alternating images with parallax. Content slides in with each panel change.
+  Progress dots, counter, scroll hint, side label.
+  Prefix: shsr-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font   = section.settings.heading_font
+  assign body_font      = section.settings.body_font
+  assign bg_color       = section.settings.bg_color
+  assign accent         = section.settings.accent_color
+  assign heading_color  = section.settings.heading_color
+  assign text_color     = section.settings.text_color
+  assign divider_color  = section.settings.divider_color
+  assign divider_w      = section.settings.divider_width
+  assign overlay_color  = section.settings.overlay_color
+  assign overlay_op     = section.settings.overlay_opacity
+  assign scroll_per     = section.settings.scroll_per_panel
+  assign parallax_str   = section.settings.parallax_strength
+  assign show_counter   = section.settings.show_counter
+  assign show_dots      = section.settings.show_dots
+  assign show_hint      = section.settings.show_scroll_hint
+  assign show_side      = section.settings.show_side_label
+  assign side_text      = section.settings.side_label_text
+  assign side_color     = section.settings.side_label_color
+  assign px             = section.settings.content_padding
+  assign btn_radius     = section.settings.btn_radius
+
+  assign panel_count    = section.blocks.size
+  assign total_scroll   = panel_count | times: scroll_per | plus: 100
+-%}
+
+{%- assign ov_r = overlay_color | color_extract: 'red' -%}
+{%- assign ov_g = overlay_color | color_extract: 'green' -%}
+{%- assign ov_b = overlay_color | color_extract: 'blue' -%}
+{%- assign ov_a = overlay_op | divided_by: 100.0 -%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shsr-wrap--{{ section.id }} {
+    --shsr-bg: {{ bg_color }};
+    --shsr-accent: {{ accent }};
+    --shsr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shsr-heading-fw: {{ heading_font.weight }};
+    --shsr-heading-fs: {{ heading_font.style }};
+    --shsr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --shsr-body-fw: {{ body_font.weight }};
+    --shsr-body-fs: {{ body_font.style }};
+    --shsr-heading-color: {{ heading_color }};
+    --shsr-text-color: {{ text_color }};
+    --shsr-divider-color: {{ divider_color }};
+    --shsr-divider-w: {{ divider_w }}px;
+    --shsr-dot-inactive: rgba(255,255,255,0.25);
+    --shsr-side-color: {{ side_color }};
+    --shsr-px: {{ px }}px;
+    --shsr-btn-radius: {{ btn_radius }}px;
+  }
+</style>
+
+<section class="shsr-wrap shsr-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  <div class="shsr-scroll" style="height: {{ total_scroll }}vh;" data-shsr-scroll data-shsr-panels="{{ panel_count }}" data-shsr-scroll-per="{{ scroll_per }}" data-shsr-parallax="{{ parallax_str }}">
+
+    <div class="shsr-sticky">
+
+      {%- comment -%} Divider line {%- endcomment -%}
+      <div class="shsr-divider">
+        <div class="shsr-divider__glow"></div>
+      </div>
+
+      {%- comment -%} Left panel — shows image for active block {%- endcomment -%}
+      <div class="shsr-panel shsr-panel--left">
+        {%- for block in section.blocks -%}
+          <div class="shsr-panel__media{% if forloop.first %} shsr-panel--active{% endif %}" data-shsr-media-left="{{ forloop.index0 }}">
+            {%- if block.settings.image_left != blank -%}
+              <img
+                src="{{ block.settings.image_left | image_url: width: 1400 }}"
+                srcset="{{ block.settings.image_left | image_url: width: 700 }} 700w, {{ block.settings.image_left | image_url: width: 1400 }} 1400w"
+                sizes="50vw"
+                alt="{{ block.settings.image_left.alt | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                width="{{ block.settings.image_left.width }}"
+                height="{{ block.settings.image_left.height }}"
+                data-shsr-parallax-img
+              >
+            {%- else -%}
+              {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+            {%- endif -%}
+            <div class="shsr-panel__overlay" style="background: rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a }});"></div>
+          </div>
+        {%- endfor -%}
+
+        {%- comment -%} Content on left side {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.content_side == 'left' -%}
+            <div class="shsr-content shsr-content--left{% if forloop.first %} shsr-panel--active{% endif %}" data-shsr-content="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.eyebrow != blank -%}
+                <div class="shsr-eyebrow">{{ block.settings.eyebrow }}</div>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="shsr-heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="shsr-desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="shsr-btn shsr-btn--{{ block.settings.btn_style }}">
+                  {{ block.settings.btn_text }}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Right panel {%- endcomment -%}
+      <div class="shsr-panel shsr-panel--right">
+        {%- for block in section.blocks -%}
+          <div class="shsr-panel__media{% if forloop.first %} shsr-panel--active{% endif %}" data-shsr-media-right="{{ forloop.index0 }}">
+            {%- if block.settings.image_right != blank -%}
+              <img
+                src="{{ block.settings.image_right | image_url: width: 1400 }}"
+                srcset="{{ block.settings.image_right | image_url: width: 700 }} 700w, {{ block.settings.image_right | image_url: width: 1400 }} 1400w"
+                sizes="50vw"
+                alt="{{ block.settings.image_right.alt | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                width="{{ block.settings.image_right.width }}"
+                height="{{ block.settings.image_right.height }}"
+                data-shsr-parallax-img
+              >
+            {%- else -%}
+              {{ 'collection-' | append: forloop.index | placeholder_svg_tag }}
+            {%- endif -%}
+            <div class="shsr-panel__overlay" style="background: rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a }});"></div>
+          </div>
+        {%- endfor -%}
+
+        {%- comment -%} Content on right side {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.settings.content_side == 'right' or block.settings.content_side == 'center' -%}
+            <div class="shsr-content shsr-content--{{ block.settings.content_side }}{% if forloop.first %} shsr-panel--active{% endif %}" data-shsr-content="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+              {%- if block.settings.eyebrow != blank -%}
+                <div class="shsr-eyebrow">{{ block.settings.eyebrow }}</div>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="shsr-heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="shsr-desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="shsr-btn shsr-btn--{{ block.settings.btn_style }}">
+                  {{ block.settings.btn_text }}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Progress dots {%- endcomment -%}
+      {%- if show_dots -%}
+        <div class="shsr-progress" data-shsr-dots>
+          {%- for block in section.blocks -%}
+            <button class="shsr-progress-dot{% if forloop.first %} shsr-progress-dot--active{% endif %}" data-shsr-dot="{{ forloop.index0 }}" aria-label="Go to slide {{ forloop.index }}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Counter {%- endcomment -%}
+      {%- if show_counter -%}
+        <div class="shsr-counter">
+          <span class="shsr-counter__current" data-shsr-counter>01</span>
+          <span> / {{ panel_count | prepend: '0' | slice: -2, 2 }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Scroll hint {%- endcomment -%}
+      {%- if show_hint -%}
+        <div class="shsr-scroll-hint" data-shsr-hint>
+          <span class="shsr-scroll-hint__text">Scroll</span>
+          <span class="shsr-scroll-hint__line"></span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Side label {%- endcomment -%}
+      {%- if show_side and side_text != blank -%}
+        <div class="shsr-side-label">{{ side_text }}</div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shsr-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var scrollEl     = section.querySelector('[data-shsr-scroll]');
+    var mediaLefts   = section.querySelectorAll('[data-shsr-media-left]');
+    var mediaRights  = section.querySelectorAll('[data-shsr-media-right]');
+    var contents     = section.querySelectorAll('[data-shsr-content]');
+    var dots         = section.querySelectorAll('[data-shsr-dot]');
+    var counter      = section.querySelector('[data-shsr-counter]');
+    var hint         = section.querySelector('[data-shsr-hint]');
+    var parallaxImgs = section.querySelectorAll('[data-shsr-parallax-img]');
+
+    if (!scrollEl || mediaLefts.length === 0) return;
+
+    var panelCount   = parseInt(scrollEl.dataset.shsrPanels) || mediaLefts.length;
+    var scrollPer    = parseInt(scrollEl.dataset.shsrScrollPer) || 150;
+    var parallaxStr  = parseInt(scrollEl.dataset.shsrParallax) || 20;
+    var currentIndex = -1;
+    var ticking      = false;
+
+    function setActive(index) {
+      if (index === currentIndex) return;
+      currentIndex = index;
+
+      mediaLefts.forEach(function(m, i) {
+        m.classList.toggle('shsr-panel--active', i === index);
+      });
+      mediaRights.forEach(function(m, i) {
+        m.classList.toggle('shsr-panel--active', i === index);
+      });
+      contents.forEach(function(c) {
+        var ci = parseInt(c.dataset.shsrContent);
+        c.classList.toggle('shsr-panel--active', ci === index);
+      });
+      dots.forEach(function(d, i) {
+        d.classList.toggle('shsr-progress-dot--active', i === index);
+      });
+      if (counter) {
+        counter.textContent = String(index + 1).padStart(2, '0');
+      }
+    }
+
+    function onScroll() {
+      var rect = scrollEl.getBoundingClientRect();
+      var scrolled = Math.max(0, -rect.top);
+      var totalHeight = scrollEl.offsetHeight - window.innerHeight;
+
+      if (totalHeight <= 0) return;
+
+      var progress = Math.min(scrolled / totalHeight, 1);
+      var index = Math.min(Math.floor(progress * panelCount), panelCount - 1);
+      index = Math.max(0, index);
+
+      setActive(index);
+
+      /* Scroll hint fades after first scroll */
+      if (hint) {
+        hint.classList.toggle('shsr-scroll-hint--hidden', scrolled > 100);
+      }
+
+      /* Parallax on images */
+      if (parallaxStr > 0) {
+        var offset = (progress - 0.5) * 2;
+        parallaxImgs.forEach(function(img, i) {
+          var dir = i % 2 === 0 ? 1 : -1;
+          var moveY = offset * parallaxStr * dir;
+          img.style.transform = 'translateY(' + moveY + 'px) scale(1.05)';
+        });
+      }
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    onScroll();
+
+    /* Dot clicks */
+    dots.forEach(function(dot) {
+      dot.addEventListener('click', function() {
+        var target = parseInt(dot.dataset.shsrDot);
+        var totalHeight = scrollEl.offsetHeight - window.innerHeight;
+        var scrollTarget = scrollEl.offsetTop + (target / panelCount) * totalHeight;
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Split Reveal",
+  "tag": "section",
+  "class": "shsr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#e11d48"
+    },
+    {
+      "type": "range",
+      "id": "scroll_per_panel",
+      "label": "Scroll distance per panel",
+      "min": 80,
+      "max": 250,
+      "step": 10,
+      "default": 150,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding",
+      "min": 20,
+      "max": 100,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Divider"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider line color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "divider_width",
+      "label": "Divider width",
+      "min": 0,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Image overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 70,
+      "step": 5,
+      "default": 20,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Parallax"
+    },
+    {
+      "type": "range",
+      "id": "parallax_strength",
+      "label": "Parallax strength",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 20,
+      "unit": "px",
+      "info": "How much images shift while scrolling. 0 = disabled."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#aaaaaa"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show progress dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show panel counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_hint",
+      "label": "Show scroll hint",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_side_label",
+      "label": "Show side label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "side_label_text",
+      "label": "Side label text",
+      "default": "Explore"
+    },
+    {
+      "type": "color",
+      "id": "side_label_color",
+      "label": "Side label color",
+      "default": "#333333"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "slide",
+      "name": "Slide",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image_left",
+          "label": "Left image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_right",
+          "label": "Right image"
+        },
+        {
+          "type": "select",
+          "id": "content_side",
+          "label": "Content position",
+          "options": [
+            { "value": "left", "label": "Left panel" },
+            { "value": "right", "label": "Right panel" },
+            { "value": "center", "label": "Center overlay" }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow text",
+          "default": "Discover"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Two Worlds Collide"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Where bold contrast meets refined elegance. A visual story told through the power of duality."
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text",
+          "default": "Learn More"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Button style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Glass" }
+          ],
+          "default": "outline"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Split Reveal",
+      "blocks": [
+        {
+          "type": "slide",
+          "settings": {
+            "content_side": "left",
+            "eyebrow": "The Vision",
+            "heading": "Where Light Meets Shadow",
+            "description": "A cinematic journey through contrast. Bold imagery on one side, intimate detail on the other — scroll to discover the story.",
+            "btn_text": "Explore",
+            "btn_style": "outline"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "content_side": "right",
+            "eyebrow": "The Craft",
+            "heading": "Built by Hand, Designed by Heart",
+            "description": "Every texture, every material is chosen with intention. Our artisans bring decades of expertise to every single piece.",
+            "btn_text": "Our Process",
+            "btn_style": "glass"
+          }
+        },
+        {
+          "type": "slide",
+          "settings": {
+            "content_side": "left",
+            "eyebrow": "The Collection",
+            "heading": "Timeless Meets Contemporary",
+            "description": "Pieces that transcend trends. Designed to be cherished today and treasured for generations.",
+            "btn_text": "Shop Now",
+            "btn_style": "solid"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

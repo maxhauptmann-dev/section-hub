@@ -1,0 +1,50 @@
+{
+  "id": "hero-marquee-split",
+  "name": "SS - Hero Marquee Split",
+  "description": "Bold split-screen hero with a rotating diagonal marquee text-band slicing through the section. Features oversized heading that breaks across the split, two image zones, floating tags, horizontal rule accents, and staggered reveal animations. 80+ customization options for a magazine-editorial look.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Split",
+    "Marquee",
+    "Editorial",
+    "Magazine",
+    "Bold",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0c0c0c",
+  "previews": [
+    {
+      "src": "/previews/hero-marquee-split/default.webp",
+      "alt": "Hero Marquee Split - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

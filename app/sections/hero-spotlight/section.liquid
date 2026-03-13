@@ -1,0 +1,739 @@
+{% comment %}
+  Section Hub – Hero Spotlight v1.0
+  Dramatic dark hero with cursor-following spotlight, vertical side text,
+  word-level heading animation, gradient mesh blobs, noise texture,
+  custom cursor, and bottom info bar.
+  Prefix: shsl-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font   = section.settings.heading_font
+  assign body_font      = section.settings.body_font
+
+  assign bg_color       = section.settings.bg_color
+  assign height         = section.settings.height
+  assign height_m       = section.settings.height_mobile
+  assign text_align     = section.settings.text_align
+  assign max_w          = section.settings.content_max_width
+
+  assign bg_image       = section.settings.bg_image
+  assign img_opacity    = section.settings.bg_image_opacity
+
+  assign spot_enable    = section.settings.enable_spotlight
+  assign spot_size      = section.settings.spotlight_size
+  assign spot_color     = section.settings.spotlight_color
+  assign cursor_size    = section.settings.cursor_size
+
+  assign mesh_enable    = section.settings.enable_mesh
+  assign mesh_c1        = section.settings.mesh_color1
+  assign mesh_c2        = section.settings.mesh_color2
+  assign mesh_blur      = section.settings.mesh_blur
+  assign mesh_opacity   = section.settings.mesh_opacity
+
+  assign noise_enable   = section.settings.enable_noise
+  assign noise_opacity  = section.settings.noise_opacity
+
+  assign vert_left      = section.settings.vertical_text_left
+  assign vert_right     = section.settings.vertical_text_right
+  assign vert_color     = section.settings.vertical_text_color
+
+  assign eyebrow        = section.settings.eyebrow
+  assign eyebrow_color  = section.settings.eyebrow_color
+  assign accent_color   = section.settings.accent_color
+
+  assign heading        = section.settings.heading
+  assign heading_accent = section.settings.heading_accent_word
+  assign heading_color  = section.settings.heading_color
+  assign heading_style  = section.settings.heading_style
+  assign stroke_w       = section.settings.stroke_width
+
+  assign description    = section.settings.description
+  assign desc_color     = section.settings.description_color
+
+  assign btn1_text      = section.settings.btn1_text
+  assign btn1_link      = section.settings.btn1_link
+  assign btn1_style     = section.settings.btn1_style
+  assign btn1_bg        = section.settings.btn1_bg
+  assign btn1_text_c    = section.settings.btn1_text_color
+  assign btn1_arrow     = section.settings.btn1_show_arrow
+  assign btn_radius     = section.settings.btn_radius
+
+  assign btn2_text      = section.settings.btn2_text
+  assign btn2_link      = section.settings.btn2_link
+  assign btn2_style     = section.settings.btn2_style
+  assign btn2_color     = section.settings.btn2_color
+  assign btn2_border    = section.settings.btn2_border_color
+  assign btn2_arrow     = section.settings.btn2_show_arrow
+
+  assign bar_show       = section.settings.show_infobar
+  assign bar_left       = section.settings.infobar_left
+  assign bar_center     = section.settings.infobar_center
+  assign bar_right      = section.settings.infobar_right
+  assign bar_color      = section.settings.infobar_color
+  assign bar_border     = section.settings.infobar_border_color
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shsl-wrap--{{ section.id }} {
+    --shsl-bg: {{ bg_color }};
+    --shsl-height: {{ height }}vh;
+    --shsl-height-m: {{ height_m }}vh;
+    --shsl-align: {{ text_align }};
+    --shsl-max-w: {{ max_w }}px;
+
+    --shsl-img-opacity: {{ img_opacity | divided_by: 100.0 }};
+
+    --shsl-spot-size: {{ spot_size }}px;
+    --shsl-spot-color: {{ spot_color }};
+    --shsl-cursor-size: {{ cursor_size }}px;
+
+    --shsl-mesh-c1: {{ mesh_c1 }};
+    --shsl-mesh-c2: {{ mesh_c2 }};
+    --shsl-mesh-blur: {{ mesh_blur }}px;
+    --shsl-mesh-opacity: {{ mesh_opacity | divided_by: 100.0 }};
+
+    --shsl-noise-opacity: {{ noise_opacity | divided_by: 100.0 }};
+
+    --shsl-vert-color: {{ vert_color }};
+    --shsl-accent: {{ accent_color }};
+    --shsl-eyebrow-color: {{ eyebrow_color }};
+
+    --shsl-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shsl-heading-fw: {{ heading_font.weight }};
+    --shsl-heading-fs: {{ heading_font.style }};
+    --shsl-heading-color: {{ heading_color }};
+    --shsl-stroke-w: {{ stroke_w }}px;
+
+    --shsl-desc-color: {{ desc_color }};
+
+    --shsl-btn1-bg: {{ btn1_bg }};
+    --shsl-btn1-text: {{ btn1_text_c }};
+    --shsl-btn2-color: {{ btn2_color }};
+    --shsl-btn2-border: {{ btn2_border }};
+    --shsl-btn-radius: {{ btn_radius }}px;
+
+    --shsl-bar-color: {{ bar_color }};
+    --shsl-bar-border: {{ bar_border }};
+  }
+</style>
+
+<section class="shsl-wrap shsl-wrap--{{ section.id }}{% unless spot_enable %} shsl-wrap--no-cursor{% endunless %}" data-section-id="{{ section.id }}" data-shsl-spotlight="{{ spot_enable }}">
+
+  {%- comment -%} Background image {%- endcomment -%}
+  {%- if bg_image != blank -%}
+    <div class="shsl-bg-image">
+      <img
+        src="{{ bg_image | image_url: width: 2400 }}"
+        srcset="{{ bg_image | image_url: width: 800 }} 800w,
+                {{ bg_image | image_url: width: 1400 }} 1400w,
+                {{ bg_image | image_url: width: 2400 }} 2400w"
+        sizes="100vw"
+        alt="{{ bg_image.alt | escape }}"
+        loading="eager"
+        fetchpriority="high"
+        width="{{ bg_image.width }}"
+        height="{{ bg_image.height }}"
+      >
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Gradient mesh blobs {%- endcomment -%}
+  {%- if mesh_enable -%}
+    <div class="shsl-mesh">
+      <div class="shsl-mesh__blob shsl-mesh__blob--1"></div>
+      <div class="shsl-mesh__blob shsl-mesh__blob--2"></div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Spotlight {%- endcomment -%}
+  {%- if spot_enable -%}
+    <div class="shsl-spotlight" data-shsl-spot></div>
+  {%- endif -%}
+
+  {%- comment -%} Noise {%- endcomment -%}
+  {%- if noise_enable -%}
+    <div class="shsl-noise"></div>
+  {%- endif -%}
+
+  {%- comment -%} Vertical side text {%- endcomment -%}
+  {%- if vert_left != blank -%}
+    <div class="shsl-vertical shsl-vertical--left shsl-reveal shsl-reveal--d5">{{ vert_left }}</div>
+  {%- endif -%}
+  {%- if vert_right != blank -%}
+    <div class="shsl-vertical shsl-vertical--right shsl-reveal shsl-reveal--d5">{{ vert_right }}</div>
+  {%- endif -%}
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="shsl-content" data-align="{{ text_align }}" style="text-align: {{ text_align }}; max-width: {{ max_w }}px;">
+
+    {%- if eyebrow != blank -%}
+      <div class="shsl-eyebrow shsl-reveal shsl-reveal--d1">
+        <span class="shsl-eyebrow__line"></span>
+        {{ eyebrow }}
+        <span class="shsl-eyebrow__line"></span>
+      </div>
+    {%- endif -%}
+
+    {%- if heading != blank -%}
+      <h2 class="shsl-heading{% if heading_style == 'stroke' %} shsl-heading--stroke{% endif %}">
+        {%- assign heading_words = heading | split: ' ' -%}
+        {%- for word in heading_words -%}
+          {%- assign delay_index = forloop.index | modulo: 5 | plus: 1 -%}
+          <span class="shsl-heading__word shsl-heading__word--d{{ delay_index }}{% if heading_accent != blank and word == heading_accent %} shsl-heading__accent{% endif %}">{{ word }}</span>
+          {%- unless forloop.last %} {% endunless -%}
+        {%- endfor -%}
+      </h2>
+    {%- endif -%}
+
+    {%- if description != blank -%}
+      <p class="shsl-description shsl-reveal shsl-reveal--d3">{{ description }}</p>
+    {%- endif -%}
+
+    {%- if btn1_text != blank or btn2_text != blank -%}
+      <div class="shsl-buttons shsl-reveal shsl-reveal--d4" style="{% if text_align == 'center' %}justify-content:center;{% elsif text_align == 'right' %}justify-content:flex-end;{% endif %}">
+        {%- if btn1_text != blank -%}
+          <a href="{{ btn1_link | default: '#' }}" class="shsl-btn shsl-btn--{{ btn1_style }}" data-shsl-hover>
+            {{ btn1_text }}
+            {%- if btn1_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+        {%- if btn2_text != blank -%}
+          <a href="{{ btn2_link | default: '#' }}" class="shsl-btn shsl-btn--{{ btn2_style }}" data-shsl-hover>
+            {{ btn2_text }}
+            {%- if btn2_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Bottom info bar {%- endcomment -%}
+  {%- if bar_show -%}
+    <div class="shsl-infobar shsl-reveal shsl-reveal--d6">
+      {%- if bar_left != blank -%}
+        <div class="shsl-infobar__item">
+          <span class="shsl-infobar__dot"></span>
+          {{ bar_left }}
+        </div>
+      {%- endif -%}
+      {%- if bar_center != blank -%}
+        <div class="shsl-infobar__item">{{ bar_center }}</div>
+      {%- endif -%}
+      {%- if bar_right != blank -%}
+        <div class="shsl-infobar__item">{{ bar_right }}</div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Custom cursor {%- endcomment -%}
+  {%- if spot_enable -%}
+    <div class="shsl-cursor" data-shsl-cursor></div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shsl-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var spotEnabled = section.dataset.shslSpotlight === 'true';
+    if (!spotEnabled) return;
+
+    var spot = section.querySelector('[data-shsl-spot]');
+    var cursor = section.querySelector('[data-shsl-cursor]');
+    var hovers = section.querySelectorAll('[data-shsl-hover]');
+
+    if (!spot && !cursor) return;
+
+    function onMove(e) {
+      var rect = section.getBoundingClientRect();
+      var x = ((e.clientX - rect.left) / rect.width) * 100;
+      var y = ((e.clientY - rect.top) / rect.height) * 100;
+
+      if (spot) {
+        spot.style.setProperty('--shsl-mx', x + '%');
+        spot.style.setProperty('--shsl-my', y + '%');
+      }
+
+      if (cursor) {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top = e.clientY + 'px';
+      }
+    }
+
+    section.addEventListener('mousemove', onMove);
+
+    section.addEventListener('mouseenter', function() {
+      if (cursor) cursor.classList.add('shsl-cursor--visible');
+    });
+
+    section.addEventListener('mouseleave', function() {
+      if (cursor) cursor.classList.remove('shsl-cursor--visible');
+    });
+
+    hovers.forEach(function(el) {
+      el.addEventListener('mouseenter', function() {
+        if (cursor) cursor.classList.add('shsl-cursor--hover');
+      });
+      el.addEventListener('mouseleave', function() {
+        if (cursor) cursor.classList.remove('shsl-cursor--hover');
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Hero Spotlight",
+  "tag": "section",
+  "class": "shsl-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#050505"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Section height (desktop)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Section height (mobile)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 600,
+      "max": 1400,
+      "step": 50,
+      "default": 1000,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "range",
+      "id": "bg_image_opacity",
+      "label": "Image opacity",
+      "min": 5,
+      "max": 100,
+      "step": 5,
+      "default": 30,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Spotlight effect"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_spotlight",
+      "label": "Enable cursor spotlight",
+      "default": true,
+      "info": "Radial glow follows the cursor. Custom cursor dot replaces default."
+    },
+    {
+      "type": "range",
+      "id": "spotlight_size",
+      "label": "Spotlight radius",
+      "min": 150,
+      "max": 600,
+      "step": 50,
+      "default": 350,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "spotlight_color",
+      "label": "Spotlight color",
+      "default": "#c9a96e",
+      "info": "This will be displayed with low opacity as a radial glow."
+    },
+    {
+      "type": "range",
+      "id": "cursor_size",
+      "label": "Custom cursor size",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Gradient mesh blobs"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mesh",
+      "label": "Enable gradient mesh",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "mesh_color1",
+      "label": "Mesh blob 1 color",
+      "default": "#6c63ff"
+    },
+    {
+      "type": "color",
+      "id": "mesh_color2",
+      "label": "Mesh blob 2 color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "range",
+      "id": "mesh_blur",
+      "label": "Mesh blur",
+      "min": 40,
+      "max": 200,
+      "step": 20,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mesh_opacity",
+      "label": "Mesh opacity",
+      "min": 5,
+      "max": 40,
+      "step": 5,
+      "default": 15,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Noise texture"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_noise",
+      "label": "Enable noise texture",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "noise_opacity",
+      "label": "Noise opacity",
+      "min": 2,
+      "max": 15,
+      "step": 1,
+      "default": 5,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Vertical side text"
+    },
+    {
+      "type": "text",
+      "id": "vertical_text_left",
+      "label": "Left side text",
+      "default": "Established 2024"
+    },
+    {
+      "type": "text",
+      "id": "vertical_text_right",
+      "label": "Right side text",
+      "default": "Crafted with Care"
+    },
+    {
+      "type": "color",
+      "id": "vertical_text_color",
+      "label": "Side text color",
+      "default": "#444444"
+    },
+    {
+      "type": "header",
+      "content": "Eyebrow"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Introducing"
+    },
+    {
+      "type": "color",
+      "id": "eyebrow_color",
+      "label": "Eyebrow color",
+      "default": "#888888"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a96e",
+      "info": "Used for lines, dots, glow button, and heading accent word."
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Beyond the Ordinary"
+    },
+    {
+      "type": "text",
+      "id": "heading_accent_word",
+      "label": "Accent word (colored)",
+      "default": "Ordinary",
+      "info": "This word will appear in the accent color."
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "select",
+      "id": "heading_style",
+      "label": "Heading style",
+      "options": [
+        { "value": "solid", "label": "Solid fill" },
+        { "value": "stroke", "label": "Outline stroke" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Stroke width (outline mode)",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Description"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Where shadow meets light, a new kind of elegance emerges. Move your cursor to explore the atmosphere."
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Discover"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "underline", "label": "Underline" },
+        { "value": "glow", "label": "Glow border" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "btn1_bg",
+      "label": "Button 1 background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn1_text_color",
+      "label": "Button 1 text color",
+      "default": "#050505"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn1_show_arrow",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text",
+      "default": "Our Story"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "accent", "label": "Accent" },
+        { "value": "underline", "label": "Underline" },
+        { "value": "glow", "label": "Glow border" }
+      ],
+      "default": "glow"
+    },
+    {
+      "type": "color",
+      "id": "btn2_color",
+      "label": "Button 2 text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border_color",
+      "label": "Button 2 border color",
+      "default": "#444444"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn2_show_arrow",
+      "label": "Show arrow icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Bottom info bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_infobar",
+      "label": "Show info bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "infobar_left",
+      "label": "Left item",
+      "default": "Free Worldwide Shipping"
+    },
+    {
+      "type": "text",
+      "id": "infobar_center",
+      "label": "Center item",
+      "default": "Handcrafted Quality"
+    },
+    {
+      "type": "text",
+      "id": "infobar_right",
+      "label": "Right item",
+      "default": "30-Day Returns"
+    },
+    {
+      "type": "color",
+      "id": "infobar_color",
+      "label": "Info bar text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "infobar_border_color",
+      "label": "Info bar border color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Spotlight"
+    }
+  ]
+}
+{% endschema %}

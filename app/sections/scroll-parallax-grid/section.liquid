@@ -1,0 +1,508 @@
+{% comment %}
+  Section Hub – Scroll Parallax Grid v1.0
+  Masonry gallery with per-card parallax depth, scroll-triggered reveals,
+  hover zoom + tilt, floating gradient orbs, glass-morph overlays.
+  Prefix: shpg-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign layout_mode   = section.settings.layout_mode
+  assign aspect        = section.settings.aspect_ratio
+  assign radius        = section.settings.border_radius
+  assign gap           = section.settings.grid_gap
+  assign stagger       = section.settings.stagger_delay
+  assign parallax_d    = section.settings.parallax_depth
+  assign show_orbs     = section.settings.show_orbs
+  assign section_py    = section.settings.section_padding_y
+  assign section_px    = section.settings.section_padding_x
+  assign cta_style     = section.settings.cta_style
+  assign btn_radius    = section.settings.cta_radius
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shpg-wrap--{{ section.id }} {
+    --shpg-bg: {{ bg_color }};
+    --shpg-accent: {{ accent }};
+    --shpg-accent-2: {{ accent_2 }};
+    --shpg-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shpg-heading-fw: {{ heading_font.weight }};
+    --shpg-heading-fs: {{ heading_font.style }};
+    --shpg-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --shpg-body-fw: {{ body_font.weight }};
+    --shpg-body-fs: {{ body_font.style }};
+    --shpg-heading-color: {{ heading_color }};
+    --shpg-text-color: {{ text_color }};
+    --shpg-radius: {{ radius }}px;
+    --shpg-aspect: {{ aspect }};
+    --shpg-gap: {{ gap }}px;
+    --shpg-py: {{ section_py }}px;
+    --shpg-px: {{ section_px }}px;
+    --shpg-btn-radius: {{ btn_radius }}px;
+  }
+</style>
+
+<section class="shpg-wrap shpg-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if show_orbs -%}
+    <div class="shpg-orb shpg-orb--1"></div>
+    <div class="shpg-orb shpg-orb--2"></div>
+  {%- endif -%}
+
+  <div class="shpg-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="shpg-header" data-shpg-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="shpg-header__eyebrow">{{ section.settings.eyebrow }}</div>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="shpg-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="shpg-header__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="shpg-grid shpg-grid--{{ layout_mode }}">
+      {%- for block in section.blocks -%}
+        {%- assign depth = block.settings.parallax_speed -%}
+        <div
+          class="shpg-card"
+          data-shpg-card
+          data-shpg-delay="{{ forloop.index0 | times: stagger }}"
+          data-shpg-depth="{{ depth }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="shpg-card__img-wrap" data-shpg-parallax>
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1200 }}"
+                srcset="{{ block.settings.image | image_url: width: 600 }} 600w,
+                        {{ block.settings.image | image_url: width: 900 }} 900w,
+                        {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 749px) 100vw, 33vw"
+                alt="{{ block.settings.image.alt | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+              >
+            {%- else -%}
+              {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+            {%- endif -%}
+          </div>
+
+          <div class="shpg-card__overlay"></div>
+
+          <div class="shpg-card__icon">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+          </div>
+
+          <div class="shpg-card__content">
+            {%- if block.settings.category_tag != blank -%}
+              <span class="shpg-card__category">{{ block.settings.category_tag }}</span>
+            {%- endif -%}
+            {%- if block.settings.label != blank -%}
+              <div class="shpg-card__label">{{ block.settings.label }}</div>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <p class="shpg-card__desc">{{ block.settings.description }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_text != blank -%}
+      <div class="shpg-cta" data-shpg-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="shpg-cta__btn shpg-cta__btn--{{ cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shpg-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var cards = section.querySelectorAll('[data-shpg-card]');
+    var headers = section.querySelectorAll('[data-shpg-reveal]');
+    var parallaxDepth = {{ parallax_d }};
+
+    /* Scroll-triggered reveal with stagger */
+    var revealObserver = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var delay = parseInt(el.dataset.shpgDelay) || 0;
+        setTimeout(function() { el.classList.add('shpg-visible'); }, delay);
+        revealObserver.unobserve(el);
+      });
+    }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+
+    cards.forEach(function(c) { revealObserver.observe(c); });
+    headers.forEach(function(h) { revealObserver.observe(h); });
+
+    /* Parallax on scroll – each card moves at its own speed */
+    if (parallaxDepth > 0) {
+      var ticking = false;
+      window.addEventListener('scroll', function() {
+        if (!ticking) {
+          requestAnimationFrame(function() {
+            cards.forEach(function(card) {
+              var rect = card.getBoundingClientRect();
+              var center = rect.top + rect.height / 2;
+              var offset = (center - window.innerHeight / 2) / window.innerHeight;
+              var depth = parseFloat(card.dataset.shpgDepth) || 1;
+              var moveY = offset * parallaxDepth * depth;
+
+              var imgWrap = card.querySelector('[data-shpg-parallax]');
+              if (imgWrap) {
+                imgWrap.style.transform = 'translateY(' + moveY + 'px)';
+              }
+            });
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Parallax Grid",
+  "tag": "section",
+  "class": "shpg-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Portfolio"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Finest Work"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Scroll to explore our collection. Each piece moves at its own depth for a cinematic parallax experience."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Grid layout",
+      "options": [
+        { "value": "masonry", "label": "Masonry (alternating heights)" },
+        { "value": "equal", "label": "Equal columns" },
+        { "value": "alternate", "label": "Alternating feature row" }
+      ],
+      "default": "masonry"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Card aspect ratio (equal mode)",
+      "options": [
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "4/5", "label": "Portrait (4:5)" },
+        { "value": "3/4", "label": "Classic (3:4)" },
+        { "value": "16/9", "label": "Landscape (16:9)" }
+      ],
+      "default": "4/5"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 160,
+      "step": 10,
+      "default": 100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#e11d48"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (orbs)",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_orbs",
+      "label": "Show floating gradient orbs",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger delay between cards",
+      "min": 0,
+      "max": 300,
+      "step": 50,
+      "default": 100,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "parallax_depth",
+      "label": "Parallax depth",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 25,
+      "unit": "px",
+      "info": "How much cards move relative to scroll. 0 = disabled."
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "View All Projects"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass / Frosted" }
+      ],
+      "default": "glass"
+    },
+    {
+      "type": "range",
+      "id": "cta_radius",
+      "label": "CTA border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Gallery Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Title",
+          "default": "Project Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A brief description of this project or visual."
+        },
+        {
+          "type": "text",
+          "id": "category_tag",
+          "label": "Category badge",
+          "default": "Design"
+        },
+        {
+          "type": "range",
+          "id": "parallax_speed",
+          "label": "Parallax speed multiplier",
+          "min": 0,
+          "max": 3,
+          "step": 1,
+          "default": 1,
+          "info": "0 = static, 1 = normal, 2 = fast, 3 = dramatic."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Parallax Grid",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "label": "Midnight Architecture",
+            "description": "Bold lines and shadows in urban landscapes.",
+            "category_tag": "Architecture",
+            "parallax_speed": 2
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "label": "Golden Hour Portraits",
+            "description": "Authentic warmth captured in natural light.",
+            "category_tag": "Photography",
+            "parallax_speed": 1
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "label": "Textile Craft",
+            "description": "Hand-woven artistry meets modern design.",
+            "category_tag": "Craft",
+            "parallax_speed": 3
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "label": "Brand Identity System",
+            "description": "Complete visual language for a luxury brand.",
+            "category_tag": "Branding",
+            "parallax_speed": 1
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "label": "Nature in Detail",
+            "description": "Macro photography revealing hidden textures.",
+            "category_tag": "Nature",
+            "parallax_speed": 2
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "label": "Minimalist Interior",
+            "description": "Less is more in contemporary living spaces.",
+            "category_tag": "Interior",
+            "parallax_speed": 1
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

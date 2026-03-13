@@ -85,7 +85,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       // Redirect back into the Shopify Admin embedded app
       // The shop handle is the subdomain part (e.g. "sections-test-2021" from "sections-test-2021.myshopify.com")
       const shopHandle = shop.replace(".myshopify.com", "");
-      const clientId = process.env.SHOPIFY_API_KEY || "fdaa930bde855ab7d9821c6c51375169";
+      const clientId = process.env.SHOPIFY_API_KEY || "";
 
       const finalUrl = isBundle
         ? `https://admin.shopify.com/store/${shopHandle}/apps/${clientId}/app/bundles?purchased=true`

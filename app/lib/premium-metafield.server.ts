@@ -1,4 +1,4 @@
-const API_VERSION = "2024-10";
+const API_VERSION = "2025-10";
 
 /**
  * Sets the shop-level metafield `sectioniq.premium` to "active" or "inactive".

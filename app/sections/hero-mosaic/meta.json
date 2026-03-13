@@ -1,0 +1,52 @@
+{
+  "id": "hero-mosaic",
+  "name": "SS - Hero Mosaic",
+  "description": "Asymmetric image mosaic hero with animated hover zoom, magnetic cursor effect, floating text overlay, marquee badge strip, and parallax tilt. Uses a dynamic grid of 2–5 images that shift and reveal on scroll. 70+ design controls for a gallery-style hero that turns heads.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Mosaic",
+    "Gallery",
+    "Grid",
+    "Animation",
+    "Parallax",
+    "Marquee",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f5f1eb",
+  "previews": [
+    {
+      "src": "/previews/hero-mosaic/default.webp",
+      "alt": "Hero Mosaic - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

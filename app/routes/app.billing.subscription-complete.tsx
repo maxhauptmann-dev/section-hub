@@ -3,7 +3,7 @@ import { redirect } from "react-router";
 import prisma from "../db.server";
 import { setPremiumMetafield } from "../lib/premium-metafield.server";
 
-const API_VERSION = "2024-10";
+const API_VERSION = "2025-10";
 
 /**
  * Callback nach Shopify Abo-Genehmigung
@@ -37,7 +37,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 
   const shopHandle = shop.replace(".myshopify.com", "");
-  const clientId = process.env.SHOPIFY_API_KEY || "fdaa930bde855ab7d9821c6c51375169";
+  const clientId = process.env.SHOPIFY_API_KEY || "";
 
   try {
     // Status bei Shopify prüfen

@@ -1,0 +1,53 @@
+{
+  "id": "hero-cinematic",
+  "name": "SS - Hero Cinematic",
+  "description": "Cinematic fullscreen hero with parallax video/image background, letterbox film bars, animated text reveals with stagger, glassmorphism CTA cards, scroll-progress indicator, and Ken Burns zoom effect. 80+ customization options for a truly immersive above-the-fold experience.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Cinematic",
+    "Parallax",
+    "Video",
+    "Letterbox",
+    "Animation",
+    "Glassmorphism",
+    "Ken Burns",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/hero-cinematic/default.webp",
+      "alt": "Hero Cinematic - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

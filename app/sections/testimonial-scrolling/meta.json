@@ -4,7 +4,8 @@
   "description": "Infinitely scrolling testimonial cards with images, videos (Shopify/YouTube/Vimeo), star ratings, review comments and author names. Customizable card size, speed, multi-row support. Auto marquee with hover pause.",
   "category": [
     "Testimonials",
-    "Scrolling"
+    "Scrolling",
+    "Video"
   ],
   "version": "2.1.0",
   "price": {

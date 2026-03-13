@@ -1,0 +1,72 @@
+{
+  "id": "before-after-comparison",
+  "name": "Before / After Comparison",
+  "description": "Fully customizable before/after image comparison slider. Features: adjustable image focal point, 3 layout modes (text left/right/slider only), 7 aspect ratios, configurable slider start position, 3 label styles, CTA button per tab, handle size controls, shadow & border options, and full color customization. Mobile-first with smooth touch gestures and animated pill tabs.",
+  "category": ["Conversion", "Image", "before and after"],
+  "version": "2.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Before After",
+    "Slider",
+    "Comparison",
+    "Image",
+    "Tabs",
+    "Mobile First",
+    "Touch",
+    "Responsive",
+    "Conversion"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/before-after-comparison/default.webp",
+      "alt": "Before / After Comparison - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-09",
+  "updatedAt": "2026-03-09",
+  "changelog": [
+    {
+      "version": "2.0.0",
+      "date": "2026-03-09",
+      "changes": [
+        "Image focal point setting per comparison tab",
+        "3 layout modes: text left, text right, slider only",
+        "7 aspect ratios including 3:2, 2:3, 9:16",
+        "Configurable slider start position (10-90%)",
+        "3 label styles: pill, minimal, hidden",
+        "CTA button per comparison tab",
+        "Handle size and line width controls",
+        "Shadow and border toggles for slider",
+        "Subheading field",
+        "Text column width control",
+        "Desktop gap control",
+        "Full-width toggle",
+        "Button color and radius settings",
+        "Image fit: cover or contain"
+      ]
+    },
+    {
+      "version": "1.0.0",
+      "date": "2026-03-09",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

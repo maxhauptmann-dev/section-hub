@@ -1,0 +1,590 @@
+{% comment %}
+  Section Hub – Scroll Card Stack v1.0
+  Cards stack on top of each other as you scroll, like a deck being dealt.
+  Each card has its own image, content, button. 3D perspective stacking.
+  Progress pips, counter, ambient glow, grid background.
+  Prefix: shcs-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign card_w        = section.settings.card_width
+  assign card_h        = section.settings.card_height
+  assign card_radius   = section.settings.card_radius
+  assign perspective    = section.settings.perspective
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_op    = section.settings.overlay_opacity
+  assign scroll_per    = section.settings.scroll_per_card
+  assign show_grid     = section.settings.show_grid_bg
+  assign show_glow     = section.settings.show_glow
+  assign show_counter  = section.settings.show_counter
+  assign show_pips     = section.settings.show_progress
+  assign show_header   = section.settings.show_header
+  assign show_side     = section.settings.show_side_label
+  assign side_text     = section.settings.side_label_text
+  assign card_px       = section.settings.card_padding
+  assign btn_radius    = section.settings.btn_radius
+
+  assign card_count    = section.blocks.size
+  assign total_scroll  = card_count | times: scroll_per | plus: 100
+-%}
+
+{%- assign ov_r = overlay_color | color_extract: 'red' -%}
+{%- assign ov_g = overlay_color | color_extract: 'green' -%}
+{%- assign ov_b = overlay_color | color_extract: 'blue' -%}
+{%- assign ov_a = overlay_op | divided_by: 100.0 -%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .shcs-wrap--{{ section.id }} {
+    --shcs-bg: {{ bg_color }};
+    --shcs-accent: {{ accent }};
+    --shcs-accent-2: {{ accent_2 }};
+    --shcs-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shcs-heading-fw: {{ heading_font.weight }};
+    --shcs-heading-fs: {{ heading_font.style }};
+    --shcs-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --shcs-body-fw: {{ body_font.weight }};
+    --shcs-body-fs: {{ body_font.style }};
+    --shcs-heading-color: {{ heading_color }};
+    --shcs-card-w: {{ card_w }}px;
+    --shcs-card-h: {{ card_h }}px;
+    --shcs-radius: {{ card_radius }}px;
+    --shcs-perspective: {{ perspective }}px;
+    --shcs-card-px: {{ card_px }}px;
+    --shcs-btn-radius: {{ btn_radius }}px;
+  }
+</style>
+
+<section class="shcs-wrap shcs-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  <div class="shcs-scroll" style="height: {{ total_scroll }}vh;" data-shcs-scroll data-shcs-cards="{{ card_count }}" data-shcs-scroll-per="{{ scroll_per }}">
+
+    <div class="shcs-sticky">
+
+      {%- if show_grid -%}
+        <div class="shcs-bg-grid"></div>
+      {%- endif -%}
+
+      {%- if show_glow -%}
+        <div class="shcs-glow shcs-glow--1"></div>
+        <div class="shcs-glow shcs-glow--2"></div>
+      {%- endif -%}
+
+      {%- comment -%} Header {%- endcomment -%}
+      {%- if show_header -%}
+        <div class="shcs-header">
+          {%- if section.settings.eyebrow != blank -%}
+            <div class="shcs-header__eyebrow">{{ section.settings.eyebrow }}</div>
+          {%- endif -%}
+          {%- if section.settings.heading != blank -%}
+            <h2 class="shcs-header__heading">{{ section.settings.heading }}</h2>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Card deck {%- endcomment -%}
+      <div class="shcs-deck">
+        {%- for block in section.blocks -%}
+          <div
+            class="shcs-card"
+            data-shcs-card="{{ forloop.index0 }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="shcs-card__media">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 1400 }}"
+                  srcset="{{ block.settings.image | image_url: width: 700 }} 700w, {{ block.settings.image | image_url: width: 1400 }} 1400w"
+                  sizes="680px"
+                  alt="{{ block.settings.image.alt | escape }}"
+                  loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                >
+              {%- else -%}
+                {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+              {%- endif -%}
+              <div class="shcs-card__overlay" style="background: linear-gradient(to top, rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a | times: 1.5 }}), transparent 60%);"></div>
+            </div>
+
+            <div class="shcs-card__body">
+              {%- if block.settings.tag != blank -%}
+                <span class="shcs-card__tag">{{ block.settings.tag }}</span>
+              {%- endif -%}
+              {%- if block.settings.heading != blank -%}
+                <h3 class="shcs-card__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="shcs-card__desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="shcs-card__btn shcs-card__btn--{{ block.settings.btn_style }}">
+                  {{ block.settings.btn_text }}
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Progress pips {%- endcomment -%}
+      {%- if show_pips -%}
+        <div class="shcs-progress-bar" data-shcs-pips>
+          {%- for block in section.blocks -%}
+            <button class="shcs-progress-pip{% if forloop.first %} shcs-progress-pip--active{% endif %}" data-shcs-pip="{{ forloop.index0 }}" aria-label="Go to card {{ forloop.index }}"></button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Counter {%- endcomment -%}
+      {%- if show_counter -%}
+        <div class="shcs-counter">
+          <span class="shcs-counter__current" data-shcs-counter>01</span>
+          <span> / {{ card_count | prepend: '0' | slice: -2, 2 }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Side label {%- endcomment -%}
+      {%- if show_side and side_text != blank -%}
+        <div class="shcs-side-label">{{ side_text }}</div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.shcs-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var scrollEl = section.querySelector('[data-shcs-scroll]');
+    var cards    = section.querySelectorAll('[data-shcs-card]');
+    var pips     = section.querySelectorAll('[data-shcs-pip]');
+    var counter  = section.querySelector('[data-shcs-counter]');
+
+    if (!scrollEl || cards.length === 0) return;
+
+    var cardCount   = cards.length;
+    var scrollPer   = parseInt(scrollEl.dataset.shcsScrollPer) || 120;
+    var currentIdx  = -1;
+    var ticking     = false;
+
+    function layout(progress) {
+      /* Which card should be on top */
+      var activeIndex = Math.min(Math.floor(progress * cardCount), cardCount - 1);
+      activeIndex = Math.max(0, activeIndex);
+
+      /* Sub-progress within the current card's segment */
+      var segmentSize = 1 / cardCount;
+      var segmentProgress = (progress - activeIndex * segmentSize) / segmentSize;
+      segmentProgress = Math.max(0, Math.min(1, segmentProgress));
+
+      cards.forEach(function(card, i) {
+        var offset = i - activeIndex;
+
+        if (offset < 0) {
+          /* Already passed — stacked behind, scaled down, pushed up */
+          var stackDepth = Math.abs(offset);
+          card.style.transform = 'translateY(' + (-stackDepth * 12) + 'px) scale(' + (1 - stackDepth * 0.04) + ') translateZ(' + (-stackDepth * 30) + 'px)';
+          card.style.opacity = Math.max(0, 1 - stackDepth * 0.3);
+          card.style.zIndex = cardCount - stackDepth;
+          card.style.boxShadow = 'none';
+        } else if (offset === 0) {
+          /* Active card — slight movement based on sub-progress */
+          var slideUp = segmentProgress * 8;
+          card.style.transform = 'translateY(' + (-slideUp) + 'px) scale(1) translateZ(0)';
+          card.style.opacity = '1';
+          card.style.zIndex = cardCount + 1;
+          card.style.boxShadow = '0 25px 60px rgba(0,0,0,0.4)';
+        } else {
+          /* Future cards — stacked below */
+          var stackBelow = offset;
+          card.style.transform = 'translateY(' + (stackBelow * 18) + 'px) scale(' + (1 - stackBelow * 0.05) + ') translateZ(' + (-stackBelow * 40) + 'px)';
+          card.style.opacity = Math.max(0, 1 - stackBelow * 0.25);
+          card.style.zIndex = cardCount - stackBelow;
+          card.style.boxShadow = 'none';
+        }
+      });
+
+      /* Update pips */
+      if (activeIndex !== currentIdx) {
+        currentIdx = activeIndex;
+        pips.forEach(function(p, i) {
+          p.classList.toggle('shcs-progress-pip--active', i === activeIndex);
+        });
+        if (counter) {
+          counter.textContent = String(activeIndex + 1).padStart(2, '0');
+        }
+      }
+    }
+
+    function onScroll() {
+      var rect = scrollEl.getBoundingClientRect();
+      var scrolled = Math.max(0, -rect.top);
+      var totalHeight = scrollEl.offsetHeight - window.innerHeight;
+      if (totalHeight <= 0) return;
+
+      var progress = Math.min(scrolled / totalHeight, 1);
+      layout(progress);
+    }
+
+    window.addEventListener('scroll', function() {
+      if (!ticking) {
+        requestAnimationFrame(function() {
+          onScroll();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    /* Initial layout */
+    layout(0);
+
+    /* Pip clicks */
+    pips.forEach(function(pip) {
+      pip.addEventListener('click', function() {
+        var target = parseInt(pip.dataset.shcsPip);
+        var totalHeight = scrollEl.offsetHeight - window.innerHeight;
+        var scrollTarget = scrollEl.offsetTop + (target / cardCount) * totalHeight;
+        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+      });
+    });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Card Stack",
+  "tag": "section",
+  "class": "shcs-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show section header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Featured"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Stories Worth Telling"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0f0f0f"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "default": 680,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 300,
+      "max": 600,
+      "step": 20,
+      "default": 440,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card content padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "perspective",
+      "label": "3D perspective",
+      "min": 600,
+      "max": 2000,
+      "step": 100,
+      "default": 1200,
+      "unit": "px",
+      "info": "Lower = more dramatic 3D effect."
+    },
+    {
+      "type": "range",
+      "id": "scroll_per_card",
+      "label": "Scroll distance per card",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "default": 120,
+      "unit": "vh"
+    },
+    {
+      "type": "header",
+      "content": "Image overlay"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Card overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (glow)",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_grid_bg",
+      "label": "Show grid background",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show ambient glow effects",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress pips",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show card counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_side_label",
+      "label": "Show side label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "side_label_text",
+      "label": "Side label text",
+      "default": "Scroll Down"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Stack Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / category",
+          "default": "Featured"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "A Story Unfolds"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Every great journey begins with a single card. Scroll to discover what lies beneath."
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text",
+          "default": "Discover"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Button style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Glass" }
+          ],
+          "default": "glass"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Card Stack",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Design",
+            "heading": "The Art of Visual Storytelling",
+            "description": "Bold imagery meets refined typography. Every pixel serves a purpose in this carefully curated narrative.",
+            "btn_text": "View Project",
+            "btn_style": "glass"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Architecture",
+            "heading": "Spaces That Breathe",
+            "description": "Where form follows function and light becomes a building material. Exploring the boundaries of modern architecture.",
+            "btn_text": "Explore",
+            "btn_style": "outline"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Lifestyle",
+            "heading": "Living with Intention",
+            "description": "A collection of moments captured in their purest form. Authentic, unscripted, beautifully imperfect.",
+            "btn_text": "Read More",
+            "btn_style": "solid"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Innovation",
+            "heading": "The Future Is Now",
+            "description": "Cutting-edge technology blended with timeless design principles. Where tomorrow's possibilities meet today's craftsmanship.",
+            "btn_text": "Learn More",
+            "btn_style": "glass"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Nature",
+            "heading": "Untouched Landscapes",
+            "description": "From misty mountain peaks to crystal-clear coastlines — nature's grandeur captured in breathtaking detail.",
+            "btn_text": "Gallery",
+            "btn_style": "outline"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

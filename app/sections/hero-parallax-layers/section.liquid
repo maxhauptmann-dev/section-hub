@@ -1,0 +1,914 @@
+{% comment %}
+  SS - Hero Parallax Layers
+  Multi-layer parallax hero with floating shapes, duotone filter,
+  animated gradient border, progress bar & staggered text reveals.
+  Prefix: shpl-
+{% endcomment %}
+
+{%- assign shpl_bg = section.settings.bg_color -%}
+{%- assign shpl_height = section.settings.section_height -%}
+{%- assign shpl_height_mob = section.settings.section_height_mobile -%}
+{%- assign shpl_align = section.settings.text_align -%}
+{%- assign shpl_max_w = section.settings.content_max_width -%}
+
+{%- assign shpl_img1 = section.settings.layer1_image -%}
+{%- assign shpl_img2 = section.settings.layer2_image -%}
+{%- assign shpl_img3 = section.settings.layer3_image -%}
+{%- assign shpl_speed1 = section.settings.layer1_speed -%}
+{%- assign shpl_speed2 = section.settings.layer2_speed -%}
+{%- assign shpl_speed3 = section.settings.layer3_speed -%}
+{%- assign shpl_parallax = section.settings.enable_parallax -%}
+
+{%- assign shpl_duotone = section.settings.enable_duotone -%}
+{%- assign shpl_duo_c1 = section.settings.duotone_color1 -%}
+{%- assign shpl_duo_c2 = section.settings.duotone_color2 -%}
+{%- assign shpl_duo_opacity = section.settings.duotone_opacity -%}
+
+{%- assign shpl_shapes = section.settings.enable_shapes -%}
+{%- assign shpl_shape1_c = section.settings.shape1_color -%}
+{%- assign shpl_shape2_c = section.settings.shape2_color -%}
+{%- assign shpl_shape3_c = section.settings.shape3_color -%}
+{%- assign shpl_shape_blur = section.settings.shape_blur -%}
+{%- assign shpl_shape_opacity = section.settings.shape_opacity -%}
+{%- assign shpl_shape_speed = section.settings.shape_animation_speed -%}
+
+{%- assign shpl_grain = section.settings.enable_grain -%}
+{%- assign shpl_grain_opacity = section.settings.grain_opacity -%}
+
+{%- assign shpl_overlay_style = section.settings.overlay_style -%}
+
+{%- assign shpl_border = section.settings.enable_border_frame -%}
+{%- assign shpl_border_inset = section.settings.border_inset -%}
+{%- assign shpl_border_w = section.settings.border_width -%}
+{%- assign shpl_border_rad = section.settings.border_radius -%}
+{%- assign shpl_border_c1 = section.settings.border_color1 -%}
+{%- assign shpl_border_c2 = section.settings.border_color2 -%}
+{%- assign shpl_border_c3 = section.settings.border_color3 -%}
+
+{%- assign shpl_badge_show = section.settings.show_badge -%}
+{%- assign shpl_badge_text = section.settings.badge_text -%}
+{%- assign shpl_badge_bg = section.settings.badge_bg -%}
+{%- assign shpl_badge_color = section.settings.badge_text_color -%}
+{%- assign shpl_badge_dot = section.settings.badge_dot_color -%}
+{%- assign shpl_badge_border = section.settings.badge_border_color -%}
+
+{%- assign shpl_subtitle = section.settings.subtitle -%}
+{%- assign shpl_subtitle_color = section.settings.subtitle_color -%}
+
+{%- assign shpl_heading = section.settings.heading -%}
+{%- assign shpl_heading_color = section.settings.heading_color -%}
+{%- assign shpl_heading_gradient = section.settings.heading_gradient -%}
+{%- assign shpl_heading_g1 = section.settings.heading_gradient_c1 -%}
+{%- assign shpl_heading_g2 = section.settings.heading_gradient_c2 -%}
+{%- assign shpl_heading_g3 = section.settings.heading_gradient_c3 -%}
+{%- assign shpl_heading_font = section.settings.heading_font -%}
+
+{%- assign shpl_desc = section.settings.description -%}
+{%- assign shpl_desc_color = section.settings.description_color -%}
+
+{%- assign shpl_btn1_text = section.settings.btn1_text -%}
+{%- assign shpl_btn1_link = section.settings.btn1_link -%}
+{%- assign shpl_btn1_style = section.settings.btn1_style -%}
+{%- assign shpl_btn1_bg = section.settings.btn1_bg -%}
+{%- assign shpl_btn1_color = section.settings.btn1_color -%}
+{%- assign shpl_btn1_arrow = section.settings.btn1_show_arrow -%}
+{%- assign shpl_btn_radius = section.settings.btn_radius -%}
+
+{%- assign shpl_btn2_text = section.settings.btn2_text -%}
+{%- assign shpl_btn2_link = section.settings.btn2_link -%}
+{%- assign shpl_btn2_style = section.settings.btn2_style -%}
+{%- assign shpl_btn2_color = section.settings.btn2_text_color -%}
+{%- assign shpl_btn2_border = section.settings.btn2_border_color -%}
+{%- assign shpl_btn2_arrow = section.settings.btn2_show_arrow -%}
+
+{%- assign shpl_progress = section.settings.enable_progress -%}
+{%- assign shpl_progress_h = section.settings.progress_height -%}
+
+{%- assign shpl_scroll = section.settings.show_scroll_indicator -%}
+{%- assign shpl_scroll_text = section.settings.scroll_text -%}
+{%- assign shpl_scroll_color = section.settings.scroll_color -%}
+
+{%- assign shpl_reveal_style = section.settings.reveal_animation -%}
+
+<style>
+  {{ shpl_heading_font | font_face: font_display: 'swap' }}
+
+  .shpl-wrap--{{ section.id }} {
+    --shpl-bg: {{ shpl_bg }};
+    --shpl-height: {{ shpl_height }}vh;
+    --shpl-align: {{ shpl_align }};
+    --shpl-max-width: {{ shpl_max_w }}px;
+
+    --shpl-duo-opacity: {{ shpl_duo_opacity | divided_by: 100.0 }};
+    --shpl-duo-color1: {{ shpl_duo_c1 }};
+    --shpl-duo-color2: {{ shpl_duo_c2 }};
+
+    --shpl-shape1-color: {{ shpl_shape1_c }};
+    --shpl-shape2-color: {{ shpl_shape2_c }};
+    --shpl-shape3-color: {{ shpl_shape3_c }};
+    --shpl-shape-blur: {{ shpl_shape_blur }}px;
+    --shpl-shape-opacity: {{ shpl_shape_opacity | divided_by: 100.0 }};
+    --shpl-shape-speed: {{ shpl_shape_speed }}s;
+
+    --shpl-grain-opacity: {{ shpl_grain_opacity | divided_by: 100.0 }};
+
+    --shpl-border-inset: {{ shpl_border_inset }}px;
+    --shpl-border-width: {{ shpl_border_w }}px;
+    --shpl-border-radius: {{ shpl_border_rad }}px;
+    --shpl-border-c1: {{ shpl_border_c1 }};
+    --shpl-border-c2: {{ shpl_border_c2 }};
+    --shpl-border-c3: {{ shpl_border_c3 }};
+
+    --shpl-badge-bg: {{ shpl_badge_bg }};
+    --shpl-badge-color: {{ shpl_badge_color }};
+    --shpl-badge-dot: {{ shpl_badge_dot }};
+    --shpl-badge-border: {{ shpl_badge_border }};
+
+    --shpl-subtitle-color: {{ shpl_subtitle_color }};
+
+    --shpl-heading-color: {{ shpl_heading_color }};
+    --shpl-heading-ff: {{ shpl_heading_font.family }}, {{ shpl_heading_font.fallback_families }};
+    --shpl-heading-fw: {{ shpl_heading_font.weight }};
+    --shpl-heading-fs: {{ shpl_heading_font.style }};
+    --shpl-heading-g1: {{ shpl_heading_g1 }};
+    --shpl-heading-g2: {{ shpl_heading_g2 }};
+    --shpl-heading-g3: {{ shpl_heading_g3 }};
+
+    --shpl-desc-color: {{ shpl_desc_color }};
+
+    --shpl-btn1-bg: {{ shpl_btn1_bg }};
+    --shpl-btn1-text: {{ shpl_btn1_color }};
+    --shpl-btn2-text: {{ shpl_btn2_color }};
+    --shpl-btn2-border: {{ shpl_btn2_border }};
+    --shpl-btn-radius: {{ shpl_btn_radius }}px;
+
+    --shpl-progress-h: {{ shpl_progress_h }}px;
+    --shpl-scroll-color: {{ shpl_scroll_color }};
+  }
+
+  @media (max-width: 749px) {
+    .shpl-wrap--{{ section.id }} {
+      --shpl-height: {{ shpl_height_mob }}vh;
+    }
+  }
+</style>
+
+<section class="shpl-wrap shpl-wrap--{{ section.id }}" data-shpl-parallax="{{ shpl_parallax }}" data-section-id="{{ section.id }}">
+
+  {%- comment -%} Parallax layers {%- endcomment -%}
+  <div class="shpl-layers">
+    {%- if shpl_img1 != blank -%}
+      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed1 }}">
+        <img
+          src="{{ shpl_img1 | image_url: width: 2400 }}"
+          srcset="{{ shpl_img1 | image_url: width: 800 }} 800w,
+                  {{ shpl_img1 | image_url: width: 1200 }} 1200w,
+                  {{ shpl_img1 | image_url: width: 1800 }} 1800w,
+                  {{ shpl_img1 | image_url: width: 2400 }} 2400w"
+          sizes="100vw"
+          alt="{{ shpl_img1.alt | escape }}"
+          loading="eager"
+          fetchpriority="high"
+          width="{{ shpl_img1.width }}"
+          height="{{ shpl_img1.height }}"
+        >
+      </div>
+    {%- endif -%}
+
+    {%- if shpl_img2 != blank -%}
+      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed2 }}" style="opacity:0.7;">
+        <img
+          src="{{ shpl_img2 | image_url: width: 2400 }}"
+          srcset="{{ shpl_img2 | image_url: width: 800 }} 800w,
+                  {{ shpl_img2 | image_url: width: 1200 }} 1200w,
+                  {{ shpl_img2 | image_url: width: 1800 }} 1800w,
+                  {{ shpl_img2 | image_url: width: 2400 }} 2400w"
+          sizes="100vw"
+          alt="{{ shpl_img2.alt | escape }}"
+          loading="eager"
+          width="{{ shpl_img2.width }}"
+          height="{{ shpl_img2.height }}"
+        >
+      </div>
+    {%- endif -%}
+
+    {%- if shpl_img3 != blank -%}
+      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed3 }}" style="opacity:0.5;">
+        <img
+          src="{{ shpl_img3 | image_url: width: 2400 }}"
+          srcset="{{ shpl_img3 | image_url: width: 800 }} 800w,
+                  {{ shpl_img3 | image_url: width: 1200 }} 1200w,
+                  {{ shpl_img3 | image_url: width: 1800 }} 1800w,
+                  {{ shpl_img3 | image_url: width: 2400 }} 2400w"
+          sizes="100vw"
+          alt="{{ shpl_img3.alt | escape }}"
+          loading="eager"
+          width="{{ shpl_img3.width }}"
+          height="{{ shpl_img3.height }}"
+        >
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Duotone filter {%- endcomment -%}
+  {%- if shpl_duotone -%}
+    <div class="shpl-duotone"></div>
+  {%- endif -%}
+
+  {%- comment -%} Floating shapes {%- endcomment -%}
+  {%- if shpl_shapes -%}
+    <div class="shpl-shapes">
+      <div class="shpl-shape shpl-shape--1"></div>
+      <div class="shpl-shape shpl-shape--2"></div>
+      <div class="shpl-shape shpl-shape--3"></div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Grain overlay {%- endcomment -%}
+  {%- if shpl_grain -%}
+    <div class="shpl-grain"></div>
+  {%- endif -%}
+
+  {%- comment -%} Gradient overlay {%- endcomment -%}
+  {%- if shpl_overlay_style != 'none' -%}
+    <div class="shpl-gradient-overlay shpl-gradient-overlay--{{ shpl_overlay_style }}"></div>
+  {%- endif -%}
+
+  {%- comment -%} Animated border frame {%- endcomment -%}
+  {%- if shpl_border -%}
+    <div class="shpl-border-frame"></div>
+  {%- endif -%}
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="shpl-content" style="--shpl-align: {{ shpl_align }}; max-width: {{ shpl_max_w }}px;">
+
+    {%- if shpl_badge_show and shpl_badge_text != blank -%}
+      <div class="shpl-badge shpl-reveal shpl-reveal--d1">
+        <span class="shpl-badge__dot"></span>
+        {{ shpl_badge_text }}
+      </div>
+    {%- endif -%}
+
+    {%- if shpl_subtitle != blank -%}
+      <p class="shpl-subtitle shpl-reveal shpl-reveal--d2">{{ shpl_subtitle }}</p>
+    {%- endif -%}
+
+    {%- if shpl_heading != blank -%}
+      <h2 class="shpl-heading{% if shpl_heading_gradient %} shpl-heading--gradient{% endif %} shpl-reveal{% if shpl_reveal_style == 'blur' %}-blur{% elsif shpl_reveal_style == 'scale' %}-scale{% endif %} shpl-reveal--d3">
+        {{ shpl_heading }}
+      </h2>
+    {%- endif -%}
+
+    {%- if shpl_desc != blank -%}
+      <p class="shpl-description shpl-reveal shpl-reveal--d4">{{ shpl_desc }}</p>
+    {%- endif -%}
+
+    {%- if shpl_btn1_text != blank or shpl_btn2_text != blank -%}
+      <div class="shpl-buttons shpl-reveal shpl-reveal--d5">
+        {%- if shpl_btn1_text != blank -%}
+          <a href="{{ shpl_btn1_link | default: '#' }}" class="shpl-btn shpl-btn--{{ shpl_btn1_style }}">
+            {{ shpl_btn1_text }}
+            {%- if shpl_btn1_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+
+        {%- if shpl_btn2_text != blank -%}
+          <a href="{{ shpl_btn2_link | default: '#' }}" class="shpl-btn shpl-btn--{{ shpl_btn2_style }}">
+            {{ shpl_btn2_text }}
+            {%- if shpl_btn2_arrow -%}
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            {%- endif -%}
+          </a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Progress bar {%- endcomment -%}
+  {%- if shpl_progress -%}
+    <div class="shpl-progress" data-shpl-progress></div>
+  {%- endif -%}
+
+  {%- comment -%} Scroll indicator {%- endcomment -%}
+  {%- if shpl_scroll -%}
+    <div class="shpl-scroll-indicator shpl-reveal shpl-reveal--d5">
+      <div class="shpl-scroll-indicator__mouse"></div>
+      {%- if shpl_scroll_text != blank -%}
+        <span>{{ shpl_scroll_text }}</span>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function() {
+    const section = document.querySelector('.shpl-wrap--{{ section.id }}');
+    if (!section) return;
+
+    const parallaxEnabled = section.dataset.shplParallax === 'true';
+    const layers = section.querySelectorAll('.shpl-layer');
+    const progressBar = section.querySelector('[data-shpl-progress]');
+
+    if (parallaxEnabled && layers.length > 0) {
+      let ticking = false;
+      function onScroll() {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function() {
+          const rect = section.getBoundingClientRect();
+          const scrolled = -rect.top;
+          const sectionH = section.offsetHeight;
+
+          if (rect.bottom > 0 && rect.top < window.innerHeight) {
+            layers.forEach(function(layer) {
+              const speed = parseFloat(layer.dataset.shplSpeed) || 0;
+              const yOffset = scrolled * speed * 0.1;
+              layer.style.transform = 'translate3d(0,' + yOffset + 'px,0)';
+            });
+          }
+
+          if (progressBar) {
+            const progress = Math.min(Math.max(scrolled / (sectionH - window.innerHeight), 0), 1);
+            progressBar.style.width = (progress * 100) + '%';
+          }
+
+          ticking = false;
+        });
+      }
+
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Hero Parallax Layers",
+  "tag": "section",
+  "class": "shpl-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height (vh)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "section_height_mobile",
+      "label": "Section height mobile (vh)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "default": 90,
+      "unit": "vh"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 500,
+      "max": 1200,
+      "step": 50,
+      "default": 800,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Parallax layers"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_parallax",
+      "label": "Enable parallax scroll effect",
+      "default": true
+    },
+    {
+      "type": "image_picker",
+      "id": "layer1_image",
+      "label": "Layer 1 image (back)"
+    },
+    {
+      "type": "range",
+      "id": "layer1_speed",
+      "label": "Layer 1 parallax speed",
+      "min": -5,
+      "max": 5,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "image_picker",
+      "id": "layer2_image",
+      "label": "Layer 2 image (middle)"
+    },
+    {
+      "type": "range",
+      "id": "layer2_speed",
+      "label": "Layer 2 parallax speed",
+      "min": -5,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "image_picker",
+      "id": "layer3_image",
+      "label": "Layer 3 image (front)"
+    },
+    {
+      "type": "range",
+      "id": "layer3_speed",
+      "label": "Layer 3 parallax speed",
+      "min": -5,
+      "max": 5,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "Duotone filter"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_duotone",
+      "label": "Enable duotone overlay",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "duotone_color1",
+      "label": "Duotone color 1",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "duotone_color2",
+      "label": "Duotone color 2",
+      "default": "#16213e"
+    },
+    {
+      "type": "range",
+      "id": "duotone_opacity",
+      "label": "Duotone opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Floating shapes"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_shapes",
+      "label": "Enable floating shapes",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "shape1_color",
+      "label": "Shape 1 color",
+      "default": "#6c63ff"
+    },
+    {
+      "type": "color",
+      "id": "shape2_color",
+      "label": "Shape 2 color",
+      "default": "#ff6584"
+    },
+    {
+      "type": "color",
+      "id": "shape3_color",
+      "label": "Shape 3 color",
+      "default": "#43e97b"
+    },
+    {
+      "type": "range",
+      "id": "shape_blur",
+      "label": "Shape blur",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "shape_opacity",
+      "label": "Shape opacity",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "shape_animation_speed",
+      "label": "Shape animation speed",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Grain & overlay"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_grain",
+      "label": "Enable film grain texture",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grain_opacity",
+      "label": "Grain opacity",
+      "min": 2,
+      "max": 20,
+      "step": 2,
+      "default": 6,
+      "unit": "%"
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Gradient overlay style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "radial", "label": "Radial vignette" },
+        { "value": "bottom", "label": "Bottom fade" },
+        { "value": "top-bottom", "label": "Top & bottom fade" }
+      ],
+      "default": "radial"
+    },
+    {
+      "type": "header",
+      "content": "Animated border frame"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_border_frame",
+      "label": "Enable animated border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "border_inset",
+      "label": "Border inset",
+      "min": 8,
+      "max": 60,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "label": "Border width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "border_color1",
+      "label": "Border gradient color 1",
+      "default": "#6c63ff"
+    },
+    {
+      "type": "color",
+      "id": "border_color2",
+      "label": "Border gradient color 2",
+      "default": "#ff6584"
+    },
+    {
+      "type": "color",
+      "id": "border_color3",
+      "label": "Border gradient color 3",
+      "default": "#43e97b"
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "New Collection"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "badge_text_color",
+      "label": "Badge text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_dot_color",
+      "label": "Badge dot color",
+      "default": "#43e97b"
+    },
+    {
+      "type": "color",
+      "id": "badge_border_color",
+      "label": "Badge border color",
+      "default": "#2a2a4a"
+    },
+    {
+      "type": "header",
+      "content": "Text content"
+    },
+    {
+      "type": "text",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Curated for you"
+    },
+    {
+      "type": "color",
+      "id": "subtitle_color",
+      "label": "Subtitle color",
+      "default": "#9999bb"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Discover Infinite Depths"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "heading_gradient",
+      "label": "Use gradient heading",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "heading_gradient_c1",
+      "label": "Heading gradient start",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_gradient_c2",
+      "label": "Heading gradient middle",
+      "default": "#6c63ff"
+    },
+    {
+      "type": "color",
+      "id": "heading_gradient_c3",
+      "label": "Heading gradient end",
+      "default": "#ff6584"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description text",
+      "default": "Journey through layered dimensions where every scroll reveals a new perspective. Immerse yourself in a world of refined elegance."
+    },
+    {
+      "type": "color",
+      "id": "description_color",
+      "label": "Description color",
+      "default": "#b0b0cc"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "reveal_animation",
+      "label": "Text reveal animation",
+      "options": [
+        { "value": "slide", "label": "Slide up" },
+        { "value": "scale", "label": "Scale in" },
+        { "value": "blur", "label": "Blur in" }
+      ],
+      "default": "slide"
+    },
+    {
+      "type": "header",
+      "content": "Primary button"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Explore Now"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass" },
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "minimal", "label": "Minimal" }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "color",
+      "id": "btn1_bg",
+      "label": "Button 1 background",
+      "default": "#6c63ff"
+    },
+    {
+      "type": "color",
+      "id": "btn1_color",
+      "label": "Button 1 text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn1_show_arrow",
+      "label": "Show arrow icon",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Secondary button"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text",
+      "default": "Learn More"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass" },
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "minimal", "label": "Minimal" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "color",
+      "id": "btn2_text_color",
+      "label": "Button 2 text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border_color",
+      "label": "Button 2 border color",
+      "default": "#444466"
+    },
+    {
+      "type": "checkbox",
+      "id": "btn2_show_arrow",
+      "label": "Show arrow icon",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Progress bar"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_progress",
+      "label": "Show scroll progress bar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "progress_height",
+      "label": "Progress bar height",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 3,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Scroll indicator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show scroll indicator",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "scroll_text",
+      "label": "Scroll indicator text",
+      "default": "Scroll"
+    },
+    {
+      "type": "color",
+      "id": "scroll_color",
+      "label": "Scroll indicator color",
+      "default": "#7777aa"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Parallax Layers"
+    }
+  ]
+}
+{% endschema %}

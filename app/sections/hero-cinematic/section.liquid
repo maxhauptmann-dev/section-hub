@@ -1,0 +1,864 @@
+{% comment %}
+  Section Hub – Hero Cinematic v1.0
+  Cinematic fullscreen hero with parallax background, letterbox bars,
+  animated text reveals, glassmorphism CTA, scroll indicator, and Ken Burns zoom.
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+
+  assign bg_image      = section.settings.bg_image
+  assign bg_image_m    = section.settings.bg_image_mobile
+  assign bg_video      = section.settings.bg_video
+  assign bg_video_m    = section.settings.bg_video_mobile
+  assign overlay_type  = section.settings.overlay_type
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign overlay_grad_from = section.settings.overlay_grad_from
+  assign overlay_grad_to   = section.settings.overlay_grad_to
+  assign overlay_grad_angle = section.settings.overlay_grad_angle
+
+  assign ken_burns     = section.settings.ken_burns
+  assign parallax      = section.settings.parallax
+
+  assign height        = section.settings.height
+  assign height_m      = section.settings.height_mobile
+  assign content_width = section.settings.content_width
+  assign content_align = section.settings.content_align
+  assign content_valign = section.settings.content_valign
+  assign text_align    = section.settings.text_align
+
+  assign show_letterbox = section.settings.show_letterbox
+  assign letterbox_size = section.settings.letterbox_size
+  assign letterbox_color = section.settings.letterbox_color
+
+  assign kicker        = section.settings.kicker
+  assign heading       = section.settings.heading
+  assign subheading    = section.settings.subheading
+
+  assign heading_color = section.settings.heading_color
+  assign kicker_color  = section.settings.kicker_color
+  assign sub_color     = section.settings.subheading_color
+
+  assign heading_size  = section.settings.heading_size
+  assign heading_size_m = section.settings.heading_size_mobile
+  assign sub_size      = section.settings.subheading_size
+  assign kicker_size   = section.settings.kicker_size
+
+  assign use_gradient_heading = section.settings.use_gradient_heading
+  assign grad_from     = section.settings.heading_grad_from
+  assign grad_to       = section.settings.heading_grad_to
+  assign grad_angle    = section.settings.heading_grad_angle
+
+  assign animate_text  = section.settings.animate_text
+  assign animate_style = section.settings.animate_style
+
+  assign btn1_text     = section.settings.btn1_text
+  assign btn1_link     = section.settings.btn1_link
+  assign btn1_style    = section.settings.btn1_style
+  assign btn2_text     = section.settings.btn2_text
+  assign btn2_link     = section.settings.btn2_link
+  assign btn2_style    = section.settings.btn2_style
+
+  assign btn_bg        = section.settings.btn_bg
+  assign btn_text      = section.settings.btn_text
+  assign btn_bg_hover  = section.settings.btn_bg_hover
+  assign btn_text_hover = section.settings.btn_text_hover
+  assign btn_radius    = section.settings.btn_radius
+
+  assign use_glass_card = section.settings.use_glass_card
+  assign glass_blur    = section.settings.glass_blur
+  assign glass_opacity = section.settings.glass_opacity
+  assign glass_radius  = section.settings.glass_radius
+  assign glass_border  = section.settings.glass_border
+
+  assign show_scroll   = section.settings.show_scroll_indicator
+  assign scroll_color  = section.settings.scroll_color
+
+  assign show_badge    = section.settings.show_badge
+  assign badge_text    = section.settings.badge_text
+  assign badge_bg      = section.settings.badge_bg
+  assign badge_color   = section.settings.badge_color
+
+  assign pt            = section.settings.padding_top
+  assign pb            = section.settings.padding_bottom
+  assign custom_css    = section.settings.custom_css
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #shcn-{{ section.id }} {
+    --shcn-height: {{ height }}vh;
+    --shcn-height-m: {{ height_m }}vh;
+    --shcn-content-w: {{ content_width }}px;
+    --shcn-pt: {{ pt }}px;
+    --shcn-pb: {{ pb }}px;
+
+    --shcn-heading-size: {{ heading_size }}px;
+    --shcn-heading-size-m: {{ heading_size_m }}px;
+    --shcn-sub-size: {{ sub_size }}px;
+    --shcn-kicker-size: {{ kicker_size }}px;
+    --shcn-heading-color: {{ heading_color }};
+    --shcn-kicker-color: {{ kicker_color }};
+    --shcn-sub-color: {{ sub_color }};
+
+    --shcn-grad-from: {{ grad_from }};
+    --shcn-grad-to: {{ grad_to }};
+    --shcn-grad-angle: {{ grad_angle }}deg;
+
+    --shcn-overlay-color: {{ overlay_color }};
+    --shcn-overlay-opacity: {{ overlay_opacity | divided_by: 100.0 }};
+    --shcn-overlay-grad-from: {{ overlay_grad_from }};
+    --shcn-overlay-grad-to: {{ overlay_grad_to }};
+    --shcn-overlay-grad-angle: {{ overlay_grad_angle }}deg;
+
+    --shcn-letterbox-size: {{ letterbox_size }}px;
+    --shcn-letterbox-color: {{ letterbox_color }};
+
+    --shcn-btn-bg: {{ btn_bg }};
+    --shcn-btn-text: {{ btn_text }};
+    --shcn-btn-bg-hover: {{ btn_bg_hover }};
+    --shcn-btn-text-hover: {{ btn_text_hover }};
+    --shcn-btn-radius: {{ btn_radius }}px;
+
+    --shcn-glass-blur: {{ glass_blur }}px;
+    --shcn-glass-opacity: {{ glass_opacity | divided_by: 100.0 }};
+    --shcn-glass-radius: {{ glass_radius }}px;
+    --shcn-glass-border: {{ glass_border }};
+
+    --shcn-badge-bg: {{ badge_bg }};
+    --shcn-badge-color: {{ badge_color }};
+
+    --shcn-scroll-color: {{ scroll_color }};
+
+    --shcn-font-heading: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --shcn-font-body: {{ body_font.family }}, {{ body_font.fallback_families }};
+  }
+
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<section id="shcn-{{ section.id }}" class="shcn-hero{% if ken_burns %} shcn-hero--kenburns{% endif %}{% if parallax %} shcn-hero--parallax{% endif %}" style="padding-top:{{ pt }}px; padding-bottom:{{ pb }}px;">
+
+  {%- comment -%} Background {%- endcomment -%}
+  <div class="shcn-bg">
+    {%- if bg_video != blank -%}
+      <video class="shcn-bg__media shcn-bg__media--desk" autoplay muted loop playsinline>
+        <source src="{{ bg_video }}" type="video/mp4">
+      </video>
+      {%- if bg_video_m != blank -%}
+        <video class="shcn-bg__media shcn-bg__media--mob" autoplay muted loop playsinline>
+          <source src="{{ bg_video_m }}" type="video/mp4">
+        </video>
+      {%- endif -%}
+    {%- elsif bg_image != blank -%}
+      <img
+        class="shcn-bg__media shcn-bg__media--desk"
+        src="{{ bg_image | image_url: width: 2400 }}"
+        alt="{{ bg_image.alt | default: heading }}"
+        width="2400"
+        height="{{ 2400 | divided_by: bg_image.aspect_ratio }}"
+        loading="eager"
+        fetchpriority="high"
+      >
+      {%- if bg_image_m != blank -%}
+        <img
+          class="shcn-bg__media shcn-bg__media--mob"
+          src="{{ bg_image_m | image_url: width: 800 }}"
+          alt="{{ bg_image_m.alt | default: heading }}"
+          width="800"
+          height="{{ 800 | divided_by: bg_image_m.aspect_ratio }}"
+          loading="eager"
+        >
+      {%- endif -%}
+    {%- else -%}
+      <div class="shcn-bg__placeholder">
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'shcn-bg__placeholder-svg' }}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Overlay {%- endcomment -%}
+    <div class="shcn-overlay shcn-overlay--{{ overlay_type }}"></div>
+  </div>
+
+  {%- comment -%} Letterbox Bars {%- endcomment -%}
+  {%- if show_letterbox -%}
+    <div class="shcn-letterbox shcn-letterbox--top"></div>
+    <div class="shcn-letterbox shcn-letterbox--bottom"></div>
+  {%- endif -%}
+
+  {%- comment -%} Badge {%- endcomment -%}
+  {%- if show_badge and badge_text != blank -%}
+    <div class="shcn-badge">
+      <span class="shcn-badge__dot"></span>
+      {{ badge_text }}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Content {%- endcomment -%}
+  <div class="shcn-content shcn-content--h-{{ content_align }} shcn-content--v-{{ content_valign }} shcn-content--text-{{ text_align }}{% if use_glass_card %} shcn-content--glass{% endif %}{% if animate_text %} shcn-content--animate shcn-content--{{ animate_style }}{% endif %}">
+    <div class="shcn-content__inner">
+      {%- if kicker != blank -%}
+        <p class="shcn-kicker" data-shcn-reveal>{{ kicker }}</p>
+      {%- endif -%}
+
+      {%- if heading != blank -%}
+        <h1 class="shcn-heading{% if use_gradient_heading %} shcn-heading--gradient{% endif %}" data-shcn-reveal>
+          {{ heading }}
+        </h1>
+      {%- endif -%}
+
+      {%- if subheading != blank -%}
+        <p class="shcn-sub" data-shcn-reveal>{{ subheading }}</p>
+      {%- endif -%}
+
+      {%- if btn1_text != blank or btn2_text != blank -%}
+        <div class="shcn-btns" data-shcn-reveal>
+          {%- if btn1_text != blank -%}
+            <a href="{{ btn1_link }}" class="shcn-btn shcn-btn--{{ btn1_style }}">
+              {{ btn1_text }}
+              {%- if btn1_style == 'solid-arrow' or btn1_style == 'outline-arrow' -%}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+          {%- if btn2_text != blank -%}
+            <a href="{{ btn2_link }}" class="shcn-btn shcn-btn--{{ btn2_style }}">
+              {{ btn2_text }}
+              {%- if btn2_style == 'solid-arrow' or btn2_style == 'outline-arrow' -%}
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              {%- endif -%}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+  {%- comment -%} Scroll Indicator {%- endcomment -%}
+  {%- if show_scroll -%}
+    <div class="shcn-scroll">
+      <div class="shcn-scroll__mouse">
+        <div class="shcn-scroll__wheel"></div>
+      </div>
+      <span class="shcn-scroll__text">Scroll</span>
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  (function(){
+    const root = document.getElementById('shcn-{{ section.id }}');
+    if(!root) return;
+
+    /* ── Parallax ── */
+    {% if parallax %}
+    const bg = root.querySelector('.shcn-bg');
+    if(bg){
+      let ticking = false;
+      window.addEventListener('scroll', function(){
+        if(!ticking){
+          requestAnimationFrame(function(){
+            const rect = root.getBoundingClientRect();
+            const vh = window.innerHeight;
+            if(rect.bottom > 0 && rect.top < vh){
+              const progress = (vh - rect.top) / (vh + rect.height);
+              const translate = (progress - 0.5) * 60;
+              bg.style.transform = 'translate3d(0,' + translate + 'px,0) scale(1.1)';
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, {passive:true});
+    }
+    {% endif %}
+
+    /* ── Intersection Observer for text reveal ── */
+    {% if animate_text %}
+    const reveals = root.querySelectorAll('[data-shcn-reveal]');
+    if(reveals.length){
+      const obs = new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){
+            entry.target.classList.add('shcn-revealed');
+            obs.unobserve(entry.target);
+          }
+        });
+      }, {threshold:0.15});
+      reveals.forEach(function(el,i){
+        el.style.transitionDelay = (i * 0.12) + 's';
+        obs.observe(el);
+      });
+    }
+    {% endif %}
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Hero Cinematic",
+  "class": "shcn-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image_mobile",
+      "label": "Background image - mobile"
+    },
+    {
+      "type": "text",
+      "id": "bg_video",
+      "label": "Video URL (mp4)",
+      "info": "Paste a direct .mp4 link. Overrides the background image."
+    },
+    {
+      "type": "text",
+      "id": "bg_video_mobile",
+      "label": "Video URL - mobile (mp4)"
+    },
+    {
+      "type": "checkbox",
+      "id": "ken_burns",
+      "label": "Ken Burns zoom effect",
+      "default": true,
+      "info": "Slow zoom on the background image for a cinematic feel."
+    },
+    {
+      "type": "checkbox",
+      "id": "parallax",
+      "label": "Parallax scroll effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "select",
+      "id": "overlay_type",
+      "label": "Overlay type",
+      "options": [
+        { "value": "solid", "label": "Solid color" },
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "vignette", "label": "Vignette" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "color",
+      "id": "overlay_grad_from",
+      "label": "Gradient from",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "overlay_grad_to",
+      "label": "Gradient to",
+      "default": "#0a0a2e"
+    },
+    {
+      "type": "range",
+      "id": "overlay_grad_angle",
+      "label": "Gradient angle",
+      "min": 0,
+      "max": 360,
+      "step": 15,
+      "unit": "°",
+      "default": 180
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "height",
+      "label": "Height (desktop)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 100
+    },
+    {
+      "type": "range",
+      "id": "height_mobile",
+      "label": "Height (mobile)",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "vh",
+      "default": 90
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content max width",
+      "min": 400,
+      "max": 1200,
+      "step": 50,
+      "unit": "px",
+      "default": 800
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Horizontal alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "content_valign",
+      "label": "Vertical alignment",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "center", "label": "Center" },
+        { "value": "bottom", "label": "Bottom" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Letterbox"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_letterbox",
+      "label": "Show cinematic letterbox bars",
+      "default": true,
+      "info": "Adds black bars top and bottom for a cinematic 2.39:1 film look."
+    },
+    {
+      "type": "range",
+      "id": "letterbox_size",
+      "label": "Bar height",
+      "min": 20,
+      "max": 120,
+      "step": 5,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "letterbox_color",
+      "label": "Bar color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Kicker"
+    },
+    {
+      "type": "text",
+      "id": "kicker",
+      "label": "Kicker text",
+      "default": "New Collection 2026"
+    },
+    {
+      "type": "range",
+      "id": "kicker_size",
+      "label": "Font size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "kicker_color",
+      "label": "Color",
+      "default": "#a0a0a0"
+    },
+    {
+      "type": "header",
+      "content": "Heading"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Experience the Extraordinary"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Font size",
+      "min": 28,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 72
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Font size - mobile",
+      "min": 24,
+      "max": 72,
+      "step": 2,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_gradient_heading",
+      "label": "Gradient text",
+      "default": false
+    },
+    {
+      "type": "color",
+      "id": "heading_grad_from",
+      "label": "Gradient from",
+      "default": "#667eea"
+    },
+    {
+      "type": "color",
+      "id": "heading_grad_to",
+      "label": "Gradient to",
+      "default": "#764ba2"
+    },
+    {
+      "type": "range",
+      "id": "heading_grad_angle",
+      "label": "Gradient angle",
+      "min": 0,
+      "max": 360,
+      "step": 15,
+      "unit": "°",
+      "default": 135
+    },
+    {
+      "type": "header",
+      "content": "Subheading"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Crafted with passion. Designed to inspire. Discover pieces that tell your story."
+    },
+    {
+      "type": "range",
+      "id": "subheading_size",
+      "label": "Font size",
+      "min": 14,
+      "max": 28,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "subheading_color",
+      "label": "Color",
+      "default": "#b0b0b0"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "checkbox",
+      "id": "animate_text",
+      "label": "Animate text on scroll",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "animate_style",
+      "label": "Animation style",
+      "options": [
+        { "value": "fade-up", "label": "Fade up" },
+        { "value": "fade-in", "label": "Fade in" },
+        { "value": "slide-left", "label": "Slide from left" },
+        { "value": "clip-reveal", "label": "Clip reveal" }
+      ],
+      "default": "fade-up"
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "btn1_text",
+      "label": "Button 1 text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "btn1_link",
+      "label": "Button 1 link"
+    },
+    {
+      "type": "select",
+      "id": "btn1_style",
+      "label": "Button 1 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "solid-arrow", "label": "Solid + Arrow" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "outline-arrow", "label": "Outline + Arrow" },
+        { "value": "ghost", "label": "Ghost (text only)" }
+      ],
+      "default": "solid-arrow"
+    },
+    {
+      "type": "text",
+      "id": "btn2_text",
+      "label": "Button 2 text",
+      "default": "Watch Film"
+    },
+    {
+      "type": "url",
+      "id": "btn2_link",
+      "label": "Button 2 link"
+    },
+    {
+      "type": "select",
+      "id": "btn2_style",
+      "label": "Button 2 style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "solid-arrow", "label": "Solid + Arrow" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "outline-arrow", "label": "Outline + Arrow" },
+        { "value": "ghost", "label": "Ghost (text only)" }
+      ],
+      "default": "ghost"
+    },
+    {
+      "type": "header",
+      "content": "Button colors"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_text",
+      "label": "Text",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_hover",
+      "label": "Background - hover",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_hover",
+      "label": "Text - hover",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Glass card"
+    },
+    {
+      "type": "checkbox",
+      "id": "use_glass_card",
+      "label": "Wrap content in glass card",
+      "default": false,
+      "info": "Adds a frosted-glass background behind the content."
+    },
+    {
+      "type": "range",
+      "id": "glass_blur",
+      "label": "Blur intensity",
+      "min": 4,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "glass_opacity",
+      "label": "Glass opacity",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "unit": "%",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "glass_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "color",
+      "id": "glass_border",
+      "label": "Border color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "● Live Now"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Text color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "header",
+      "content": "Scroll indicator"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_indicator",
+      "label": "Show scroll indicator",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "scroll_color",
+      "label": "Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Custom CSS"
+    },
+    {
+      "type": "liquid",
+      "id": "custom_css",
+      "label": "Custom CSS",
+      "info": "Advanced: Add your own CSS rules."
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Hero Cinematic"
+    }
+  ]
+}
+{% endschema %}

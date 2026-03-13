@@ -13,6 +13,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
   // Delete all data associated with this shop
   if (shop) {
+    await db.storeAnalysis.deleteMany({ where: { shop } });
     await db.sectionPurchase.deleteMany({ where: { shop } });
     await db.sectionInstallation.deleteMany({ where: { shop } });
     await db.subscription.deleteMany({ where: { shop } });

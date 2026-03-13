@@ -1,0 +1,50 @@
+{
+  "id": "scroll-storyteller",
+  "name": "SS - Scroll Storyteller",
+  "description": "Immersive horizontal scroll-through story section with sticky panels that transition as the user scrolls. Each panel has its own image, heading, text, and accent color. Features progress dots, panel counter, cinematic transitions (fade/slide/zoom), and a persistent side label. 80+ customization options for visual brand storytelling.",
+  "category": ["Hero", "Scroll Triggered"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Storytelling",
+    "Horizontal",
+    "Sticky",
+    "Panels",
+    "Animation",
+    "Cinematic",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/scroll-storyteller/default.webp",
+      "alt": "Scroll Storyteller - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

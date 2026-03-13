@@ -120,7 +120,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             currencyCode: "EUR",
           },
           returnUrl,
-          test: true,
+          test: false,
         },
       },
     );

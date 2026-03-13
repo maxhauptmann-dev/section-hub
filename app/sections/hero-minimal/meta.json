@@ -2,7 +2,7 @@
   "id": "hero-minimal",
   "name": "Hero Minimal",
   "description": "A clean, minimalist hero section with headline, text, and animated CTA button.",
-  "category": "Hero",
+  "category": ["Hero", "Video"],
   "version": "1.1.0",
   "price": {
     "type": "free"

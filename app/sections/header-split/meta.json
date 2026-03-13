@@ -1,0 +1,85 @@
+{
+  "id": "header-split",
+  "name": "SS - Header Split",
+  "description": "Unique split-layout header with centered logo, dual navigation zones, optional announcement top bar, animated underline effects, multiple dropdown styles, gradient text support, and a morphing burger icon. Offers maximum design flexibility with 70+ customization options.",
+  "category": "Header",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Header",
+    "Navigation",
+    "Mega Menu",
+    "Split Layout",
+    "Centered Logo",
+    "Top Bar",
+    "Animated",
+    "Sticky",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/header-split/default.webp",
+      "alt": "Header Split – Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/header-split/menu.webp",
+      "alt": "Header Split – Menu Open",
+      "label": "Menu Open"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "features": [
+    "Split navigation layout with centered logo",
+    "Optional announcement top bar with marquee scrolling",
+    "Animated underline, highlight, or gradient hover effects",
+    "Mega menu with image support per column",
+    "Dropdown with multiple layout styles (grid, list, featured)",
+    "Gradient text support for shop name and links",
+    "Morphing hamburger-to-X animation",
+    "Google Fonts support for all text elements",
+    "Search, account, cart with badge customization",
+    "CTA button with multiple styles and animations",
+    "Sticky, scroll-up reveal, or transparent overlay modes",
+    "Extensive color customization for every element",
+    "Full mobile slide-out drawer with accordion submenus",
+    "Section margin, padding, border, and roundness controls",
+    "Custom CSS support"
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

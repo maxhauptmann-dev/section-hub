@@ -1,0 +1,50 @@
+{
+  "id": "hero-reveal",
+  "name": "SS - Hero Reveal",
+  "description": "Scroll-triggered hero with an image that expands from a contained window to fullscreen as the user scrolls. Features sticky text overlay, split-color typography, counter stats, glowing cursor trail effect, and elegant micro-animations. 75+ customization options for a jaw-dropping first impression.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Reveal",
+    "Scroll",
+    "Expand",
+    "Animation",
+    "Sticky",
+    "Counters",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#faf9f6",
+  "previews": [
+    {
+      "src": "/previews/hero-reveal/default.webp",
+      "alt": "Hero Reveal - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

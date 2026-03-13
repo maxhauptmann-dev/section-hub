@@ -1,0 +1,51 @@
+{
+  "id": "hero-parallax-layers",
+  "name": "SS - Hero Parallax Layers",
+  "description": "Multi-layer parallax hero with stacked depth planes that move at different speeds on scroll. Includes floating shapes, duotone filter, horizontal progress bar, animated gradient border, and staggered text reveals. 80+ customization options for an immersive 3D-depth experience.",
+  "category": "Hero",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Parallax",
+    "Layers",
+    "3D",
+    "Depth",
+    "Shapes",
+    "Animation",
+    "Gradient",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/hero-parallax-layers/default.webp",
+      "alt": "Hero Parallax Layers - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
