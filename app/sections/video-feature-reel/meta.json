@@ -1,7 +1,7 @@
 {
-  "id": "video-parallax-story",
-  "name": "SS - Video Story",
-  "description": "Immersive parallax video storytelling section where video stays fixed as editorial content panels scroll over it. Features sticky video with fade-in text chapters, floating stat counters, glassmorphism content cards, custom overlay gradients, Ken Burns poster fallback, ambient glow, and scroll-triggered chapter reveals. Supports Shopify hosted video, YouTube/Vimeo, and MP4 URLs. Ideal for brand stories, product launches, and campaign pages. 70+ customization options.",
+  "id": "video-feature-reel",
+  "name": "SS - Video Feature Reel",
+  "description": "Vertical video feature reel with alternating video and editorial content rows. Each block has its own video, heading, text, stats, and CTA. Supports Shopify hosted video, YouTube/Vimeo, and MP4 URLs per block. Features alternating layout (video left/right), hover-to-play, glassmorphism/solid/minimal card styles, scroll-reveal animations, ambient glow, progress indicators, and accent dividers. Ideal for brand stories, product features, and campaign timelines. 70+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
@@ -12,12 +12,11 @@
   "tags": [
     "OS2.0",
     "Video",
-    "Parallax",
-    "Story",
-    "Scroll",
-    "Sticky",
-    "Cinematic",
+    "Feature",
+    "Reel",
+    "Alternating",
     "Editorial",
+    "Timeline",
     "Animation",
     "Premium",
     "Responsive"
@@ -26,8 +25,8 @@
   "previewColor": "#0a0a0a",
   "previews": [
     {
-      "src": "/previews/video-parallax-story/default.webp",
-      "alt": "Video Parallax Story - Default",
+      "src": "/previews/video-feature-reel/default.webp",
+      "alt": "Video Feature Reel - Default",
       "label": "Default"
     }
   ],

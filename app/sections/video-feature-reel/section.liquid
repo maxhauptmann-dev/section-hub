@@ -1,0 +1,695 @@
+{% comment %}
+  Section Hub – Video Feature Reel v1.0
+  Vertical showcase with alternating video + editorial rows.
+  Each block has its own video source. No sticky hacks.
+  Prefix: vfr-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign card_style    = section.settings.card_style
+  assign layout_mode   = section.settings.layout_mode
+  assign video_ratio   = section.settings.video_ratio
+  assign video_radius  = section.settings.video_radius
+  assign row_gap       = section.settings.row_gap
+  assign show_glow     = section.settings.show_glow
+  assign show_index    = section.settings.show_index
+  assign show_divider  = section.settings.show_accent_divider
+  assign content_width = section.settings.content_width
+  assign py            = section.settings.section_padding_y
+  assign px            = section.settings.section_padding_x
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .vfr-wrap--{{ section.id }} {
+    --vfr-bg: {{ bg_color }};
+    --vfr-accent: {{ accent }};
+    --vfr-accent-2: {{ accent_2 }};
+    --vfr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --vfr-heading-fw: {{ heading_font.weight }};
+    --vfr-heading-fs: {{ heading_font.style }};
+    --vfr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --vfr-body-fw: {{ body_font.weight }};
+    --vfr-body-fs: {{ body_font.style }};
+    --vfr-heading-color: {{ heading_color }};
+    --vfr-text-color: {{ text_color }};
+    --vfr-video-radius: {{ video_radius }}px;
+    --vfr-row-gap: {{ row_gap }}px;
+    --vfr-content-w: {{ content_width }}px;
+    --vfr-py: {{ py }}px;
+    --vfr-px: {{ px }}px;
+  }
+</style>
+
+<section class="vfr-wrap vfr-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if show_glow -%}
+    <div class="vfr-glow vfr-glow--1"></div>
+    <div class="vfr-glow vfr-glow--2"></div>
+  {%- endif -%}
+
+  {%- comment -%} Section header {%- endcomment -%}
+  {%- if section.settings.section_eyebrow != blank or section.settings.section_heading != blank or section.settings.section_subtext != blank -%}
+    <div class="vfr-header" data-vfr-reveal>
+      {%- if section.settings.section_eyebrow != blank -%}
+        <span class="vfr-header__eyebrow">{{ section.settings.section_eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.section_heading != blank -%}
+        <h2 class="vfr-header__heading">{{ section.settings.section_heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.section_subtext != blank -%}
+        <p class="vfr-header__subtext">{{ section.settings.section_subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Feature rows {%- endcomment -%}
+  <div class="vfr-rows">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'feature' -%}
+        {%- liquid
+          assign b_has_shopify = false
+          assign b_has_embed = false
+          assign b_has_mp4 = false
+          if block.settings.shopify_video != blank
+            assign b_has_shopify = true
+          endif
+          if block.settings.embed_url != blank
+            assign b_has_embed = true
+          endif
+          if block.settings.video_url != blank
+            assign b_has_mp4 = true
+          endif
+          assign b_has_video = false
+          if b_has_shopify or b_has_embed or b_has_mp4
+            assign b_has_video = true
+          endif
+
+          assign is_even = false
+          assign mod_check = forloop.index0 | modulo: 2
+          if mod_check == 0
+            assign is_even = true
+          endif
+
+          assign row_layout = 'left'
+          if layout_mode == 'alternate'
+            if is_even
+              assign row_layout = 'left'
+            else
+              assign row_layout = 'right'
+            endif
+          elsif layout_mode == 'video-right'
+            assign row_layout = 'right'
+          endif
+
+          if block.settings.layout_override != 'default'
+            assign row_layout = block.settings.layout_override
+          endif
+        -%}
+
+        <div class="vfr-row vfr-row--{{ row_layout }} vfr-row--{{ video_ratio }}" data-vfr-reveal {{ block.shopify_attributes }}>
+
+          {%- comment -%} Video side {%- endcomment -%}
+          <div class="vfr-row__video" data-vfr-video-wrap>
+            <div class="vfr-video-frame">
+              {%- if b_has_shopify -%}
+                {{ block.settings.shopify_video | video_tag: playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata' }}
+              {%- elsif b_has_embed -%}
+                {%- assign ev = block.settings.embed_url -%}
+                {%- if ev.type == 'youtube' -%}
+                  {%- assign yt_thumb = 'https://img.youtube.com/vi/' | append: ev.id | append: '/maxresdefault.jpg' -%}
+                  {%- if block.settings.poster != blank -%}
+                    {%- assign yt_thumb = block.settings.poster | image_url: width: 960 -%}
+                  {%- endif -%}
+                  <div class="vfr-embed" data-vfr-embed data-video-type="youtube" data-video-id="{{ ev.id }}">
+                    <img class="vfr-embed__poster" src="{{ yt_thumb }}" alt="{{ block.settings.heading | escape }}" loading="lazy">
+                    <div class="vfr-embed__iframe" data-vfr-iframe-wrap style="display:none;"></div>
+                    <button class="vfr-play-embed" data-vfr-play-embed aria-label="Play video">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                  </div>
+                {%- elsif ev.type == 'vimeo' -%}
+                  {%- assign vm_poster = '' -%}
+                  {%- if block.settings.poster != blank -%}
+                    {%- assign vm_poster = block.settings.poster | image_url: width: 960 -%}
+                  {%- endif -%}
+                  <div class="vfr-embed" data-vfr-embed data-video-type="vimeo" data-video-id="{{ ev.id }}">
+                    {%- if vm_poster != '' -%}
+                      <img class="vfr-embed__poster" src="{{ vm_poster }}" alt="{{ block.settings.heading | escape }}" loading="lazy">
+                    {%- endif -%}
+                    <div class="vfr-embed__iframe" data-vfr-iframe-wrap style="display:none;"></div>
+                    <button class="vfr-play-embed" data-vfr-play-embed aria-label="Play video">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                    </button>
+                  </div>
+                {%- endif -%}
+              {%- elsif b_has_mp4 -%}
+                <video playsinline muted loop preload="metadata"{% if block.settings.poster != blank %} poster="{{ block.settings.poster | image_url: width: 960 }}"{% endif %}>
+                  <source src="{{ block.settings.video_url }}" type="video/mp4">
+                </video>
+              {%- elsif block.settings.poster != blank -%}
+                <img src="{{ block.settings.poster | image_url: width: 960 }}" alt="{{ block.settings.heading | escape }}" loading="lazy" width="{{ block.settings.poster.width }}" height="{{ block.settings.poster.height }}">
+              {%- else -%}
+                {{ 'lifestyle-1' | placeholder_svg_tag }}
+              {%- endif -%}
+
+              {%- comment -%} Play button for native video {%- endcomment -%}
+              {%- if b_has_shopify or b_has_mp4 -%}
+                <button class="vfr-play" data-vfr-play aria-label="Play video">
+                  <svg data-vfr-icon-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                  <svg data-vfr-icon-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                </button>
+              {%- endif -%}
+            </div>
+
+            {%- comment -%} Optional badge on video {%- endcomment -%}
+            {%- if block.settings.badge != blank -%}
+              <span class="vfr-row__badge">{{ block.settings.badge }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Content side {%- endcomment -%}
+          <div class="vfr-row__content vfr-row__content--{{ card_style }}">
+            {%- if show_index -%}
+              <span class="vfr-row__index">{{ forloop.index | prepend: '0' | slice: -2, 2 }}</span>
+            {%- endif -%}
+
+            {%- if show_divider -%}
+              <div class="vfr-row__divider"></div>
+            {%- endif -%}
+
+            {%- if block.settings.eyebrow != blank -%}
+              <span class="vfr-row__eyebrow">{{ block.settings.eyebrow }}</span>
+            {%- endif -%}
+
+            {%- if block.settings.heading != blank -%}
+              <h3 class="vfr-row__heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.text != blank -%}
+              <p class="vfr-row__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+
+            {%- comment -%} Stats {%- endcomment -%}
+            {%- if block.settings.stat_1_value != blank -%}
+              <div class="vfr-row__stats">
+                <div class="vfr-row__stat">
+                  <span class="vfr-row__stat-val">{{ block.settings.stat_1_value }}</span>
+                  {%- if block.settings.stat_1_label != blank -%}
+                    <span class="vfr-row__stat-label">{{ block.settings.stat_1_label }}</span>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.stat_2_value != blank -%}
+                  <div class="vfr-row__stat">
+                    <span class="vfr-row__stat-val">{{ block.settings.stat_2_value }}</span>
+                    {%- if block.settings.stat_2_label != blank -%}
+                      <span class="vfr-row__stat-label">{{ block.settings.stat_2_label }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.btn_text != blank -%}
+              <a href="{{ block.settings.btn_link | default: '#' }}" class="vfr-btn vfr-btn--primary">
+                {{ block.settings.btn_text }}
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              </a>
+            {%- endif -%}
+          </div>
+
+        </div>
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+  (function() {
+    var wrap = document.querySelector('.vfr-wrap--{{ section.id }}');
+    if (!wrap) return;
+
+    /* Scroll reveal */
+    var reveals = wrap.querySelectorAll('[data-vfr-reveal]');
+    var revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vfr-visible');
+        revealObs.unobserve(e.target);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+    reveals.forEach(function(el) { revealObs.observe(el); });
+
+    /* Autoplay videos when in viewport */
+    var videoWraps = wrap.querySelectorAll('[data-vfr-video-wrap]');
+    videoWraps.forEach(function(vw) {
+      var video = vw.querySelector('video');
+      if (!video) return;
+
+      var playBtn = vw.querySelector('[data-vfr-play]');
+
+      function setBtnState(playing) {
+        if (!playBtn) return;
+        var iconPlay = playBtn.querySelector('[data-vfr-icon-play]');
+        var iconPause = playBtn.querySelector('[data-vfr-icon-pause]');
+        if (playing) {
+          if (iconPlay) iconPlay.style.display = 'none';
+          if (iconPause) iconPause.style.display = '';
+          playBtn.classList.add('vfr-play--playing');
+        } else {
+          if (iconPlay) iconPlay.style.display = '';
+          if (iconPause) iconPause.style.display = 'none';
+          playBtn.classList.remove('vfr-play--playing');
+        }
+      }
+
+      var autoObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        });
+      }, { threshold: 0.3 });
+      autoObs.observe(vw);
+
+      if (playBtn) {
+        playBtn.addEventListener('click', function() {
+          if (video.paused) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        });
+      }
+    });
+
+    /* Embed play buttons (YouTube/Vimeo) */
+    var embedBtns = wrap.querySelectorAll('[data-vfr-play-embed]');
+    embedBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var embedWrap = btn.closest('[data-vfr-embed]');
+        if (!embedWrap) return;
+        var iframeWrap = embedWrap.querySelector('[data-vfr-iframe-wrap]');
+        var posterImg = embedWrap.querySelector('.vfr-embed__poster');
+        if (!iframeWrap || iframeWrap.style.display !== 'none') return;
+
+        var vType = embedWrap.dataset.videoType;
+        var vId = embedWrap.dataset.videoId;
+        var iframeSrc = '';
+        if (vType === 'youtube') {
+          iframeSrc = 'https://www.youtube.com/embed/' + vId + '?autoplay=1&mute=0&loop=1&playlist=' + vId + '&controls=1&modestbranding=1&rel=0';
+        } else if (vType === 'vimeo') {
+          iframeSrc = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=0&loop=1';
+        }
+        if (iframeSrc) {
+          iframeWrap.innerHTML = '<iframe src="' + iframeSrc + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+          iframeWrap.style.display = '';
+          iframeWrap.style.position = 'absolute';
+          iframeWrap.style.inset = '0';
+          iframeWrap.style.width = '100%';
+          iframeWrap.style.height = '100%';
+          iframeWrap.style.zIndex = '2';
+          if (posterImg) posterImg.style.display = 'none';
+          btn.style.display = 'none';
+        }
+      });
+    });
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Feature Reel",
+  "tag": "section",
+  "class": "vfr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "section_eyebrow",
+      "label": "Eyebrow",
+      "default": "Our Story"
+    },
+    {
+      "type": "text",
+      "id": "section_heading",
+      "label": "Heading",
+      "default": "Features in focus"
+    },
+    {
+      "type": "textarea",
+      "id": "section_subtext",
+      "label": "Subtext",
+      "default": "Each chapter highlights what makes us different — told through film, design, and detail."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout mode",
+      "options": [
+        { "value": "alternate", "label": "Alternate (zigzag)" },
+        { "value": "video-left", "label": "Video always left" },
+        { "value": "video-right", "label": "Video always right" }
+      ],
+      "default": "alternate"
+    },
+    {
+      "type": "select",
+      "id": "video_ratio",
+      "label": "Video aspect ratio",
+      "options": [
+        { "value": "landscape", "label": "Landscape (16:9)" },
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (9:16)" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "range",
+      "id": "video_radius",
+      "label": "Video corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Space between rows",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Max content width",
+      "min": 900,
+      "max": 1400,
+      "step": 20,
+      "unit": "px",
+      "default": 1200
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 120,
+      "step": 8,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Content card style",
+      "options": [
+        { "value": "glass", "label": "Glassmorphism" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "minimal", "label": "Minimal (no background)" }
+      ],
+      "default": "minimal"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_index",
+      "label": "Show row number",
+      "default": true,
+      "info": "Large 01, 02, 03… number above content."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accent_divider",
+      "label": "Show accent divider",
+      "default": true,
+      "info": "Gradient accent line above eyebrow."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#e0c67e"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2",
+      "default": "#d4a853"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#c8c8c8"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Ambient glow",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "limit": 10,
+      "settings": [
+        {
+          "type": "header",
+          "content": "Video"
+        },
+        {
+          "type": "video",
+          "id": "shopify_video",
+          "label": "Shopify video"
+        },
+        {
+          "type": "video_url",
+          "id": "embed_url",
+          "accept": ["youtube", "vimeo"],
+          "label": "YouTube / Vimeo URL"
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "MP4 URL",
+          "info": "Direct MP4 link. Final fallback."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster / fallback image"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Video badge",
+          "info": "e.g. 'New', '4K', 'Behind the Scenes'"
+        },
+        {
+          "type": "header",
+          "content": "Content"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow",
+          "default": "Feature"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Designed with purpose"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Text",
+          "default": "Every detail serves a purpose. Watch how precision craftsmanship meets modern design in this exclusive look."
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        },
+        {
+          "type": "header",
+          "content": "Stats"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_value",
+          "label": "Stat 1 value",
+          "info": "e.g. 120K+"
+        },
+        {
+          "type": "text",
+          "id": "stat_1_label",
+          "label": "Stat 1 label"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_value",
+          "label": "Stat 2 value"
+        },
+        {
+          "type": "text",
+          "id": "stat_2_label",
+          "label": "Stat 2 label"
+        },
+        {
+          "type": "header",
+          "content": "Layout override"
+        },
+        {
+          "type": "select",
+          "id": "layout_override",
+          "label": "Layout override",
+          "options": [
+            { "value": "default", "label": "Default (section setting)" },
+            { "value": "left", "label": "Video left" },
+            { "value": "right", "label": "Video right" }
+          ],
+          "default": "default"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Feature Reel",
+      "settings": {
+        "section_eyebrow": "Our Story",
+        "section_heading": "Features in focus",
+        "section_subtext": "Each chapter highlights what makes us different — told through film, design, and detail."
+      },
+      "blocks": [
+        {
+          "type": "feature",
+          "settings": {
+            "eyebrow": "Craftsmanship",
+            "heading": "Built to last",
+            "text": "Premium materials meet meticulous engineering. Every component is designed to endure and inspire.",
+            "stat_1_value": "10+",
+            "stat_1_label": "Years of R&D",
+            "btn_text": "Learn more"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "eyebrow": "Design",
+            "heading": "Form meets function",
+            "text": "Clean lines, intuitive ergonomics, and a silhouette that feels both timeless and ahead of its time.",
+            "stat_1_value": "3",
+            "stat_1_label": "Design Awards"
+          }
+        },
+        {
+          "type": "feature",
+          "settings": {
+            "eyebrow": "Impact",
+            "heading": "Sustainability at scale",
+            "text": "From sourcing to shipping, every step is optimized for minimal environmental impact without compromising quality.",
+            "stat_1_value": "85%",
+            "stat_1_label": "Recycled Materials",
+            "stat_2_value": "0",
+            "stat_2_label": "Carbon Offset",
+            "btn_text": "Our commitment"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
