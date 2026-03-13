@@ -184,7 +184,11 @@
             {%- if block.settings.author != blank -%}
               <div class="vcg-card__meta">
                 <div class="vcg-card__meta-avatar">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  {%- if block.settings.author_image != blank -%}
+                    <img src="{{ block.settings.author_image | image_url: width: 56 }}" alt="{{ block.settings.author | escape }}" loading="lazy" width="28" height="28">
+                  {%- else -%}
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  {%- endif -%}
                 </div>
                 <div class="vcg-card__meta-text">
                   <span class="vcg-card__meta-author">{{ block.settings.author }}</span>
@@ -612,6 +616,11 @@
           "id": "author",
           "label": "Author name",
           "default": "Studio Team"
+        },
+        {
+          "type": "image_picker",
+          "id": "author_image",
+          "label": "Author image"
         },
         {
           "type": "text",
