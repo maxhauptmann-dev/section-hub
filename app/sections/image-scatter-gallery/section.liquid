@@ -194,36 +194,51 @@
         entries.forEach(function(entry) {
           if (entry.isIntersecting) {
             var idx = parseInt(entry.target.getAttribute('data-isg-index')) || 0;
-            var delay = idx * 80;
+            var delay = idx * 100;
             setTimeout(function() {
               entry.target.classList.add('isg-visible');
             }, delay);
             observer.unobserve(entry.target);
           }
         });
-      }, { threshold: 0.1 });
+      }, { threshold: 0.08 });
       revealEls.forEach(function(el) { observer.observe(el); });
     } else {
       revealEls.forEach(function(el) { el.classList.add('isg-visible'); });
     }
 
-    /* Hover depth/tilt */
+    /* Hover depth/tilt — GPU-friendly using CSS custom properties + rAF */
     var cards = wrap.querySelectorAll('.isg-card');
     cards.forEach(function(card) {
+      var rafId = null;
+      var isHovering = false;
+
       card.addEventListener('mouseenter', function() {
-        this.style.zIndex = '10';
+        isHovering = true;
+        this.classList.add('isg-card--hover');
       });
+
       card.addEventListener('mouseleave', function() {
-        this.style.zIndex = '';
-        this.style.transform = 'rotate(var(--isg-card-rot, 0deg))';
+        isHovering = false;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        this.classList.remove('isg-card--hover');
+        /* Reset tilt via CSS custom properties — smooth transition handled by CSS */
+        this.style.setProperty('--isg-tilt-x', '0deg');
+        this.style.setProperty('--isg-tilt-y', '0deg');
       });
+
       card.addEventListener('mousemove', function(e) {
-        var rect = this.getBoundingClientRect();
-        var x = (e.clientX - rect.left) / rect.width - 0.5;
-        var y = (e.clientY - rect.top) / rect.height - 0.5;
-        var tiltX = y * -8;
-        var tiltY = x * 8;
-        this.style.transform = 'rotate(0deg) perspective(600px) rotateX(' + tiltX + 'deg) rotateY(' + tiltY + 'deg) translateY(-8px) scale(1.03)';
+        if (!isHovering) return;
+        var self = this;
+        if (rafId) return; /* Throttle to 1 rAF at a time */
+        rafId = requestAnimationFrame(function() {
+          rafId = null;
+          var rect = self.getBoundingClientRect();
+          var x = (e.clientX - rect.left) / rect.width - 0.5;
+          var y = (e.clientY - rect.top) / rect.height - 0.5;
+          self.style.setProperty('--isg-tilt-x', (y * -6) + 'deg');
+          self.style.setProperty('--isg-tilt-y', (x * 6) + 'deg');
+        });
       });
     });
 
