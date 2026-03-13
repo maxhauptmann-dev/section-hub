@@ -1,0 +1,787 @@
+{% comment %}
+  Section Hub – Image Mosaic Wall v1.0
+  Pinterest-style masonry gallery with lightbox, filters,
+  hover overlays, and scroll-reveal animations.
+  Prefix: imw-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign layout_mode = section.settings.layout_mode
+  assign cols = section.settings.columns
+  assign cols_m = section.settings.columns_mobile
+  assign gap = section.settings.grid_gap
+  assign radius = section.settings.card_radius
+  assign overlay_style = section.settings.overlay_style
+  assign show_filters = section.settings.show_filters
+  assign show_glow = section.settings.show_glow
+  assign enable_lightbox = section.settings.enable_lightbox
+  assign hover_zoom = section.settings.hover_zoom
+  assign img_aspect = section.settings.img_aspect
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+  assign max_w = section.settings.max_width
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .imw-wrap--{{ section.id }} {
+    --imw-bg: {{ section.settings.bg_color }};
+    --imw-accent: {{ section.settings.accent_color }};
+    --imw-accent-2: {{ section.settings.accent_color_2 }};
+    --imw-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --imw-heading-fw: {{ hf.weight }};
+    --imw-heading-fs: {{ hf.style }};
+    --imw-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --imw-body-fw: {{ bf.weight }};
+    --imw-body-fs: {{ bf.style }};
+    --imw-heading-color: {{ section.settings.heading_color }};
+    --imw-text-color: {{ section.settings.text_color }};
+    --imw-overlay-bg: {{ section.settings.overlay_bg }};
+    --imw-overlay-text: {{ section.settings.overlay_text_color }};
+    --imw-filter-bg: {{ section.settings.filter_bg }};
+    --imw-filter-active: {{ section.settings.filter_active_bg }};
+    --imw-filter-text: {{ section.settings.filter_text_color }};
+    --imw-card-radius: {{ radius }}px;
+    --imw-gap: {{ gap }}px;
+    --imw-cols: {{ cols }};
+    --imw-cols-m: {{ cols_m }};
+    --imw-py: {{ py }}px;
+    --imw-px: {{ px }}px;
+    --imw-max-w: {{ max_w }}px;
+  }
+</style>
+
+<section class="imw-wrap imw-wrap--{{ section.id }}" data-section-id="{{ section.id }}" data-imw-lightbox="{{ enable_lightbox }}">
+
+  {%- if show_glow -%}
+    <div class="imw-glow imw-glow--1"></div>
+    <div class="imw-glow imw-glow--2"></div>
+  {%- endif -%}
+
+  <div class="imw-container">
+
+    {%- comment -%} Header {%- endcomment -%}
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="imw-header" data-imw-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="imw-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="imw-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="imw-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Category filters {%- endcomment -%}
+    {%- if show_filters -%}
+      {%- liquid
+        assign all_cats = ''
+        for block in section.blocks
+          if block.settings.category != blank
+            assign cat = block.settings.category | strip
+            unless all_cats contains cat
+              if all_cats != ''
+                assign all_cats = all_cats | append: '|||'
+              endif
+              assign all_cats = all_cats | append: cat
+            endunless
+          endif
+        endfor
+        assign cat_arr = all_cats | split: '|||'
+      -%}
+      {%- if cat_arr.size > 0 -%}
+        <div class="imw-filters" data-imw-reveal>
+          <button class="imw-filter imw-filter--active" data-imw-filter="all">All</button>
+          {%- for cat in cat_arr -%}
+            <button class="imw-filter" data-imw-filter="{{ cat | handleize }}">{{ cat }}</button>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    {%- endif -%}
+
+    {%- comment -%} Gallery grid {%- endcomment -%}
+    <div class="imw-grid imw-grid--{{ layout_mode }}" data-imw-grid>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign cat_handle = block.settings.category | handleize
+          assign span_val = block.settings.span_columns
+          assign tall = block.settings.tall_card
+        -%}
+        <div class="imw-card{% if tall %} imw-card--tall{% endif %}"
+             data-imw-reveal
+             data-imw-cat="{{ cat_handle }}"
+             {% if span_val > 1 %}style="grid-column: span {{ span_val }};"{% endif %}
+             {{ block.shopify_attributes }}>
+
+          <div class="imw-card__media{% if hover_zoom %} imw-card__media--zoom{% endif %}">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1200 }}"
+                srcset="{{ block.settings.image | image_url: width: 400 }} 400w, {{ block.settings.image | image_url: width: 700 }} 700w, {{ block.settings.image | image_url: width: 1000 }} 1000w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                sizes="(max-width: 749px) 90vw, 33vw"
+                alt="{{ block.settings.image.alt | default: block.settings.title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+                class="imw-card__img"
+              >
+            {%- else -%}
+              <div class="imw-card__placeholder">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Hover overlay {%- endcomment -%}
+            <div class="imw-card__overlay imw-card__overlay--{{ overlay_style }}">
+              {%- if block.settings.badge != blank -%}
+                <span class="imw-card__badge">{{ block.settings.badge }}</span>
+              {%- endif -%}
+              <div class="imw-card__overlay-content">
+                {%- if enable_lightbox -%}
+                  <button class="imw-card__zoom" aria-label="Open lightbox" data-imw-open="{{ forloop.index0 }}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                  </button>
+                {%- endif -%}
+                {%- if block.settings.title != blank -%}
+                  <h3 class="imw-card__title">{{ block.settings.title }}</h3>
+                {%- endif -%}
+                {%- if block.settings.subtitle != blank -%}
+                  <p class="imw-card__subtitle">{{ block.settings.subtitle }}</p>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+
+          {%- if block.settings.link != blank -%}
+            <a href="{{ block.settings.link }}" class="imw-card__link" aria-label="{{ block.settings.title | default: 'View image' | escape }}"></a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_link != blank -%}
+      <div class="imw-cta" data-imw-reveal>
+        <a href="{{ section.settings.cta_link }}" class="imw-btn imw-btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Lightbox {%- endcomment -%}
+  {%- if enable_lightbox -%}
+    <div class="imw-lightbox" data-imw-lightbox aria-hidden="true">
+      <div class="imw-lightbox__backdrop"></div>
+      <button class="imw-lightbox__close" aria-label="Close">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <button class="imw-lightbox__arrow imw-lightbox__arrow--prev" aria-label="Previous">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="imw-lightbox__arrow imw-lightbox__arrow--next" aria-label="Next">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 6 15 12 9 18"/></svg>
+      </button>
+      <div class="imw-lightbox__stage">
+        <img class="imw-lightbox__img" src="" alt="">
+      </div>
+      <div class="imw-lightbox__caption">
+        <span class="imw-lightbox__title"></span>
+        <span class="imw-lightbox__counter"></span>
+      </div>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function(){
+    const sid = '{{ section.id }}';
+    const wrap = document.querySelector('.imw-wrap--' + sid);
+    if (!wrap) return;
+
+    /* ── Scroll reveal ── */
+    const revealEls = wrap.querySelectorAll('[data-imw-reveal]');
+    if (revealEls.length) {
+      const rio = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('imw-visible');
+            rio.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      revealEls.forEach(function(el) { rio.observe(el); });
+    }
+
+    /* ── Filters ── */
+    const filterBtns = wrap.querySelectorAll('[data-imw-filter]');
+    const cards = wrap.querySelectorAll('.imw-card');
+    filterBtns.forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var f = btn.getAttribute('data-imw-filter');
+        filterBtns.forEach(function(b) { b.classList.remove('imw-filter--active'); });
+        btn.classList.add('imw-filter--active');
+        cards.forEach(function(c) {
+          var cat = c.getAttribute('data-imw-cat');
+          if (f === 'all' || cat === f) {
+            c.style.display = '';
+            c.classList.remove('imw-card--hidden');
+          } else {
+            c.classList.add('imw-card--hidden');
+            setTimeout(function(){ c.style.display = 'none'; }, 350);
+          }
+        });
+      });
+    });
+
+    /* ── Lightbox ── */
+    var lb = wrap.querySelector('[data-imw-lightbox]');
+    if (!lb) return;
+    var lbImg = lb.querySelector('.imw-lightbox__img');
+    var lbTitle = lb.querySelector('.imw-lightbox__title');
+    var lbCounter = lb.querySelector('.imw-lightbox__counter');
+    var lbClose = lb.querySelector('.imw-lightbox__close');
+    var lbPrev = lb.querySelector('.imw-lightbox__arrow--prev');
+    var lbNext = lb.querySelector('.imw-lightbox__arrow--next');
+    var lbBackdrop = lb.querySelector('.imw-lightbox__backdrop');
+    var images = [];
+    var curIdx = 0;
+
+    cards.forEach(function(c, i) {
+      var img = c.querySelector('.imw-card__img');
+      if (img) {
+        images.push({
+          src: img.src,
+          alt: img.alt,
+          title: c.querySelector('.imw-card__title') ? c.querySelector('.imw-card__title').textContent : ''
+        });
+      }
+      var openBtn = c.querySelector('[data-imw-open]');
+      if (openBtn) {
+        openBtn.addEventListener('click', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          openLightbox(parseInt(openBtn.getAttribute('data-imw-open')));
+        });
+      }
+    });
+
+    function openLightbox(idx) {
+      curIdx = idx;
+      showSlide();
+      lb.classList.add('imw-lightbox--open');
+      lb.setAttribute('aria-hidden', 'false');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lb.classList.remove('imw-lightbox--open');
+      lb.setAttribute('aria-hidden', 'true');
+      document.body.style.overflow = '';
+    }
+
+    function showSlide() {
+      if (!images[curIdx]) return;
+      lbImg.src = images[curIdx].src;
+      lbImg.alt = images[curIdx].alt;
+      lbTitle.textContent = images[curIdx].title;
+      lbCounter.textContent = (curIdx + 1) + ' / ' + images.length;
+    }
+
+    lbClose.addEventListener('click', closeLightbox);
+    lbBackdrop.addEventListener('click', closeLightbox);
+    lbPrev.addEventListener('click', function() {
+      curIdx = (curIdx - 1 + images.length) % images.length;
+      showSlide();
+    });
+    lbNext.addEventListener('click', function() {
+      curIdx = (curIdx + 1) % images.length;
+      showSlide();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (!lb.classList.contains('imw-lightbox--open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') { curIdx = (curIdx - 1 + images.length) % images.length; showSlide(); }
+      if (e.key === 'ArrowRight') { curIdx = (curIdx + 1) % images.length; showSlide(); }
+    });
+
+    /* Touch swipe for lightbox */
+    var touchStartX = 0;
+    lb.addEventListener('touchstart', function(e) { touchStartX = e.changedTouches[0].screenX; }, { passive: true });
+    lb.addEventListener('touchend', function(e) {
+      var dx = e.changedTouches[0].screenX - touchStartX;
+      if (Math.abs(dx) > 50) {
+        if (dx < 0) { curIdx = (curIdx + 1) % images.length; }
+        else { curIdx = (curIdx - 1 + images.length) % images.length; }
+        showSlide();
+      }
+    }, { passive: true });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Image Mosaic Wall",
+  "tag": "section",
+  "class": "imw-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Our Work"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Visual Gallery"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "A curated collection of our finest work, campaigns, and creative explorations."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout mode",
+      "options": [
+        { "value": "masonry", "label": "Masonry (Pinterest)" },
+        { "value": "grid", "label": "Even grid" }
+      ],
+      "default": "masonry"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "img_aspect",
+      "label": "Image aspect (grid mode)",
+      "options": [
+        { "value": "auto", "label": "Auto (natural)" },
+        { "value": "1/1", "label": "Square 1:1" },
+        { "value": "4/3", "label": "Landscape 4:3" },
+        { "value": "3/4", "label": "Portrait 3:4" },
+        { "value": "16/9", "label": "Wide 16:9" }
+      ],
+      "default": "auto",
+      "info": "Only used in even-grid mode. Masonry uses natural image heights."
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 4,
+      "max": 32,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 800,
+      "max": 1600,
+      "step": 100,
+      "default": 1400,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_filters",
+      "label": "Show category filters",
+      "default": true,
+      "info": "Filters based on each image block's Category field."
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_lightbox",
+      "label": "Enable lightbox",
+      "default": true,
+      "info": "Click image to open fullscreen with arrow navigation."
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_zoom",
+      "label": "Hover zoom effect",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "overlay_style",
+      "label": "Hover overlay style",
+      "options": [
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "solid", "label": "Solid" },
+        { "value": "blur", "label": "Blur" },
+        { "value": "none", "label": "None" }
+      ],
+      "default": "gradient"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 160,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#e0c67e"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2 (glow)",
+      "default": "#d4a853"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#b0b0b0"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg",
+      "label": "Overlay background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "overlay_text_color",
+      "label": "Overlay text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "filter_bg",
+      "label": "Filter button bg",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "filter_active_bg",
+      "label": "Filter active bg",
+      "default": "#e0c67e"
+    },
+    {
+      "type": "color",
+      "id": "filter_text_color",
+      "label": "Filter text color",
+      "default": "#999999"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show ambient glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "default": "solid"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Project Title"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category",
+          "default": "Campaign",
+          "info": "Used for filter tabs."
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "range",
+          "id": "span_columns",
+          "label": "Span columns",
+          "min": 1,
+          "max": 3,
+          "step": 1,
+          "default": 1,
+          "info": "Make this card wider in the grid."
+        },
+        {
+          "type": "checkbox",
+          "id": "tall_card",
+          "label": "Tall card (masonry)",
+          "default": false,
+          "info": "Card gets 1.5x height in masonry mode."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Image Mosaic Wall",
+      "settings": {
+        "eyebrow": "Our Work",
+        "heading": "Visual Gallery",
+        "subtext": "A curated collection of our finest work, campaigns, and creative explorations.",
+        "layout_mode": "masonry",
+        "columns": "3",
+        "columns_mobile": "2",
+        "show_filters": true,
+        "enable_lightbox": true,
+        "hover_zoom": true,
+        "overlay_style": "gradient"
+      },
+      "blocks": [
+        {
+          "type": "image",
+          "settings": {
+            "title": "Summer Collection",
+            "subtitle": "Editorial shoot in Santorini",
+            "category": "Campaign",
+            "badge": "Featured",
+            "span_columns": 1,
+            "tall_card": true
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Brand Identity",
+            "subtitle": "Visual concept development",
+            "category": "Branding",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Product Launch",
+            "subtitle": "Minimalist product photography",
+            "category": "Product",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Spring Lookbook",
+            "subtitle": "On-location fashion editorial",
+            "category": "Campaign",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Packaging Design",
+            "subtitle": "Premium unboxing experience",
+            "category": "Branding",
+            "span_columns": 1,
+            "tall_card": true
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Studio Session",
+            "subtitle": "Clean light studio portraits",
+            "category": "Product",
+            "badge": "New",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Campaign Film Stills",
+            "subtitle": "Behind the scenes captures",
+            "category": "Campaign",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Holiday Collection",
+            "subtitle": "Festive visual storytelling",
+            "category": "Campaign",
+            "span_columns": 1,
+            "tall_card": true
+          }
+        },
+        {
+          "type": "image",
+          "settings": {
+            "title": "Typography Study",
+            "subtitle": "Custom lettering exploration",
+            "category": "Branding",
+            "span_columns": 1,
+            "tall_card": false
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
