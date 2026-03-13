@@ -1,0 +1,198 @@
+/* ============================================
+   Section Hub – Image Grid Light
+   Prefix: igl-
+   ============================================ */
+
+.igl-wrap *, .igl-wrap *::before, .igl-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.igl-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--igl-bg, #ffffff);
+  color: var(--igl-text-color, #666);
+  font-family: var(--igl-body-ff, sans-serif);
+  font-weight: var(--igl-body-fw, 400);
+  font-style: var(--igl-body-fs, normal);
+  padding: var(--igl-py, 60px) var(--igl-px, 20px);
+  -webkit-font-smoothing: antialiased;
+}
+
+.igl-container {
+  position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ---- Header ---- */
+.igl-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.igl-header.igl-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.igl-header__eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--igl-accent, #4a90e2);
+  margin-bottom: 12px;
+}
+
+.igl-header__heading {
+  font-family: var(--igl-heading-ff, serif);
+  font-weight: var(--igl-heading-fw, 700);
+  font-style: var(--igl-heading-fs, normal);
+  font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+  line-height: 1.15;
+  color: var(--igl-heading-color, #000);
+  margin-bottom: 12px;
+}
+
+.igl-header__subtext {
+  font-size: clamp(0.9rem, 1vw, 1rem);
+  line-height: 1.6;
+  color: var(--igl-text-color, #666);
+}
+
+/* ---- Grid ---- */
+.igl-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--igl-cols, 3), 1fr);
+  gap: var(--igl-gap, 16px);
+}
+
+/* ---- Card ---- */
+.igl-card {
+  position: relative;
+  border-radius: var(--igl-card-radius, 8px);
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.igl-card.igl-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.igl-card__media {
+  position: relative;
+  overflow: hidden;
+  background: #f5f5f5;
+}
+.igl-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  aspect-ratio: var(--igl-aspect, 4 / 3);
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* Hover effects */
+[data-igl-grid] .igl-card:hover .igl-card__img {
+  transform: scale(1.04);
+}
+
+.igl-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: var(--igl-aspect, 4 / 3);
+  background: #f0f0f0;
+  color: rgba(0,0,0,0.1);
+}
+.igl-card__placeholder svg {
+  width: 48px;
+  height: 48px;
+}
+
+/* ---- Overlay ---- */
+.igl-card__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  display: flex;
+  align-items: flex-end;
+  padding: 24px;
+  background: linear-gradient(to top, rgba(0,0,0, var(--igl-overlay-opacity, 0.5)) 0%, transparent 100%);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.igl-card:hover .igl-card__overlay {
+  opacity: 1;
+}
+
+.igl-card__content {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 100%;
+}
+
+.igl-card__badge {
+  display: inline-block;
+  align-self: flex-start;
+  padding: 3px 10px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--igl-accent, #4a90e2);
+  border-radius: 100px;
+  margin-bottom: 4px;
+}
+
+.igl-card__title {
+  font-family: var(--igl-heading-ff, serif);
+  font-weight: var(--igl-heading-fw, 700);
+  font-size: 0.95rem;
+  color: #fff;
+  line-height: 1.3;
+}
+
+.igl-card__subtitle {
+  font-family: var(--igl-body-ff, sans-serif);
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.75);
+  line-height: 1.5;
+}
+
+.igl-card__link {
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+}
+
+/* ============================================
+   Mobile (≤ 749px)
+   ============================================ */
+@media screen and (max-width: 749px) {
+  .igl-wrap {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
+  .igl-grid {
+    grid-template-columns: repeat(var(--igl-cols-m, 1), 1fr);
+  }
+
+  .igl-header {
+    margin-bottom: 32px;
+  }
+}

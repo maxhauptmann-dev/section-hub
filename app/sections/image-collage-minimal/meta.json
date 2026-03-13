@@ -1,0 +1,50 @@
+{
+  "id": "image-collage-minimal",
+  "name": "SS - Collage Minimal",
+  "description": "Asymmetric masonry collage gallery with light theme and editorial design. Mix images of different sizes (1x1, 2x1, 1x2) for dynamic visual layouts. Each image supports optional title, subtitle, link, and hover overlay with smooth animations. Features adjustable gap, border radius, accent color for borders, and full typography/color customization. Perfect for fashion lookbooks, travel stories, brand galleries, and creative portfolios. 60+ customization options.",
+  "category": ["Image", "Gallery", "Portfolio"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Image",
+    "Gallery",
+    "Collage",
+    "Masonry",
+    "Light Theme",
+    "Asymmetric",
+    "Editorial",
+    "Responsive",
+    "Premium"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#f8f8f8",
+  "previews": [
+    {
+      "src": "/previews/image-collage-minimal/default.webp",
+      "alt": "Collage Minimal - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
