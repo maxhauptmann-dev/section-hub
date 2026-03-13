@@ -1,0 +1,458 @@
+/* ============================================
+   SectionHub – Counter Milestone Path  (cmp-)
+   Vertical timeline with animated milestone counters
+   ============================================ */
+
+/* ---------- Reset ---------- */
+.cmp-wrap *,
+.cmp-wrap *::before,
+.cmp-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.cmp-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--cmp-bg);
+  padding: var(--cmp-py) var(--cmp-px);
+}
+
+.cmp-container {
+  position: relative;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.cmp-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.cmp-header__eyebrow {
+  display: inline-block;
+  font-family: var(--cmp-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cmp-accent);
+  margin-bottom: 12px;
+}
+
+.cmp-header__heading {
+  font-family: var(--cmp-heading-ff);
+  font-weight: var(--cmp-heading-fw);
+  font-style: var(--cmp-heading-fs);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.15;
+  color: var(--cmp-heading-color);
+  margin: 0 0 14px;
+}
+
+.cmp-header__subtext {
+  font-family: var(--cmp-body-ff);
+  font-weight: var(--cmp-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--cmp-text-color);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Timeline ---------- */
+.cmp-timeline {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Vertical line */
+.cmp-timeline__line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 3px;
+  transform: translateX(-50%);
+  background: var(--cmp-line-color);
+  border-radius: 2px;
+  z-index: 1;
+}
+
+.cmp-timeline--left .cmp-timeline__line {
+  left: 28px;
+}
+
+.cmp-timeline--right .cmp-timeline__line {
+  left: auto;
+  right: 28px;
+  transform: translateX(50%);
+}
+
+.cmp-timeline__line-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(180deg, var(--cmp-line-active), var(--cmp-accent-2, var(--cmp-line-active)));
+  border-radius: 2px;
+  transform: scaleY(0);
+  transform-origin: top center;
+  will-change: transform;
+}
+
+/* ---------- Milestone ---------- */
+.cmp-milestone {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr 56px 1fr;
+  align-items: start;
+  min-height: 120px;
+  padding-bottom: 48px;
+  z-index: 2;
+}
+
+/* Alternate: odd = content left, even = content right */
+.cmp-timeline--alternate .cmp-milestone {
+  direction: ltr;
+}
+
+.cmp-timeline--alternate .cmp-milestone .cmp-milestone__card {
+  grid-column: 1;
+  text-align: right;
+  justify-self: end;
+}
+
+.cmp-timeline--alternate .cmp-milestone .cmp-milestone__node {
+  grid-column: 2;
+  grid-row: 1;
+}
+
+.cmp-timeline--alternate .cmp-milestone--right .cmp-milestone__card {
+  grid-column: 3;
+  text-align: left;
+  justify-self: start;
+}
+
+/* Left-only layout */
+.cmp-timeline--left .cmp-milestone {
+  grid-template-columns: 56px 1fr;
+}
+
+.cmp-timeline--left .cmp-milestone__node {
+  grid-column: 1;
+}
+
+.cmp-timeline--left .cmp-milestone__card {
+  grid-column: 2;
+  text-align: left;
+}
+
+/* Right-only layout */
+.cmp-timeline--right .cmp-milestone {
+  grid-template-columns: 1fr 56px;
+}
+
+.cmp-timeline--right .cmp-milestone__node {
+  grid-column: 2;
+}
+
+.cmp-timeline--right .cmp-milestone__card {
+  grid-column: 1;
+  text-align: right;
+}
+
+/* ---------- Node ---------- */
+.cmp-milestone__node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  justify-self: center;
+  z-index: 3;
+  position: relative;
+}
+
+.cmp-milestone__node::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: var(--cmp-node-bg);
+  z-index: -1;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+}
+
+.cmp-milestone__node--circle::before {
+  border-radius: 50%;
+}
+
+.cmp-milestone__node--diamond::before {
+  border-radius: 6px;
+  transform: rotate(45deg) scale(0.72);
+}
+
+.cmp-milestone__node--square::before {
+  border-radius: 12px;
+}
+
+.cmp-milestone.cmp-visible .cmp-milestone__node::before {
+  box-shadow: 0 0 0 8px rgba(99, 102, 241, 0.15), 0 0 20px rgba(99, 102, 241, 0.1);
+}
+
+.cmp-milestone__node-num {
+  font-family: var(--cmp-heading-ff);
+  font-weight: var(--cmp-heading-fw);
+  font-size: 16px;
+  color: #fff;
+  z-index: 2;
+}
+
+.cmp-milestone__node-icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  z-index: 2;
+}
+
+/* ---------- Card ---------- */
+.cmp-milestone__card {
+  background: var(--cmp-card-bg);
+  border: 1px solid var(--cmp-card-border);
+  border-radius: var(--cmp-card-radius);
+  padding: 24px 28px;
+  max-width: 420px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.cmp-milestone__card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.08);
+}
+
+/* Counter */
+.cmp-milestone__counter {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+.cmp-milestone--right .cmp-milestone__counter,
+.cmp-timeline--left .cmp-milestone__counter {
+  justify-content: flex-start;
+}
+
+.cmp-timeline--alternate .cmp-milestone:not(.cmp-milestone--right) .cmp-milestone__counter {
+  justify-content: flex-end;
+}
+
+.cmp-timeline--right .cmp-milestone__counter {
+  justify-content: flex-end;
+}
+
+.cmp-milestone__number {
+  font-family: var(--cmp-heading-ff);
+  font-weight: var(--cmp-heading-fw);
+  font-size: clamp(32px, 3.5vw, 48px);
+  line-height: 1;
+  color: var(--cmp-number-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.cmp-milestone__prefix,
+.cmp-milestone__suffix {
+  font-family: var(--cmp-heading-ff);
+  font-weight: var(--cmp-heading-fw);
+  font-size: clamp(20px, 2vw, 28px);
+  color: var(--cmp-accent);
+  line-height: 1;
+}
+
+.cmp-milestone__label {
+  font-family: var(--cmp-heading-ff);
+  font-weight: var(--cmp-heading-fw);
+  font-size: 17px;
+  color: var(--cmp-heading-color);
+  margin: 0 0 8px;
+}
+
+.cmp-milestone__desc {
+  font-family: var(--cmp-body-ff);
+  font-weight: var(--cmp-body-fw);
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--cmp-text-color);
+  margin: 0;
+}
+
+.cmp-milestone__tag {
+  display: inline-block;
+  font-family: var(--cmp-body-ff);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #fff;
+  background: linear-gradient(135deg, var(--cmp-accent), var(--cmp-accent-2, var(--cmp-accent)));
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-top: 12px;
+}
+
+/* ---------- CTA ---------- */
+.cmp-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.cmp-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--cmp-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.cmp-cta__btn--filled {
+  background: var(--cmp-accent);
+  color: #fff;
+  border: 2px solid var(--cmp-accent);
+}
+
+.cmp-cta__btn--filled:hover {
+  background: transparent;
+  color: var(--cmp-accent);
+}
+
+.cmp-cta__btn--outline {
+  background: transparent;
+  color: var(--cmp-accent);
+  border: 2px solid var(--cmp-accent);
+}
+
+.cmp-cta__btn--outline:hover {
+  background: var(--cmp-accent);
+  color: #fff;
+}
+
+.cmp-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-cmp-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-cmp-reveal].cmp-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Alternate slide direction */
+.cmp-timeline--alternate .cmp-milestone[data-cmp-reveal] {
+  transform: translateX(-40px);
+}
+
+.cmp-timeline--alternate .cmp-milestone--right[data-cmp-reveal] {
+  transform: translateX(40px);
+}
+
+.cmp-timeline--alternate .cmp-milestone[data-cmp-reveal].cmp-visible,
+.cmp-timeline--alternate .cmp-milestone--right[data-cmp-reveal].cmp-visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 799px) {
+  /* Force left-aligned single column on mobile */
+  .cmp-timeline {
+    padding-left: 0;
+  }
+
+  .cmp-timeline__line {
+    left: 28px !important;
+    right: auto !important;
+    transform: translateX(-50%) !important;
+  }
+
+  .cmp-milestone,
+  .cmp-timeline--alternate .cmp-milestone,
+  .cmp-timeline--right .cmp-milestone {
+    grid-template-columns: 56px 1fr;
+  }
+
+  .cmp-milestone__card,
+  .cmp-timeline--alternate .cmp-milestone .cmp-milestone__card,
+  .cmp-timeline--alternate .cmp-milestone--right .cmp-milestone__card,
+  .cmp-timeline--right .cmp-milestone .cmp-milestone__card {
+    grid-column: 2;
+    text-align: left;
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .cmp-milestone__node,
+  .cmp-timeline--right .cmp-milestone__node {
+    grid-column: 1;
+  }
+
+  .cmp-milestone__counter,
+  .cmp-timeline--alternate .cmp-milestone:not(.cmp-milestone--right) .cmp-milestone__counter,
+  .cmp-timeline--right .cmp-milestone__counter {
+    justify-content: flex-start;
+  }
+
+  /* Reset slide direction */
+  .cmp-timeline--alternate .cmp-milestone[data-cmp-reveal],
+  .cmp-timeline--alternate .cmp-milestone--right[data-cmp-reveal] {
+    transform: translateY(30px);
+  }
+
+  .cmp-timeline--alternate .cmp-milestone[data-cmp-reveal].cmp-visible,
+  .cmp-timeline--alternate .cmp-milestone--right[data-cmp-reveal].cmp-visible {
+    transform: translateY(0);
+  }
+
+  .cmp-milestone__card {
+    padding: 18px 20px;
+  }
+
+  .cmp-header {
+    margin-bottom: 40px;
+  }
+}
+
+@media (max-width: 499px) {
+  .cmp-milestone__node {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cmp-milestone,
+  .cmp-timeline--alternate .cmp-milestone,
+  .cmp-timeline--right .cmp-milestone {
+    grid-template-columns: 44px 1fr;
+  }
+
+  .cmp-timeline__line {
+    left: 22px !important;
+  }
+}

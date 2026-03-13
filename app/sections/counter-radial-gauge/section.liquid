@@ -1,0 +1,672 @@
+{% comment %}
+  Section Hub – Counter Radial Gauge v1.0
+  Animated SVG ring gauges with count-up numbers.
+  Each gauge fills its ring on scroll with smooth animation.
+  Prefix: crg-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign cols = section.settings.columns
+  assign ring_size = section.settings.ring_size
+  assign stroke_w = section.settings.stroke_width
+  assign gap = section.settings.grid_gap
+  assign count_dur = section.settings.count_duration
+  assign stagger = section.settings.stagger_delay
+  assign show_glow = section.settings.show_glow
+  assign show_track = section.settings.show_track
+  assign ring_cap = section.settings.ring_cap
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .crg-wrap--{{ section.id }} {
+    --crg-bg: {{ section.settings.bg_color }};
+    --crg-accent: {{ section.settings.accent_color }};
+    --crg-accent-2: {{ section.settings.accent_color_2 }};
+    --crg-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --crg-heading-fw: {{ hf.weight }};
+    --crg-heading-fs: {{ hf.style }};
+    --crg-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --crg-body-fw: {{ bf.weight }};
+    --crg-body-fs: {{ bf.style }};
+    --crg-heading-color: {{ section.settings.heading_color }};
+    --crg-text-color: {{ section.settings.text_color }};
+    --crg-number-color: {{ section.settings.number_color }};
+    --crg-track-color: {{ section.settings.track_color }};
+    --crg-card-bg: {{ section.settings.card_bg }};
+    --crg-card-border: {{ section.settings.card_border }};
+    --crg-card-radius: {{ section.settings.card_radius }}px;
+    --crg-cols: {{ cols }};
+    --crg-gap: {{ gap }}px;
+    --crg-ring-size: {{ ring_size }}px;
+    --crg-stroke: {{ stroke_w }};
+    --crg-py: {{ py }}px;
+    --crg-px: {{ px }}px;
+  }
+</style>
+
+<section class="crg-wrap crg-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- comment -%} Optional background image {%- endcomment -%}
+  {%- if section.settings.bg_image != blank -%}
+    {%- assign ov_r = section.settings.overlay_color | color_extract: 'red' -%}
+    {%- assign ov_g = section.settings.overlay_color | color_extract: 'green' -%}
+    {%- assign ov_b = section.settings.overlay_color | color_extract: 'blue' -%}
+    {%- assign ov_a = section.settings.overlay_opacity | divided_by: 100.0 -%}
+    <div class="crg-bg-img">
+      <img src="{{ section.settings.bg_image | image_url: width: 1920 }}" alt="" loading="lazy" width="{{ section.settings.bg_image.width }}" height="{{ section.settings.bg_image.height }}">
+      <div class="crg-bg-img__overlay" style="background:rgba({{ ov_r }},{{ ov_g }},{{ ov_b }},{{ ov_a }})"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="crg-container">
+
+    {%- comment -%} Section Header {%- endcomment -%}
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="crg-header" data-crg-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="crg-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="crg-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="crg-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Gauges grid {%- endcomment -%}
+    <div class="crg-grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign pct = block.settings.percent | default: 75
+          assign radius = ring_size | divided_by: 2 | minus: stroke_w
+          assign circ = radius | times: 6.2832
+          assign block_accent = block.settings.ring_color
+          if block_accent == blank
+            assign block_accent = section.settings.accent_color
+          endif
+          assign block_accent_2 = block.settings.ring_color_2
+          if block_accent_2 == blank
+            assign block_accent_2 = section.settings.accent_color_2
+          endif
+        -%}
+        <div class="crg-gauge"
+             data-crg-reveal
+             data-crg-delay="{{ forloop.index0 | times: stagger }}"
+             data-crg-percent="{{ pct }}"
+             data-crg-target="{{ block.settings.number }}"
+             data-crg-duration="{{ count_dur }}"
+             data-crg-circ="{{ circ }}"
+             {{ block.shopify_attributes }}>
+
+          <div class="crg-gauge__ring-wrap">
+            {%- comment -%} Glow behind ring {%- endcomment -%}
+            {%- if show_glow -%}
+              <div class="crg-gauge__glow" style="background: radial-gradient(circle, {{ block_accent | color_modify: 'alpha', 0.25 }} 0%, transparent 70%)"></div>
+            {%- endif -%}
+
+            <svg class="crg-gauge__svg"
+                 width="{{ ring_size }}" height="{{ ring_size }}"
+                 viewBox="0 0 {{ ring_size }} {{ ring_size }}">
+              <defs>
+                <linearGradient id="crg-grad-{{ section.id }}-{{ forloop.index }}" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="{{ block_accent }}" />
+                  <stop offset="100%" stop-color="{{ block_accent_2 }}" />
+                </linearGradient>
+              </defs>
+              {%- if show_track -%}
+                <circle class="crg-gauge__track"
+                        cx="{{ ring_size | divided_by: 2 }}"
+                        cy="{{ ring_size | divided_by: 2 }}"
+                        r="{{ radius }}"
+                        stroke-width="{{ stroke_w }}"
+                        fill="none" />
+              {%- endif -%}
+              <circle class="crg-gauge__progress"
+                      cx="{{ ring_size | divided_by: 2 }}"
+                      cy="{{ ring_size | divided_by: 2 }}"
+                      r="{{ radius }}"
+                      stroke-width="{{ stroke_w }}"
+                      fill="none"
+                      stroke="url(#crg-grad-{{ section.id }}-{{ forloop.index }})"
+                      stroke-dasharray="{{ circ }}"
+                      stroke-dashoffset="{{ circ }}"
+                      stroke-linecap="{{ ring_cap }}"
+                      transform="rotate(-90 {{ ring_size | divided_by: 2 }} {{ ring_size | divided_by: 2 }})" />
+            </svg>
+
+            {%- comment -%} Center content {%- endcomment -%}
+            <div class="crg-gauge__center">
+              {%- if block.settings.icon_image != blank -%}
+                <img class="crg-gauge__icon"
+                     src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                     alt="" width="32" height="32" loading="lazy">
+              {%- endif -%}
+              <div class="crg-gauge__num-wrap">
+                {%- if block.settings.prefix != blank -%}
+                  <span class="crg-gauge__prefix">{{ block.settings.prefix }}</span>
+                {%- endif -%}
+                <span class="crg-gauge__number" data-crg-count>0</span>
+                {%- if block.settings.suffix != blank -%}
+                  <span class="crg-gauge__suffix">{{ block.settings.suffix }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+
+          {%- if block.settings.label != blank -%}
+            <h3 class="crg-gauge__label">{{ block.settings.label }}</h3>
+          {%- endif -%}
+          {%- if block.settings.description != blank -%}
+            <p class="crg-gauge__desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank -%}
+      <div class="crg-cta" data-crg-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="crg-cta__btn crg-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function(){
+    var sid = '{{ section.id }}';
+    var wrap = document.querySelector('.crg-wrap--' + sid);
+    if (!wrap) return;
+
+    var gauges = wrap.querySelectorAll('.crg-gauge');
+    var revealEls = wrap.querySelectorAll('[data-crg-reveal]');
+    var animated = new Set();
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function animateGauge(gauge) {
+      var pct = parseFloat(gauge.dataset.crgPercent) || 0;
+      var target = parseFloat(gauge.dataset.crgTarget) || 0;
+      var duration = parseInt(gauge.dataset.crgDuration) || 2000;
+      var circ = parseFloat(gauge.dataset.crgCirc) || 0;
+      var progress = gauge.querySelector('.crg-gauge__progress');
+      var counter = gauge.querySelector('[data-crg-count]');
+      var isDecimal = target % 1 !== 0;
+      var start = performance.now();
+
+      function tick(now) {
+        var elapsed = now - start;
+        var t = Math.min(elapsed / duration, 1);
+        var eased = easeOutCubic(t);
+
+        if (progress) {
+          var offset = circ - (circ * pct / 100) * eased;
+          progress.setAttribute('stroke-dashoffset', offset);
+        }
+
+        if (counter) {
+          if (isDecimal) {
+            counter.textContent = (eased * target).toFixed(1);
+          } else {
+            counter.textContent = Math.round(eased * target).toLocaleString();
+          }
+        }
+
+        if (t < 1) requestAnimationFrame(tick);
+      }
+
+      requestAnimationFrame(tick);
+    }
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var delay = parseInt(el.dataset.crgDelay) || 0;
+
+        setTimeout(function() {
+          el.classList.add('crg-visible');
+          if (el.classList.contains('crg-gauge') && !animated.has(el)) {
+            animated.add(el);
+            animateGauge(el);
+          }
+        }, delay);
+
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(function(el) { observer.observe(el); });
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Radial Gauge",
+  "tag": "section",
+  "class": "crg-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Performance"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Our Results at a Glance"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Watch our achievements come to life as each metric fills its gauge."
+    },
+    {
+      "type": "header",
+      "content": "Ring settings"
+    },
+    {
+      "type": "range",
+      "id": "ring_size",
+      "label": "Ring diameter",
+      "min": 100,
+      "max": 240,
+      "step": 10,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Ring stroke width",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "ring_cap",
+      "label": "Ring line cap",
+      "options": [
+        { "value": "round", "label": "Rounded" },
+        { "value": "butt", "label": "Flat" }
+      ],
+      "default": "round"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_track",
+      "label": "Show background track",
+      "default": true,
+      "info": "Faint ring behind the progress arc"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show glow effect",
+      "default": true,
+      "info": "Subtle radial glow behind each gauge"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Gap between cards",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Count-up duration",
+      "min": 500,
+      "max": 4000,
+      "step": 250,
+      "default": 2000,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger delay",
+      "min": 0,
+      "max": 400,
+      "step": 50,
+      "default": 150,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 30,
+      "max": 140,
+      "step": 10,
+      "default": 90,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0d1117"
+    },
+    {
+      "type": "image_picker",
+      "id": "bg_image",
+      "label": "Background image"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#0d1117"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 85,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Ring color start",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Ring color end",
+      "default": "#06b6d4"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "track_color",
+      "label": "Track color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#161b22"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#21262d"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button style",
+      "options": [
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "gradient"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "gauge",
+      "name": "Gauge",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Display number",
+          "default": "95",
+          "info": "The number shown in the center"
+        },
+        {
+          "type": "range",
+          "id": "percent",
+          "label": "Ring fill percent",
+          "min": 0,
+          "max": 100,
+          "step": 5,
+          "default": 75,
+          "unit": "%",
+          "info": "How much the ring fills (0-100)"
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Prefix"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix",
+          "default": "%"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Satisfaction"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Center icon (optional)"
+        },
+        {
+          "type": "color",
+          "id": "ring_color",
+          "label": "Ring color override"
+        },
+        {
+          "type": "color",
+          "id": "ring_color_2",
+          "label": "Ring gradient end override"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Radial Gauge",
+      "settings": {
+        "eyebrow": "Performance",
+        "heading": "Our Results at a Glance",
+        "subtext": "Watch our achievements come to life as each metric fills its gauge.",
+        "ring_size": 160,
+        "stroke_width": 10,
+        "ring_cap": "round",
+        "show_track": true,
+        "show_glow": true,
+        "columns": "4",
+        "grid_gap": 28,
+        "card_radius": 16,
+        "count_duration": 2000,
+        "stagger_delay": 150,
+        "bg_color": "#0d1117",
+        "accent_color": "#6366f1",
+        "accent_color_2": "#06b6d4",
+        "heading_color": "#ffffff",
+        "number_color": "#ffffff",
+        "track_color": "#1e293b",
+        "card_bg": "#161b22",
+        "card_border": "#21262d"
+      },
+      "blocks": [
+        {
+          "type": "gauge",
+          "settings": {
+            "number": "98",
+            "percent": 95,
+            "suffix": "%",
+            "label": "Satisfaction Rate",
+            "description": "Our customers love what we do."
+          }
+        },
+        {
+          "type": "gauge",
+          "settings": {
+            "number": "2500",
+            "percent": 80,
+            "suffix": "+",
+            "label": "Projects Delivered",
+            "description": "Across 30 countries worldwide."
+          }
+        },
+        {
+          "type": "gauge",
+          "settings": {
+            "number": "4.9",
+            "percent": 90,
+            "suffix": "/5",
+            "label": "Average Rating",
+            "description": "Based on verified customer reviews."
+          }
+        },
+        {
+          "type": "gauge",
+          "settings": {
+            "number": "150",
+            "percent": 60,
+            "suffix": "+",
+            "label": "Team Members",
+            "description": "Passionate experts in every field."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,51 @@
+{
+  "id": "counter-milestone-path",
+  "name": "SS - Milestone Path",
+  "description": "Vertical timeline path with animated milestone counters connected by a visual journey line. Numbers count up on scroll, each milestone reveals with staggered animation. Features alternating layout, glowing path nodes, progress line fill, and rich content per milestone.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 17,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Timeline",
+    "Milestone",
+    "Path",
+    "Statistics",
+    "Animation",
+    "Numbers",
+    "Journey",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#faf9f6",
+  "previews": [
+    {
+      "src": "/previews/counter-milestone-path/default.webp",
+      "alt": "Counter Milestone Path - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

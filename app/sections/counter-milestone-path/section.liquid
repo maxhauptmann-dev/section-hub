@@ -1,0 +1,588 @@
+{% comment %}
+  Section Hub – Counter Milestone Path v1.0
+  Vertical timeline with animated milestone counters.
+  Connected by a visual path line that fills on scroll.
+  Prefix: cmp-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign layout = section.settings.layout_style
+  assign count_dur = section.settings.count_duration
+  assign stagger = section.settings.stagger_delay
+  assign show_line = section.settings.show_path_line
+  assign node_style = section.settings.node_style
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .cmp-wrap--{{ section.id }} {
+    --cmp-bg: {{ section.settings.bg_color }};
+    --cmp-accent: {{ section.settings.accent_color }};
+    --cmp-accent-2: {{ section.settings.accent_color_2 }};
+    --cmp-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --cmp-heading-fw: {{ hf.weight }};
+    --cmp-heading-fs: {{ hf.style }};
+    --cmp-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --cmp-body-fw: {{ bf.weight }};
+    --cmp-body-fs: {{ bf.style }};
+    --cmp-heading-color: {{ section.settings.heading_color }};
+    --cmp-text-color: {{ section.settings.text_color }};
+    --cmp-number-color: {{ section.settings.number_color }};
+    --cmp-node-bg: {{ section.settings.node_bg }};
+    --cmp-card-bg: {{ section.settings.card_bg }};
+    --cmp-card-border: {{ section.settings.card_border }};
+    --cmp-card-radius: {{ section.settings.card_radius }}px;
+    --cmp-line-color: {{ section.settings.line_color }};
+    --cmp-line-active: {{ section.settings.line_active_color }};
+    --cmp-py: {{ py }}px;
+    --cmp-px: {{ px }}px;
+  }
+</style>
+
+<section class="cmp-wrap cmp-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="cmp-container">
+
+    {%- comment -%} Header {%- endcomment -%}
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="cmp-header" data-cmp-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="cmp-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="cmp-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="cmp-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Timeline {%- endcomment -%}
+    <div class="cmp-timeline cmp-timeline--{{ layout }}">
+
+      {%- if show_line -%}
+        <div class="cmp-timeline__line">
+          <div class="cmp-timeline__line-fill" data-cmp-line></div>
+        </div>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign is_right = false
+          if layout == 'alternate'
+            assign mod_result = forloop.index0 | modulo: 2
+            if mod_result == 1
+              assign is_right = true
+            endif
+          elsif layout == 'right'
+            assign is_right = true
+          endif
+        -%}
+        <div class="cmp-milestone{% if is_right %} cmp-milestone--right{% endif %}"
+             data-cmp-reveal
+             data-cmp-delay="{{ forloop.index0 | times: stagger }}"
+             data-cmp-target="{{ block.settings.number }}"
+             data-cmp-duration="{{ count_dur }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Node on the line {%- endcomment -%}
+          <div class="cmp-milestone__node cmp-milestone__node--{{ node_style }}">
+            {%- if block.settings.icon_image != blank -%}
+              <img src="{{ block.settings.icon_image | image_url: width: 64 }}"
+                   alt="" width="28" height="28" loading="lazy"
+                   class="cmp-milestone__node-icon">
+            {%- else -%}
+              <span class="cmp-milestone__node-num">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Content card {%- endcomment -%}
+          <div class="cmp-milestone__card">
+            {%- comment -%} Counter {%- endcomment -%}
+            <div class="cmp-milestone__counter">
+              {%- if block.settings.prefix != blank -%}
+                <span class="cmp-milestone__prefix">{{ block.settings.prefix }}</span>
+              {%- endif -%}
+              <span class="cmp-milestone__number" data-cmp-count>0</span>
+              {%- if block.settings.suffix != blank -%}
+                <span class="cmp-milestone__suffix">{{ block.settings.suffix }}</span>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.label != blank -%}
+              <h3 class="cmp-milestone__label">{{ block.settings.label }}</h3>
+            {%- endif -%}
+
+            {%- if block.settings.description != blank -%}
+              <p class="cmp-milestone__desc">{{ block.settings.description }}</p>
+            {%- endif -%}
+
+            {%- if block.settings.tag != blank -%}
+              <span class="cmp-milestone__tag">{{ block.settings.tag }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank -%}
+      <div class="cmp-cta" data-cmp-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="cmp-cta__btn cmp-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+  (function(){
+    var sid = '{{ section.id }}';
+    var wrap = document.querySelector('.cmp-wrap--' + sid);
+    if (!wrap) return;
+
+    var revealEls = wrap.querySelectorAll('[data-cmp-reveal]');
+    var lineFill = wrap.querySelector('[data-cmp-line]');
+    var counted = new Set();
+
+    function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+    function animateCount(el, target, duration) {
+      var isDecimal = target % 1 !== 0;
+      var start = performance.now();
+      function tick(now) {
+        var elapsed = now - start;
+        var t = Math.min(elapsed / duration, 1);
+        var eased = easeOutCubic(t);
+        var current = eased * target;
+        if (isDecimal) {
+          el.textContent = current.toFixed(1);
+        } else {
+          el.textContent = Math.round(current).toLocaleString();
+        }
+        if (t < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    /* Reveal + count */
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (!entry.isIntersecting) return;
+        var el = entry.target;
+        var delay = parseInt(el.dataset.cmpDelay) || 0;
+
+        setTimeout(function() {
+          el.classList.add('cmp-visible');
+
+          var counter = el.querySelector('[data-cmp-count]');
+          if (counter && !counted.has(counter)) {
+            counted.add(counter);
+            var target = parseFloat(el.dataset.cmpTarget) || 0;
+            var dur = parseInt(el.dataset.cmpDuration) || 2000;
+            animateCount(counter, target, dur);
+          }
+        }, delay);
+
+        observer.unobserve(el);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    revealEls.forEach(function(el) { observer.observe(el); });
+
+    /* Path line fill on scroll */
+    if (lineFill) {
+      var timeline = wrap.querySelector('.cmp-timeline');
+      function updateLine() {
+        var rect = timeline.getBoundingClientRect();
+        var vh = window.innerHeight;
+        var progress = Math.max(0, Math.min(1, (vh - rect.top) / (rect.height + vh * 0.3)));
+        lineFill.style.transform = 'scaleY(' + progress + ')';
+      }
+      var rafTick = false;
+      window.addEventListener('scroll', function() {
+        if (rafTick) return;
+        rafTick = true;
+        requestAnimationFrame(function() {
+          updateLine();
+          rafTick = false;
+        });
+      }, { passive: true });
+      updateLine();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Milestone Path",
+  "tag": "section",
+  "class": "cmp-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Our Journey"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Key Milestones"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Follow our path of growth and achievement, one milestone at a time."
+    },
+    {
+      "type": "header",
+      "content": "Timeline layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Layout",
+      "options": [
+        { "value": "alternate", "label": "Alternating (zigzag)" },
+        { "value": "left", "label": "All left" },
+        { "value": "right", "label": "All right" }
+      ],
+      "default": "alternate"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_path_line",
+      "label": "Show connecting line",
+      "default": true,
+      "info": "Animated vertical line that fills on scroll"
+    },
+    {
+      "type": "select",
+      "id": "node_style",
+      "label": "Node style",
+      "options": [
+        { "value": "circle", "label": "Circle" },
+        { "value": "diamond", "label": "Diamond" },
+        { "value": "square", "label": "Rounded square" }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Count-up duration",
+      "min": 500,
+      "max": 4000,
+      "step": 250,
+      "default": 2000,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger delay",
+      "min": 0,
+      "max": 400,
+      "step": 50,
+      "default": 200,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 30,
+      "max": 140,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#faf9f6"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent gradient end",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "node_bg",
+      "label": "Node background",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#e8e5e0"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line (inactive)",
+      "default": "#e8e5e0"
+    },
+    {
+      "type": "color",
+      "id": "line_active_color",
+      "label": "Line (active fill)",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "filled"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "milestone",
+      "name": "Milestone",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Number",
+          "default": "500",
+          "info": "The number to count up to"
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Prefix",
+          "info": "e.g. $ or €"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Happy Customers"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A key achievement on our journey of growth."
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag label",
+          "info": "Optional colored badge, e.g. 2024"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Node icon (optional)",
+          "info": "Replaces the step number in the node"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Milestone Path",
+      "settings": {
+        "eyebrow": "Our Journey",
+        "heading": "Key Milestones",
+        "subtext": "Follow our path of growth and achievement, one milestone at a time.",
+        "layout_style": "alternate",
+        "show_path_line": true,
+        "node_style": "circle",
+        "card_radius": 16,
+        "count_duration": 2000,
+        "stagger_delay": 200,
+        "bg_color": "#faf9f6",
+        "heading_color": "#1a1a1a",
+        "accent_color": "#6366f1",
+        "accent_color_2": "#a855f7",
+        "node_bg": "#6366f1",
+        "card_bg": "#ffffff",
+        "card_border": "#e8e5e0",
+        "line_color": "#e8e5e0",
+        "line_active_color": "#6366f1"
+      },
+      "blocks": [
+        {
+          "type": "milestone",
+          "settings": {
+            "number": "1000",
+            "suffix": "+",
+            "label": "First Customers",
+            "description": "We reached our first thousand customers within six months of launch.",
+            "tag": "2022"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "prefix": "$",
+            "number": "2.5",
+            "suffix": "M",
+            "label": "Revenue Milestone",
+            "description": "Annual revenue crossed the two and a half million dollar mark.",
+            "tag": "2023"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "number": "50",
+            "suffix": "+",
+            "label": "Countries Reached",
+            "description": "Our products are now loved by customers across fifty countries.",
+            "tag": "2024"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "number": "98",
+            "suffix": "%",
+            "label": "Satisfaction Rate",
+            "description": "Nearly perfect customer satisfaction based on thousands of reviews.",
+            "tag": "2025"
+          }
+        },
+        {
+          "type": "milestone",
+          "settings": {
+            "number": "25000",
+            "suffix": "+",
+            "label": "Community Members",
+            "description": "A thriving global community of passionate users and advocates.",
+            "tag": "2026"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

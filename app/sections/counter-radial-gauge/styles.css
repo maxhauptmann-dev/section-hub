@@ -1,0 +1,285 @@
+/* ============================================
+   SectionHub – Counter Radial Gauge  (crg-)
+   Animated SVG ring gauge counters
+   ============================================ */
+
+/* ---------- Reset ---------- */
+.crg-wrap *,
+.crg-wrap *::before,
+.crg-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.crg-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--crg-bg);
+  padding: var(--crg-py) var(--crg-px);
+}
+
+/* ---------- Background image ---------- */
+.crg-bg-img {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.crg-bg-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.crg-bg-img__overlay {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- Container ---------- */
+.crg-container {
+  position: relative;
+  z-index: 2;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.crg-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.crg-header__eyebrow {
+  display: inline-block;
+  font-family: var(--crg-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--crg-accent);
+  margin-bottom: 12px;
+}
+
+.crg-header__heading {
+  font-family: var(--crg-heading-ff);
+  font-weight: var(--crg-heading-fw);
+  font-style: var(--crg-heading-fs);
+  font-size: clamp(26px, 3.5vw, 44px);
+  line-height: 1.15;
+  color: var(--crg-heading-color);
+  margin: 0 0 14px;
+}
+
+.crg-header__subtext {
+  font-family: var(--crg-body-ff);
+  font-weight: var(--crg-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--crg-text-color);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Grid ---------- */
+.crg-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--crg-cols), 1fr);
+  gap: var(--crg-gap);
+}
+
+/* ---------- Gauge card ---------- */
+.crg-gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--crg-card-bg);
+  border: 1px solid var(--crg-card-border);
+  border-radius: var(--crg-card-radius);
+  padding: 32px 20px 28px;
+  transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+
+.crg-gauge:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+/* ---------- Ring wrap ---------- */
+.crg-gauge__ring-wrap {
+  position: relative;
+  width: var(--crg-ring-size);
+  height: var(--crg-ring-size);
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+/* Glow */
+.crg-gauge__glow {
+  position: absolute;
+  inset: -20px;
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.3s;
+  pointer-events: none;
+}
+
+.crg-gauge.crg-visible .crg-gauge__glow {
+  opacity: 1;
+}
+
+/* SVG */
+.crg-gauge__svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.crg-gauge__track {
+  stroke: var(--crg-track-color);
+}
+
+.crg-gauge__progress {
+  transition: none; /* JS handles the animation */
+}
+
+/* Center */
+.crg-gauge__center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.crg-gauge__icon {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  margin-bottom: 2px;
+}
+
+.crg-gauge__num-wrap {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.crg-gauge__number {
+  font-family: var(--crg-heading-ff);
+  font-weight: var(--crg-heading-fw);
+  font-size: clamp(24px, 2.5vw, 36px);
+  line-height: 1;
+  color: var(--crg-number-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.crg-gauge__prefix,
+.crg-gauge__suffix {
+  font-family: var(--crg-heading-ff);
+  font-weight: var(--crg-heading-fw);
+  font-size: clamp(16px, 1.5vw, 22px);
+  color: var(--crg-accent);
+  line-height: 1;
+}
+
+/* Label & desc */
+.crg-gauge__label {
+  font-family: var(--crg-heading-ff);
+  font-weight: var(--crg-heading-fw);
+  font-size: 15px;
+  color: var(--crg-heading-color);
+  margin: 0 0 6px;
+}
+
+.crg-gauge__desc {
+  font-family: var(--crg-body-ff);
+  font-weight: var(--crg-body-fw);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--crg-text-color);
+  max-width: 200px;
+}
+
+/* ---------- CTA ---------- */
+.crg-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.crg-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--crg-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.crg-cta__btn--gradient {
+  background: linear-gradient(135deg, var(--crg-accent), var(--crg-accent-2));
+  color: #fff;
+  border: none;
+}
+
+.crg-cta__btn--gradient:hover {
+  box-shadow: 0 8px 30px rgba(99, 102, 241, 0.35);
+  transform: translateY(-2px);
+}
+
+.crg-cta__btn--outline {
+  background: transparent;
+  color: var(--crg-accent);
+  border: 2px solid var(--crg-accent);
+}
+
+.crg-cta__btn--outline:hover {
+  background: var(--crg-accent);
+  color: #fff;
+}
+
+.crg-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-crg-reveal] {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-crg-reveal].crg-visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 999px) {
+  .crg-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .crg-grid {
+    grid-template-columns: 1fr;
+    max-width: 320px;
+    margin: 0 auto;
+  }
+
+  .crg-header {
+    margin-bottom: 36px;
+  }
+}

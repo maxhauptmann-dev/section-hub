@@ -1,0 +1,51 @@
+{
+  "id": "counter-radial-gauge",
+  "name": "SS - Radial Gauge",
+  "description": "Stunning animated radial gauge counters with SVG ring progress, smooth count-up, and optional inner icon. Each gauge fills its ring on scroll with configurable stroke width, colors, and animation. Features gradient rings, glow effects, and fully customizable layout.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Gauge",
+    "Radial",
+    "Circle",
+    "Statistics",
+    "Animation",
+    "SVG",
+    "Numbers",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0d1117",
+  "previews": [
+    {
+      "src": "/previews/counter-radial-gauge/default.webp",
+      "alt": "Counter Radial Gauge - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
