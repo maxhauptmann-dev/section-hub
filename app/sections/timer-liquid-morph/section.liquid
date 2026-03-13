@@ -1,0 +1,521 @@
+{% comment %}
+  Section Hub – Timer Liquid Morph v1.0
+  Organic liquid-morphing countdown with SVG turbulence blobs.
+  Numbers float inside undulating organic shapes.
+  Prefix: tlm-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+  assign blob_size = section.settings.blob_size
+  assign morph_speed = section.settings.morph_speed
+  assign show_inner_glow = section.settings.show_inner_glow
+  assign show_labels = section.settings.show_labels
+  assign show_shadow = section.settings.show_shadow
+  assign expired_msg = section.settings.expired_message
+  assign hide_zero_units = section.settings.hide_zero_units
+  assign layout = section.settings.layout
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .tlm-wrap--{{ section.id }} {
+    --tlm-bg: {{ section.settings.bg_color }};
+    --tlm-blob-1: {{ section.settings.blob_color_1 }};
+    --tlm-blob-2: {{ section.settings.blob_color_2 }};
+    --tlm-blob-3: {{ section.settings.blob_color_3 }};
+    --tlm-blob-4: {{ section.settings.blob_color_4 }};
+    --tlm-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --tlm-heading-fw: {{ hf.weight }};
+    --tlm-heading-fs: {{ hf.style }};
+    --tlm-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --tlm-body-fw: {{ bf.weight }};
+    --tlm-body-fs: {{ bf.style }};
+    --tlm-heading-color: {{ section.settings.heading_color }};
+    --tlm-text-color: {{ section.settings.text_color }};
+    --tlm-number-color: {{ section.settings.number_color }};
+    --tlm-label-color: {{ section.settings.label_color }};
+    --tlm-blob-size: {{ blob_size }}px;
+    --tlm-morph-dur: {{ morph_speed }}s;
+    --tlm-py: {{ py }}px;
+    --tlm-px: {{ px }}px;
+  }
+</style>
+
+<section class="tlm-wrap tlm-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- comment -%} SVG filter for liquid morph {%- endcomment -%}
+  <svg class="tlm-defs" aria-hidden="true" style="position:absolute;width:0;height:0;">
+    <defs>
+      <filter id="tlm-goo-{{ section.id }}">
+        <feGaussianBlur in="SourceGraphic" stdDeviation="10" result="blur" />
+        <feColorMatrix in="blur" type="matrix"
+          values="1 0 0 0 0
+                  0 1 0 0 0
+                  0 0 1 0 0
+                  0 0 0 20 -8" result="goo" />
+        <feComposite in="SourceGraphic" in2="goo" operator="atop" />
+      </filter>
+    </defs>
+  </svg>
+
+  <div class="tlm-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="tlm-header" data-tlm-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="tlm-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="tlm-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="tlm-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="tlm-timer"
+         data-tlm-reveal
+         data-tlm-timer
+         data-target-year="{{ section.settings.target_year }}"
+         data-target-month="{{ section.settings.target_month }}"
+         data-target-day="{{ section.settings.target_day }}"
+         data-target-hour="{{ section.settings.target_hour }}"
+         data-target-minute="{{ section.settings.target_minute }}"
+         data-hide-zero="{{ hide_zero_units }}"
+         data-expired-msg="{{ expired_msg }}">
+
+      <div class="tlm-blobs tlm-blobs--{{ layout }}">
+
+        {%- assign unit_keys = 'days,hours,minutes,seconds' | split: ',' -%}
+        {%- assign label_ids = 'label_days,label_hours,label_minutes,label_seconds' | split: ',' -%}
+        {%- assign blob_vars = 'var(--tlm-blob-1),var(--tlm-blob-2),var(--tlm-blob-3),var(--tlm-blob-4)' | split: ',' -%}
+        {%- assign delays = '0,2,4,6' | split: ',' -%}
+
+        {%- for i in (0..3) -%}
+          {%- assign ukey = unit_keys[i] -%}
+          {%- assign lid = label_ids[i] -%}
+          {%- assign bvar = blob_vars[i] -%}
+          {%- assign del = delays[i] -%}
+
+          <div class="tlm-blob-unit" data-tlm-unit="{{ ukey }}">
+            <div class="tlm-blob"
+                 style="--tlm-bc: {{ bvar }}; --tlm-delay: {{ del }}s; filter: url(#tlm-goo-{{ section.id }});">
+              <div class="tlm-blob__shape tlm-blob__shape--1"></div>
+              <div class="tlm-blob__shape tlm-blob__shape--2"></div>
+              <div class="tlm-blob__shape tlm-blob__shape--3"></div>
+              {%- if show_inner_glow -%}
+                <div class="tlm-blob__glow" aria-hidden="true"></div>
+              {%- endif -%}
+            </div>
+            {%- if show_shadow -%}
+              <div class="tlm-blob__shadow" style="--tlm-bc: {{ bvar }};" aria-hidden="true"></div>
+            {%- endif -%}
+            <div class="tlm-blob__content">
+              <span class="tlm-blob__number" data-tlm-number>0</span>
+              {%- if show_labels -%}
+                <span class="tlm-blob__label">{{ section.settings[lid] }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+
+      </div>
+
+      <div class="tlm-expired" data-tlm-expired style="display:none;">
+        <p class="tlm-expired__msg"></p>
+      </div>
+    </div>
+
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <div class="tlm-cta" data-tlm-reveal>
+        <a href="{{ section.settings.cta_url }}" class="tlm-cta__btn tlm-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('.tlm-wrap--{{ section.id }}');
+  if(!root) return;
+  var timer = root.querySelector('[data-tlm-timer]');
+  if(!timer) return;
+
+  var y = parseInt(timer.dataset.targetYear) || 2026;
+  var mo = parseInt(timer.dataset.targetMonth) || 1;
+  var d = parseInt(timer.dataset.targetDay) || 1;
+  var h = parseInt(timer.dataset.targetHour) || 0;
+  var mi = parseInt(timer.dataset.targetMinute) || 0;
+  var hideZero = timer.dataset.hideZero === 'true';
+  var expMsg = timer.dataset.expiredMsg || 'Time is up!';
+  var target = new Date(y, mo - 1, d, h, mi, 0).getTime();
+
+  var unitEls = root.querySelectorAll('[data-tlm-unit]');
+  var expiredEl = root.querySelector('[data-tlm-expired]');
+  var expiredMsg = root.querySelector('[data-tlm-expired] .tlm-expired__msg');
+  var lastVals = [null, null, null, null];
+
+  function tick(){
+    var now = Date.now();
+    var diff = target - now;
+
+    if(diff <= 0){
+      if(expiredEl) expiredEl.style.display = 'flex';
+      if(expiredMsg) expiredMsg.textContent = expMsg;
+      var blobs = timer.querySelector('.tlm-blobs');
+      if(blobs) blobs.style.display = 'none';
+      return;
+    }
+
+    var secs = Math.floor(diff / 1000);
+    var days = Math.floor(secs / 86400); secs -= days * 86400;
+    var hrs = Math.floor(secs / 3600); secs -= hrs * 3600;
+    var mins = Math.floor(secs / 60); secs -= mins * 60;
+    var vals = [days, hrs, mins, secs];
+
+    unitEls.forEach(function(u, i){
+      if(vals[i] !== lastVals[i]){
+        var numEl = u.querySelector('[data-tlm-number]');
+        if(numEl){
+          numEl.textContent = vals[i];
+          numEl.classList.remove('tlm-num-pop');
+          void numEl.offsetWidth;
+          numEl.classList.add('tlm-num-pop');
+        }
+        lastVals[i] = vals[i];
+      }
+    });
+
+    if(hideZero && days === 0){
+      unitEls[0].style.display = 'none';
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  var reveals = root.querySelectorAll('[data-tlm-reveal]');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('tlm-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(function(el){ obs.observe(el); });
+
+  tick();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Liquid Timer",
+  "tag": "section",
+  "class": "section-liquid-morph-timer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Exclusive Drop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Limited Edition Ends In"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Once time runs out, this collection disappears forever. Don't let this moment slip away."
+    },
+    {
+      "type": "header",
+      "content": "Target Date"
+    },
+    {
+      "type": "range",
+      "id": "target_year",
+      "label": "Year",
+      "min": 2025,
+      "max": 2030,
+      "step": 1,
+      "default": 2026
+    },
+    {
+      "type": "range",
+      "id": "target_month",
+      "label": "Month",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "target_day",
+      "label": "Day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "target_hour",
+      "label": "Hour",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "target_minute",
+      "label": "Minute",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "label_days",
+      "label": "Days Label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours Label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes Label",
+      "default": "Min"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds Label",
+      "default": "Sec"
+    },
+    {
+      "type": "text",
+      "id": "expired_message",
+      "label": "Expired Message",
+      "default": "This drop has ended."
+    },
+    {
+      "type": "header",
+      "content": "Blob Settings"
+    },
+    {
+      "type": "range",
+      "id": "blob_size",
+      "label": "Blob Size",
+      "min": 100,
+      "max": 220,
+      "step": 5,
+      "default": 150,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "morph_speed",
+      "label": "Morph Speed",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 8,
+      "unit": "s"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Layout",
+      "options": [
+        { "value": "row", "label": "Row" },
+        { "value": "staggered", "label": "Staggered" }
+      ],
+      "default": "staggered"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_inner_glow",
+      "label": "Show Inner Glow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_shadow",
+      "label": "Show Drop Shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_zero_units",
+      "label": "Hide Zero Days",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0c0a20"
+    },
+    {
+      "type": "color",
+      "id": "blob_color_1",
+      "label": "Days Blob Color",
+      "default": "#7c3aed"
+    },
+    {
+      "type": "color",
+      "id": "blob_color_2",
+      "label": "Hours Blob Color",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "blob_color_3",
+      "label": "Minutes Blob Color",
+      "default": "#06b6d4"
+    },
+    {
+      "type": "color",
+      "id": "blob_color_4",
+      "label": "Seconds Blob Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#f5f3ff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#a78bfa"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "Shop the Drop"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "gradient", "label": "Gradient" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "gradient"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Liquid Timer"
+    }
+  ]
+}
+{% endschema %}

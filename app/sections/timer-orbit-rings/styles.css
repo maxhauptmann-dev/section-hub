@@ -1,0 +1,261 @@
+/* ============================================
+   SectionHub – Timer Orbit Rings  (tor-)
+   Sci-fi orbital ring countdown
+   ============================================ */
+
+.tor-wrap *,
+.tor-wrap *::before,
+.tor-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.tor-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--tor-bg);
+  padding: var(--tor-py) var(--tor-px);
+}
+
+.tor-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.tor-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.tor-header__eyebrow {
+  display: inline-block;
+  font-family: var(--tor-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--tor-accent-1);
+  margin-bottom: 14px;
+}
+
+.tor-header__heading {
+  font-family: var(--tor-heading-ff);
+  font-weight: var(--tor-heading-fw);
+  font-style: var(--tor-heading-fs);
+  font-size: clamp(26px, 4vw, 48px);
+  line-height: 1.15;
+  color: var(--tor-heading-color);
+  margin: 0 0 14px;
+}
+
+.tor-header__subtext {
+  font-family: var(--tor-body-ff);
+  font-weight: var(--tor-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--tor-text-color);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ---------- Rings grid ---------- */
+.tor-rings {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+/* ---------- Ring unit ---------- */
+.tor-ring-unit {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tor-ring-size);
+  height: var(--tor-ring-size);
+  transition: opacity 0.3s ease;
+}
+
+.tor-ring-svg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.tor-ring__track {
+  transition: none;
+}
+
+.tor-ring__progress {
+  transition: stroke-dashoffset 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  filter: drop-shadow(0 0 6px currentColor);
+}
+
+.tor-ring__outer {
+  animation: tor-rotate 30s linear infinite;
+  transform-origin: center;
+}
+
+@keyframes tor-rotate {
+  to { transform: rotate(360deg); }
+}
+
+/* Particle dot on the ring */
+.tor-ring__particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tor-p-color);
+  box-shadow: 0 0 8px var(--tor-p-color), 0 0 20px var(--tor-p-color);
+  transform: translate(-50%, -50%);
+  transition: left 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              top 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ---------- Center content ---------- */
+.tor-ring__content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.tor-ring__number {
+  font-family: var(--tor-heading-ff);
+  font-weight: var(--tor-heading-fw);
+  font-size: calc(var(--tor-ring-size) * 0.24);
+  line-height: 1;
+  color: var(--tor-number-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.tor-ring__label {
+  font-family: var(--tor-body-ff);
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--tor-label-color);
+  margin-top: 4px;
+}
+
+/* ---------- Expired ---------- */
+.tor-expired {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tor-ring-size);
+}
+
+.tor-expired__msg {
+  font-family: var(--tor-heading-ff);
+  font-weight: var(--tor-heading-fw);
+  font-size: clamp(20px, 3vw, 32px);
+  color: var(--tor-accent-1);
+  text-align: center;
+}
+
+/* ---------- CTA ---------- */
+.tor-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.tor-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tor-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 40px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.tor-cta__btn--filled {
+  background: var(--tor-accent-1);
+  color: #fff;
+  border: 2px solid var(--tor-accent-1);
+}
+
+.tor-cta__btn--filled:hover {
+  background: transparent;
+  color: var(--tor-accent-1);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--tor-accent-1) 40%, transparent);
+}
+
+.tor-cta__btn--outline {
+  background: transparent;
+  color: var(--tor-accent-1);
+  border: 2px solid var(--tor-accent-1);
+}
+
+.tor-cta__btn--outline:hover {
+  background: var(--tor-accent-1);
+  color: #fff;
+}
+
+.tor-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-tor-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-tor-reveal].tor-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 700px) {
+  .tor-rings {
+    gap: 20px;
+  }
+
+  .tor-ring-unit {
+    width: calc(var(--tor-ring-size) * 0.7);
+    height: calc(var(--tor-ring-size) * 0.7);
+  }
+
+  .tor-ring__number {
+    font-size: calc(var(--tor-ring-size) * 0.18);
+  }
+
+  .tor-header {
+    margin-bottom: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tor-rings {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    gap: 24px;
+  }
+
+  .tor-ring-unit {
+    width: calc(var(--tor-ring-size) * 0.65);
+    height: calc(var(--tor-ring-size) * 0.65);
+  }
+}

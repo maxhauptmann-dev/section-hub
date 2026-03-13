@@ -1,0 +1,369 @@
+/* ============================================
+   SectionHub – Timer Liquid Morph  (tlm-)
+   Organic liquid blob countdown
+   ============================================ */
+
+.tlm-wrap *,
+.tlm-wrap *::before,
+.tlm-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.tlm-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--tlm-bg);
+  padding: var(--tlm-py) var(--tlm-px);
+}
+
+.tlm-container {
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.tlm-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.tlm-header__eyebrow {
+  display: inline-block;
+  font-family: var(--tlm-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--tlm-blob-1);
+  margin-bottom: 14px;
+}
+
+.tlm-header__heading {
+  font-family: var(--tlm-heading-ff);
+  font-weight: var(--tlm-heading-fw);
+  font-style: var(--tlm-heading-fs);
+  font-size: clamp(26px, 4vw, 48px);
+  line-height: 1.15;
+  color: var(--tlm-heading-color);
+  margin: 0 0 14px;
+}
+
+.tlm-header__subtext {
+  font-family: var(--tlm-body-ff);
+  font-weight: var(--tlm-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--tlm-text-color);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ---------- Blobs container ---------- */
+.tlm-blobs {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+}
+
+.tlm-blobs--staggered .tlm-blob-unit:nth-child(2) {
+  transform: translateY(20px);
+}
+
+.tlm-blobs--staggered .tlm-blob-unit:nth-child(3) {
+  transform: translateY(-10px);
+}
+
+.tlm-blobs--staggered .tlm-blob-unit:nth-child(4) {
+  transform: translateY(14px);
+}
+
+/* ---------- Individual blob unit ---------- */
+.tlm-blob-unit {
+  position: relative;
+  width: var(--tlm-blob-size);
+  height: var(--tlm-blob-size);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease;
+}
+
+/* ---------- Blob shape container ---------- */
+.tlm-blob {
+  position: absolute;
+  inset: -10%;
+  width: 120%;
+  height: 120%;
+}
+
+/* Organic shapes */
+.tlm-blob__shape {
+  position: absolute;
+  border-radius: 50%;
+  background: var(--tlm-bc);
+  opacity: 0.6;
+}
+
+.tlm-blob__shape--1 {
+  width: 80%;
+  height: 80%;
+  top: 10%;
+  left: 10%;
+  animation: tlm-morph-1 var(--tlm-morph-dur) ease-in-out infinite;
+  animation-delay: var(--tlm-delay);
+}
+
+.tlm-blob__shape--2 {
+  width: 70%;
+  height: 70%;
+  top: 18%;
+  left: 20%;
+  animation: tlm-morph-2 var(--tlm-morph-dur) ease-in-out infinite;
+  animation-delay: calc(var(--tlm-delay) + 1s);
+  opacity: 0.5;
+}
+
+.tlm-blob__shape--3 {
+  width: 65%;
+  height: 65%;
+  top: 12%;
+  left: 8%;
+  animation: tlm-morph-3 var(--tlm-morph-dur) ease-in-out infinite;
+  animation-delay: calc(var(--tlm-delay) + 2.5s);
+  opacity: 0.4;
+}
+
+@keyframes tlm-morph-1 {
+  0%, 100% {
+    border-radius: 42% 58% 62% 38% / 46% 52% 48% 54%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    border-radius: 55% 45% 38% 62% / 58% 42% 58% 42%;
+    transform: translate(4%, -6%) rotate(5deg);
+  }
+  50% {
+    border-radius: 38% 62% 55% 45% / 42% 58% 42% 58%;
+    transform: translate(-3%, 4%) rotate(-3deg);
+  }
+  75% {
+    border-radius: 52% 48% 45% 55% / 55% 45% 55% 45%;
+    transform: translate(5%, 2%) rotate(4deg);
+  }
+}
+
+@keyframes tlm-morph-2 {
+  0%, 100% {
+    border-radius: 58% 42% 45% 55% / 52% 48% 52% 48%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    border-radius: 42% 58% 55% 45% / 45% 55% 45% 55%;
+    transform: translate(-5%, 3%) rotate(-4deg);
+  }
+  66% {
+    border-radius: 52% 48% 42% 58% / 58% 42% 58% 42%;
+    transform: translate(3%, -4%) rotate(6deg);
+  }
+}
+
+@keyframes tlm-morph-3 {
+  0%, 100% {
+    border-radius: 45% 55% 52% 48% / 48% 52% 45% 55%;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  50% {
+    border-radius: 55% 45% 48% 52% / 52% 48% 55% 45%;
+    transform: translate(6%, 4%) rotate(-5deg);
+  }
+}
+
+/* Inner glow */
+.tlm-blob__glow {
+  position: absolute;
+  top: 25%;
+  left: 25%;
+  width: 50%;
+  height: 50%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
+  animation: tlm-glow-pulse 3s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes tlm-glow-pulse {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.15); }
+}
+
+/* Drop shadow under blob */
+.tlm-blob__shadow {
+  position: absolute;
+  bottom: -12%;
+  left: 15%;
+  width: 70%;
+  height: 20%;
+  border-radius: 50%;
+  background: var(--tlm-bc);
+  filter: blur(20px);
+  opacity: 0.2;
+  pointer-events: none;
+}
+
+/* ---------- Content overlay ---------- */
+.tlm-blob__content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  pointer-events: none;
+}
+
+.tlm-blob__number {
+  font-family: var(--tlm-heading-ff);
+  font-weight: var(--tlm-heading-fw);
+  font-size: calc(var(--tlm-blob-size) * 0.3);
+  line-height: 1;
+  color: var(--tlm-number-color);
+  font-variant-numeric: tabular-nums;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.4);
+}
+
+.tlm-num-pop {
+  animation: tlm-pop 0.3s ease-out;
+}
+
+@keyframes tlm-pop {
+  0% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.tlm-blob__label {
+  font-family: var(--tlm-body-ff);
+  font-weight: 500;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--tlm-label-color);
+  margin-top: 4px;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.4);
+}
+
+/* ---------- Expired ---------- */
+.tlm-expired {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tlm-blob-size);
+}
+
+.tlm-expired__msg {
+  font-family: var(--tlm-heading-ff);
+  font-weight: var(--tlm-heading-fw);
+  font-size: clamp(20px, 3vw, 32px);
+  color: var(--tlm-blob-1);
+  text-align: center;
+}
+
+/* ---------- CTA ---------- */
+.tlm-cta {
+  text-align: center;
+  margin-top: 56px;
+}
+
+.tlm-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tlm-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 40px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.tlm-cta__btn--gradient {
+  background: linear-gradient(135deg, var(--tlm-blob-1), var(--tlm-blob-2));
+  color: #fff;
+  border: 2px solid transparent;
+  box-shadow: 0 4px 20px color-mix(in srgb, var(--tlm-blob-1) 30%, transparent);
+}
+
+.tlm-cta__btn--gradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px color-mix(in srgb, var(--tlm-blob-1) 50%, transparent);
+}
+
+.tlm-cta__btn--outline {
+  background: transparent;
+  color: var(--tlm-blob-1);
+  border: 2px solid var(--tlm-blob-1);
+}
+
+.tlm-cta__btn--outline:hover {
+  background: var(--tlm-blob-1);
+  color: #fff;
+}
+
+.tlm-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-tlm-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-tlm-reveal].tlm-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 740px) {
+  .tlm-blobs {
+    gap: 28px;
+  }
+
+  .tlm-blob-unit {
+    width: calc(var(--tlm-blob-size) * 0.75);
+    height: calc(var(--tlm-blob-size) * 0.75);
+  }
+
+  .tlm-blobs--staggered .tlm-blob-unit:nth-child(2),
+  .tlm-blobs--staggered .tlm-blob-unit:nth-child(3),
+  .tlm-blobs--staggered .tlm-blob-unit:nth-child(4) {
+    transform: translateY(0);
+  }
+
+  .tlm-header {
+    margin-bottom: 36px;
+  }
+}
+
+@media (max-width: 480px) {
+  .tlm-blobs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    justify-items: center;
+    gap: 24px;
+  }
+
+  .tlm-blob-unit {
+    width: calc(var(--tlm-blob-size) * 0.65);
+    height: calc(var(--tlm-blob-size) * 0.65);
+  }
+}

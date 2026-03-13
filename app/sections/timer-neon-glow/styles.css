@@ -1,0 +1,355 @@
+/* ============================================
+   SectionHub – Timer Neon Glow  (tng-)
+   Cyberpunk neon countdown with glow tubes
+   ============================================ */
+
+.tng-wrap *,
+.tng-wrap *::before,
+.tng-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.tng-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--tng-bg);
+  padding: var(--tng-py) var(--tng-px);
+}
+
+.tng-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.tng-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.tng-header__eyebrow {
+  display: inline-block;
+  font-family: var(--tng-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--tng-neon-1);
+  text-shadow: 0 0 8px var(--tng-neon-1), 0 0 20px var(--tng-neon-1);
+  margin-bottom: 14px;
+}
+
+.tng-header__heading {
+  font-family: var(--tng-heading-ff);
+  font-weight: var(--tng-heading-fw);
+  font-style: var(--tng-heading-fs);
+  font-size: clamp(26px, 4vw, 48px);
+  line-height: 1.15;
+  color: var(--tng-heading-color);
+  margin: 0 0 14px;
+}
+
+.tng-header__subtext {
+  font-family: var(--tng-body-ff);
+  font-weight: var(--tng-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--tng-text-color);
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/* ---------- Timer ---------- */
+.tng-timer {
+  position: relative;
+}
+
+.tng-timer__card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  background: var(--tng-card-bg);
+  border: 1px solid var(--tng-card-border);
+  border-radius: var(--tng-card-radius);
+  padding: 40px 32px 36px;
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.4),
+              inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+
+/* ---------- Unit ---------- */
+.tng-unit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 12px;
+}
+
+.tng-unit__digits {
+  display: flex;
+  gap: 6px;
+}
+
+/* ---------- Digit – the neon glow ---------- */
+.tng-digit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--tng-neon-size);
+  height: calc(var(--tng-neon-size) * 1.4);
+  font-family: var(--tng-heading-ff);
+  font-weight: var(--tng-heading-fw);
+  font-size: calc(var(--tng-neon-size) * 0.85);
+  line-height: 1;
+  color: var(--tng-neon-1);
+  text-shadow:
+    0 0 6px var(--tng-neon-1),
+    0 0 14px var(--tng-neon-1),
+    0 0 40px var(--tng-neon-1),
+    0 0 80px color-mix(in srgb, var(--tng-neon-1) 50%, transparent);
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  position: relative;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+  transition: text-shadow 0.15s ease;
+}
+
+/* Pulse on digit change */
+.tng-digit--pulse {
+  animation: tng-pulse 0.35s ease-out;
+}
+
+@keyframes tng-pulse {
+  0% {
+    text-shadow:
+      0 0 10px var(--tng-neon-1),
+      0 0 30px var(--tng-neon-1),
+      0 0 60px var(--tng-neon-1),
+      0 0 120px var(--tng-neon-1);
+    transform: scale(1.06);
+  }
+  100% {
+    text-shadow:
+      0 0 6px var(--tng-neon-1),
+      0 0 14px var(--tng-neon-1),
+      0 0 40px var(--tng-neon-1),
+      0 0 80px color-mix(in srgb, var(--tng-neon-1) 50%, transparent);
+    transform: scale(1);
+  }
+}
+
+/* Neon flicker */
+.tng-digit--flicker {
+  animation: tng-flicker 4s infinite alternate;
+}
+
+.tng-digit--flicker:nth-child(2) {
+  animation-delay: 1.2s;
+}
+
+@keyframes tng-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    opacity: 1;
+    text-shadow:
+      0 0 6px var(--tng-neon-1),
+      0 0 14px var(--tng-neon-1),
+      0 0 40px var(--tng-neon-1),
+      0 0 80px color-mix(in srgb, var(--tng-neon-1) 50%, transparent);
+  }
+  20%, 24%, 55% {
+    opacity: 0.85;
+    text-shadow:
+      0 0 4px var(--tng-neon-1),
+      0 0 8px var(--tng-neon-1);
+  }
+}
+
+/* Reflection below digits */
+.tng-unit__reflection {
+  width: 80%;
+  height: 30px;
+  margin-top: 4px;
+  background: radial-gradient(ellipse at center, var(--tng-neon-1), transparent 70%);
+  opacity: 0.12;
+  filter: blur(8px);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Label */
+.tng-unit__label {
+  display: block;
+  margin-top: 12px;
+  font-family: var(--tng-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--tng-label-color);
+}
+
+/* ---------- Separators ---------- */
+.tng-sep {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0 6px;
+  height: calc(var(--tng-neon-size) * 1.4);
+  align-self: flex-start;
+}
+
+.tng-sep__dot {
+  display: block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--tng-sep-color);
+  box-shadow: 0 0 6px var(--tng-sep-color), 0 0 18px var(--tng-sep-color);
+  animation: tng-sep-blink 1s infinite;
+}
+
+.tng-sep__dot:nth-child(2) {
+  animation-delay: 0.5s;
+}
+
+@keyframes tng-sep-blink {
+  0%, 49% { opacity: 1; }
+  50%, 100% { opacity: 0.25; }
+}
+
+.tng-sep__dash {
+  display: block;
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  background: var(--tng-sep-color);
+  box-shadow: 0 0 6px var(--tng-sep-color);
+}
+
+.tng-sep__slash {
+  font-family: var(--tng-heading-ff);
+  font-size: calc(var(--tng-neon-size) * 0.6);
+  color: var(--tng-sep-color);
+  text-shadow: 0 0 8px var(--tng-sep-color);
+  opacity: 0.5;
+}
+
+/* ---------- Expired ---------- */
+.tng-expired {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--tng-card-bg);
+  border-radius: var(--tng-card-radius);
+  z-index: 5;
+}
+
+.tng-expired__msg {
+  font-family: var(--tng-heading-ff);
+  font-weight: var(--tng-heading-fw);
+  font-size: clamp(20px, 3vw, 32px);
+  color: var(--tng-neon-1);
+  text-shadow: 0 0 10px var(--tng-neon-1), 0 0 30px var(--tng-neon-1);
+  text-align: center;
+}
+
+/* ---------- CTA ---------- */
+.tng-cta {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.tng-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--tng-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 40px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.tng-cta__btn--neon {
+  background: transparent;
+  color: var(--tng-neon-1);
+  border: 2px solid var(--tng-neon-1);
+  box-shadow: 0 0 10px var(--tng-neon-1), inset 0 0 10px color-mix(in srgb, var(--tng-neon-1) 15%, transparent);
+}
+
+.tng-cta__btn--neon:hover {
+  background: var(--tng-neon-1);
+  color: var(--tng-bg);
+  box-shadow: 0 0 20px var(--tng-neon-1), 0 0 50px color-mix(in srgb, var(--tng-neon-1) 40%, transparent);
+}
+
+.tng-cta__btn--outline {
+  background: transparent;
+  color: var(--tng-neon-2);
+  border: 2px solid var(--tng-neon-2);
+}
+
+.tng-cta__btn--outline:hover {
+  background: var(--tng-neon-2);
+  color: var(--tng-bg);
+}
+
+.tng-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-tng-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-tng-reveal].tng-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 680px) {
+  .tng-timer__card {
+    flex-wrap: wrap;
+    gap: 16px 0;
+    padding: 28px 16px 24px;
+    justify-content: center;
+  }
+
+  .tng-unit {
+    min-width: 40%;
+    padding: 0 8px;
+  }
+
+  .tng-sep {
+    display: none;
+  }
+
+  .tng-header {
+    margin-bottom: 32px;
+  }
+}
+
+@media (max-width: 420px) {
+  .tng-digit {
+    width: calc(var(--tng-neon-size) * 0.8);
+    height: calc(var(--tng-neon-size) * 1.1);
+    font-size: calc(var(--tng-neon-size) * 0.65);
+  }
+}

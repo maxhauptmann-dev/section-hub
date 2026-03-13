@@ -1,0 +1,52 @@
+{
+  "id": "timer-orbit-rings",
+  "name": "SS - Orbit Rings Timer",
+  "description": "Sci-fi dashboard countdown with animated orbital SVG rings rotating around each time unit. Features animated ring progress, particle trails, and a futuristic HUD aesthetic. Each ring shows remaining time as a circular progress arc with staggered rotation speeds.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 22,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Timer",
+    "Countdown",
+    "Orbit",
+    "Rings",
+    "Sci-Fi",
+    "Dashboard",
+    "SVG",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#050a18",
+  "previews": [
+    {
+      "src": "/previews/timer-orbit-rings/default.webp",
+      "alt": "Timer Orbit Rings - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

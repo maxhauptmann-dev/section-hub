@@ -1,0 +1,545 @@
+{% comment %}
+  Section Hub – Timer Orbit Rings v1.0
+  Sci-fi dashboard countdown with animated orbital SVG rings.
+  Each time unit is inside a rotating ring progress arc.
+  Prefix: tor-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+  assign ring_size = section.settings.ring_size
+  assign stroke_w = section.settings.stroke_width
+  assign show_outer = section.settings.show_outer_ring
+  assign show_particles = section.settings.show_particles
+  assign show_labels = section.settings.show_labels
+  assign expired_msg = section.settings.expired_message
+  assign hide_zero_units = section.settings.hide_zero_units
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .tor-wrap--{{ section.id }} {
+    --tor-bg: {{ section.settings.bg_color }};
+    --tor-accent-1: {{ section.settings.accent_color_1 }};
+    --tor-accent-2: {{ section.settings.accent_color_2 }};
+    --tor-accent-3: {{ section.settings.accent_color_3 }};
+    --tor-accent-4: {{ section.settings.accent_color_4 }};
+    --tor-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --tor-heading-fw: {{ hf.weight }};
+    --tor-heading-fs: {{ hf.style }};
+    --tor-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --tor-body-fw: {{ bf.weight }};
+    --tor-body-fs: {{ bf.style }};
+    --tor-heading-color: {{ section.settings.heading_color }};
+    --tor-text-color: {{ section.settings.text_color }};
+    --tor-number-color: {{ section.settings.number_color }};
+    --tor-label-color: {{ section.settings.label_color }};
+    --tor-track-color: {{ section.settings.track_color }};
+    --tor-ring-size: {{ ring_size }}px;
+    --tor-stroke: {{ stroke_w }};
+    --tor-py: {{ py }}px;
+    --tor-px: {{ px }}px;
+  }
+</style>
+
+<section class="tor-wrap tor-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="tor-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="tor-header" data-tor-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="tor-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="tor-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="tor-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="tor-timer"
+         data-tor-reveal
+         data-tor-timer
+         data-target-year="{{ section.settings.target_year }}"
+         data-target-month="{{ section.settings.target_month }}"
+         data-target-day="{{ section.settings.target_day }}"
+         data-target-hour="{{ section.settings.target_hour }}"
+         data-target-minute="{{ section.settings.target_minute }}"
+         data-hide-zero="{{ hide_zero_units }}"
+         data-expired-msg="{{ expired_msg }}">
+
+      <div class="tor-rings">
+        {%- assign unit_names = 'days,hours,minutes,seconds' | split: ',' -%}
+        {%- assign unit_labels_ids = 'label_days,label_hours,label_minutes,label_seconds' | split: ',' -%}
+        {%- assign unit_maxes = '365,24,60,60' | split: ',' -%}
+        {%- assign accent_vars = 'var(--tor-accent-1),var(--tor-accent-2),var(--tor-accent-3),var(--tor-accent-4)' | split: ',' -%}
+
+        {%- for i in (0..3) -%}
+          {%- assign uname = unit_names[i] -%}
+          {%- assign umax = unit_maxes[i] -%}
+          {%- assign accent_v = accent_vars[i] -%}
+          {%- assign label_id = unit_labels_ids[i] -%}
+
+          <div class="tor-ring-unit" data-tor-unit="{{ uname }}" data-max="{{ umax }}">
+            <svg class="tor-ring-svg" viewBox="0 0 200 200" width="{{ ring_size }}" height="{{ ring_size }}">
+              <defs>
+                <linearGradient id="tor-grad-{{ section.id }}-{{ i }}" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="{{ accent_v }}" />
+                  <stop offset="100%" stop-color="{{ accent_v }}" stop-opacity="0.4" />
+                </linearGradient>
+              </defs>
+              {%- comment -%} Track ring {%- endcomment -%}
+              <circle class="tor-ring__track"
+                      cx="100" cy="100"
+                      r="88"
+                      fill="none"
+                      stroke="var(--tor-track-color)"
+                      stroke-width="{{ stroke_w }}"
+                      opacity="0.3" />
+              {%- comment -%} Progress arc {%- endcomment -%}
+              <circle class="tor-ring__progress"
+                      data-tor-progress
+                      cx="100" cy="100"
+                      r="88"
+                      fill="none"
+                      stroke="url(#tor-grad-{{ section.id }}-{{ i }})"
+                      stroke-width="{{ stroke_w }}"
+                      stroke-linecap="round"
+                      stroke-dasharray="553"
+                      stroke-dashoffset="553"
+                      transform="rotate(-90 100 100)" />
+              {%- if show_outer -%}
+                <circle class="tor-ring__outer"
+                        cx="100" cy="100"
+                        r="96"
+                        fill="none"
+                        stroke="{{ accent_v }}"
+                        stroke-width="1"
+                        opacity="0.15"
+                        stroke-dasharray="4 8" />
+              {%- endif -%}
+            </svg>
+
+            {%- if show_particles -%}
+              <div class="tor-ring__particle" data-tor-particle aria-hidden="true"
+                   style="--tor-p-color: {{ accent_v }};"></div>
+            {%- endif -%}
+
+            <div class="tor-ring__content">
+              <span class="tor-ring__number" data-tor-number>0</span>
+              {%- if show_labels -%}
+                <span class="tor-ring__label">{{ section.settings[label_id] }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <div class="tor-expired" data-tor-expired style="display:none;">
+        <p class="tor-expired__msg"></p>
+      </div>
+    </div>
+
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <div class="tor-cta" data-tor-reveal>
+        <a href="{{ section.settings.cta_url }}" class="tor-cta__btn tor-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('.tor-wrap--{{ section.id }}');
+  if(!root) return;
+  var timer = root.querySelector('[data-tor-timer]');
+  if(!timer) return;
+
+  var y = parseInt(timer.dataset.targetYear) || 2026;
+  var mo = parseInt(timer.dataset.targetMonth) || 1;
+  var d = parseInt(timer.dataset.targetDay) || 1;
+  var h = parseInt(timer.dataset.targetHour) || 0;
+  var mi = parseInt(timer.dataset.targetMinute) || 0;
+  var hideZero = timer.dataset.hideZero === 'true';
+  var expMsg = timer.dataset.expiredMsg || 'Time is up!';
+  var target = new Date(y, mo - 1, d, h, mi, 0).getTime();
+
+  var unitEls = root.querySelectorAll('[data-tor-unit]');
+  var CIRCUMFERENCE = 2 * Math.PI * 88;
+
+  function updateUnit(unitEl, value, max){
+    var numEl = unitEl.querySelector('[data-tor-number]');
+    var prog = unitEl.querySelector('[data-tor-progress]');
+    var particle = unitEl.querySelector('[data-tor-particle]');
+
+    if(numEl) numEl.textContent = value;
+    if(prog){
+      var frac = value / max;
+      var offset = CIRCUMFERENCE * (1 - frac);
+      prog.style.strokeDashoffset = offset;
+    }
+    if(particle){
+      var angle = (value / max) * 360 - 90;
+      var rad = angle * Math.PI / 180;
+      var px = 50 + 44 * Math.cos(rad);
+      var py = 50 + 44 * Math.sin(rad);
+      particle.style.left = px + '%';
+      particle.style.top = py + '%';
+    }
+  }
+
+  var expiredEl = root.querySelector('[data-tor-expired]');
+  var expiredMsg = root.querySelector('[data-tor-expired] .tor-expired__msg');
+
+  function tick(){
+    var now = Date.now();
+    var diff = target - now;
+
+    if(diff <= 0){
+      if(expiredEl) expiredEl.style.display = 'flex';
+      if(expiredMsg) expiredMsg.textContent = expMsg;
+      var rings = timer.querySelector('.tor-rings');
+      if(rings) rings.style.display = 'none';
+      return;
+    }
+
+    var secs = Math.floor(diff / 1000);
+    var days = Math.floor(secs / 86400); secs -= days * 86400;
+    var hrs = Math.floor(secs / 3600); secs -= hrs * 3600;
+    var mins = Math.floor(secs / 60); secs -= mins * 60;
+
+    var vals = [days, hrs, mins, secs];
+    unitEls.forEach(function(u, i){
+      var max = parseInt(u.dataset.max) || 60;
+      updateUnit(u, vals[i], max);
+    });
+
+    if(hideZero && days === 0){
+      unitEls[0].style.display = 'none';
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  var reveals = root.querySelectorAll('[data-tor-reveal]');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('tor-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(function(el){ obs.observe(el); });
+
+  tick();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Orbit Timer",
+  "tag": "section",
+  "class": "section-orbit-rings-timer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Launching Soon"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Countdown to Launch"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Our next big thing is almost here. Be the first to experience something extraordinary."
+    },
+    {
+      "type": "header",
+      "content": "Target Date"
+    },
+    {
+      "type": "range",
+      "id": "target_year",
+      "label": "Year",
+      "min": 2025,
+      "max": 2030,
+      "step": 1,
+      "default": 2026
+    },
+    {
+      "type": "range",
+      "id": "target_month",
+      "label": "Month",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "target_day",
+      "label": "Day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "target_hour",
+      "label": "Hour",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "target_minute",
+      "label": "Minute",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "label_days",
+      "label": "Days Label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours Label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes Label",
+      "default": "Minutes"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds Label",
+      "default": "Seconds"
+    },
+    {
+      "type": "text",
+      "id": "expired_message",
+      "label": "Expired Message",
+      "default": "We have launched!"
+    },
+    {
+      "type": "header",
+      "content": "Ring Settings"
+    },
+    {
+      "type": "range",
+      "id": "ring_size",
+      "label": "Ring Size",
+      "min": 100,
+      "max": 220,
+      "step": 5,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Stroke Width",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_outer_ring",
+      "label": "Show Outer Ring",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_particles",
+      "label": "Show Particle Dot",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_zero_units",
+      "label": "Hide Zero Days",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#050a18"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_1",
+      "label": "Days Ring Color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Hours Ring Color",
+      "default": "#06b6d4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_3",
+      "label": "Minutes Ring Color",
+      "default": "#10b981"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_4",
+      "label": "Seconds Ring Color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "number_color",
+      "label": "Number Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "track_color",
+      "label": "Track Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "Get Notified"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "filled"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Orbit Timer"
+    }
+  ]
+}
+{% endschema %}

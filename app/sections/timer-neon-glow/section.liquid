@@ -1,0 +1,573 @@
+{% comment %}
+  Section Hub – Timer Neon Glow v1.0
+  Cyberpunk neon countdown timer with pulsing glow tubes.
+  Each digit glows like a neon sign with flicker & reflection.
+  Prefix: tng-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+  assign neon_size = section.settings.neon_size
+  assign show_flicker = section.settings.show_flicker
+  assign show_reflection = section.settings.show_reflection
+  assign show_separators = section.settings.show_separators
+  assign separator_style = section.settings.separator_style
+  assign show_labels = section.settings.show_labels
+  assign expired_msg = section.settings.expired_message
+  assign hide_zero_units = section.settings.hide_zero_units
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .tng-wrap--{{ section.id }} {
+    --tng-bg: {{ section.settings.bg_color }};
+    --tng-neon-1: {{ section.settings.neon_color_1 }};
+    --tng-neon-2: {{ section.settings.neon_color_2 }};
+    --tng-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --tng-heading-fw: {{ hf.weight }};
+    --tng-heading-fs: {{ hf.style }};
+    --tng-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --tng-body-fw: {{ bf.weight }};
+    --tng-body-fs: {{ bf.style }};
+    --tng-heading-color: {{ section.settings.heading_color }};
+    --tng-text-color: {{ section.settings.text_color }};
+    --tng-label-color: {{ section.settings.label_color }};
+    --tng-sep-color: {{ section.settings.separator_color }};
+    --tng-neon-size: {{ neon_size }}px;
+    --tng-card-bg: {{ section.settings.card_bg }};
+    --tng-card-border: {{ section.settings.card_border }};
+    --tng-card-radius: {{ section.settings.card_radius }}px;
+    --tng-py: {{ py }}px;
+    --tng-px: {{ px }}px;
+  }
+</style>
+
+<section class="tng-wrap tng-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="tng-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="tng-header" data-tng-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="tng-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="tng-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="tng-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Timer display {%- endcomment -%}
+    <div class="tng-timer"
+         data-tng-reveal
+         data-tng-timer
+         data-target-year="{{ section.settings.target_year }}"
+         data-target-month="{{ section.settings.target_month }}"
+         data-target-day="{{ section.settings.target_day }}"
+         data-target-hour="{{ section.settings.target_hour }}"
+         data-target-minute="{{ section.settings.target_minute }}"
+         data-hide-zero="{{ hide_zero_units }}"
+         data-expired-msg="{{ expired_msg }}">
+
+      <div class="tng-timer__card">
+
+        {%- comment -%} Days {%- endcomment -%}
+        <div class="tng-unit" data-tng-unit="days">
+          <div class="tng-unit__digits">
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="0">0</span>
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="1">0</span>
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="2">0</span>
+          </div>
+          {%- if show_reflection -%}<div class="tng-unit__reflection" aria-hidden="true"></div>{%- endif -%}
+          {%- if show_labels -%}<span class="tng-unit__label">{{ section.settings.label_days }}</span>{%- endif -%}
+        </div>
+
+        {%- if show_separators -%}
+          <div class="tng-sep" aria-hidden="true">
+            {%- if separator_style == 'colon' -%}
+              <span class="tng-sep__dot"></span><span class="tng-sep__dot"></span>
+            {%- elsif separator_style == 'dash' -%}
+              <span class="tng-sep__dash"></span>
+            {%- elsif separator_style == 'slash' -%}
+              <span class="tng-sep__slash">/</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Hours {%- endcomment -%}
+        <div class="tng-unit" data-tng-unit="hours">
+          <div class="tng-unit__digits">
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="0">0</span>
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="1">0</span>
+          </div>
+          {%- if show_reflection -%}<div class="tng-unit__reflection" aria-hidden="true"></div>{%- endif -%}
+          {%- if show_labels -%}<span class="tng-unit__label">{{ section.settings.label_hours }}</span>{%- endif -%}
+        </div>
+
+        {%- if show_separators -%}
+          <div class="tng-sep" aria-hidden="true">
+            {%- if separator_style == 'colon' -%}
+              <span class="tng-sep__dot"></span><span class="tng-sep__dot"></span>
+            {%- elsif separator_style == 'dash' -%}
+              <span class="tng-sep__dash"></span>
+            {%- elsif separator_style == 'slash' -%}
+              <span class="tng-sep__slash">/</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Minutes {%- endcomment -%}
+        <div class="tng-unit" data-tng-unit="minutes">
+          <div class="tng-unit__digits">
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="0">0</span>
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="1">0</span>
+          </div>
+          {%- if show_reflection -%}<div class="tng-unit__reflection" aria-hidden="true"></div>{%- endif -%}
+          {%- if show_labels -%}<span class="tng-unit__label">{{ section.settings.label_minutes }}</span>{%- endif -%}
+        </div>
+
+        {%- if show_separators -%}
+          <div class="tng-sep" aria-hidden="true">
+            {%- if separator_style == 'colon' -%}
+              <span class="tng-sep__dot"></span><span class="tng-sep__dot"></span>
+            {%- elsif separator_style == 'dash' -%}
+              <span class="tng-sep__dash"></span>
+            {%- elsif separator_style == 'slash' -%}
+              <span class="tng-sep__slash">/</span>
+            {%- endif -%}
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Seconds {%- endcomment -%}
+        <div class="tng-unit" data-tng-unit="seconds">
+          <div class="tng-unit__digits">
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="0">0</span>
+            <span class="tng-digit{% if show_flicker %} tng-digit--flicker{% endif %}" data-tng-d="1">0</span>
+          </div>
+          {%- if show_reflection -%}<div class="tng-unit__reflection" aria-hidden="true"></div>{%- endif -%}
+          {%- if show_labels -%}<span class="tng-unit__label">{{ section.settings.label_seconds }}</span>{%- endif -%}
+        </div>
+
+      </div>
+
+      {%- comment -%} Expired overlay {%- endcomment -%}
+      <div class="tng-expired" data-tng-expired style="display:none;">
+        <p class="tng-expired__msg"></p>
+      </div>
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <div class="tng-cta" data-tng-reveal>
+        <a href="{{ section.settings.cta_url }}" class="tng-cta__btn tng-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('.tng-wrap--{{ section.id }}');
+  if(!root) return;
+  var timer = root.querySelector('[data-tng-timer]');
+  if(!timer) return;
+
+  var y = parseInt(timer.dataset.targetYear) || 2026;
+  var mo = parseInt(timer.dataset.targetMonth) || 1;
+  var d = parseInt(timer.dataset.targetDay) || 1;
+  var h = parseInt(timer.dataset.targetHour) || 0;
+  var mi = parseInt(timer.dataset.targetMinute) || 0;
+  var hideZero = timer.dataset.hideZero === 'true';
+  var expMsg = timer.dataset.expiredMsg || 'Time is up!';
+  var target = new Date(y, mo - 1, d, h, mi, 0).getTime();
+
+  var units = {
+    days: root.querySelector('[data-tng-unit="days"]'),
+    hours: root.querySelector('[data-tng-unit="hours"]'),
+    minutes: root.querySelector('[data-tng-unit="minutes"]'),
+    seconds: root.querySelector('[data-tng-unit="seconds"]')
+  };
+
+  var expiredEl = root.querySelector('[data-tng-expired]');
+  var expiredMsg = root.querySelector('[data-tng-expired] .tng-expired__msg');
+
+  function setDigits(unitEl, value, padLen){
+    if(!unitEl) return;
+    var str = String(value).padStart(padLen, '0');
+    var digits = unitEl.querySelectorAll('[data-tng-d]');
+    for(var i = 0; i < digits.length; i++){
+      var ch = str[str.length - digits.length + i] || '0';
+      if(digits[i].textContent !== ch){
+        digits[i].textContent = ch;
+        digits[i].classList.remove('tng-digit--pulse');
+        void digits[i].offsetWidth;
+        digits[i].classList.add('tng-digit--pulse');
+      }
+    }
+  }
+
+  function tick(){
+    var now = Date.now();
+    var diff = target - now;
+
+    if(diff <= 0){
+      if(expiredEl){ expiredEl.style.display = 'flex'; }
+      if(expiredMsg){ expiredMsg.textContent = expMsg; }
+      var card = timer.querySelector('.tng-timer__card');
+      if(card) card.style.display = 'none';
+      return;
+    }
+
+    var secs = Math.floor(diff / 1000);
+    var days = Math.floor(secs / 86400); secs -= days * 86400;
+    var hrs = Math.floor(secs / 3600); secs -= hrs * 3600;
+    var mins = Math.floor(secs / 60); secs -= mins * 60;
+
+    setDigits(units.days, days, 3);
+    setDigits(units.hours, hrs, 2);
+    setDigits(units.minutes, mins, 2);
+    setDigits(units.seconds, secs, 2);
+
+    if(hideZero && days === 0 && units.days){
+      units.days.style.display = 'none';
+      var sep = units.days.nextElementSibling;
+      if(sep && sep.classList.contains('tng-sep')) sep.style.display = 'none';
+    }
+
+    requestAnimationFrame(tick);
+  }
+
+  /* Reveal */
+  var reveals = root.querySelectorAll('[data-tng-reveal]');
+  var obs = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){
+        e.target.classList.add('tng-visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.15 });
+  reveals.forEach(function(el){ obs.observe(el); });
+
+  tick();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Neon Glow Timer",
+  "tag": "section",
+  "class": "section-neon-glow-timer",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Limited Time"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Flash Sale Ends Soon"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Don't miss out on our biggest discounts of the year. Grab your favorites before time runs out."
+    },
+    {
+      "type": "header",
+      "content": "Target Date"
+    },
+    {
+      "type": "range",
+      "id": "target_year",
+      "label": "Year",
+      "min": 2025,
+      "max": 2030,
+      "step": 1,
+      "default": 2026
+    },
+    {
+      "type": "range",
+      "id": "target_month",
+      "label": "Month",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "range",
+      "id": "target_day",
+      "label": "Day",
+      "min": 1,
+      "max": 31,
+      "step": 1,
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "target_hour",
+      "label": "Hour",
+      "min": 0,
+      "max": 23,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "target_minute",
+      "label": "Minute",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Labels"
+    },
+    {
+      "type": "text",
+      "id": "label_days",
+      "label": "Days Label",
+      "default": "Days"
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours Label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes Label",
+      "default": "Minutes"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds Label",
+      "default": "Seconds"
+    },
+    {
+      "type": "text",
+      "id": "expired_message",
+      "label": "Expired Message",
+      "default": "This offer has ended!"
+    },
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "range",
+      "id": "neon_size",
+      "label": "Digit Size",
+      "min": 40,
+      "max": 100,
+      "step": 2,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_labels",
+      "label": "Show Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_separators",
+      "label": "Show Separators",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "separator_style",
+      "label": "Separator Style",
+      "options": [
+        { "value": "colon", "label": "Colon" },
+        { "value": "dash", "label": "Dash" },
+        { "value": "slash", "label": "Slash" }
+      ],
+      "default": "colon"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_flicker",
+      "label": "Neon Flicker",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reflection",
+      "label": "Show Reflection",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hide_zero_units",
+      "label": "Hide Zero Days",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "neon_color_1",
+      "label": "Neon Color Primary",
+      "default": "#ff2d55"
+    },
+    {
+      "type": "color",
+      "id": "neon_color_2",
+      "label": "Neon Color Secondary",
+      "default": "#00f0ff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#8892a4"
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#5a6478"
+    },
+    {
+      "type": "color",
+      "id": "separator_color",
+      "label": "Separator Color",
+      "default": "#ff2d55"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#12121f"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card Border",
+      "default": "#1e1e35"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "neon", "label": "Neon Glow" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "neon"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Neon Glow Timer"
+    }
+  ]
+}
+{% endschema %}

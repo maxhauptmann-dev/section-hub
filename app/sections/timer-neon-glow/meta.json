@@ -1,0 +1,51 @@
+{
+  "id": "timer-neon-glow",
+  "name": "SS - Neon Glow Timer",
+  "description": "Cyberpunk-inspired neon countdown timer with realistic glowing tube effects. Each digit pulses with customizable neon colors, flicker animation, and reflection effects. Perfect for flash sales, event launches, and limited-time offers with an electric nightclub aesthetic.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 21,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Timer",
+    "Countdown",
+    "Neon",
+    "Glow",
+    "Cyberpunk",
+    "Flash Sale",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a1a",
+  "previews": [
+    {
+      "src": "/previews/timer-neon-glow/default.webp",
+      "alt": "Timer Neon Glow - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
