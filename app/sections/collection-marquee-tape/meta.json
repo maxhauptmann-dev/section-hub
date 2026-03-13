@@ -25,5 +25,12 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "previewColor": "#0e0e14"
+  "author": "Section Hub",
+  "previewColor": "#0e0e14",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13"
 }
