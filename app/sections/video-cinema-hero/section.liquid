@@ -1,7 +1,7 @@
 {% comment %}
   Section Hub – Video Cinema Hero v1.0
   Full-bleed cinematic video hero with floating content card,
-  chapter markers, letterbox bars, and scroll-reveal.
+  letterbox bars, and scroll-reveal.
   Supports Shopify video, YouTube/Vimeo, MP4 URL.
   Prefix: vch-
 {% endcomment %}
@@ -196,22 +196,8 @@
     </button>
   {%- endif -%}
 
-  {%- comment -%} Chapter markers {%- endcomment -%}
-  {%- if section.blocks.size > 0 -%}
-    <div class="vch-chapters" data-vch-reveal>
-      {%- for block in section.blocks -%}
-        <div class="vch-chapter{% if forloop.first %} vch-chapter--active{% endif %}" data-vch-chapter="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
-          <div class="vch-chapter__dot"></div>
-          {%- if block.settings.label != blank -%}
-            <span class="vch-chapter__label">{{ block.settings.label }}</span>
-          {%- endif -%}
-        </div>
-      {%- endfor -%}
-    </div>
-  {%- endif -%}
-
   {%- comment -%} Scroll indicator {%- endcomment -%}
-  {%- if show_scroll and section.blocks.size == 0 -%}
+  {%- if show_scroll -%}
     <div class="vch-scroll-hint" data-vch-reveal>
       <span class="vch-scroll-hint__label">Scroll</span>
       <div class="vch-scroll-hint__line"></div>
@@ -660,20 +646,6 @@
       "default": true
     }
   ],
-  "blocks": [
-    {
-      "type": "chapter",
-      "name": "Chapter Marker",
-      "settings": [
-        {
-          "type": "text",
-          "id": "label",
-          "label": "Chapter label",
-          "default": "Chapter"
-        }
-      ]
-    }
-  ],
   "presets": [
     {
       "name": "SS - Video Cinema Hero",
@@ -689,25 +661,7 @@
         "autoplay_video": true,
         "show_glow": true,
         "show_scroll_hint": true
-      },
-      "blocks": [
-        {
-          "type": "chapter",
-          "settings": { "label": "Intro" }
-        },
-        {
-          "type": "chapter",
-          "settings": { "label": "Craft" }
-        },
-        {
-          "type": "chapter",
-          "settings": { "label": "Vision" }
-        },
-        {
-          "type": "chapter",
-          "settings": { "label": "Finale" }
-        }
-      ]
+      }
     }
   ]
 }

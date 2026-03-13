@@ -1,7 +1,7 @@
 {
   "id": "video-cinema-hero",
   "name": "SS - Video Cinema Hero",
-  "description": "Full-bleed cinematic video hero section with floating glassmorphism content card, chapter timeline markers, cinematic letterbox bars, and dramatic scroll-reveal animation. Supports Shopify hosted video, YouTube/Vimeo embeds, and MP4 URLs. Features autoplay with IntersectionObserver, muted background mode, custom poster, overlay tint control, content positioning (6 positions), object-fit toggle, section height control, mobile-specific settings, and ambient glow. 60+ customization options.",
+  "description": "Full-bleed cinematic video hero section with floating glassmorphism content card, cinematic letterbox bars, and dramatic scroll-reveal animation. Supports Shopify hosted video, YouTube/Vimeo embeds, and MP4 URLs. Features autoplay with IntersectionObserver, muted background mode, custom poster, overlay tint control, content positioning (9 positions), object-fit toggle, section height control, mobile-specific settings, and ambient glow. 60+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
