@@ -113,20 +113,7 @@
           {%- if has_shopify_video -%}
             {%- comment -%} Shopify hosted video {%- endcomment -%}
             {%- assign sv = block.settings.shopify_video -%}
-            {%- assign sv_poster = '' -%}
-            {%- if block.settings.poster != blank -%}
-              {%- assign sv_poster = block.settings.poster | image_url: width: 1200 -%}
-            {%- elsif sv.preview_image != blank -%}
-              {%- assign sv_poster = sv.preview_image | image_url: width: 1200 -%}
-            {%- endif -%}
-            <div class="shvp-video__shopify-wrap" data-shvp-shopify-wrap>
-              {%- if sv_poster != '' -%}
-                <img class="shvp-video__poster" src="{{ sv_poster }}" alt="{{ block.settings.content_title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
-              {%- endif -%}
-              <div class="shvp-video__shopify-player" data-shvp-shopify-player style="{% if sv_poster != '' %}display:none;{% endif %}">
-                {{ sv | video_tag: class: 'shvp-video__el', playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata', data-shvp-video: '' }}
-              </div>
-            </div>
+            {{ sv | video_tag: class: 'shvp-video__el', playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata' }}
 
           {%- elsif has_embed_video -%}
             {%- comment -%} YouTube / Vimeo {%- endcomment -%}
@@ -315,7 +302,7 @@
         p.style.display = 'none';
         p.classList.remove('shvp-split--active');
         p.classList.add('shvp-split--hidden');
-        var v = p.querySelector('[data-shvp-video]') || p.querySelector('[data-shvp-shopify-wrap] video');
+        var v = p.querySelector('video');
         if (v) { v.pause(); }
         var ip = p.querySelector('[data-shvp-icon-play]');
         var ipa = p.querySelector('[data-shvp-icon-pause]');
@@ -356,7 +343,7 @@
       });
     });
 
-    /* Play/pause — handles mp4, Shopify hosted, and YouTube/Vimeo */
+    /* Play/pause — handles mp4/Shopify video and YouTube/Vimeo */
     var playBtns = section.querySelectorAll('[data-shvp-play]');
     playBtns.forEach(function(btn) {
       btn.addEventListener('click', function() {
@@ -365,48 +352,7 @@
         var iconPlay = btn.querySelector('[data-shvp-icon-play]');
         var iconPause = btn.querySelector('[data-shvp-icon-pause]');
 
-        /* MP4 video */
-        var video = pair.querySelector('[data-shvp-video]');
-        if (video) {
-          if (video.paused) {
-            video.play();
-            if (iconPlay) iconPlay.style.display = 'none';
-            if (iconPause) iconPause.style.display = '';
-          } else {
-            video.pause();
-            if (iconPlay) iconPlay.style.display = '';
-            if (iconPause) iconPause.style.display = 'none';
-          }
-          return;
-        }
-
-        /* Shopify hosted video */
-        var shopifyWrap = pair.querySelector('[data-shvp-shopify-wrap]');
-        if (shopifyWrap) {
-          var poster = shopifyWrap.querySelector('.shvp-video__poster');
-          var playerWrap = shopifyWrap.querySelector('[data-shvp-shopify-player]');
-          var sv = shopifyWrap.querySelector('video');
-          if (sv) {
-            if (poster && poster.style.display !== 'none') {
-              poster.style.display = 'none';
-              if (playerWrap) playerWrap.style.display = '';
-              sv.play();
-              if (iconPlay) iconPlay.style.display = 'none';
-              if (iconPause) iconPause.style.display = '';
-            } else if (sv.paused) {
-              sv.play();
-              if (iconPlay) iconPlay.style.display = 'none';
-              if (iconPause) iconPause.style.display = '';
-            } else {
-              sv.pause();
-              if (iconPlay) iconPlay.style.display = '';
-              if (iconPause) iconPause.style.display = 'none';
-            }
-          }
-          return;
-        }
-
-        /* YouTube / Vimeo embed */
+        /* YouTube / Vimeo embed — check first since it has no <video> */
         var embedWrap = pair.querySelector('[data-shvp-embed]');
         if (embedWrap) {
           var iframeWrap = embedWrap.querySelector('[data-shvp-iframe-wrap]');
@@ -435,13 +381,28 @@
           }
           return;
         }
+
+        /* MP4 or Shopify hosted video — both render as <video> */
+        var video = pair.querySelector('video');
+        if (video) {
+          if (video.paused) {
+            video.play().catch(function(){});
+            if (iconPlay) iconPlay.style.display = 'none';
+            if (iconPause) iconPause.style.display = '';
+          } else {
+            video.pause();
+            if (iconPlay) iconPlay.style.display = '';
+            if (iconPause) iconPause.style.display = 'none';
+          }
+          return;
+        }
       });
     });
 
     /* Progress ring — works for mp4 and Shopify video */
     function updateRings() {
       pairs.forEach(function(pair) {
-        var video = pair.querySelector('[data-shvp-video]') || pair.querySelector('[data-shvp-shopify-wrap] video');
+        var video = pair.querySelector('video');
         var ring = pair.querySelector('[data-shvp-ring]');
         if (!video || !ring || video.paused || !video.duration) return;
 
