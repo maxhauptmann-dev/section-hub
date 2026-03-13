@@ -153,7 +153,7 @@
 
     var currentIdx = 0;
     var autoplayOn = wrap.getAttribute('data-ils-autoplay') === 'true';
-    var speed = parseInt(wrap.getAttribute('data-ils-speed')) || 5000;
+    var speed = (parseInt(wrap.getAttribute('data-ils-speed')) || 5) * 1000; // Convert seconds to ms
     var transStyle = wrap.getAttribute('data-ils-transition') || 'fade';
     var timer = null;
 
@@ -354,11 +354,11 @@
       "type": "range",
       "id": "autoplay_speed",
       "label": "Autoplay interval",
-      "min": 2000,
-      "max": 10000,
-      "step": 500,
-      "default": 5000,
-      "unit": "ms"
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 5,
+      "unit": "s"
     },
     {
       "type": "checkbox",
@@ -488,7 +488,7 @@
         "show_dots": true,
         "show_counter": true,
         "autoplay": true,
-        "autoplay_speed": 5000,
+        "autoplay_speed": 5,
         "show_progress": true,
         "kenburns": true
       },
