@@ -1,0 +1,335 @@
+/* ============================================
+   SectionHub – Counter Flip Board  (cfb-)
+   Retro split-flap display counters
+   ============================================ */
+
+.cfb-wrap *,
+.cfb-wrap *::before,
+.cfb-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.cfb-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--cfb-bg);
+  padding: var(--cfb-py) var(--cfb-px);
+}
+
+.cfb-container {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.cfb-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.cfb-header__eyebrow {
+  display: inline-block;
+  font-family: var(--cfb-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cfb-accent);
+  margin-bottom: 12px;
+}
+
+.cfb-header__heading {
+  font-family: var(--cfb-heading-ff);
+  font-weight: var(--cfb-heading-fw);
+  font-style: var(--cfb-heading-fs);
+  font-size: clamp(26px, 3.5vw, 44px);
+  line-height: 1.15;
+  color: var(--cfb-heading-color);
+  margin: 0 0 14px;
+}
+
+.cfb-header__subtext {
+  font-family: var(--cfb-body-ff);
+  font-weight: var(--cfb-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--cfb-text-color);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Grid ---------- */
+.cfb-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--cfb-cols), 1fr);
+  gap: var(--cfb-gap);
+}
+
+/* ---------- Stat card ---------- */
+.cfb-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: var(--cfb-card-bg);
+  border: 1px solid var(--cfb-card-border);
+  border-radius: var(--cfb-card-radius);
+  padding: 32px 16px 28px;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+.cfb-stat:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+}
+
+.cfb-stat__icon {
+  margin-bottom: 16px;
+}
+
+.cfb-stat__icon img {
+  display: block;
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+}
+
+/* ---------- Board (flip panels container) ---------- */
+.cfb-stat__board {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  margin-bottom: 18px;
+  min-height: var(--cfb-digit-size);
+  perspective: 600px;
+}
+
+/* ---------- Individual panel ---------- */
+.cfb-panel {
+  position: relative;
+  width: var(--cfb-digit-size);
+  height: calc(var(--cfb-digit-size) * 1.3);
+  flex-shrink: 0;
+}
+
+.cfb-panel--symbol {
+  width: calc(var(--cfb-digit-size) * 0.5);
+}
+
+.cfb-panel__inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--cfb-panel-bg);
+  border: 1px solid var(--cfb-panel-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+/* Top & bottom halves */
+.cfb-panel__top,
+.cfb-panel__bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cfb-panel__top {
+  top: 0;
+  background: linear-gradient(180deg, var(--cfb-panel-bg) 0%, color-mix(in srgb, var(--cfb-panel-bg) 90%, #000) 100%);
+}
+
+.cfb-panel__bottom {
+  bottom: 0;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--cfb-panel-bg) 85%, #000) 0%, var(--cfb-panel-bg) 100%);
+}
+
+.cfb-panel__top .cfb-panel__char {
+  transform: translateY(50%);
+}
+
+.cfb-panel__bottom .cfb-panel__char {
+  transform: translateY(-50%);
+}
+
+.cfb-panel__char {
+  font-family: var(--cfb-heading-ff);
+  font-weight: var(--cfb-heading-fw);
+  font-size: calc(var(--cfb-digit-size) * 0.75);
+  line-height: 1;
+  color: var(--cfb-panel-text);
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+
+/* Center divider line */
+.cfb-panel__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 3;
+  transform: translateY(-50%);
+}
+
+.cfb-panel__line::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 1px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+/* Decorative screws */
+.cfb-panel__screw {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  z-index: 4;
+}
+
+.cfb-panel__screw--tl {
+  top: 4px;
+  left: 4px;
+}
+
+.cfb-panel__screw--tr {
+  top: 4px;
+  right: 4px;
+}
+
+/* ---------- Flip animation ---------- */
+.cfb-panel--flipping .cfb-panel__top {
+  animation: cfb-flip-top 0.2s ease-in forwards;
+}
+
+.cfb-panel--flipping .cfb-panel__bottom {
+  animation: cfb-flip-bottom 0.2s ease-out 0.1s forwards;
+}
+
+@keyframes cfb-flip-top {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-6deg); opacity: 0.7; }
+}
+
+@keyframes cfb-flip-bottom {
+  0% { transform: rotateX(6deg); opacity: 0.7; }
+  100% { transform: rotateX(0deg); opacity: 1; }
+}
+
+/* ---------- Label & desc ---------- */
+.cfb-stat__label {
+  font-family: var(--cfb-heading-ff);
+  font-weight: var(--cfb-heading-fw);
+  font-size: 15px;
+  color: var(--cfb-heading-color);
+  margin: 0 0 6px;
+}
+
+.cfb-stat__desc {
+  font-family: var(--cfb-body-ff);
+  font-weight: var(--cfb-body-fw);
+  font-size: 13px;
+  line-height: 1.55;
+  color: var(--cfb-text-color);
+  max-width: 220px;
+}
+
+/* ---------- CTA ---------- */
+.cfb-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.cfb-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--cfb-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.cfb-cta__btn--filled {
+  background: var(--cfb-accent);
+  color: #1a1a2e;
+  border: 2px solid var(--cfb-accent);
+}
+
+.cfb-cta__btn--filled:hover {
+  background: transparent;
+  color: var(--cfb-accent);
+}
+
+.cfb-cta__btn--outline {
+  background: transparent;
+  color: var(--cfb-accent);
+  border: 2px solid var(--cfb-accent);
+}
+
+.cfb-cta__btn--outline:hover {
+  background: var(--cfb-accent);
+  color: #1a1a2e;
+}
+
+.cfb-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-cfb-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-cfb-reveal].cfb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 999px) {
+  .cfb-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .cfb-grid {
+    grid-template-columns: 1fr;
+    max-width: 340px;
+    margin: 0 auto;
+  }
+
+  .cfb-header {
+    margin-bottom: 36px;
+  }
+
+  .cfb-stat {
+    padding: 24px 14px 22px;
+  }
+}

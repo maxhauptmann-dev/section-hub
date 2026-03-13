@@ -1,0 +1,607 @@
+{% comment %}
+  Section Hub – Counter Wave Bars v1.0
+  Animated bar chart with wave-like staggered rise.
+  Gradient-filled bars grow to target height on scroll.
+  Floating value labels, grid lines, glow effects.
+  Prefix: cwb-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign bar_height = section.settings.bar_max_height
+  assign bar_width = section.settings.bar_width
+  assign bar_gap = section.settings.bar_gap
+  assign bar_radius = section.settings.bar_radius
+  assign count_dur = section.settings.count_duration
+  assign stagger = section.settings.stagger_delay
+  assign show_grid = section.settings.show_grid_lines
+  assign show_labels = section.settings.show_value_labels
+  assign show_glow = section.settings.show_glow
+  assign grid_lines_count = section.settings.grid_lines_count
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .cwb-wrap--{{ section.id }} {
+    --cwb-bg: {{ section.settings.bg_color }};
+    --cwb-accent: {{ section.settings.accent_color }};
+    --cwb-accent-2: {{ section.settings.accent_color_2 }};
+    --cwb-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --cwb-heading-fw: {{ hf.weight }};
+    --cwb-heading-fs: {{ hf.style }};
+    --cwb-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --cwb-body-fw: {{ bf.weight }};
+    --cwb-body-fs: {{ bf.style }};
+    --cwb-heading-color: {{ section.settings.heading_color }};
+    --cwb-text-color: {{ section.settings.text_color }};
+    --cwb-bar-label-color: {{ section.settings.bar_label_color }};
+    --cwb-grid-line-color: {{ section.settings.grid_line_color }};
+    --cwb-card-bg: {{ section.settings.card_bg }};
+    --cwb-card-border: {{ section.settings.card_border }};
+    --cwb-card-radius: {{ section.settings.card_radius }}px;
+    --cwb-bar-height: {{ bar_height }}px;
+    --cwb-bar-width: {{ bar_width }}px;
+    --cwb-bar-gap: {{ bar_gap }}px;
+    --cwb-bar-radius: {{ bar_radius }}px;
+    --cwb-py: {{ py }}px;
+    --cwb-px: {{ px }}px;
+  }
+</style>
+
+<section class="cwb-wrap cwb-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="cwb-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="cwb-header" data-cwb-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="cwb-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="cwb-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="cwb-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="cwb-chart" data-cwb-reveal>
+      <div class="cwb-chart__inner"
+           data-cwb-chart
+           data-duration="{{ count_dur }}"
+           data-stagger="{{ stagger }}"
+           style="height:{{ bar_height }}px;">
+
+        {%- comment -%} Grid lines {%- endcomment -%}
+        {%- if show_grid -%}
+          <div class="cwb-grid-lines" aria-hidden="true">
+            {%- for i in (1..grid_lines_count) -%}
+              {%- assign line_pct = 100 | divided_by: grid_lines_count | times: i -%}
+              {%- assign remaining = 100 | minus: line_pct -%}
+              <div class="cwb-grid-lines__line" style="bottom: {{ line_pct }}%;">
+                <span class="cwb-grid-lines__label">{{ line_pct }}%</span>
+              </div>
+            {%- endfor -%}
+            <div class="cwb-grid-lines__line cwb-grid-lines__line--base" style="bottom: 0;"></div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} Bars {%- endcomment -%}
+        <div class="cwb-bars">
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign pct = block.settings.percent
+              assign num = block.settings.number
+              assign lbl = block.settings.label
+              assign sfx = block.settings.suffix
+              assign pfx = block.settings.prefix
+              assign has_color = block.settings.bar_color_override
+              assign bar_color_1 = section.settings.accent_color
+              assign bar_color_2 = section.settings.accent_color_2
+              if has_color != blank
+                assign bar_color_1 = has_color
+                assign bar_color_2 = has_color
+              endif
+            -%}
+            <div class="cwb-bar"
+                 data-cwb-bar
+                 data-pct="{{ pct }}"
+                 data-num="{{ num }}"
+                 data-prefix="{{ pfx }}"
+                 data-suffix="{{ sfx }}"
+                 {{ block.shopify_attributes }}
+                 style="--cwb-bar-c1: {{ bar_color_1 }}; --cwb-bar-c2: {{ bar_color_2 }};">
+
+              {%- if show_labels -%}
+                <div class="cwb-bar__value" data-cwb-value>
+                  {%- if pfx != blank -%}<span class="cwb-bar__prefix">{{ pfx }}</span>{%- endif -%}
+                  <span class="cwb-bar__num" data-cwb-num>0</span>
+                  {%- if sfx != blank -%}<span class="cwb-bar__suffix">{{ sfx }}</span>{%- endif -%}
+                </div>
+              {%- endif -%}
+
+              <div class="cwb-bar__fill" data-cwb-fill>
+                {%- if show_glow -%}
+                  <div class="cwb-bar__glow" aria-hidden="true"></div>
+                {%- endif -%}
+              </div>
+
+              {%- if lbl != blank -%}
+                <div class="cwb-bar__label">{{ lbl }}</div>
+              {%- endif -%}
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_url != blank -%}
+      <div class="cwb-cta" data-cwb-reveal>
+        <a href="{{ section.settings.cta_url }}" class="cwb-cta__btn cwb-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          {%- if section.settings.cta_style == 'filled' -%}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          {%- endif -%}
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function(){
+    const root = document.querySelector('.cwb-wrap--{{ section.id }}');
+    if(!root) return;
+    const chart = root.querySelector('[data-cwb-chart]');
+    if(!chart) return;
+    const dur = parseInt(chart.dataset.duration) || 2000;
+    const stag = parseInt(chart.dataset.stagger) || 150;
+    const bars = chart.querySelectorAll('[data-cwb-bar]');
+
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+    function animateBar(bar, idx){
+      const pct = parseFloat(bar.dataset.pct) || 0;
+      const num = parseFloat(bar.dataset.num) || 0;
+      const fill = bar.querySelector('[data-cwb-fill]');
+      const numEl = bar.querySelector('[data-cwb-num]');
+
+      setTimeout(function(){
+        const start = performance.now();
+        function tick(now){
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / dur, 1);
+          const eased = easeOutCubic(progress);
+
+          if(fill) fill.style.height = (pct * eased) + '%';
+          if(numEl){
+            const currentVal = num * eased;
+            var numCheck = num % 1;
+            if(numCheck !== 0){
+              numEl.textContent = currentVal.toFixed(1);
+            } else {
+              numEl.textContent = Math.round(currentVal).toLocaleString();
+            }
+          }
+
+          if(progress < 1) requestAnimationFrame(tick);
+        }
+        requestAnimationFrame(tick);
+      }, idx * stag);
+    }
+
+    /* Scroll reveal */
+    const reveals = root.querySelectorAll('[data-cwb-reveal]');
+    let animated = false;
+
+    function handleIntersect(entries, obs){
+      entries.forEach(function(e){
+        if(e.isIntersecting){
+          e.target.classList.add('cwb-visible');
+          if(e.target === chart.closest('[data-cwb-reveal]') || e.target.querySelector('[data-cwb-chart]')){
+            if(!animated){
+              animated = true;
+              bars.forEach(function(b, i){ animateBar(b, i); });
+            }
+          }
+          obs.unobserve(e.target);
+        }
+      });
+    }
+
+    const obs = new IntersectionObserver(handleIntersect, { threshold: 0.2 });
+    reveals.forEach(function(el){ obs.observe(el); });
+
+    /* Also observe chart directly if not wrapped */
+    var chartReveal = chart.closest('[data-cwb-reveal]');
+    if(!chartReveal){
+      const chartObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(e){
+          if(e.isIntersecting && !animated){
+            animated = true;
+            bars.forEach(function(b, i){ animateBar(b, i); });
+            chartObs.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.2 });
+      chartObs.observe(chart);
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Wave Bars",
+  "tag": "section",
+  "class": "section-wave-bars",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Performance Metrics"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Rising Numbers"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Watch our metrics rise with beautiful animated bars that visualize growth in real time."
+    },
+    {
+      "type": "header",
+      "content": "Bar Settings"
+    },
+    {
+      "type": "range",
+      "id": "bar_max_height",
+      "label": "Chart Height",
+      "min": 200,
+      "max": 500,
+      "step": 10,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "bar_width",
+      "label": "Bar Width",
+      "min": 30,
+      "max": 120,
+      "step": 2,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "bar_gap",
+      "label": "Bar Gap",
+      "min": 8,
+      "max": 60,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "bar_radius",
+      "label": "Bar Radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_grid_lines",
+      "label": "Show Grid Lines",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "grid_lines_count",
+      "label": "Grid Lines Count",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_value_labels",
+      "label": "Show Value Labels",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show Bar Glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Animation Duration",
+      "min": 1000,
+      "max": 5000,
+      "step": 100,
+      "default": 2000,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger Delay",
+      "min": 0,
+      "max": 500,
+      "step": 25,
+      "default": 150,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Bar Gradient Start",
+      "default": "#06b6d4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Bar Gradient End",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "bar_label_color",
+      "label": "Bar Label Color",
+      "default": "#cbd5e1"
+    },
+    {
+      "type": "color",
+      "id": "grid_line_color",
+      "label": "Grid Line Color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card Border",
+      "default": "#334155"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius",
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal Padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Call to Action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button Text",
+      "default": "View Full Report"
+    },
+    {
+      "type": "url",
+      "id": "cta_url",
+      "label": "Button Link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button Style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "filled"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "bar",
+      "name": "Bar",
+      "settings": [
+        {
+          "type": "range",
+          "id": "percent",
+          "label": "Bar Height %",
+          "min": 5,
+          "max": 100,
+          "step": 1,
+          "default": 75
+        },
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Display Number",
+          "default": "750"
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Prefix"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Bar Label",
+          "default": "Metric"
+        },
+        {
+          "type": "color",
+          "id": "bar_color_override",
+          "label": "Custom Bar Color"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Wave Bars",
+      "blocks": [
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 85,
+            "number": "8,500",
+            "suffix": "+",
+            "label": "Active Users"
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 62,
+            "number": "62",
+            "suffix": "%",
+            "label": "Conversion"
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 94,
+            "number": "4.7",
+            "prefix": "★",
+            "label": "Rating"
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 48,
+            "number": "480",
+            "prefix": "$",
+            "suffix": "K",
+            "label": "Revenue"
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 76,
+            "number": "1,200",
+            "suffix": "+",
+            "label": "Orders"
+          }
+        },
+        {
+          "type": "bar",
+          "settings": {
+            "percent": 35,
+            "number": "35",
+            "suffix": "ms",
+            "label": "Load Time"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

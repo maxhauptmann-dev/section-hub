@@ -1,0 +1,570 @@
+{% comment %}
+  Section Hub – Counter Flip Board v1.0
+  Retro split-flap display inspired counters.
+  Digits flip through like an airport departure board.
+  Prefix: cfb-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign cols = section.settings.columns
+  assign gap = section.settings.grid_gap
+  assign count_dur = section.settings.count_duration
+  assign stagger = section.settings.stagger_delay
+  assign digit_size = section.settings.digit_size
+  assign show_divider = section.settings.show_center_line
+  assign show_screws = section.settings.show_screws
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .cfb-wrap--{{ section.id }} {
+    --cfb-bg: {{ section.settings.bg_color }};
+    --cfb-accent: {{ section.settings.accent_color }};
+    --cfb-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --cfb-heading-fw: {{ hf.weight }};
+    --cfb-heading-fs: {{ hf.style }};
+    --cfb-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --cfb-body-fw: {{ bf.weight }};
+    --cfb-body-fs: {{ bf.style }};
+    --cfb-heading-color: {{ section.settings.heading_color }};
+    --cfb-text-color: {{ section.settings.text_color }};
+    --cfb-panel-bg: {{ section.settings.panel_bg }};
+    --cfb-panel-text: {{ section.settings.panel_text }};
+    --cfb-panel-border: {{ section.settings.panel_border }};
+    --cfb-card-bg: {{ section.settings.card_bg }};
+    --cfb-card-border: {{ section.settings.card_border }};
+    --cfb-card-radius: {{ section.settings.card_radius }}px;
+    --cfb-cols: {{ cols }};
+    --cfb-gap: {{ gap }}px;
+    --cfb-digit-size: {{ digit_size }}px;
+    --cfb-py: {{ py }}px;
+    --cfb-px: {{ px }}px;
+  }
+</style>
+
+<section class="cfb-wrap cfb-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+  <div class="cfb-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="cfb-header" data-cfb-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="cfb-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="cfb-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="cfb-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="cfb-grid">
+      {%- for block in section.blocks -%}
+        <div class="cfb-stat"
+             data-cfb-reveal
+             data-cfb-delay="{{ forloop.index0 | times: stagger }}"
+             data-cfb-target="{{ block.settings.number }}"
+             data-cfb-duration="{{ count_dur }}"
+             data-cfb-prefix="{{ block.settings.prefix }}"
+             data-cfb-suffix="{{ block.settings.suffix }}"
+             data-cfb-divider="{{ show_divider }}"
+             data-cfb-screws="{{ show_screws }}"
+             {{ block.shopify_attributes }}>
+
+          {%- if block.settings.icon_image != blank -%}
+            <div class="cfb-stat__icon">
+              <img src="{{ block.settings.icon_image | image_url: width: 80 }}" alt="" width="36" height="36" loading="lazy">
+            </div>
+          {%- endif -%}
+
+          <div class="cfb-stat__board" data-cfb-board>
+            {%- comment -%} JS generates the flip panels here {%- endcomment -%}
+          </div>
+
+          {%- if block.settings.label != blank -%}
+            <h3 class="cfb-stat__label">{{ block.settings.label }}</h3>
+          {%- endif -%}
+
+          {%- if block.settings.description != blank -%}
+            <p class="cfb-stat__desc">{{ block.settings.description }}</p>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_text != blank -%}
+      <div class="cfb-cta" data-cfb-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="cfb-cta__btn cfb-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+  </div>
+</section>
+
+<script>
+(function(){
+  var sid = '{{ section.id }}';
+  var wrap = document.querySelector('.cfb-wrap--' + sid);
+  if (!wrap) return;
+
+  /* Build flip panel HTML for a single character */
+  function createPanel(ch, showDivider, showScrews) {
+    var isDigit = /\d/.test(ch);
+    var panel = document.createElement('div');
+    panel.className = 'cfb-panel' + (isDigit ? '' : ' cfb-panel--symbol');
+    panel.innerHTML =
+      '<div class="cfb-panel__inner">' +
+        (showScrews === 'true' ? '<span class="cfb-panel__screw cfb-panel__screw--tl"></span><span class="cfb-panel__screw cfb-panel__screw--tr"></span>' : '') +
+        '<div class="cfb-panel__top"><span class="cfb-panel__char">' + ch + '</span></div>' +
+        (showDivider === 'true' ? '<div class="cfb-panel__line"></div>' : '') +
+        '<div class="cfb-panel__bottom"><span class="cfb-panel__char">' + ch + '</span></div>' +
+      '</div>';
+    return panel;
+  }
+
+  /* Animate a single panel from oldCh to newCh */
+  function flipPanel(panel, newCh, showDivider, showScrews) {
+    var inner = panel.querySelector('.cfb-panel__inner');
+    if (!inner) return;
+    panel.classList.add('cfb-panel--flipping');
+    setTimeout(function() {
+      inner.querySelector('.cfb-panel__top .cfb-panel__char').textContent = newCh;
+      inner.querySelector('.cfb-panel__bottom .cfb-panel__char').textContent = newCh;
+      panel.classList.remove('cfb-panel--flipping');
+    }, 200);
+  }
+
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+
+  function animateStat(stat) {
+    var board = stat.querySelector('[data-cfb-board]');
+    if (!board) return;
+    var target = parseFloat(stat.dataset.cfbTarget) || 0;
+    var prefix = stat.dataset.cfbPrefix || '';
+    var suffix = stat.dataset.cfbSuffix || '';
+    var duration = parseInt(stat.dataset.cfbDuration) || 2000;
+    var showDiv = stat.dataset.cfbDivider;
+    var showScr = stat.dataset.cfbScrews;
+    var isDecimal = target % 1 !== 0;
+
+    var finalStr = prefix + (isDecimal ? target.toFixed(1) : Math.round(target).toLocaleString('en-US')) + suffix;
+
+    /* Create initial panels with '0' or symbol */
+    board.innerHTML = '';
+    for (var i = 0; i < finalStr.length; i++) {
+      var initCh = /\d/.test(finalStr[i]) ? '0' : finalStr[i];
+      board.appendChild(createPanel(initCh, showDiv, showScr));
+    }
+
+    var panels = board.querySelectorAll('.cfb-panel');
+    var lastStr = '';
+    for (var j = 0; j < finalStr.length; j++) {
+      lastStr += /\d/.test(finalStr[j]) ? '0' : finalStr[j];
+    }
+
+    var start = performance.now();
+    function tick(now) {
+      var elapsed = now - start;
+      var t = Math.min(elapsed / duration, 1);
+      var eased = easeOutCubic(t);
+      var current = eased * target;
+      var curStr = prefix + (isDecimal ? current.toFixed(1) : Math.round(current).toLocaleString('en-US')) + suffix;
+
+      /* Pad to same length */
+      while (curStr.length < finalStr.length) curStr = ' ' + curStr;
+
+      for (var k = 0; k < panels.length; k++) {
+        var ch = k < curStr.length ? curStr[k] : ' ';
+        var old = k < lastStr.length ? lastStr[k] : ' ';
+        if (ch !== old) {
+          flipPanel(panels[k], ch, showDiv, showScr);
+        }
+      }
+      lastStr = curStr;
+      if (t < 1) requestAnimationFrame(tick);
+    }
+    requestAnimationFrame(tick);
+  }
+
+  /* Reveal + trigger */
+  var revealEls = wrap.querySelectorAll('[data-cfb-reveal]');
+  var animated = new Set();
+
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      var el = entry.target;
+      var delay = parseInt(el.dataset.cfbDelay) || 0;
+
+      setTimeout(function() {
+        el.classList.add('cfb-visible');
+        if (el.classList.contains('cfb-stat') && !animated.has(el)) {
+          animated.add(el);
+          animateStat(el);
+        }
+      }, delay);
+
+      observer.unobserve(el);
+    });
+  }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+  revealEls.forEach(function(el) { observer.observe(el); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Flip Board",
+  "tag": "section",
+  "class": "cfb-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Live Stats"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "The Numbers Speak"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Watch our achievements flip into view, one digit at a time."
+    },
+    {
+      "type": "header",
+      "content": "Flip panel style"
+    },
+    {
+      "type": "range",
+      "id": "digit_size",
+      "label": "Digit panel size",
+      "min": 36,
+      "max": 80,
+      "step": 4,
+      "default": 52,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_center_line",
+      "label": "Show center split line",
+      "default": true,
+      "info": "Horizontal line across each digit panel"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_screws",
+      "label": "Show decorative screws",
+      "default": true,
+      "info": "Tiny dots in the top corners for retro feel"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns",
+      "options": [
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ],
+      "default": "4"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Gap between cards",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "count_duration",
+      "label": "Flip duration",
+      "min": 1000,
+      "max": 5000,
+      "step": 250,
+      "default": 2500,
+      "unit": "ms"
+    },
+    {
+      "type": "range",
+      "id": "stagger_delay",
+      "label": "Stagger delay",
+      "min": 0,
+      "max": 400,
+      "step": 50,
+      "default": 200,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 30,
+      "max": 140,
+      "step": 10,
+      "default": 90,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "panel_bg",
+      "label": "Panel background",
+      "default": "#16213e"
+    },
+    {
+      "type": "color",
+      "id": "panel_text",
+      "label": "Panel text color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "panel_border",
+      "label": "Panel border",
+      "default": "#0f3460"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#16213e"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#0f3460"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "filled"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "stat",
+      "name": "Stat",
+      "settings": [
+        {
+          "type": "text",
+          "id": "number",
+          "label": "Target number",
+          "default": "500",
+          "info": "Number to flip to. Supports decimals (e.g. 4.9)"
+        },
+        {
+          "type": "text",
+          "id": "prefix",
+          "label": "Prefix",
+          "info": "e.g. $ or €"
+        },
+        {
+          "type": "text",
+          "id": "suffix",
+          "label": "Suffix",
+          "default": "+"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Happy Customers"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Flip Board",
+      "settings": {
+        "eyebrow": "Live Stats",
+        "heading": "The Numbers Speak",
+        "subtext": "Watch our achievements flip into view, one digit at a time.",
+        "digit_size": 52,
+        "show_center_line": true,
+        "show_screws": true,
+        "columns": "4",
+        "grid_gap": 24,
+        "card_radius": 16,
+        "count_duration": 2500,
+        "stagger_delay": 200,
+        "bg_color": "#1a1a2e",
+        "heading_color": "#ffffff",
+        "accent_color": "#f59e0b",
+        "panel_bg": "#16213e",
+        "panel_text": "#f59e0b",
+        "panel_border": "#0f3460",
+        "card_bg": "#16213e",
+        "card_border": "#0f3460"
+      },
+      "blocks": [
+        {
+          "type": "stat",
+          "settings": {
+            "number": "12500",
+            "suffix": "+",
+            "label": "Active Users",
+            "description": "Trusted by thousands worldwide."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "98",
+            "suffix": "%",
+            "label": "Uptime",
+            "description": "Rock-solid reliability, always on."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "prefix": "$",
+            "number": "4.2",
+            "suffix": "M",
+            "label": "Revenue",
+            "description": "Generated for our partners."
+          }
+        },
+        {
+          "type": "stat",
+          "settings": {
+            "number": "365",
+            "label": "Days of Innovation",
+            "description": "Shipping new features every day."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

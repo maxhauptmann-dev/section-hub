@@ -1,0 +1,50 @@
+{
+  "id": "counter-flip-board",
+  "name": "SS - Flip Board",
+  "description": "Retro split-flap display inspired counter section. Numbers flip through digits like an airport departure board with realistic 3D card-flip animation. Features individual digit flipping, customizable panel colors, staggered reveal, and nostalgic mechanical feel.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 19,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Flip",
+    "Split Flap",
+    "Retro",
+    "Animation",
+    "Statistics",
+    "Numbers",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#1a1a2e",
+  "previews": [
+    {
+      "src": "/previews/counter-flip-board/default.webp",
+      "alt": "Counter Flip Board - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

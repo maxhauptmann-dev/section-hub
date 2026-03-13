@@ -1,0 +1,296 @@
+/* ============================================
+   SectionHub – Counter Wave Bars  (cwb-)
+   Animated bar chart with wave-like staggered rise
+   ============================================ */
+
+.cwb-wrap *,
+.cwb-wrap *::before,
+.cwb-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Base ---------- */
+.cwb-wrap {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--cwb-bg);
+  padding: var(--cwb-py) var(--cwb-px);
+}
+
+.cwb-container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.cwb-header {
+  text-align: center;
+  margin-bottom: 56px;
+}
+
+.cwb-header__eyebrow {
+  display: inline-block;
+  font-family: var(--cwb-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--cwb-accent);
+  margin-bottom: 12px;
+}
+
+.cwb-header__heading {
+  font-family: var(--cwb-heading-ff);
+  font-weight: var(--cwb-heading-fw);
+  font-style: var(--cwb-heading-fs);
+  font-size: clamp(26px, 3.5vw, 44px);
+  line-height: 1.15;
+  color: var(--cwb-heading-color);
+  margin: 0 0 14px;
+}
+
+.cwb-header__subtext {
+  font-family: var(--cwb-body-ff);
+  font-weight: var(--cwb-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--cwb-text-color);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Chart ---------- */
+.cwb-chart {
+  background: var(--cwb-card-bg);
+  border: 1px solid var(--cwb-card-border);
+  border-radius: var(--cwb-card-radius);
+  padding: 40px 32px 24px;
+}
+
+.cwb-chart__inner {
+  position: relative;
+  width: 100%;
+}
+
+/* ---------- Grid lines ---------- */
+.cwb-grid-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.cwb-grid-lines__line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--cwb-grid-line-color);
+}
+
+.cwb-grid-lines__line--base {
+  background: color-mix(in srgb, var(--cwb-grid-line-color) 100%, #fff 20%);
+}
+
+.cwb-grid-lines__label {
+  position: absolute;
+  right: calc(100% + 8px);
+  top: -7px;
+  font-family: var(--cwb-body-ff);
+  font-size: 10px;
+  color: var(--cwb-text-color);
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+/* ---------- Bars container ---------- */
+.cwb-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: var(--cwb-bar-gap);
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+/* ---------- Individual bar ---------- */
+.cwb-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--cwb-bar-width);
+  flex-shrink: 0;
+  height: 100%;
+  justify-content: flex-end;
+  position: relative;
+}
+
+/* Value label floating above bar */
+.cwb-bar__value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 1px;
+  margin-bottom: 8px;
+  font-family: var(--cwb-heading-ff);
+  font-weight: var(--cwb-heading-fw);
+  font-size: 14px;
+  color: var(--cwb-heading-color);
+  white-space: nowrap;
+  transition: opacity 0.4s ease;
+}
+
+.cwb-bar__prefix,
+.cwb-bar__suffix {
+  font-size: 11px;
+  opacity: 0.7;
+}
+
+.cwb-bar__num {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Bar fill */
+.cwb-bar__fill {
+  position: relative;
+  width: 100%;
+  height: 0;
+  border-radius: var(--cwb-bar-radius) var(--cwb-bar-radius) 0 0;
+  background: linear-gradient(180deg, var(--cwb-bar-c1), var(--cwb-bar-c2));
+  transition: height 0s;
+  will-change: height;
+}
+
+/* Glow effect */
+.cwb-bar__glow {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140%;
+  height: 60%;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, var(--cwb-bar-c1), transparent 70%);
+  opacity: 0.25;
+  pointer-events: none;
+  filter: blur(10px);
+}
+
+/* Bottom label */
+.cwb-bar__label {
+  margin-top: 12px;
+  font-family: var(--cwb-body-ff);
+  font-weight: var(--cwb-body-fw);
+  font-size: 12px;
+  color: var(--cwb-bar-label-color);
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: calc(var(--cwb-bar-width) + 20px);
+}
+
+/* ---------- CTA ---------- */
+.cwb-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.cwb-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--cwb-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.cwb-cta__btn--filled {
+  background: var(--cwb-accent);
+  color: var(--cwb-bg);
+  border: 2px solid var(--cwb-accent);
+}
+
+.cwb-cta__btn--filled:hover {
+  background: transparent;
+  color: var(--cwb-accent);
+}
+
+.cwb-cta__btn--outline {
+  background: transparent;
+  color: var(--cwb-accent);
+  border: 2px solid var(--cwb-accent);
+}
+
+.cwb-cta__btn--outline:hover {
+  background: var(--cwb-accent);
+  color: var(--cwb-bg);
+}
+
+.cwb-cta__btn svg {
+  flex-shrink: 0;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-cwb-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-cwb-reveal].cwb-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .cwb-chart {
+    padding: 28px 16px 16px;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .cwb-chart__inner {
+    min-width: max-content;
+  }
+
+  .cwb-bars {
+    gap: calc(var(--cwb-bar-gap) * 0.7);
+  }
+
+  .cwb-bar {
+    width: calc(var(--cwb-bar-width) * 0.75);
+  }
+
+  .cwb-bar__value {
+    font-size: 12px;
+  }
+
+  .cwb-bar__label {
+    font-size: 11px;
+  }
+
+  .cwb-header {
+    margin-bottom: 36px;
+  }
+
+  .cwb-grid-lines__label {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .cwb-bar {
+    width: calc(var(--cwb-bar-width) * 0.6);
+  }
+}

@@ -1,0 +1,51 @@
+{
+  "id": "counter-wave-bars",
+  "name": "SS - Wave Bars",
+  "description": "Animated vertical bar chart counter section with wave-like staggered rise animation. Each bar grows to its target height on scroll with gradient fills, floating value labels, and smooth easing. Features horizontal and vertical orientations, adjustable bar widths, glow effects, and grid lines.",
+  "category": ["Counter"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Counter",
+    "Bars",
+    "Chart",
+    "Wave",
+    "Animation",
+    "Statistics",
+    "Numbers",
+    "Data",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0f172a",
+  "previews": [
+    {
+      "src": "/previews/counter-wave-bars/default.webp",
+      "alt": "Counter Wave Bars - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}
