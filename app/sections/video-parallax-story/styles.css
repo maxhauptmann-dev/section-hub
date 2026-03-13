@@ -192,8 +192,8 @@
   margin-top: calc(-1 * var(--vps-video-h, 100vh));
   /* first chapter starts at center of viewport */
   padding-top: calc(var(--vps-video-h, 100vh) * 0.3);
-  /* extra padding at the bottom so last chapter scrolls out */
-  padding-bottom: calc(var(--vps-video-h, 100vh) * 0.5);
+  /* minimal bottom padding — just enough to see last chapter */
+  padding-bottom: 60px;
 }
 
 .vps-chapter {
@@ -202,6 +202,9 @@
   opacity: 0;
   transform: translateY(60px);
   transition: opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+.vps-chapter:last-child {
+  margin-bottom: 0;
 }
 .vps-chapter--visible {
   opacity: 1;
