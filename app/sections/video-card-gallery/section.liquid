@@ -1,0 +1,708 @@
+{% comment %}
+  Section Hub – Video Card Gallery v1.0
+  Modular video card grid with hover-to-preview, editorial design,
+  tag badges, duration labels, and multiple card styles.
+  Each block is a video card with its own media + content.
+  Prefix: vcg-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign card_bg       = section.settings.card_bg
+  assign columns       = section.settings.columns
+  assign card_radius   = section.settings.card_radius
+  assign aspect        = section.settings.aspect_ratio
+  assign gap           = section.settings.grid_gap
+  assign card_style    = section.settings.card_style
+  assign show_glow     = section.settings.show_glow
+  assign hover_play    = section.settings.hover_play
+  assign btn_radius    = section.settings.btn_radius
+  assign cta_style     = section.settings.cta_style
+  assign section_py    = section.settings.section_padding_y
+  assign section_px    = section.settings.section_padding_x
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .vcg-wrap--{{ section.id }} {
+    --vcg-bg: {{ bg_color }};
+    --vcg-accent: {{ accent }};
+    --vcg-accent-2: {{ accent_2 }};
+    --vcg-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --vcg-heading-fw: {{ heading_font.weight }};
+    --vcg-heading-fs: {{ heading_font.style }};
+    --vcg-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --vcg-body-fw: {{ body_font.weight }};
+    --vcg-body-fs: {{ body_font.style }};
+    --vcg-heading-color: {{ heading_color }};
+    --vcg-text-color: {{ text_color }};
+    --vcg-card-bg: {{ card_bg }};
+    --vcg-card-radius: {{ card_radius }}px;
+    --vcg-aspect: {{ aspect }};
+    --vcg-gap: {{ gap }}px;
+    --vcg-btn-radius: {{ btn_radius }}px;
+    --vcg-py: {{ section_py }}px;
+    --vcg-px: {{ section_px }}px;
+  }
+</style>
+
+<section class="vcg-wrap vcg-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if show_glow -%}
+    <div class="vcg-glow vcg-glow--1"></div>
+    <div class="vcg-glow vcg-glow--2"></div>
+  {%- endif -%}
+
+  <div class="vcg-container">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtitle != blank -%}
+      <div class="vcg-header" data-vcg-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <div class="vcg-header__eyebrow">{{ section.settings.eyebrow }}</div>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="vcg-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtitle != blank -%}
+          <p class="vcg-header__subtitle">{{ section.settings.subtitle }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="vcg-grid vcg-grid--{{ columns }}{% if card_style == 'overlay' %} vcg-grid--overlay{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign has_shopify_video = false
+          assign has_embed_video = false
+          assign has_mp4 = false
+          if block.settings.shopify_video != blank
+            assign has_shopify_video = true
+          endif
+          if block.settings.embed_url != blank
+            assign has_embed_video = true
+          endif
+          if block.settings.video_url != blank
+            assign has_mp4 = true
+          endif
+          assign has_any_video = false
+          if has_shopify_video or has_embed_video or has_mp4
+            assign has_any_video = true
+          endif
+        -%}
+
+        <div class="vcg-card" data-vcg-reveal data-vcg-card="{{ forloop.index0 }}"{% if hover_play and has_any_video %} data-vcg-hover-play{% endif %} {{ block.shopify_attributes }}>
+          <div class="vcg-card__media">
+
+            {%- if has_shopify_video -%}
+              {%- assign sv = block.settings.shopify_video -%}
+              {{ sv | video_tag: class: 'vcg-card__video-el', playsinline: true, muted: true, loop: true, controls: false, preload: 'metadata' }}
+
+            {%- elsif has_embed_video -%}
+              {%- assign ev = block.settings.embed_url -%}
+              {%- if ev.type == 'youtube' -%}
+                {%- assign yt_thumb = 'https://img.youtube.com/vi/' | append: ev.id | append: '/maxresdefault.jpg' -%}
+                {%- if block.settings.poster != blank -%}
+                  {%- assign yt_thumb = block.settings.poster | image_url: width: 800 -%}
+                {%- endif -%}
+                <div class="vcg-card__embed" data-vcg-embed data-video-type="youtube" data-video-id="{{ ev.id }}">
+                  <img class="vcg-card__poster" src="{{ yt_thumb }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+                  <div class="vcg-card__iframe-wrap" data-vcg-iframe-wrap style="display:none;"></div>
+                </div>
+              {%- elsif ev.type == 'vimeo' -%}
+                {%- assign vm_poster = '' -%}
+                {%- if block.settings.poster != blank -%}
+                  {%- assign vm_poster = block.settings.poster | image_url: width: 800 -%}
+                {%- endif -%}
+                <div class="vcg-card__embed" data-vcg-embed data-video-type="vimeo" data-video-id="{{ ev.id }}">
+                  {%- if vm_poster != '' -%}
+                    <img class="vcg-card__poster" src="{{ vm_poster }}" alt="{{ block.settings.title | escape }}" loading="lazy">
+                  {%- endif -%}
+                  <div class="vcg-card__iframe-wrap" data-vcg-iframe-wrap style="display:none;"></div>
+                </div>
+              {%- endif -%}
+
+            {%- elsif has_mp4 -%}
+              <video
+                data-vcg-video
+                playsinline
+                muted
+                loop
+                preload="metadata"
+                poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 800 }}{% endif %}"
+              >
+                <source src="{{ block.settings.video_url }}" type="video/mp4">
+              </video>
+
+            {%- elsif block.settings.poster != blank -%}
+              <img
+                src="{{ block.settings.poster | image_url: width: 800 }}"
+                alt="{{ block.settings.title | escape }}"
+                loading="lazy"
+                width="{{ block.settings.poster.width }}"
+                height="{{ block.settings.poster.height }}"
+              >
+            {%- else -%}
+              {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+            {%- endif -%}
+
+            <div class="vcg-card__gradient"></div>
+
+            {%- if has_any_video -%}
+              <div class="vcg-card__play-icon" data-vcg-play-icon="{{ forloop.index0 }}">
+                <svg data-vcg-icon-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+                <svg data-vcg-icon-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.tag != blank -%}
+              <div class="vcg-card__tag">
+                <span class="vcg-card__tag-dot"></span>
+                {{ block.settings.tag }}
+              </div>
+            {%- endif -%}
+
+            {%- if block.settings.duration != blank -%}
+              <div class="vcg-card__duration">{{ block.settings.duration }}</div>
+            {%- endif -%}
+          </div>
+
+          <div class="vcg-card__body">
+            {%- if block.settings.title != blank -%}
+              <h3 class="vcg-card__title">{{ block.settings.title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.description != blank -%}
+              <p class="vcg-card__desc">{{ block.settings.description }}</p>
+            {%- endif -%}
+            {%- if block.settings.author != blank -%}
+              <div class="vcg-card__meta">
+                <div class="vcg-card__meta-avatar">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                </div>
+                <div class="vcg-card__meta-text">
+                  <span class="vcg-card__meta-author">{{ block.settings.author }}</span>
+                  {%- if block.settings.date != blank -%}
+                    <span> · {{ block.settings.date }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+
+    {%- if section.settings.cta_text != blank -%}
+      <div class="vcg-cta" data-vcg-reveal>
+        <a href="{{ section.settings.cta_link | default: '#' }}" class="vcg-cta__btn vcg-cta__btn--{{ cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function() {
+    var section = document.querySelector('.vcg-wrap--{{ section.id }}');
+    if (!section) return;
+
+    var cards = section.querySelectorAll('[data-vcg-card]');
+    var reveals = section.querySelectorAll('[data-vcg-reveal]');
+
+    /* Scroll reveal */
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vcg-visible');
+        obs.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+    reveals.forEach(function(el) { obs.observe(el); });
+
+    /* Helper: set play icon state */
+    function setIconState(card, playing) {
+      var playIcon = card.querySelector('[data-vcg-play-icon]');
+      if (!playIcon) return;
+      var iconPlay = playIcon.querySelector('[data-vcg-icon-play]');
+      var iconPause = playIcon.querySelector('[data-vcg-icon-pause]');
+      if (playing) {
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconPause) iconPause.style.display = '';
+        playIcon.classList.add('vcg-card__play-icon--playing');
+      } else {
+        if (iconPlay) iconPlay.style.display = '';
+        if (iconPause) iconPause.style.display = 'none';
+        playIcon.classList.remove('vcg-card__play-icon--playing');
+      }
+    }
+
+    /* Hover to play (for Shopify video and MP4) */
+    cards.forEach(function(card) {
+      if (!card.hasAttribute('data-vcg-hover-play')) return;
+
+      card.addEventListener('mouseenter', function() {
+        var video = card.querySelector('video');
+        if (video) {
+          video.play().catch(function(){});
+          setIconState(card, true);
+        }
+      });
+
+      card.addEventListener('mouseleave', function() {
+        var video = card.querySelector('video');
+        if (video) {
+          video.pause();
+          video.currentTime = 0;
+          setIconState(card, false);
+        }
+      });
+    });
+
+    /* Click to play (for embeds and manual play) */
+    cards.forEach(function(card) {
+      var playIcon = card.querySelector('[data-vcg-play-icon]');
+      if (!playIcon) return;
+
+      playIcon.addEventListener('click', function(e) {
+        e.stopPropagation();
+
+        /* YouTube / Vimeo embed */
+        var embedWrap = card.querySelector('[data-vcg-embed]');
+        if (embedWrap) {
+          var iframeWrap = embedWrap.querySelector('[data-vcg-iframe-wrap]');
+          var posterImg = embedWrap.querySelector('.vcg-card__poster');
+          if (iframeWrap && iframeWrap.style.display === 'none') {
+            var vType = embedWrap.dataset.videoType;
+            var vId = embedWrap.dataset.videoId;
+            var iframeSrc = '';
+            if (vType === 'youtube') {
+              iframeSrc = 'https://www.youtube.com/embed/' + vId + '?autoplay=1&mute=1&loop=1&playlist=' + vId + '&controls=0&modestbranding=1&rel=0';
+            } else if (vType === 'vimeo') {
+              iframeSrc = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&loop=1&background=1';
+            }
+            if (iframeSrc) {
+              iframeWrap.innerHTML = '<iframe src="' + iframeSrc + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+              iframeWrap.style.display = '';
+              iframeWrap.style.position = 'absolute';
+              iframeWrap.style.inset = '0';
+              iframeWrap.style.width = '100%';
+              iframeWrap.style.height = '100%';
+              iframeWrap.style.zIndex = '3';
+              if (posterImg) posterImg.style.display = 'none';
+              setIconState(card, true);
+            }
+          }
+          return;
+        }
+
+        /* MP4 or Shopify hosted video */
+        var video = card.querySelector('video');
+        if (video) {
+          if (video.paused) {
+            video.play().catch(function(){});
+            setIconState(card, true);
+          } else {
+            video.pause();
+            setIconState(card, false);
+          }
+        }
+      });
+    });
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Cards",
+  "tag": "section",
+  "class": "vcg-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Video Library"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Watch & Discover"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Explore our curated collection of brand stories, tutorials, and behind-the-scenes content."
+    },
+    {
+      "type": "header",
+      "content": "Grid layout"
+    },
+    {
+      "type": "select",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "options": [
+        { "value": "2", "label": "2 Columns" },
+        { "value": "3", "label": "3 Columns" },
+        { "value": "4", "label": "4 Columns" }
+      ],
+      "default": "3"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "standard", "label": "Standard (text below)" },
+        { "value": "overlay", "label": "Overlay (text on media)" }
+      ],
+      "default": "standard"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Card aspect ratio",
+      "options": [
+        { "value": "16/9", "label": "Widescreen (16:9)" },
+        { "value": "4/3", "label": "Classic (4:3)" },
+        { "value": "1/1", "label": "Square (1:1)" },
+        { "value": "3/4", "label": "Portrait (3:4)" }
+      ],
+      "default": "16/9"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 28,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 160,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (glow)",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#888888"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Video settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_play",
+      "label": "Play on hover",
+      "default": true,
+      "info": "Videos preview on hover (muted). Click play icon for full playback."
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show ambient glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Call to action"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "View All Videos"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "CTA style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "default": "glass"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "CTA border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "video_card",
+      "name": "Video Card",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Video source"
+        },
+        {
+          "type": "video",
+          "id": "shopify_video",
+          "label": "Shopify video",
+          "info": "Upload or select from media library."
+        },
+        {
+          "type": "video_url",
+          "id": "embed_url",
+          "accept": ["youtube", "vimeo"],
+          "label": "YouTube / Vimeo URL",
+          "info": "Used when no Shopify video is set."
+        },
+        {
+          "type": "text",
+          "id": "video_url",
+          "label": "External MP4 URL",
+          "info": "Direct .mp4 link. Last fallback."
+        },
+        {
+          "type": "image_picker",
+          "id": "poster",
+          "label": "Poster image"
+        },
+        {
+          "type": "header",
+          "content": "Card content"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / category",
+          "default": "Brand Film"
+        },
+        {
+          "type": "text",
+          "id": "duration",
+          "label": "Duration label",
+          "default": "2:45"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Behind the Scenes"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A look at the creative process behind our latest collection and campaign."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author name",
+          "default": "Studio Team"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date label",
+          "default": "Mar 2026"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Cards",
+      "settings": {
+        "eyebrow": "Video Library",
+        "heading": "Watch & Discover",
+        "subtitle": "Explore our curated collection of brand stories, tutorials, and behind-the-scenes content.",
+        "columns": "3",
+        "card_style": "standard",
+        "hover_play": true,
+        "cta_text": "View All Videos"
+      },
+      "blocks": [
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Brand Film",
+            "duration": "3:20",
+            "title": "The Art of Craft",
+            "description": "Watch how our artisans bring decades of expertise to every piece. A story of passion and precision.",
+            "author": "Creative Team",
+            "date": "Mar 2026"
+          }
+        },
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Tutorial",
+            "duration": "5:15",
+            "title": "Styling Guide: Spring Edition",
+            "description": "Learn how to style our latest pieces for every occasion this spring season.",
+            "author": "Style Editor",
+            "date": "Feb 2026"
+          }
+        },
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Behind the Scenes",
+            "duration": "4:00",
+            "title": "Making of the Campaign",
+            "description": "From concept sketch to finished product — an intimate look at our creative process.",
+            "author": "Studio Team",
+            "date": "Jan 2026"
+          }
+        },
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Interview",
+            "duration": "8:30",
+            "title": "Founder's Vision",
+            "description": "Our founder shares the passion, values, and ambition driving the brand into the future.",
+            "author": "Editorial",
+            "date": "Dec 2025"
+          }
+        },
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Campaign",
+            "duration": "2:10",
+            "title": "Summer Collection Lookbook",
+            "description": "Bold colors meet timeless silhouettes in our latest seasonal visual campaign.",
+            "author": "Creative Team",
+            "date": "Nov 2025"
+          }
+        },
+        {
+          "type": "video_card",
+          "settings": {
+            "tag": "Workshop",
+            "duration": "6:45",
+            "title": "Inside the Atelier",
+            "description": "Step inside our workshop where tradition meets modern innovation and every detail matters.",
+            "author": "Studio Team",
+            "date": "Oct 2025"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,50 @@
+{
+  "id": "video-card-gallery",
+  "name": "SS - Video Card Gallery",
+  "description": "Modular video card gallery with hover-to-preview, masonry-style grid, and editorial design. Each card features video with poster, hover playback preview, glassmorphism overlay, tag/category badges, and expandable detail overlay. Supports Shopify hosted video, YouTube/Vimeo embeds, and MP4 URLs. Features autoplay-on-hover, custom grid columns, card radius, aspect ratio control, ambient glow, and scroll-reveal animations. 60+ customization options.",
+  "category": "Video",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Video",
+    "Gallery",
+    "Cards",
+    "Grid",
+    "Hover",
+    "Editorial",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/video-card-gallery/default.webp",
+      "alt": "Video Card Gallery - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "id": "video-cinema-hero",
+  "name": "SS - Video Cinema Hero",
+  "description": "Full-bleed cinematic video hero section with floating glassmorphism content card, chapter timeline markers, cinematic letterbox bars, and dramatic scroll-reveal animation. Supports Shopify hosted video, YouTube/Vimeo embeds, and MP4 URLs. Features autoplay with IntersectionObserver, muted background mode, custom poster, overlay tint control, content positioning (6 positions), object-fit toggle, section height control, mobile-specific settings, and ambient glow. 60+ customization options.",
+  "category": "Video",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Video",
+    "Hero",
+    "Cinema",
+    "Fullscreen",
+    "Autoplay",
+    "Glassmorphism",
+    "Animation",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "Section Hub",
+  "previewColor": "#000000",
+  "previews": [
+    {
+      "src": "/previews/video-cinema-hero/default.webp",
+      "alt": "Video Cinema Hero - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-13",
+  "updatedAt": "2026-03-13",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-13",
+      "changes": ["Initial release"]
+    }
+  ]
+}

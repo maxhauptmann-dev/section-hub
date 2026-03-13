@@ -1,0 +1,714 @@
+{% comment %}
+  Section Hub – Video Cinema Hero v1.0
+  Full-bleed cinematic video hero with floating content card,
+  chapter markers, letterbox bars, and scroll-reveal.
+  Supports Shopify video, YouTube/Vimeo, MP4 URL.
+  Prefix: vch-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign overlay_color = section.settings.overlay_color
+  assign overlay_opacity = section.settings.overlay_opacity
+  assign content_pos   = section.settings.content_position
+  assign content_style = section.settings.content_style
+  assign content_w     = section.settings.content_width
+  assign card_radius   = section.settings.card_radius
+  assign height        = section.settings.section_height
+  assign height_mobile = section.settings.section_height_mobile
+  assign obj_fit       = section.settings.object_fit
+  assign show_glow     = section.settings.show_glow
+  assign autoplay_vid  = section.settings.autoplay_video
+  assign loop_vid      = section.settings.loop_video
+  assign show_controls = section.settings.show_controls
+  assign show_scroll   = section.settings.show_scroll_hint
+  assign letterbox     = section.settings.letterbox_height
+  assign btn_radius    = section.settings.btn_radius
+  assign btn2_style    = section.settings.btn_secondary_style
+  assign px            = section.settings.section_padding_x
+
+  assign has_shopify_video = false
+  assign has_embed_video = false
+  assign has_mp4 = false
+  if section.settings.shopify_video != blank
+    assign has_shopify_video = true
+  endif
+  if section.settings.embed_url != blank
+    assign has_embed_video = true
+  endif
+  if section.settings.video_url != blank
+    assign has_mp4 = true
+  endif
+  assign has_any_video = false
+  if has_shopify_video or has_embed_video or has_mp4
+    assign has_any_video = true
+  endif
+
+  assign ov_r = overlay_color | color_extract: 'red'
+  assign ov_g = overlay_color | color_extract: 'green'
+  assign ov_b = overlay_color | color_extract: 'blue'
+  assign ov_a_decimal = overlay_opacity | times: 0.01
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .vch-wrap--{{ section.id }} {
+    --vch-bg: {{ bg_color }};
+    --vch-accent: {{ accent }};
+    --vch-accent-2: {{ accent_2 }};
+    --vch-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --vch-heading-fw: {{ heading_font.weight }};
+    --vch-heading-fs: {{ heading_font.style }};
+    --vch-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --vch-body-fw: {{ body_font.weight }};
+    --vch-body-fs: {{ body_font.style }};
+    --vch-heading-color: {{ heading_color }};
+    --vch-text-color: {{ text_color }};
+    --vch-height: {{ height }}vh;
+    --vch-height-mobile: {{ height_mobile }}vh;
+    --vch-content-w: {{ content_w }}px;
+    --vch-card-radius: {{ card_radius }}px;
+    --vch-btn-radius: {{ btn_radius }}px;
+    --vch-letterbox-h: {{ letterbox }}px;
+    --vch-px: {{ px }}px;
+  }
+</style>
+
+<section class="vch-wrap vch-wrap--{{ section.id }} vch-pos--{{ content_pos }}" data-section-id="{{ section.id }}"{% if autoplay_vid %} data-vch-autoplay{% endif %}>
+
+  {%- if show_glow -%}
+    <div class="vch-glow vch-glow--1"></div>
+    <div class="vch-glow vch-glow--2"></div>
+  {%- endif -%}
+
+  {%- comment -%} Video background {%- endcomment -%}
+  <div class="vch-video-bg vch-video-bg--{{ obj_fit }}">
+    {%- if has_shopify_video -%}
+      {%- assign sv = section.settings.shopify_video -%}
+      {{ sv | video_tag: playsinline: true, muted: true, loop: loop_vid, controls: show_controls, preload: 'metadata' }}
+
+    {%- elsif has_embed_video -%}
+      {%- assign ev = section.settings.embed_url -%}
+      {%- if ev.type == 'youtube' -%}
+        {%- assign yt_thumb = 'https://img.youtube.com/vi/' | append: ev.id | append: '/maxresdefault.jpg' -%}
+        {%- if section.settings.poster != blank -%}
+          {%- assign yt_thumb = section.settings.poster | image_url: width: 1920 -%}
+        {%- endif -%}
+        <div class="vch-video-bg__embed" data-vch-embed data-video-type="youtube" data-video-id="{{ ev.id }}">
+          <img class="vch-video-bg__poster" src="{{ yt_thumb }}" alt="{{ section.settings.heading | escape }}" loading="eager">
+          <div class="vch-video-bg__iframe-wrap" data-vch-iframe-wrap style="display:none;"></div>
+        </div>
+      {%- elsif ev.type == 'vimeo' -%}
+        {%- assign vm_poster = '' -%}
+        {%- if section.settings.poster != blank -%}
+          {%- assign vm_poster = section.settings.poster | image_url: width: 1920 -%}
+        {%- endif -%}
+        <div class="vch-video-bg__embed" data-vch-embed data-video-type="vimeo" data-video-id="{{ ev.id }}">
+          {%- if vm_poster != '' -%}
+            <img class="vch-video-bg__poster" src="{{ vm_poster }}" alt="{{ section.settings.heading | escape }}" loading="eager">
+          {%- endif -%}
+          <div class="vch-video-bg__iframe-wrap" data-vch-iframe-wrap style="display:none;"></div>
+        </div>
+      {%- endif -%}
+
+    {%- elsif has_mp4 -%}
+      <video
+        data-vch-video
+        playsinline
+        muted
+        {% if loop_vid %}loop{% endif %}
+        {% if show_controls %}controls{% endif %}
+        preload="metadata"
+        poster="{% if section.settings.poster != blank %}{{ section.settings.poster | image_url: width: 1920 }}{% endif %}"
+      >
+        <source src="{{ section.settings.video_url }}" type="video/mp4">
+      </video>
+
+    {%- elsif section.settings.poster != blank -%}
+      <img
+        src="{{ section.settings.poster | image_url: width: 1920 }}"
+        alt="{{ section.settings.heading | escape }}"
+        loading="eager"
+        width="{{ section.settings.poster.width }}"
+        height="{{ section.settings.poster.height }}"
+      >
+    {%- else -%}
+      {{ 'lifestyle-1' | placeholder_svg_tag }}
+    {%- endif -%}
+  </div>
+
+  {%- comment -%} Overlay tint {%- endcomment -%}
+  <div class="vch-overlay" style="background: rgba({{ ov_r }}, {{ ov_g }}, {{ ov_b }}, {{ ov_a_decimal }});"></div>
+
+  {%- comment -%} Letterbox bars {%- endcomment -%}
+  {%- if letterbox > 0 -%}
+    <div class="vch-letterbox vch-letterbox--top"></div>
+    <div class="vch-letterbox vch-letterbox--bottom"></div>
+  {%- endif -%}
+
+  {%- comment -%} Content card {%- endcomment -%}
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtitle != blank or section.settings.btn_primary_text != blank -%}
+    <div class="vch-content{% if content_style == 'glass' %} vch-content--glass{% endif %}" data-vch-reveal>
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="vch-eyebrow">{{ section.settings.eyebrow }}</div>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="vch-heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtitle != blank -%}
+        <p class="vch-subtitle">{{ section.settings.subtitle }}</p>
+      {%- endif -%}
+      {%- if section.settings.btn_primary_text != blank or section.settings.btn_secondary_text != blank -%}
+        <div class="vch-actions">
+          {%- if section.settings.btn_primary_text != blank -%}
+            <a href="{{ section.settings.btn_primary_link | default: '#' }}" class="vch-btn vch-btn--primary">
+              {{ section.settings.btn_primary_text }}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+          {%- endif -%}
+          {%- if section.settings.btn_secondary_text != blank -%}
+            <a href="{{ section.settings.btn_secondary_link | default: '#' }}" class="vch-btn vch-btn--{{ btn2_style }}">
+              {{ section.settings.btn_secondary_text }}
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Play button (shown when no content card, or alongside it) {%- endcomment -%}
+  {%- if has_any_video and section.settings.show_play_btn -%}
+    <button class="vch-play" data-vch-play aria-label="Play video">
+      <svg class="vch-play__ring" viewBox="0 0 84 84">
+        <circle class="vch-play__ring-bg" cx="42" cy="42" r="42"></circle>
+        <circle class="vch-play__ring-progress" cx="42" cy="42" r="42" data-vch-ring></circle>
+      </svg>
+      <svg data-vch-icon-play viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      <svg data-vch-icon-pause viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+    </button>
+  {%- endif -%}
+
+  {%- comment -%} Chapter markers {%- endcomment -%}
+  {%- if section.blocks.size > 0 -%}
+    <div class="vch-chapters" data-vch-reveal>
+      {%- for block in section.blocks -%}
+        <div class="vch-chapter{% if forloop.first %} vch-chapter--active{% endif %}" data-vch-chapter="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <div class="vch-chapter__dot"></div>
+          {%- if block.settings.label != blank -%}
+            <span class="vch-chapter__label">{{ block.settings.label }}</span>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} Scroll indicator {%- endcomment -%}
+  {%- if show_scroll and section.blocks.size == 0 -%}
+    <div class="vch-scroll-hint" data-vch-reveal>
+      <span class="vch-scroll-hint__label">Scroll</span>
+      <div class="vch-scroll-hint__line"></div>
+    </div>
+  {%- endif -%}
+
+</section>
+
+<script>
+  (function() {
+    var wrap = document.querySelector('.vch-wrap--{{ section.id }}');
+    if (!wrap) return;
+
+    var autoplayEnabled = wrap.hasAttribute('data-vch-autoplay');
+    var reveals = wrap.querySelectorAll('[data-vch-reveal]');
+    var playBtn = wrap.querySelector('[data-vch-play]');
+    var ring = wrap.querySelector('[data-vch-ring]');
+
+    /* Scroll reveal */
+    var revealObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (!e.isIntersecting) return;
+        e.target.classList.add('vch-visible');
+        revealObs.unobserve(e.target);
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+    reveals.forEach(function(el) { revealObs.observe(el); });
+
+    /* Helper: set play button state */
+    function setBtnState(playing) {
+      if (!playBtn) return;
+      var iconPlay = playBtn.querySelector('[data-vch-icon-play]');
+      var iconPause = playBtn.querySelector('[data-vch-icon-pause]');
+      if (playing) {
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconPause) iconPause.style.display = '';
+        playBtn.classList.add('vch-play--playing');
+      } else {
+        if (iconPlay) iconPlay.style.display = '';
+        if (iconPause) iconPause.style.display = 'none';
+        playBtn.classList.remove('vch-play--playing');
+      }
+    }
+
+    /* Autoplay via IntersectionObserver */
+    if (autoplayEnabled) {
+      var autoObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          var video = wrap.querySelector('.vch-video-bg video');
+          if (!video) return;
+          if (e.isIntersecting) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        });
+      }, { threshold: 0.3 });
+      autoObs.observe(wrap);
+    }
+
+    /* Play / pause click */
+    if (playBtn) {
+      playBtn.addEventListener('click', function() {
+        /* YouTube / Vimeo embed */
+        var embedWrap = wrap.querySelector('[data-vch-embed]');
+        if (embedWrap) {
+          var iframeWrap = embedWrap.querySelector('[data-vch-iframe-wrap]');
+          var posterImg = embedWrap.querySelector('.vch-video-bg__poster');
+          if (iframeWrap && iframeWrap.style.display === 'none') {
+            var vType = embedWrap.dataset.videoType;
+            var vId = embedWrap.dataset.videoId;
+            var iframeSrc = '';
+            if (vType === 'youtube') {
+              iframeSrc = 'https://www.youtube.com/embed/' + vId + '?autoplay=1&mute=1&loop=1&playlist=' + vId + '&controls=0&modestbranding=1&rel=0';
+            } else if (vType === 'vimeo') {
+              iframeSrc = 'https://player.vimeo.com/video/' + vId + '?autoplay=1&muted=1&loop=1&background=1';
+            }
+            if (iframeSrc) {
+              iframeWrap.innerHTML = '<iframe src="' + iframeSrc + '" style="position:absolute;inset:0;width:100%;height:100%;border:0;" allow="autoplay;fullscreen" allowfullscreen></iframe>';
+              iframeWrap.style.display = '';
+              iframeWrap.style.position = 'absolute';
+              iframeWrap.style.inset = '0';
+              iframeWrap.style.width = '100%';
+              iframeWrap.style.height = '100%';
+              iframeWrap.style.zIndex = '1';
+              if (posterImg) posterImg.style.display = 'none';
+              setBtnState(true);
+            }
+          }
+          return;
+        }
+
+        /* MP4 or Shopify hosted video */
+        var video = wrap.querySelector('.vch-video-bg video');
+        if (video) {
+          if (video.paused) {
+            video.play().catch(function(){});
+            setBtnState(true);
+          } else {
+            video.pause();
+            setBtnState(false);
+          }
+        }
+      });
+    }
+
+    /* Progress ring */
+    function updateRing() {
+      var video = wrap.querySelector('.vch-video-bg video');
+      if (video && ring && !video.paused && video.duration) {
+        var progress = video.currentTime / video.duration;
+        var circumference = 2 * Math.PI * 42;
+        ring.style.strokeDashoffset = circumference * (1 - progress);
+      }
+      requestAnimationFrame(updateRing);
+    }
+    updateRing();
+
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Video Cinema Hero",
+  "tag": "section",
+  "class": "vch-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Video source"
+    },
+    {
+      "type": "video",
+      "id": "shopify_video",
+      "label": "Shopify video",
+      "info": "Upload or select a video from your Shopify media library."
+    },
+    {
+      "type": "video_url",
+      "id": "embed_url",
+      "accept": ["youtube", "vimeo"],
+      "label": "YouTube / Vimeo URL",
+      "info": "Used when no Shopify video is set."
+    },
+    {
+      "type": "text",
+      "id": "video_url",
+      "label": "External MP4 URL",
+      "info": "Direct .mp4 link. Used as last fallback."
+    },
+    {
+      "type": "image_picker",
+      "id": "poster",
+      "label": "Poster / fallback image"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Now Streaming"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Cinematic experiences, crafted with care"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Immerse yourself in stories that inspire. Premium quality, unforgettable moments."
+    },
+    {
+      "type": "header",
+      "content": "Buttons"
+    },
+    {
+      "type": "text",
+      "id": "btn_primary_text",
+      "label": "Primary button text",
+      "default": "Explore Now"
+    },
+    {
+      "type": "url",
+      "id": "btn_primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "btn_secondary_text",
+      "label": "Secondary button text",
+      "default": "Watch Trailer"
+    },
+    {
+      "type": "url",
+      "id": "btn_secondary_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "select",
+      "id": "btn_secondary_style",
+      "label": "Secondary button style",
+      "options": [
+        { "value": "secondary", "label": "Outline" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "default": "secondary"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "content_position",
+      "label": "Content position",
+      "options": [
+        { "value": "top-left", "label": "Top Left" },
+        { "value": "top-center", "label": "Top Center" },
+        { "value": "top-right", "label": "Top Right" },
+        { "value": "center-left", "label": "Center Left" },
+        { "value": "center-center", "label": "Center" },
+        { "value": "center-right", "label": "Center Right" },
+        { "value": "bottom-left", "label": "Bottom Left" },
+        { "value": "bottom-center", "label": "Bottom Center" },
+        { "value": "bottom-right", "label": "Bottom Right" }
+      ],
+      "default": "center-left"
+    },
+    {
+      "type": "select",
+      "id": "content_style",
+      "label": "Content style",
+      "options": [
+        { "value": "plain", "label": "Plain (no card)" },
+        { "value": "glass", "label": "Glass card" }
+      ],
+      "default": "plain"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content max width",
+      "min": 360,
+      "max": 800,
+      "step": 20,
+      "default": 560,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Desktop height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 90,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "section_height_mobile",
+      "label": "Mobile height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "section_padding_x",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 80,
+      "step": 8,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Video settings"
+    },
+    {
+      "type": "select",
+      "id": "object_fit",
+      "label": "Video fit",
+      "options": [
+        { "value": "cover", "label": "Cover (fill)" },
+        { "value": "contain", "label": "Contain (fit)" }
+      ],
+      "default": "cover"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_video",
+      "label": "Autoplay",
+      "default": true,
+      "info": "Always muted for browser compatibility."
+    },
+    {
+      "type": "checkbox",
+      "id": "loop_video",
+      "label": "Loop video",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_controls",
+      "label": "Show video controls",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_play_btn",
+      "label": "Show play button",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Overlay & tint"
+    },
+    {
+      "type": "color",
+      "id": "overlay_color",
+      "label": "Overlay color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 35,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2 (glow)",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show ambient glow",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "letterbox_height",
+      "label": "Letterbox bar height",
+      "min": 0,
+      "max": 60,
+      "step": 5,
+      "default": 0,
+      "unit": "px",
+      "info": "Cinematic black bars at top/bottom. Set to 0 to disable."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_scroll_hint",
+      "label": "Show scroll indicator",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "chapter",
+      "name": "Chapter Marker",
+      "settings": [
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Chapter label",
+          "default": "Chapter"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Video Cinema Hero",
+      "settings": {
+        "eyebrow": "Now Streaming",
+        "heading": "Cinematic experiences, crafted with care",
+        "subtitle": "Immerse yourself in stories that inspire. Premium quality, unforgettable moments.",
+        "btn_primary_text": "Explore Now",
+        "btn_secondary_text": "Watch Trailer",
+        "content_position": "center-left",
+        "overlay_opacity": 35,
+        "section_height": 90,
+        "autoplay_video": true,
+        "show_glow": true,
+        "show_scroll_hint": true
+      },
+      "blocks": [
+        {
+          "type": "chapter",
+          "settings": { "label": "Intro" }
+        },
+        {
+          "type": "chapter",
+          "settings": { "label": "Craft" }
+        },
+        {
+          "type": "chapter",
+          "settings": { "label": "Vision" }
+        },
+        {
+          "type": "chapter",
+          "settings": { "label": "Finale" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
