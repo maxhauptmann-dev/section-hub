@@ -2,7 +2,7 @@
   "id": "image-lookbook-scroll",
   "name": "SS - Lookbook Scroll",
   "description": "Cinematic horizontal-scroll lookbook gallery. Full-bleed images with editorial captions, Ken Burns zoom on hover, autoplay with progress bar, dot + arrow navigation, parallax depth, and overlay text positioning. Each slide has its own image, headline, subtitle, link, and badge. Supports light/dark themes, glassmorphism captions, custom fonts, and scroll-snap navigation. 70+ customization options. Perfect for fashion lookbooks, editorial campaigns, and visual storytelling.",
-  "category": "Image",
+  "category": ["Image", "Gallery", "Editorial"],
   "version": "1.0.0",
   "price": {
     "type": "one_time",

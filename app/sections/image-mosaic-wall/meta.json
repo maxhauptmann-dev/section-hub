@@ -2,7 +2,7 @@
   "id": "image-mosaic-wall",
   "name": "SS - Image Mosaic Wall",
   "description": "Premium masonry-style image gallery with Pinterest-inspired layout. Add unlimited images as blocks with captions, links, and category tags. Features category filter tabs with animated transitions, 3 layout modes (masonry, even grid, horizontal scroll), fullscreen lightbox with arrow navigation, hover overlays with icon + title + subtitle, scroll-reveal stagger animations, adjustable columns, gaps, border radius, and aspect ratios. Dark and light themes. 80+ customization options. Perfect for portfolios, lookbooks, brand galleries, and project showcases.",
-  "category": "Image",
+  "category": ["Image", "Gallery", "Portfolio"],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
