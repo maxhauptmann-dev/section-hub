@@ -1,0 +1,30 @@
+{
+  "id": "slider-morphing-panels",
+  "name": "SS - Morphing Panels",
+  "description": "Luxurious accordion-to-slider with expanding panels that morph smoothly between collapsed and full-width states. Each panel features full-bleed imagery with editorial content overlays. Warm cream and gold palette with staggered reveal animations, autoplay, keyboard navigation, and elegant hover expansions. Ideal for portfolios, case studies, and brand storytelling.",
+  "category": ["Slider"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 22,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Accordion",
+    "Panels",
+    "Morph",
+    "Expand",
+    "Editorial",
+    "Light",
+    "Premium",
+    "Animation",
+    "Luxury"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#f6f2ed"
+}

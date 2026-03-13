@@ -1,0 +1,30 @@
+{
+  "id": "slider-cinema-strip",
+  "name": "SS - Cinema Strip",
+  "description": "Film-strip inspired horizontal slider with authentic sprocket-hole borders and vintage cinema aesthetics. Frames scroll continuously with smooth drag interaction and parallax image movement within each frame. Warm white palette with terracotta accents. Features autoplay marquee mode, click-to-focus, caption overlays, and responsive strip sizing. Ideal for visual portfolios, lookbooks, and creative showcases.",
+  "category": ["Slider"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 23,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Cinema",
+    "Film",
+    "Strip",
+    "Vintage",
+    "Retro",
+    "Light",
+    "Creative",
+    "Premium",
+    "Marquee"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#faf7f2"
+}

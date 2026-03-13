@@ -1,0 +1,552 @@
+{% comment %}
+  SectionHub – Parallax Cards Slider  (spc-)
+  Floating depth-layered card slider with parallax
+{% endcomment %}
+
+{%- assign sid = section.id -%}
+{%- assign heading_font = section.settings.heading_font -%}
+{%- assign body_font    = section.settings.body_font -%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #spc-{{ sid }} {
+    --spc-bg: {{ section.settings.bg_color }};
+    --spc-accent: {{ section.settings.accent_color }};
+    --spc-heading-color: {{ section.settings.heading_color }};
+    --spc-text-color: {{ section.settings.text_color }};
+    --spc-card-bg: {{ section.settings.card_bg }};
+    --spc-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --spc-heading-fw: {{ heading_font.weight }};
+    --spc-heading-fs: {{ heading_font.style }};
+    --spc-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --spc-body-fw: {{ body_font.weight }};
+    --spc-card-w: {{ section.settings.card_width }}px;
+    --spc-img-h: {{ section.settings.image_height }}px;
+    --spc-radius: {{ section.settings.card_radius }}px;
+    --spc-gap: {{ section.settings.card_gap }}px;
+    --spc-py: {{ section.settings.padding_y }}px;
+    --spc-px: {{ section.settings.padding_x }}px;
+  }
+</style>
+
+<section id="spc-{{ sid }}" class="spc-wrap" data-spc-reveal>
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="spc-header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="spc-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="spc-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="spc-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="spc-viewport" data-spc-viewport>
+    <div class="spc-track" data-spc-track>
+      {%- for block in section.blocks -%}
+        <article class="spc-card" data-spc-card="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
+          <div class="spc-card__media" data-spc-media>
+            <div class="spc-card__img-wrap">
+              {%- if block.settings.image != blank -%}
+                <img
+                  class="spc-card__img"
+                  src="{{ block.settings.image | image_url: width: 700 }}"
+                  srcset="{{ block.settings.image | image_url: width: 400 }} 400w,
+                          {{ block.settings.image | image_url: width: 700 }} 700w,
+                          {{ block.settings.image | image_url: width: 1000 }} 1000w"
+                  sizes="(max-width:480px) 85vw, {{ section.settings.card_width }}px"
+                  alt="{{ block.settings.image.alt | escape }}"
+                  loading="lazy"
+                >
+              {%- else -%}
+                <div class="spc-card__placeholder">
+                  <svg width="40" height="40" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+                </div>
+              {%- endif -%}
+            </div>
+
+            {%- if block.settings.tag != blank -%}
+              <span class="spc-card__badge">{{ block.settings.tag }}</span>
+            {%- endif -%}
+          </div>
+
+          <div class="spc-card__body">
+            {%- if block.settings.heading != blank -%}
+              <h3 class="spc-card__heading">{{ block.settings.heading }}</h3>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="spc-card__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+            {%- if block.settings.btn_text != blank -%}
+              <a class="spc-card__btn" href="{{ block.settings.btn_link }}">
+                {{ block.settings.btn_text }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            {%- endif -%}
+          </div>
+
+          <div class="spc-card__shadow-layer"></div>
+        </article>
+      {%- endfor -%}
+    </div>
+  </div>
+
+  <div class="spc-controls">
+    {%- if section.settings.show_arrows -%}
+      <div class="spc-arrows">
+        <button class="spc-arrow spc-arrow--prev" data-spc-prev aria-label="Previous">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        </button>
+        <button class="spc-arrow spc-arrow--next" data-spc-next aria-label="Next">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+        </button>
+      </div>
+    {%- endif -%}
+
+    {%- if section.settings.show_dots -%}
+      <div class="spc-dots" data-spc-dots>
+        {%- for block in section.blocks -%}
+          <button class="spc-dot{% if forloop.first %} spc-dot--active{% endif %}" data-spc-dot="{{ forloop.index0 }}" aria-label="Slide {{ forloop.index }}"></button>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+  </div>
+
+  {%- if section.settings.show_progress -%}
+    <div class="spc-progress">
+      <div class="spc-progress__fill" data-spc-fill></div>
+    </div>
+  {%- endif -%}
+</section>
+
+<script>
+  (function(){
+    var wrap     = document.getElementById('spc-{{ sid }}');
+    if(!wrap) return;
+
+    var viewport = wrap.querySelector('[data-spc-viewport]');
+    var track    = wrap.querySelector('[data-spc-track]');
+    var cards    = Array.from(wrap.querySelectorAll('[data-spc-card]'));
+    var dots     = Array.from(wrap.querySelectorAll('[data-spc-dot]'));
+    var prevBtn  = wrap.querySelector('[data-spc-prev]');
+    var nextBtn  = wrap.querySelector('[data-spc-next]');
+    var fillEl   = wrap.querySelector('[data-spc-fill]');
+
+    var count    = cards.length;
+    if(count === 0) return;
+
+    var active    = 0;
+    var autoTimer = null;
+    var auto      = {{ section.settings.autoplay | json }};
+    var speed     = {{ section.settings.autoplay_speed }} * 1000;
+
+    function goTo(idx){
+      active = ((idx % count) + count) % count;
+      var card = cards[active];
+
+      viewport.scrollTo({
+        left: card.offsetLeft - (viewport.offsetWidth - card.offsetWidth) / 2,
+        behavior: 'smooth'
+      });
+
+      cards.forEach(function(c, i){
+        c.classList.toggle('spc-card--active', i === active);
+      });
+
+      dots.forEach(function(d, i){
+        d.classList.toggle('spc-dot--active', i === active);
+      });
+
+      if(fillEl){
+        fillEl.style.width = ((active + 1) / count * 100) + '%';
+      }
+    }
+
+    /* parallax on scroll */
+    function parallax(){
+      var vpRect = viewport.getBoundingClientRect();
+      var vpCenter = vpRect.left + vpRect.width / 2;
+
+      cards.forEach(function(c){
+        var cRect = c.getBoundingClientRect();
+        var cCenter = cRect.left + cRect.width / 2;
+        var offset = (cCenter - vpCenter) / vpRect.width;
+        var media = c.querySelector('[data-spc-media]');
+        if(media){
+          media.style.transform = 'translateY(' + (offset * -15) + 'px)';
+        }
+        /* depth shadow */
+        var dist = Math.abs(offset);
+        c.style.opacity = Math.max(0.4, 1 - dist * 0.8);
+      });
+
+      requestAnimationFrame(parallax);
+    }
+
+    /* arrows */
+    if(prevBtn) prevBtn.addEventListener('click', function(){ goTo(active - 1); startAuto(); });
+    if(nextBtn) nextBtn.addEventListener('click', function(){ goTo(active + 1); startAuto(); });
+
+    /* dots */
+    dots.forEach(function(d, i){
+      d.addEventListener('click', function(){ goTo(i); startAuto(); });
+    });
+
+    /* card click */
+    cards.forEach(function(c, i){
+      c.addEventListener('click', function(){ if(i !== active){ goTo(i); startAuto(); } });
+    });
+
+    /* touch swipe */
+    var tx = 0;
+    viewport.addEventListener('touchstart', function(e){ tx = e.touches[0].clientX; }, {passive:true});
+    viewport.addEventListener('touchend', function(e){
+      var dx = e.changedTouches[0].clientX - tx;
+      if(Math.abs(dx) > 40){
+        if(dx < 0) goTo(active + 1); else goTo(active - 1);
+        startAuto();
+      }
+    }, {passive:true});
+
+    /* keyboard */
+    wrap.setAttribute('tabindex', '0');
+    wrap.addEventListener('keydown', function(e){
+      if(e.key === 'ArrowLeft'){ goTo(active - 1); startAuto(); }
+      if(e.key === 'ArrowRight'){ goTo(active + 1); startAuto(); }
+    });
+
+    /* snap observer */
+    var scrollTimeout;
+    viewport.addEventListener('scroll', function(){
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(function(){
+        var center = viewport.scrollLeft + viewport.offsetWidth / 2;
+        var closest = 0, minDist = Infinity;
+        cards.forEach(function(c, i){
+          var mid = c.offsetLeft + c.offsetWidth / 2;
+          var d = Math.abs(mid - center);
+          if(d < minDist){ minDist = d; closest = i; }
+        });
+        if(closest !== active){
+          active = closest;
+          cards.forEach(function(c, i){ c.classList.toggle('spc-card--active', i === active); });
+          dots.forEach(function(d, i){ d.classList.toggle('spc-dot--active', i === active); });
+          if(fillEl) fillEl.style.width = ((active + 1) / count * 100) + '%';
+          startAuto();
+        }
+      }, 80);
+    }, {passive: true});
+
+    /* autoplay */
+    function startAuto(){
+      stopAuto();
+      if(!auto) return;
+      autoTimer = setInterval(function(){ goTo(active + 1); }, speed);
+    }
+    function stopAuto(){ clearInterval(autoTimer); }
+
+    /* scroll reveal */
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){
+            en.target.classList.add('spc-visible');
+            goTo(0);
+            startAuto();
+            parallax();
+            io.unobserve(en.target);
+          }
+        });
+      }, {threshold: 0.15});
+      io.observe(wrap);
+    } else {
+      wrap.classList.add('spc-visible');
+      goTo(0);
+      startAuto();
+      parallax();
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Parallax Cards Slider",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Highlights"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What makes us different"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Scroll through our highlights and discover what sets our approach apart."
+    },
+    {
+      "type": "header",
+      "content": "Card Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card Width (px)",
+      "min": 260,
+      "max": 440,
+      "step": 10,
+      "default": 340,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image Height (px)",
+      "min": 180,
+      "max": 400,
+      "step": 10,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card Gap (px)",
+      "min": 12,
+      "max": 48,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius (px)",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Behaviour"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay Speed (s)",
+      "min": 3,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Arrows",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show Dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show Progress Bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f0f7f4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#2d8a6e"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a2e28"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#5a7268"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding (px)",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Badge / Tag"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button Text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Parallax Cards Slider",
+      "category": "Slider",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Sustainable",
+            "heading": "Eco Materials",
+            "text": "Responsibly sourced natural fibers and biodegradable packaging for every product we ship.",
+            "btn_text": "Learn More"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Handcrafted",
+            "heading": "Artisan Process",
+            "text": "Each piece is hand-finished by skilled craftspeople using traditional techniques passed down generations.",
+            "btn_text": "Our Story"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Innovation",
+            "heading": "Smart Design",
+            "text": "Modular components that adapt to your needs — no tools required, endlessly reconfigurable.",
+            "btn_text": "See How"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Community",
+            "heading": "Local Impact",
+            "text": "We partner with local workshops to create jobs and keep craftsmanship alive in our communities.",
+            "btn_text": "Read More"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "tag": "Quality",
+            "heading": "Built to Last",
+            "text": "Backed by our lifetime guarantee — designed to age beautifully and stand the test of time.",
+            "btn_text": "Discover"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

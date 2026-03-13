@@ -1,0 +1,30 @@
+{
+  "id": "slider-parallax-cards",
+  "name": "SS - Parallax Cards",
+  "description": "Floating card slider with multi-layer parallax depth effect. Cards hover above a soft gradient backdrop with subtle shadow layering and smooth magnetic cursor interactions. Clean white and mint palette with organic rounded shapes. Features snap scrolling, autoplay with progress indicator, touch swipe, and responsive stacking. Perfect for product showcases and feature highlights.",
+  "category": ["Slider"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 21,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Slider",
+    "Parallax",
+    "Cards",
+    "Floating",
+    "Depth",
+    "Light",
+    "Clean",
+    "Minimal",
+    "Animation",
+    "Modern"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#f0f7f4"
+}

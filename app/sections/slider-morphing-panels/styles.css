@@ -1,0 +1,298 @@
+/* ============================================
+   SectionHub – Morphing Panels Slider  (smp-)
+   Accordion panels that expand / collapse
+   ============================================ */
+
+.smp-wrap *, .smp-wrap *::before, .smp-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.smp-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--smp-bg);
+  padding: var(--smp-py) var(--smp-px);
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.smp-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 48px;
+}
+
+.smp-header__eyebrow {
+  display: inline-block;
+  font-family: var(--smp-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--smp-accent);
+  margin-bottom: 14px;
+}
+
+.smp-header__heading {
+  font-family: var(--smp-heading-ff);
+  font-weight: var(--smp-heading-fw);
+  font-style: var(--smp-heading-fs);
+  font-size: clamp(28px, 3.5vw, 48px);
+  color: var(--smp-heading-color);
+  line-height: 1.12;
+  margin: 0 0 14px;
+}
+
+.smp-header__subtext {
+  font-family: var(--smp-body-ff);
+  font-weight: var(--smp-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--smp-text-color);
+}
+
+/* ---------- Panels Container ---------- */
+.smp-panels {
+  display: flex;
+  gap: var(--smp-gap);
+  height: var(--smp-height);
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ---------- Single Panel ---------- */
+.smp-panel {
+  position: relative;
+  flex: 0 0 72px;
+  height: 100%;
+  border-radius: var(--smp-radius);
+  overflow: hidden;
+  cursor: pointer;
+  transition: flex 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.smp-panel--active {
+  flex: 1 1 0;
+  cursor: default;
+}
+
+/* ---------- Media ---------- */
+.smp-panel__media {
+  position: absolute;
+  inset: 0;
+}
+
+.smp-panel__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.smp-panel--active .smp-panel__img {
+  transform: scale(1.05);
+}
+
+.smp-panel__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #ece7df;
+  color: #c4b99e;
+}
+
+.smp-panel__overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--smp-overlay);
+  opacity: var(--smp-overlay-o);
+  transition: opacity 0.5s ease;
+}
+
+.smp-panel--active .smp-panel__overlay {
+  opacity: calc(var(--smp-overlay-o) * 0.7);
+}
+
+/* ---------- Collapsed State ---------- */
+.smp-panel__collapsed {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  z-index: 3;
+  opacity: 1;
+  transition: opacity 0.35s ease;
+}
+
+.smp-panel--active .smp-panel__collapsed {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.smp-panel__num {
+  font-family: var(--smp-heading-ff);
+  font-weight: var(--smp-heading-fw);
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.9);
+  letter-spacing: 1px;
+}
+
+.smp-panel__vtitle {
+  font-family: var(--smp-body-ff);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.75);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* ---------- Expanded Content ---------- */
+.smp-panel__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 40px;
+  z-index: 3;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease 0.15s, transform 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.15s;
+}
+
+.smp-panel--active .smp-panel__content {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.smp-panel__tag {
+  display: inline-block;
+  font-family: var(--smp-body-ff);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--smp-accent);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  padding: 5px 14px;
+  border-radius: 20px;
+  margin-bottom: 14px;
+}
+
+.smp-panel__heading {
+  font-family: var(--smp-heading-ff);
+  font-weight: var(--smp-heading-fw);
+  font-style: var(--smp-heading-fs);
+  font-size: clamp(22px, 2.5vw, 36px);
+  color: #fff;
+  line-height: 1.15;
+  margin: 0 0 10px;
+}
+
+.smp-panel__text {
+  font-family: var(--smp-body-ff);
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0 0 18px;
+  max-width: 420px;
+}
+
+.smp-panel__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--smp-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  text-decoration: none;
+  background: var(--smp-accent);
+  padding: 10px 22px;
+  border-radius: 6px;
+  transition: gap 0.3s ease, background 0.3s ease;
+}
+
+.smp-panel__btn:hover { gap: 12px; }
+
+/* ---------- Counter ---------- */
+.smp-counter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 28px;
+  font-family: var(--smp-body-ff);
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--smp-text-color);
+  letter-spacing: 2px;
+}
+
+.smp-counter__cur { color: var(--smp-heading-color); }
+.smp-counter__sep { color: var(--smp-accent); font-size: 12px; }
+
+/* ---------- Progress Bar ---------- */
+.smp-progress {
+  max-width: 1300px;
+  margin: 20px auto 0;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.smp-progress__bar {
+  height: 100%;
+  width: 25%;
+  background: var(--smp-accent);
+  border-radius: 2px;
+  transition: width 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Scroll Reveal ---------- */
+[data-smp-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-smp-reveal].smp-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .smp-panels {
+    flex-direction: column;
+    height: auto;
+  }
+  .smp-panel {
+    flex: 0 0 60px;
+    height: 60px;
+    width: 100%;
+  }
+  .smp-panel--active {
+    flex: 0 0 clamp(300px, 55vw, 420px);
+    height: auto;
+    min-height: 300px;
+  }
+  .smp-panel__collapsed {
+    flex-direction: row;
+    gap: 12px;
+  }
+  .smp-panel__vtitle {
+    writing-mode: horizontal-tb;
+    text-orientation: initial;
+  }
+  .smp-panel__content {
+    padding: 24px;
+  }
+  .smp-panel__heading {
+    font-size: 22px;
+  }
+}

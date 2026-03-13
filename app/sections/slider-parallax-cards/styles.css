@@ -1,0 +1,286 @@
+/* ============================================
+   SectionHub – Parallax Cards Slider  (spc-)
+   Floating depth-layered cards with parallax
+   ============================================ */
+
+.spc-wrap *, .spc-wrap *::before, .spc-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.spc-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--spc-bg);
+  padding: var(--spc-py) var(--spc-px);
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.spc-header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 48px;
+}
+
+.spc-header__eyebrow {
+  display: inline-block;
+  font-family: var(--spc-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--spc-accent);
+  margin-bottom: 14px;
+}
+
+.spc-header__heading {
+  font-family: var(--spc-heading-ff);
+  font-weight: var(--spc-heading-fw);
+  font-style: var(--spc-heading-fs);
+  font-size: clamp(26px, 3.5vw, 46px);
+  color: var(--spc-heading-color);
+  line-height: 1.12;
+  margin: 0 0 14px;
+}
+
+.spc-header__subtext {
+  font-family: var(--spc-body-ff);
+  font-weight: var(--spc-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--spc-text-color);
+}
+
+/* ---------- Viewport & Track ---------- */
+.spc-viewport {
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+.spc-viewport::-webkit-scrollbar { display: none; }
+
+.spc-track {
+  display: inline-flex;
+  gap: var(--spc-gap);
+  padding: 24px calc((100vw - var(--spc-card-w)) / 2) 32px;
+}
+
+/* ---------- Card ---------- */
+.spc-card {
+  flex: 0 0 var(--spc-card-w);
+  width: var(--spc-card-w);
+  background: var(--spc-card-bg);
+  border-radius: var(--spc-radius);
+  overflow: hidden;
+  scroll-snap-align: center;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s ease,
+              opacity 0.5s ease;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+}
+
+.spc-card:hover,
+.spc-card--active {
+  transform: translateY(-8px);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12);
+}
+
+/* Multi-layer shadow */
+.spc-card__shadow-layer {
+  position: absolute;
+  inset: 8px;
+  border-radius: var(--spc-radius);
+  z-index: -1;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.08);
+  pointer-events: none;
+}
+
+/* ---------- Media ---------- */
+.spc-card__media {
+  position: relative;
+  height: var(--spc-img-h);
+  overflow: hidden;
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.spc-card__img-wrap {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.spc-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.spc-card:hover .spc-card__img,
+.spc-card--active .spc-card__img {
+  transform: scale(1.06);
+}
+
+.spc-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #e8f0ec;
+  color: #a0bfb0;
+}
+
+.spc-card__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  font-family: var(--spc-body-ff);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--spc-accent);
+  padding: 4px 12px;
+  border-radius: 20px;
+  z-index: 2;
+}
+
+/* ---------- Body ---------- */
+.spc-card__body {
+  padding: 22px 24px 26px;
+}
+
+.spc-card__heading {
+  font-family: var(--spc-heading-ff);
+  font-weight: var(--spc-heading-fw);
+  font-style: var(--spc-heading-fs);
+  font-size: 19px;
+  color: var(--spc-heading-color);
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+
+.spc-card__text {
+  font-family: var(--spc-body-ff);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--spc-text-color);
+  margin: 0 0 16px;
+}
+
+.spc-card__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--spc-body-ff);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--spc-accent);
+  text-decoration: none;
+  transition: gap 0.3s ease;
+}
+
+.spc-card__btn:hover { gap: 10px; }
+
+/* ---------- Controls ---------- */
+.spc-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.spc-arrows {
+  display: flex;
+  gap: 10px;
+}
+
+.spc-arrow {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  background: var(--spc-card-bg);
+  color: var(--spc-heading-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.spc-arrow:hover {
+  background: var(--spc-accent);
+  border-color: var(--spc-accent);
+  color: #fff;
+}
+
+/* ---------- Dots ---------- */
+.spc-dots {
+  display: flex;
+  gap: 8px;
+}
+
+.spc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+}
+
+.spc-dot--active {
+  background: var(--spc-accent);
+  transform: scale(1.35);
+}
+
+.spc-dot:hover { background: rgba(0, 0, 0, 0.25); }
+
+/* ---------- Progress Bar ---------- */
+.spc-progress {
+  max-width: 600px;
+  margin: 20px auto 0;
+  height: 2px;
+  background: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.spc-progress__fill {
+  height: 100%;
+  width: 20%;
+  background: var(--spc-accent);
+  border-radius: 2px;
+  transition: width 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* ---------- Scroll Reveal ---------- */
+[data-spc-reveal] {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-spc-reveal].spc-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .spc-header { margin-bottom: 32px; }
+  .spc-controls { gap: 16px; margin-top: 24px; }
+  .spc-arrow { width: 38px; height: 38px; }
+}
+
+@media (max-width: 480px) {
+  .spc-card__body { padding: 18px 18px 22px; }
+  .spc-card__heading { font-size: 17px; }
+}
