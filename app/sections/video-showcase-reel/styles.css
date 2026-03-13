@@ -277,9 +277,20 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.35s ease;
+  transition: all 0.35s ease, opacity 0.4s ease;
   z-index: 6;
   position: relative;
+}
+
+/* Hide button when video is playing, show on hover over slide */
+.shvr-play-btn--playing {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.shvr-slide:hover .shvr-play-btn--playing {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .shvr-play-btn:hover {

@@ -21,6 +21,7 @@
   assign reel_gap      = section.settings.reel_gap
   assign show_glow     = section.settings.show_glow
   assign show_reel     = section.settings.show_reel
+  assign autoplay_vid  = section.settings.autoplay_video
   assign cta_style     = section.settings.cta_style
   assign btn_radius    = section.settings.btn_radius
   assign section_py    = section.settings.section_padding_y
@@ -78,7 +79,7 @@
     {%- endif -%}
 
     {%- comment -%} Main video stage {%- endcomment -%}
-    <div class="shvr-stage" data-shvr-reveal data-shvr-stage>
+    <div class="shvr-stage" data-shvr-reveal data-shvr-stage{% if autoplay_vid %} data-shvr-autoplay{% endif %}>
       {%- for block in section.blocks -%}
         {%- liquid
           assign has_shopify_video = false
@@ -233,6 +234,8 @@
     var slides = section.querySelectorAll('[data-shvr-slide]');
     var thumbs = section.querySelectorAll('[data-shvr-thumb]');
     var reveals = section.querySelectorAll('[data-shvr-reveal]');
+    var stage = section.querySelector('[data-shvr-stage]');
+    var autoplayEnabled = stage && stage.hasAttribute('data-shvr-autoplay');
     var currentIdx = 0;
 
     /* Scroll reveal */
@@ -245,10 +248,24 @@
     }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
 
     reveals.forEach(function(el) { revealObs.observe(el); });
-
-    /* Also observe the stage */
-    var stage = section.querySelector('[data-shvr-stage]');
     if (stage) revealObs.observe(stage);
+
+    /* Helper: set play button state */
+    function setBtnState(slide, playing) {
+      var btn = slide.querySelector('[data-shvr-play]');
+      if (!btn) return;
+      var iconPlay = btn.querySelector('[data-shvr-icon-play]');
+      var iconPause = btn.querySelector('[data-shvr-icon-pause]');
+      if (playing) {
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconPause) iconPause.style.display = '';
+        btn.classList.add('shvr-play-btn--playing');
+      } else {
+        if (iconPlay) iconPlay.style.display = '';
+        if (iconPause) iconPause.style.display = 'none';
+        btn.classList.remove('shvr-play-btn--playing');
+      }
+    }
 
     function switchSlide(idx) {
       if (idx === currentIdx && slides.length > 1) return;
@@ -257,10 +274,7 @@
         s.classList.remove('shvr-slide--active');
         var v = s.querySelector('video');
         if (v) { v.pause(); }
-        var ip = s.querySelector('[data-shvr-icon-play]');
-        var ipa = s.querySelector('[data-shvr-icon-pause]');
-        if (ip) ip.style.display = '';
-        if (ipa) ipa.style.display = 'none';
+        setBtnState(s, false);
       });
 
       thumbs.forEach(function(t) {
@@ -270,6 +284,15 @@
       slides[idx].classList.add('shvr-slide--active');
       if (thumbs[idx]) thumbs[idx].classList.add('shvr-reel-item--active');
       currentIdx = idx;
+
+      /* Autoplay the new active slide */
+      if (autoplayEnabled) {
+        var newVideo = slides[idx].querySelector('video');
+        if (newVideo) {
+          newVideo.play().catch(function(){});
+          setBtnState(slides[idx], true);
+        }
+      }
     }
 
     /* Thumb clicks */
@@ -280,16 +303,15 @@
       });
     });
 
-    /* Play/pause buttons — handles mp4/Shopify video and YouTube/Vimeo */
+    /* Play/pause buttons */
     var playBtns = section.querySelectorAll('[data-shvr-play]');
     playBtns.forEach(function(btn) {
-      btn.addEventListener('click', function() {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
         var idx = parseInt(btn.dataset.shvrPlay);
         var slide = slides[idx];
-        var iconPlay = btn.querySelector('[data-shvr-icon-play]');
-        var iconPause = btn.querySelector('[data-shvr-icon-pause]');
 
-        /* YouTube / Vimeo embed — check first since it has no <video> */
+        /* YouTube / Vimeo embed */
         var embedWrap = slide.querySelector('[data-shvr-embed]');
         if (embedWrap) {
           var iframeWrap = embedWrap.querySelector('[data-shvr-iframe-wrap]');
@@ -312,33 +334,49 @@
               iframeWrap.style.height = '100%';
               iframeWrap.style.zIndex = '1';
               if (posterImg) posterImg.style.display = 'none';
-              if (iconPlay) iconPlay.style.display = 'none';
-              if (iconPause) iconPause.style.display = '';
+              setBtnState(slide, true);
             }
           }
           return;
         }
 
-        /* MP4 or Shopify hosted video — both render as <video> */
+        /* MP4 or Shopify hosted video */
         var video = slide.querySelector('video');
         if (video) {
           if (video.paused) {
             video.play().catch(function(){});
-            if (iconPlay) iconPlay.style.display = 'none';
-            if (iconPause) iconPause.style.display = '';
+            setBtnState(slide, true);
           } else {
             video.pause();
-            if (iconPlay) iconPlay.style.display = '';
-            if (iconPause) iconPause.style.display = 'none';
+            setBtnState(slide, false);
           }
-          return;
         }
       });
     });
 
-    /* Progress ring update — works for mp4 and Shopify video */
+    /* Autoplay first visible video via IntersectionObserver */
+    if (autoplayEnabled && stage) {
+      var autoObs = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+          var activeSlide = section.querySelector('.shvr-slide--active');
+          if (!activeSlide) return;
+          var video = activeSlide.querySelector('video');
+          if (!video) return;
+          if (e.isIntersecting) {
+            video.play().catch(function(){});
+            setBtnState(activeSlide, true);
+          } else {
+            video.pause();
+            setBtnState(activeSlide, false);
+          }
+        });
+      }, { threshold: 0.3 });
+      autoObs.observe(stage);
+    }
+
+    /* Progress ring update */
     function updateRings() {
-      slides.forEach(function(slide, i) {
+      slides.forEach(function(slide) {
         var video = slide.querySelector('video');
         var ring = slide.querySelector('[data-shvr-ring]');
         if (!video || !ring || video.paused || !video.duration) return;
@@ -521,6 +559,13 @@
     {
       "type": "header",
       "content": "Decorations"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay_video",
+      "label": "Autoplay videos",
+      "default": true,
+      "info": "Videos start automatically when scrolled into view."
     },
     {
       "type": "checkbox",

@@ -231,7 +231,8 @@
   justify-content: center;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
               background 0.3s ease,
-              box-shadow 0.3s ease;
+              box-shadow 0.3s ease,
+              opacity 0.4s ease;
   box-shadow: 0 0 0 0 rgba(255, 255, 255, 0);
 }
 
@@ -239,6 +240,21 @@
   transform: translate(-50%, -50%) scale(1.12);
   background: rgba(255, 255, 255, 0.2);
   box-shadow: 0 0 32px rgba(255, 255, 255, 0.15);
+}
+
+/* Hide button when video is playing, show on hover over video area */
+.shvp-play--playing {
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              background 0.3s ease,
+              box-shadow 0.3s ease,
+              opacity 0.4s ease;
+}
+
+.shvp-video:hover .shvp-play--playing {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .shvp-play svg {

@@ -53,7 +53,7 @@
   }
 </style>
 
-<section class="shvp-wrap shvp-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+<section class="shvp-wrap shvp-wrap--{{ section.id }}" data-section-id="{{ section.id }}"{% if autoplay_vid %} data-shvp-autoplay{% endif %}>
 
   {%- if show_glow -%}
     <div class="shvp-glow shvp-glow--1"></div>
@@ -148,7 +148,6 @@
               muted
               loop
               preload="metadata"
-              {% if autoplay_vid %}data-shvp-autoplay{% endif %}
               poster="{% if block.settings.poster != blank %}{{ block.settings.poster | image_url: width: 1200 }}{% endif %}"
             >
               <source src="{{ block.settings.video_url }}" type="video/mp4">
@@ -260,6 +259,23 @@
     var dots = section.querySelectorAll('[data-shvp-dot]');
     var reveals = section.querySelectorAll('[data-shvp-reveal]');
     var currentIdx = 0;
+    var autoplayEnabled = !!section.dataset.shvpAutoplay;
+
+    /* Helper: toggle play button state + class for auto-hiding */
+    function setPlayBtnState(btn, playing) {
+      if (!btn) return;
+      var iconPlay = btn.querySelector('[data-shvp-icon-play]');
+      var iconPause = btn.querySelector('[data-shvp-icon-pause]');
+      if (playing) {
+        if (iconPlay) iconPlay.style.display = 'none';
+        if (iconPause) iconPause.style.display = '';
+        btn.classList.add('shvp-play--playing');
+      } else {
+        if (iconPlay) iconPlay.style.display = '';
+        if (iconPause) iconPause.style.display = 'none';
+        btn.classList.remove('shvp-play--playing');
+      }
+    }
 
     /* Scroll reveal */
     var obs = new IntersectionObserver(function(entries) {
@@ -272,42 +288,43 @@
 
     reveals.forEach(function(el) { obs.observe(el); });
 
-    /* Autoplay first video if enabled */
-    var firstAutoplay = section.querySelector('[data-shvp-autoplay]');
-    if (firstAutoplay) {
-      var autoplayObs = new IntersectionObserver(function(entries) {
+    /* Autoplay via IntersectionObserver on section */
+    if (autoplayEnabled) {
+      var autoObs = new IntersectionObserver(function(entries) {
         entries.forEach(function(e) {
+          var activePair = pairs[currentIdx];
+          if (!activePair) return;
+          var video = activePair.querySelector('video');
+          var btn = activePair.querySelector('[data-shvp-play]');
           if (e.isIntersecting) {
-            e.target.play().catch(function() {});
-            var pair = e.target.closest('[data-shvp-pair]');
-            if (pair) {
-              var pp = pair.querySelector('[data-shvp-icon-play]');
-              var pa = pair.querySelector('[data-shvp-icon-pause]');
-              if (pp) pp.style.display = 'none';
-              if (pa) pa.style.display = '';
+            if (video) {
+              video.play().catch(function(){});
+              setPlayBtnState(btn, true);
             }
           } else {
-            e.target.pause();
+            if (video) {
+              video.pause();
+              setPlayBtnState(btn, false);
+            }
           }
         });
       }, { threshold: 0.3 });
-      autoplayObs.observe(firstAutoplay);
+      autoObs.observe(section);
     }
 
     /* Switch between pairs */
     function switchPair(idx) {
       if (idx === currentIdx && pairs.length > 1) return;
 
+      /* Pause all and reset buttons */
       pairs.forEach(function(p) {
         p.style.display = 'none';
         p.classList.remove('shvp-split--active');
         p.classList.add('shvp-split--hidden');
         var v = p.querySelector('video');
-        if (v) { v.pause(); }
-        var ip = p.querySelector('[data-shvp-icon-play]');
-        var ipa = p.querySelector('[data-shvp-icon-pause]');
-        if (ip) ip.style.display = '';
-        if (ipa) ipa.style.display = 'none';
+        if (v) v.pause();
+        var b = p.querySelector('[data-shvp-play]');
+        setPlayBtnState(b, false);
       });
 
       dots.forEach(function(d) { d.classList.remove('shvp-dot--active'); });
@@ -325,14 +342,14 @@
       if (dots[idx]) dots[idx].classList.add('shvp-dot--active');
       currentIdx = idx;
 
-      /* Autoplay if enabled */
-      var autoV = pair.querySelector('[data-shvp-autoplay]');
-      if (autoV) {
-        autoV.play().catch(function() {});
-        var pp2 = pair.querySelector('[data-shvp-icon-play]');
-        var pa2 = pair.querySelector('[data-shvp-icon-pause]');
-        if (pp2) pp2.style.display = 'none';
-        if (pa2) pa2.style.display = '';
+      /* Autoplay new slide if enabled */
+      if (autoplayEnabled) {
+        var vid = pair.querySelector('video');
+        var btn = pair.querySelector('[data-shvp-play]');
+        if (vid) {
+          vid.play().catch(function(){});
+          setPlayBtnState(btn, true);
+        }
       }
     }
 
@@ -349,8 +366,6 @@
       btn.addEventListener('click', function() {
         var idx = parseInt(btn.dataset.shvpPlay);
         var pair = pairs[idx];
-        var iconPlay = btn.querySelector('[data-shvp-icon-play]');
-        var iconPause = btn.querySelector('[data-shvp-icon-pause]');
 
         /* YouTube / Vimeo embed — check first since it has no <video> */
         var embedWrap = pair.querySelector('[data-shvp-embed]');
@@ -375,8 +390,7 @@
               iframeWrap.style.height = '100%';
               iframeWrap.style.zIndex = '1';
               if (posterImg) posterImg.style.display = 'none';
-              if (iconPlay) iconPlay.style.display = 'none';
-              if (iconPause) iconPause.style.display = '';
+              setPlayBtnState(btn, true);
             }
           }
           return;
@@ -387,12 +401,10 @@
         if (video) {
           if (video.paused) {
             video.play().catch(function(){});
-            if (iconPlay) iconPlay.style.display = 'none';
-            if (iconPause) iconPause.style.display = '';
+            setPlayBtnState(btn, true);
           } else {
             video.pause();
-            if (iconPlay) iconPlay.style.display = '';
-            if (iconPause) iconPause.style.display = 'none';
+            setPlayBtnState(btn, false);
           }
           return;
         }
@@ -571,7 +583,8 @@
       "type": "checkbox",
       "id": "autoplay_video",
       "label": "Autoplay when visible",
-      "default": false
+      "default": true,
+      "info": "Videos play automatically when visible. Always muted."
     },
     {
       "type": "checkbox",
