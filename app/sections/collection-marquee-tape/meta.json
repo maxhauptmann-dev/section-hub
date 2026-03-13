@@ -1,0 +1,29 @@
+{
+  "id": "collection-marquee-tape",
+  "name": "SS - Collection Marquee",
+  "description": "Infinite scrolling marquee tape showcasing collections in a cinematic horizontal loop. Each collection appears as a wide card with parallax image movement and glassmorphism label overlay. Pauses on hover for exploration. Configurable speed, direction, gap, card sizing, and double or single row layouts. Ideal for visual-first brands and lookbook pages.",
+  "category": ["Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 21,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Marquee",
+    "Tape",
+    "Loop",
+    "Scroll",
+    "Dark",
+    "Cinematic",
+    "Premium",
+    "Animation"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#0e0e14"
+}

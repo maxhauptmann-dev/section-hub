@@ -1,0 +1,432 @@
+{% comment %}
+  SectionHub – Collection Card Stack  (ccs-)
+  Stacked cards that fan out on hover with 3D perspective
+{% endcomment %}
+
+{%- assign sid = section.id -%}
+{%- assign heading_font = section.settings.heading_font -%}
+{%- assign body_font    = section.settings.body_font -%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #ccs-{{ sid }} {
+    --ccs-bg: {{ section.settings.bg_color }};
+    --ccs-accent: {{ section.settings.accent_color }};
+    --ccs-heading-color: {{ section.settings.heading_color }};
+    --ccs-text-color: {{ section.settings.text_color }};
+    --ccs-card-text: {{ section.settings.card_text_color }};
+    --ccs-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --ccs-heading-fw: {{ heading_font.weight }};
+    --ccs-heading-fs: {{ heading_font.style }};
+    --ccs-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --ccs-body-fw: {{ body_font.weight }};
+    --ccs-card-w: {{ section.settings.card_width }}px;
+    --ccs-card-h: {{ section.settings.card_height }}px;
+    --ccs-radius: {{ section.settings.card_radius }}px;
+    --ccs-stack-gap: {{ section.settings.stack_gap }}px;
+    --ccs-fan-angle: {{ section.settings.fan_angle }}deg;
+    --ccs-py: {{ section.settings.padding_y }}px;
+    --ccs-px: {{ section.settings.padding_x }}px;
+    --ccs-overlay-o: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+  }
+</style>
+
+<section id="ccs-{{ sid }}" class="ccs-wrap" data-ccs-reveal>
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+    <div class="ccs-header">
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="ccs-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ccs-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="ccs-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ccs-stacks">
+    {%- for block in section.blocks -%}
+      {%- assign col = block.settings.collection -%}
+      {%- assign col_obj = collections[col] -%}
+      {%- assign card_title = block.settings.title -%}
+      {%- if card_title == blank and col_obj != blank -%}
+        {%- assign card_title = col_obj.title -%}
+      {%- endif -%}
+      {%- assign link_url = block.settings.link -%}
+      {%- if link_url == blank and col_obj != blank -%}
+        {%- assign link_url = col_obj.url -%}
+      {%- endif -%}
+      {%- assign card_image = block.settings.image -%}
+      {%- if card_image == blank and col_obj != blank -%}
+        {%- assign card_image = col_obj.image -%}
+      {%- endif -%}
+
+      <div class="ccs-stack" data-ccs-stack style="--ccs-delay: {{ forloop.index0 | times: 0.12 }}s" {{ block.shopify_attributes }}>
+        {%- comment -%} Background "ghost" cards for depth {%- endcomment -%}
+        <div class="ccs-stack__ghost ccs-stack__ghost--2"></div>
+        <div class="ccs-stack__ghost ccs-stack__ghost--1"></div>
+
+        <a class="ccs-stack__card" href="{{ link_url | default: '#' }}">
+          <div class="ccs-stack__media">
+            {%- if card_image != blank -%}
+              <img
+                class="ccs-stack__img"
+                src="{{ card_image | image_url: width: 800 }}"
+                srcset="{{ card_image | image_url: width: 400 }} 400w,
+                        {{ card_image | image_url: width: 600 }} 600w,
+                        {{ card_image | image_url: width: 800 }} 800w,
+                        {{ card_image | image_url: width: 1100 }} 1100w"
+                sizes="(max-width:480px) 85vw, (max-width:768px) 45vw, {{ section.settings.card_width }}px"
+                alt="{{ card_title | escape }}"
+                loading="lazy"
+              >
+            {%- else -%}
+              <div class="ccs-stack__placeholder">
+                <svg width="48" height="48" fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+              </div>
+            {%- endif -%}
+            <div class="ccs-stack__gradient"></div>
+          </div>
+
+          <div class="ccs-stack__content">
+            {%- if block.settings.tag != blank -%}
+              <span class="ccs-stack__tag">{{ block.settings.tag }}</span>
+            {%- endif -%}
+            {%- if card_title != blank -%}
+              <h3 class="ccs-stack__title">{{ card_title }}</h3>
+            {%- endif -%}
+            {%- if block.settings.subtitle != blank -%}
+              <p class="ccs-stack__subtitle">{{ block.settings.subtitle }}</p>
+            {%- endif -%}
+            {%- if block.settings.btn_text != blank -%}
+              <span class="ccs-stack__btn">
+                {{ block.settings.btn_text }}
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </span>
+            {%- endif -%}
+          </div>
+        </a>
+
+        {%- if block.settings.items_count != blank -%}
+          <span class="ccs-stack__count">{{ block.settings.items_count }} items</span>
+        {%- endif -%}
+      </div>
+    {%- endfor -%}
+  </div>
+</section>
+
+<script>
+  (function(){
+    var wrap = document.getElementById('ccs-{{ sid }}');
+    if(!wrap) return;
+
+    var stacks = Array.from(wrap.querySelectorAll('[data-ccs-stack]'));
+
+    /* staggered scroll reveal */
+    if('IntersectionObserver' in window){
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){
+            en.target.classList.add('ccs-visible');
+            io.unobserve(en.target);
+          }
+        });
+      }, {threshold: 0.1, rootMargin: '0px 0px -30px 0px'});
+
+      var wrapObs = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){
+          if(en.isIntersecting){
+            en.target.classList.add('ccs-visible');
+            stacks.forEach(function(s){ io.observe(s); });
+            wrapObs.unobserve(en.target);
+          }
+        });
+      }, {threshold: 0.05});
+      wrapObs.observe(wrap);
+    } else {
+      wrap.classList.add('ccs-visible');
+      stacks.forEach(function(s){ s.classList.add('ccs-visible'); });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Collection Card Stack",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Shop"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Browse our collections"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Hover to reveal — each stack holds a curated world of products waiting to be explored."
+    },
+    {
+      "type": "header",
+      "content": "Card Dimensions"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card Width (px)",
+      "min": 220,
+      "max": 420,
+      "step": 10,
+      "default": 300,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card Height (px)",
+      "min": 280,
+      "max": 520,
+      "step": 10,
+      "default": 400,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card Radius (px)",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Stack Effect"
+    },
+    {
+      "type": "range",
+      "id": "stack_gap",
+      "label": "Stack Offset (px)",
+      "min": 4,
+      "max": 16,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "fan_angle",
+      "label": "Fan Angle (deg)",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 5,
+      "unit": "deg"
+    },
+    {
+      "type": "header",
+      "content": "Overlay"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Gradient Opacity (%)",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 45,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f5f0eb"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#b0784a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1e1a15"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#73675a"
+    },
+    {
+      "type": "color",
+      "id": "card_text_color",
+      "label": "Card Text Color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading Font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body Font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding (px)",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal Padding (px)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_card",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Custom Image",
+          "info": "Overrides the collection image"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Leave blank to use collection title"
+        },
+        {
+          "type": "text",
+          "id": "tag",
+          "label": "Tag / Label"
+        },
+        {
+          "type": "text",
+          "id": "subtitle",
+          "label": "Subtitle"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button Text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "text",
+          "id": "items_count",
+          "label": "Items Count",
+          "info": "e.g. 24"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Custom Link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Card Stack",
+      "category": "Collection",
+      "blocks": [
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Dresses",
+            "tag": "Women",
+            "subtitle": "From casual to cocktail",
+            "btn_text": "Browse",
+            "items_count": "36"
+          }
+        },
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Outerwear",
+            "tag": "Unisex",
+            "subtitle": "Layer up in style",
+            "btn_text": "Explore",
+            "items_count": "18"
+          }
+        },
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Footwear",
+            "tag": "New In",
+            "subtitle": "Step into comfort",
+            "btn_text": "Shop Now",
+            "items_count": "42"
+          }
+        },
+        {
+          "type": "collection_card",
+          "settings": {
+            "title": "Accessories",
+            "tag": "Curated",
+            "subtitle": "Complete your look",
+            "btn_text": "View All",
+            "items_count": "29"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

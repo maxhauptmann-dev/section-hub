@@ -1,0 +1,196 @@
+/* ============================================
+   SectionHub – Collection Marquee Tape  (cmt-)
+   Infinite scrolling marquee of collections
+   ============================================ */
+
+.cmt-wrap *, .cmt-wrap *::before, .cmt-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.cmt-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--cmt-bg);
+  padding: var(--cmt-py) var(--cmt-px);
+  overflow: hidden;
+}
+
+/* ---------- Header ---------- */
+.cmt-header {
+  text-align: center;
+  max-width: 560px;
+  margin: 0 auto 48px;
+  padding: 0 24px;
+}
+
+.cmt-header__eyebrow {
+  display: inline-block;
+  font-family: var(--cmt-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--cmt-accent);
+  margin-bottom: 14px;
+}
+
+.cmt-header__heading {
+  font-family: var(--cmt-heading-ff);
+  font-weight: var(--cmt-heading-fw);
+  font-style: var(--cmt-heading-fs);
+  font-size: clamp(28px, 3.5vw, 48px);
+  color: var(--cmt-heading-color);
+  line-height: 1.12;
+  margin: 0 0 14px;
+}
+
+.cmt-header__subtext {
+  font-family: var(--cmt-body-ff);
+  font-weight: var(--cmt-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--cmt-text-color);
+}
+
+/* ---------- Tape ---------- */
+.cmt-tape {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+  -webkit-mask-image: linear-gradient(to right, transparent, black 5%, black 95%, transparent);
+}
+
+.cmt-tape--row2 {
+  margin-top: var(--cmt-gap);
+}
+
+/* ---------- Track ---------- */
+.cmt-track {
+  display: flex;
+  gap: var(--cmt-gap);
+  width: max-content;
+}
+
+.cmt-track--left {
+  animation: cmt-scroll-left var(--cmt-speed) linear infinite;
+}
+
+.cmt-track--right {
+  animation: cmt-scroll-right var(--cmt-speed) linear infinite;
+}
+
+/* ---------- Card ---------- */
+.cmt-card {
+  flex: 0 0 var(--cmt-card-w);
+  width: var(--cmt-card-w);
+  height: var(--cmt-card-h);
+  position: relative;
+  border-radius: var(--cmt-radius);
+  overflow: hidden;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.cmt-card:hover {
+  transform: scale(1.04);
+  z-index: 2;
+}
+
+/* ---------- Media ---------- */
+.cmt-card__media {
+  position: absolute;
+  inset: 0;
+}
+
+.cmt-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+
+.cmt-card:hover .cmt-card__img {
+  transform: scale(1.08);
+}
+
+.cmt-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #1a1824;
+  color: #333;
+}
+
+.cmt-card__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* ---------- Label ---------- */
+.cmt-card__label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16px;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cmt-card__tag {
+  font-family: var(--cmt-body-ff);
+  font-weight: 600;
+  font-size: 9px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--cmt-accent);
+}
+
+.cmt-card__title {
+  font-family: var(--cmt-heading-ff);
+  font-weight: var(--cmt-heading-fw);
+  font-size: 18px;
+  color: var(--cmt-card-text);
+  line-height: 1.2;
+}
+
+.cmt-card__subtitle {
+  font-family: var(--cmt-body-ff);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+/* ---------- Reveal ---------- */
+[data-cmt-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-cmt-reveal].cmt-visible { opacity: 1; transform: translateY(0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .cmt-header { margin-bottom: 32px; }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .cmt-track--left,
+  .cmt-track--right {
+    animation: none;
+  }
+  .cmt-tape {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .cmt-tape::-webkit-scrollbar { display: none; }
+}

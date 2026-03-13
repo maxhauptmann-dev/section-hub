@@ -1,0 +1,281 @@
+/* ============================================
+   SectionHub – Collection Card Stack  (ccs-)
+   Stacked cards that fan out on hover
+   ============================================ */
+
+.ccs-wrap *, .ccs-wrap *::before, .ccs-wrap *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.ccs-wrap {
+  position: relative;
+  width: 100%;
+  background: var(--ccs-bg);
+  padding: var(--ccs-py) var(--ccs-px);
+}
+
+/* ---------- Header ---------- */
+.ccs-header {
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto 56px;
+}
+
+.ccs-header__eyebrow {
+  display: inline-block;
+  font-family: var(--ccs-body-ff);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 3.5px;
+  text-transform: uppercase;
+  color: var(--ccs-accent);
+  margin-bottom: 14px;
+}
+
+.ccs-header__heading {
+  font-family: var(--ccs-heading-ff);
+  font-weight: var(--ccs-heading-fw);
+  font-style: var(--ccs-heading-fs);
+  font-size: clamp(28px, 3.5vw, 48px);
+  color: var(--ccs-heading-color);
+  line-height: 1.12;
+  margin: 0 0 14px;
+}
+
+.ccs-header__subtext {
+  font-family: var(--ccs-body-ff);
+  font-weight: var(--ccs-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ccs-text-color);
+}
+
+/* ---------- Stacks Grid ---------- */
+.ccs-stacks {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 56px 40px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+/* ---------- Single Stack ---------- */
+.ccs-stack {
+  position: relative;
+  width: var(--ccs-card-w);
+  height: var(--ccs-card-h);
+  perspective: 800px;
+  cursor: pointer;
+}
+
+/* Ghost cards behind main card */
+.ccs-stack__ghost {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--ccs-radius);
+  background: rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.4s ease;
+}
+
+.ccs-stack__ghost--2 {
+  transform: translateY(calc(var(--ccs-stack-gap) * 2)) scale(0.94);
+  opacity: 0.3;
+}
+
+.ccs-stack__ghost--1 {
+  transform: translateY(var(--ccs-stack-gap)) scale(0.97);
+  opacity: 0.6;
+}
+
+/* Fan out on hover */
+.ccs-stack:hover .ccs-stack__ghost--2 {
+  transform: rotate(calc(var(--ccs-fan-angle) * -1)) translateX(-16px) translateY(8px) scale(0.95);
+  opacity: 0.5;
+}
+
+.ccs-stack:hover .ccs-stack__ghost--1 {
+  transform: rotate(var(--ccs-fan-angle)) translateX(16px) translateY(8px) scale(0.97);
+  opacity: 0.7;
+}
+
+/* ---------- Main Card ---------- */
+.ccs-stack__card {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--ccs-radius);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--ccs-card-text);
+  z-index: 3;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 0.5s ease;
+}
+
+.ccs-stack:hover .ccs-stack__card {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 56px rgba(0, 0, 0, 0.18);
+}
+
+/* ---------- Media ---------- */
+.ccs-stack__media {
+  position: absolute;
+  inset: 0;
+}
+
+.ccs-stack__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ccs-stack:hover .ccs-stack__img {
+  transform: scale(1.06);
+}
+
+.ccs-stack__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: #e2dcd4;
+  color: #bfb5a5;
+}
+
+.ccs-stack__gradient {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, var(--ccs-overlay-o)) 0%,
+    rgba(0, 0, 0, calc(var(--ccs-overlay-o) * 0.3)) 40%,
+    transparent 70%
+  );
+  pointer-events: none;
+}
+
+/* ---------- Content ---------- */
+.ccs-stack__content {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 22px;
+  z-index: 2;
+  transform: translateY(6px);
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ccs-stack:hover .ccs-stack__content {
+  transform: translateY(0);
+}
+
+.ccs-stack__tag {
+  display: inline-block;
+  font-family: var(--ccs-body-ff);
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--ccs-accent);
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(6px);
+  padding: 3px 10px;
+  border-radius: 16px;
+  margin-bottom: 8px;
+}
+
+.ccs-stack__title {
+  font-family: var(--ccs-heading-ff);
+  font-weight: var(--ccs-heading-fw);
+  font-style: var(--ccs-heading-fs);
+  font-size: 22px;
+  color: var(--ccs-card-text);
+  line-height: 1.2;
+  margin: 0 0 4px;
+}
+
+.ccs-stack__subtitle {
+  font-family: var(--ccs-body-ff);
+  font-size: 13px;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 12px;
+}
+
+.ccs-stack__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--ccs-body-ff);
+  font-weight: 600;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--ccs-card-text);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.3s ease 0.1s, transform 0.3s ease 0.1s, gap 0.3s ease;
+}
+
+.ccs-stack:hover .ccs-stack__btn {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ccs-stack__btn:hover { gap: 10px; }
+
+/* ---------- Items Count ---------- */
+.ccs-stack__count {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  z-index: 5;
+  font-family: var(--ccs-body-ff);
+  font-weight: 700;
+  font-size: 11px;
+  color: #fff;
+  background: var(--ccs-accent);
+  padding: 5px 12px;
+  border-radius: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ---------- Staggered Reveal ---------- */
+[data-ccs-reveal] {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+[data-ccs-reveal].ccs-visible { opacity: 1; transform: translateY(0); }
+
+[data-ccs-stack] {
+  opacity: 0;
+  transform: translateY(30px) scale(0.95);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--ccs-delay, 0s),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1) var(--ccs-delay, 0s);
+}
+[data-ccs-stack].ccs-visible { opacity: 1; transform: translateY(0) scale(1); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .ccs-stacks {
+    gap: 48px 24px;
+  }
+  .ccs-header { margin-bottom: 40px; }
+}
+
+@media (max-width: 480px) {
+  .ccs-stacks {
+    flex-direction: column;
+    align-items: center;
+    gap: 40px;
+  }
+}

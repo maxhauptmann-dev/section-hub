@@ -1,0 +1,29 @@
+{
+  "id": "collection-magazine",
+  "name": "SS - Collection Magazine",
+  "description": "Editorial magazine-style collection showcase with alternating large hero and compact sidebar cards. Rich hover animations with image zoom and content slide-up. Features collection picker, custom images, flexible grid ratios, gradient overlays, and staggered scroll-reveal. Perfect for fashion, lifestyle, and premium brand storefronts.",
+  "category": ["Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 19,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Magazine",
+    "Editorial",
+    "Grid",
+    "Fashion",
+    "Premium",
+    "Light",
+    "Hover",
+    "Animation"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#f8f6f3"
+}

@@ -1,0 +1,29 @@
+{
+  "id": "collection-card-stack",
+  "name": "SS - Collection Stack",
+  "description": "Interactive stacked card collection display where cards fan out on hover with smooth 3D perspective transforms. Each card features full-bleed imagery, gradient overlays, and animated content reveals. Configurable stack depth, fan angle, card sizing, and content positioning. Features collection picker, custom images, and scroll-triggered entrance animations. Perfect for curated collections and brand categories.",
+  "category": ["Collection"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 22,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Stack",
+    "Cards",
+    "3D",
+    "Interactive",
+    "Light",
+    "Premium",
+    "Animation",
+    "Hover"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "previewColor": "#f5f0eb"
+}
