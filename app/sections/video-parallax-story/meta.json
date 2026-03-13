@@ -35,7 +35,10 @@
     "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
     "os2": true
   },
-  "files": ["section.liquid", "styles.css"],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
   "createdAt": "2025-07-09",
   "updatedAt": "2025-07-09",
   "changelog": [
