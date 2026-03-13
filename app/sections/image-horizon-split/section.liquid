@@ -1,0 +1,568 @@
+{% comment %}
+  Section Hub – Horizon Split v1.0
+  Cinematic split-screen editorial gallery with alternating
+  image-text layouts, numbered entries, parallax, and scroll-reveal.
+  Prefix: ihs-
+{% endcomment %}
+
+{%- liquid
+  assign hf = section.settings.heading_font
+  assign bf = section.settings.body_font
+  assign layout = section.settings.layout_style
+  assign img_ratio = section.settings.image_ratio
+  assign split = section.settings.split_ratio
+  assign gap = section.settings.entry_gap
+  assign show_numbers = section.settings.show_numbers
+  assign show_line = section.settings.show_accent_line
+  assign hover_zoom = section.settings.hover_zoom
+  assign py = section.settings.section_py
+  assign px = section.settings.section_px
+-%}
+
+<style>
+  {{ hf | font_face: font_display: 'swap' }}
+  {{ bf | font_face: font_display: 'swap' }}
+
+  .ihs-wrap--{{ section.id }} {
+    --ihs-bg: {{ section.settings.bg_color }};
+    --ihs-accent: {{ section.settings.accent_color }};
+    --ihs-heading-ff: {{ hf.family }}, {{ hf.fallback_families }};
+    --ihs-heading-fw: {{ hf.weight }};
+    --ihs-heading-fs: {{ hf.style }};
+    --ihs-body-ff: {{ bf.family }}, {{ bf.fallback_families }};
+    --ihs-body-fw: {{ bf.weight }};
+    --ihs-body-fs: {{ bf.style }};
+    --ihs-heading-color: {{ section.settings.heading_color }};
+    --ihs-text-color: {{ section.settings.text_color }};
+    --ihs-content-bg: {{ section.settings.content_bg }};
+    --ihs-divider: {{ section.settings.divider_color }};
+    --ihs-gap: {{ gap }}px;
+    --ihs-radius: {{ section.settings.card_radius }}px;
+    --ihs-py: {{ py }}px;
+    --ihs-px: {{ px }}px;
+    --ihs-img-ratio: {{ img_ratio }};
+    --ihs-split: {{ split }};
+  }
+</style>
+
+<section class="ihs-wrap ihs-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  <div class="ihs-container">
+
+    {%- comment -%} Section header {%- endcomment -%}
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subtext != blank -%}
+      <div class="ihs-header" data-ihs-reveal>
+        {%- if section.settings.eyebrow != blank -%}
+          <span class="ihs-header__eyebrow">{{ section.settings.eyebrow }}</span>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="ihs-header__heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subtext != blank -%}
+          <p class="ihs-header__subtext">{{ section.settings.subtext }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Entries {%- endcomment -%}
+    <div class="ihs-entries">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign is_even = false
+          assign mod_result = forloop.index0 | modulo: 2
+          if mod_result == 1
+            assign is_even = true
+          endif
+          assign flip = false
+          if layout == 'alternate'
+            if is_even
+              assign flip = true
+            endif
+          elsif layout == 'right'
+            assign flip = true
+          endif
+        -%}
+        <div class="ihs-entry{% if flip %} ihs-entry--flipped{% endif %}"
+             data-ihs-reveal
+             data-ihs-index="{{ forloop.index0 }}"
+             {{ block.shopify_attributes }}>
+
+          {%- comment -%} Image side {%- endcomment -%}
+          <div class="ihs-entry__media">
+            <div class="ihs-entry__img-wrap{% if hover_zoom %} ihs-entry__img-wrap--zoom{% endif %}">
+              {%- if block.settings.image != blank -%}
+                <img
+                  src="{{ block.settings.image | image_url: width: 1200 }}"
+                  srcset="{{ block.settings.image | image_url: width: 600 }} 600w, {{ block.settings.image | image_url: width: 900 }} 900w, {{ block.settings.image | image_url: width: 1200 }} 1200w"
+                  sizes="(max-width: 749px) 100vw, 50vw"
+                  alt="{{ block.settings.image.alt | default: block.settings.heading | escape }}"
+                  loading="lazy"
+                  width="{{ block.settings.image.width }}"
+                  height="{{ block.settings.image.height }}"
+                  class="ihs-entry__img"
+                >
+              {%- else -%}
+                <div class="ihs-entry__placeholder">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </div>
+              {%- endif -%}
+            </div>
+          </div>
+
+          {%- comment -%} Content side {%- endcomment -%}
+          <div class="ihs-entry__content">
+            <div class="ihs-entry__inner">
+              {%- if show_numbers -%}
+                <span class="ihs-entry__number">{{ forloop.index | prepend: '00' | slice: -2, 2 }}</span>
+              {%- endif -%}
+
+              {%- if show_line -%}
+                <div class="ihs-entry__line"></div>
+              {%- endif -%}
+
+              {%- if block.settings.eyebrow != blank -%}
+                <span class="ihs-entry__eyebrow">{{ block.settings.eyebrow }}</span>
+              {%- endif -%}
+
+              {%- if block.settings.heading != blank -%}
+                <h3 class="ihs-entry__heading">{{ block.settings.heading }}</h3>
+              {%- endif -%}
+
+              {%- if block.settings.description != blank -%}
+                <p class="ihs-entry__desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+
+              {%- if block.settings.detail_1 != blank or block.settings.detail_2 != blank -%}
+                <div class="ihs-entry__details">
+                  {%- if block.settings.detail_label_1 != blank -%}
+                    <div class="ihs-entry__detail">
+                      <span class="ihs-entry__detail-label">{{ block.settings.detail_label_1 }}</span>
+                      <span class="ihs-entry__detail-value">{{ block.settings.detail_1 }}</span>
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.detail_label_2 != blank -%}
+                    <div class="ihs-entry__detail">
+                      <span class="ihs-entry__detail-label">{{ block.settings.detail_label_2 }}</span>
+                      <span class="ihs-entry__detail-value">{{ block.settings.detail_2 }}</span>
+                    </div>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
+
+              {%- if block.settings.btn_text != blank -%}
+                <a href="{{ block.settings.btn_link | default: '#' }}" class="ihs-entry__btn">
+                  {{ block.settings.btn_text }}
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          </div>
+        </div>
+
+        {%- comment -%} Divider between entries {%- endcomment -%}
+        {%- unless forloop.last -%}
+          {%- if section.settings.show_divider -%}
+            <div class="ihs-divider" data-ihs-reveal></div>
+          {%- endif -%}
+        {%- endunless -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} CTA {%- endcomment -%}
+    {%- if section.settings.cta_text != blank and section.settings.cta_link != blank -%}
+      <div class="ihs-cta" data-ihs-reveal>
+        <a href="{{ section.settings.cta_link }}" class="ihs-cta__btn ihs-cta__btn--{{ section.settings.cta_style }}">
+          {{ section.settings.cta_text }}
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+  (function(){
+    var sid = '{{ section.id }}';
+    var wrap = document.querySelector('.ihs-wrap--' + sid);
+    if (!wrap) return;
+
+    var revealEls = wrap.querySelectorAll('[data-ihs-reveal]');
+
+    if ('IntersectionObserver' in window) {
+      var observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('ihs-visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+      revealEls.forEach(function(el) { observer.observe(el); });
+    } else {
+      revealEls.forEach(function(el) { el.classList.add('ihs-visible'); });
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "SS - Horizon Split",
+  "tag": "section",
+  "class": "ihs-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Portfolio"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Selected Works"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "A curated selection of our finest projects, presented in cinematic split-screen detail."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Image position",
+      "options": [
+        { "value": "alternate", "label": "Alternating" },
+        { "value": "left", "label": "Always left" },
+        { "value": "right", "label": "Always right" }
+      ],
+      "default": "alternate"
+    },
+    {
+      "type": "select",
+      "id": "split_ratio",
+      "label": "Image-text split",
+      "options": [
+        { "value": "50", "label": "50 / 50" },
+        { "value": "55", "label": "55 / 45" },
+        { "value": "60", "label": "60 / 40" }
+      ],
+      "default": "55"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "auto", "label": "Auto (natural)" },
+        { "value": "4/3", "label": "Landscape 4:3" },
+        { "value": "3/4", "label": "Portrait 3:4" },
+        { "value": "1/1", "label": "Square 1:1" },
+        { "value": "16/9", "label": "Wide 16:9" }
+      ],
+      "default": "4/3"
+    },
+    {
+      "type": "range",
+      "id": "entry_gap",
+      "label": "Entry spacing",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Image radius",
+      "min": 0,
+      "max": 24,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Entry style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_numbers",
+      "label": "Show entry numbers",
+      "default": true,
+      "info": "Large numbered counter (01, 02, 03...)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accent_line",
+      "label": "Show accent line",
+      "default": true,
+      "info": "Decorative colored line above each entry"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_divider",
+      "label": "Show divider line",
+      "default": true,
+      "info": "Thin line between entries"
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_zoom",
+      "label": "Zoom image on hover",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Section size"
+    },
+    {
+      "type": "range",
+      "id": "section_py",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 70,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "section_px",
+      "label": "Horizontal padding",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "Button text"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "cta_style",
+      "label": "Button style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f7f5f2"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#c9a96e"
+    },
+    {
+      "type": "color",
+      "id": "content_bg",
+      "label": "Content area bg",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "divider_color",
+      "label": "Divider color",
+      "default": "#e5e0d8"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "entry",
+      "name": "Entry",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow"
+        },
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Project Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A brief description of this project and its unique highlights."
+        },
+        {
+          "type": "text",
+          "id": "detail_label_1",
+          "label": "Detail label 1"
+        },
+        {
+          "type": "text",
+          "id": "detail_1",
+          "label": "Detail value 1"
+        },
+        {
+          "type": "text",
+          "id": "detail_label_2",
+          "label": "Detail label 2"
+        },
+        {
+          "type": "text",
+          "id": "detail_2",
+          "label": "Detail value 2"
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Horizon Split",
+      "settings": {
+        "eyebrow": "Portfolio",
+        "heading": "Selected Works",
+        "subtext": "A curated selection of our finest projects, presented in cinematic split-screen detail.",
+        "layout_style": "alternate",
+        "split_ratio": "55",
+        "image_ratio": "4/3",
+        "entry_gap": 80,
+        "card_radius": 8,
+        "show_numbers": true,
+        "show_accent_line": true,
+        "show_divider": true,
+        "hover_zoom": true,
+        "bg_color": "#f7f5f2",
+        "heading_color": "#1a1a1a",
+        "accent_color": "#c9a96e",
+        "content_bg": "#ffffff"
+      },
+      "blocks": [
+        {
+          "type": "entry",
+          "settings": {
+            "eyebrow": "Architecture",
+            "heading": "The Glass Pavilion",
+            "description": "A stunning residential project that seamlessly blends indoor and outdoor living through floor-to-ceiling glass walls.",
+            "detail_label_1": "Year",
+            "detail_1": "2025",
+            "detail_label_2": "Location",
+            "detail_2": "Zurich, CH",
+            "btn_text": "View Project"
+          }
+        },
+        {
+          "type": "entry",
+          "settings": {
+            "eyebrow": "Interior Design",
+            "heading": "Minimal Living Space",
+            "description": "Clean lines and warm natural textures define this curated living space for a young family.",
+            "detail_label_1": "Style",
+            "detail_1": "Scandinavian",
+            "detail_label_2": "Area",
+            "detail_2": "120 sqm",
+            "btn_text": "Explore"
+          }
+        },
+        {
+          "type": "entry",
+          "settings": {
+            "eyebrow": "Brand Identity",
+            "heading": "Artisan Coffee Co.",
+            "description": "A complete visual identity redesign for a specialty coffee roaster, from logo to packaging.",
+            "detail_label_1": "Client",
+            "detail_1": "Artisan Coffee",
+            "detail_label_2": "Scope",
+            "detail_2": "Full Branding"
+          }
+        },
+        {
+          "type": "entry",
+          "settings": {
+            "eyebrow": "Photography",
+            "heading": "Golden Hour Series",
+            "description": "Capturing the fleeting beauty of golden light across diverse European landscapes.",
+            "detail_label_1": "Medium",
+            "detail_1": "Digital + Film",
+            "detail_label_2": "Duration",
+            "detail_2": "6 months",
+            "btn_text": "View Gallery"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

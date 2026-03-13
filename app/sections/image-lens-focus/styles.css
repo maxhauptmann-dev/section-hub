@@ -1,0 +1,463 @@
+/* ============================================
+   SectionHub – Lens Focus  (ilf-)
+   Gallery with blur/desaturate-to-sharp focus
+   ============================================ */
+
+/* ---------- Base ---------- */
+.ilf-wrap {
+  background: var(--ilf-bg);
+  padding: var(--ilf-py) var(--ilf-px);
+  overflow: hidden;
+}
+
+.ilf-container {
+  max-width: 1320px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+.ilf-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.ilf-header__eyebrow {
+  display: inline-block;
+  font-family: var(--ilf-body-ff);
+  font-weight: var(--ilf-body-fw);
+  font-style: var(--ilf-body-fs);
+  font-size: 13px;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--ilf-accent);
+  margin-bottom: 12px;
+}
+
+.ilf-header__heading {
+  font-family: var(--ilf-heading-ff);
+  font-weight: var(--ilf-heading-fw);
+  font-style: var(--ilf-heading-fs);
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.15;
+  color: var(--ilf-heading-color);
+  margin: 0 0 14px;
+}
+
+.ilf-header__subtext {
+  font-family: var(--ilf-body-ff);
+  font-weight: var(--ilf-body-fw);
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--ilf-text-color);
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+/* ---------- Filters ---------- */
+.ilf-filters {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 36px;
+}
+
+.ilf-filter {
+  font-family: var(--ilf-body-ff);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 8px 22px;
+  border: 1.5px solid var(--ilf-accent);
+  border-radius: 50px;
+  background: transparent;
+  color: var(--ilf-accent);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.ilf-filter--active,
+.ilf-filter:hover {
+  background: var(--ilf-accent);
+  color: #fff;
+}
+
+/* ---------- Grid ---------- */
+.ilf-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ilf-cols), 1fr);
+  gap: var(--ilf-gap);
+}
+
+/* ---------- Card ---------- */
+.ilf-card {
+  position: relative;
+  border-radius: var(--ilf-radius);
+  overflow: hidden;
+  background: var(--ilf-card-bg);
+  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.45s ease;
+}
+
+.ilf-card--lift:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- Card media ---------- */
+.ilf-card__media {
+  position: relative;
+  overflow: hidden;
+}
+
+.ilf-card__img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: var(--ilf-img-aspect, 3/4);
+  object-fit: cover;
+  backface-visibility: hidden;
+
+  /* --- Unfocused default state --- */
+  filter: blur(var(--ilf-blur)) grayscale(0.8) brightness(0.85);
+  transform: scale(1.06);
+  transition: filter 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              transform 0.7s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+/* --- Focused state (hover mode) --- */
+[data-ilf-mode="hover"] .ilf-card:hover .ilf-card__img,
+.ilf-card.ilf-focused .ilf-card__img {
+  filter: blur(0px) grayscale(0) brightness(1);
+  transform: scale(1);
+}
+
+.ilf-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 3/4;
+  background: var(--ilf-overlay);
+  opacity: 0.08;
+}
+
+.ilf-card__placeholder svg {
+  width: 48px;
+  height: 48px;
+  color: var(--ilf-text-color);
+}
+
+/* Overlay gradient */
+.ilf-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 40%, var(--ilf-overlay) 100%);
+  opacity: 0.3;
+  pointer-events: none;
+  transition: opacity 0.5s ease;
+}
+
+[data-ilf-mode="hover"] .ilf-card:hover .ilf-card__overlay,
+.ilf-card.ilf-focused .ilf-card__overlay {
+  opacity: 0.15;
+}
+
+/* ---------- Spotlight ---------- */
+.ilf-card__spot {
+  --spot-x: 50%;
+  --spot-y: 50%;
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  background: radial-gradient(
+    circle 140px at var(--spot-x) var(--spot-y),
+    rgba(255, 255, 255, 0.22) 0%,
+    transparent 100%
+  );
+  transition: opacity 0.3s ease;
+}
+
+.ilf-card:hover .ilf-card__spot {
+  opacity: 1;
+}
+
+/* ---------- Lens icon ---------- */
+.ilf-card__lens-icon {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 34px;
+  height: 34px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  border-radius: 50%;
+  opacity: 0;
+  transform: scale(0.7);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.ilf-card__lens-icon svg {
+  width: 16px;
+  height: 16px;
+  color: #fff;
+}
+
+[data-ilf-mode="hover"] .ilf-card:hover .ilf-card__lens-icon,
+.ilf-card.ilf-focused .ilf-card__lens-icon {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ---------- Card body ---------- */
+.ilf-card__body {
+  padding: 16px 18px 20px;
+}
+
+.ilf-card__cat {
+  display: inline-block;
+  font-family: var(--ilf-body-ff);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--ilf-accent);
+  margin-bottom: 6px;
+}
+
+.ilf-card__title {
+  font-family: var(--ilf-heading-ff);
+  font-weight: var(--ilf-heading-fw);
+  font-style: var(--ilf-heading-fs);
+  font-size: 18px;
+  line-height: 1.25;
+  color: var(--ilf-heading-color);
+  margin: 0 0 4px;
+}
+
+.ilf-card__caption {
+  font-family: var(--ilf-body-ff);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ilf-text-color);
+  margin: 0;
+}
+
+/* ---------- CTA ---------- */
+.ilf-cta {
+  text-align: center;
+  margin-top: 48px;
+}
+
+.ilf-cta__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--ilf-body-ff);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  padding: 14px 36px;
+  border-radius: 50px;
+  transition: all 0.35s ease;
+}
+
+.ilf-cta__btn--filled {
+  background: var(--ilf-accent);
+  color: #fff;
+  border: 2px solid var(--ilf-accent);
+}
+
+.ilf-cta__btn--filled:hover {
+  background: transparent;
+  color: var(--ilf-accent);
+}
+
+.ilf-cta__btn--outline {
+  background: transparent;
+  color: var(--ilf-accent);
+  border: 2px solid var(--ilf-accent);
+}
+
+.ilf-cta__btn--outline:hover {
+  background: var(--ilf-accent);
+  color: #fff;
+}
+
+/* ---------- Lightbox ---------- */
+.ilf-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.ilf-lightbox--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.ilf-lightbox__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  backdrop-filter: blur(12px);
+}
+
+.ilf-lightbox__content {
+  position: relative;
+  z-index: 2;
+  max-width: 90vw;
+  max-height: 85vh;
+}
+
+.ilf-lightbox__img {
+  display: block;
+  max-width: 90vw;
+  max-height: 85vh;
+  object-fit: contain;
+  border-radius: 6px;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.5);
+}
+
+.ilf-lightbox__close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.12);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.ilf-lightbox__close:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.ilf-lightbox__close svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.ilf-lightbox__arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.ilf-lightbox__arrow:hover {
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.ilf-lightbox__arrow svg {
+  width: 20px;
+  height: 20px;
+  color: #fff;
+}
+
+.ilf-lightbox__arrow--prev {
+  left: 20px;
+}
+
+.ilf-lightbox__arrow--next {
+  right: 20px;
+}
+
+.ilf-lightbox__counter {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 3;
+  font-family: var(--ilf-body-ff, sans-serif);
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+  letter-spacing: 1px;
+}
+
+/* ---------- Scroll reveal ---------- */
+[data-ilf-reveal] {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-ilf-reveal].ilf-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ilf-card[data-ilf-reveal] {
+  transition-delay: calc(var(--stagger, 0) * 70ms);
+}
+
+.ilf-card[data-ilf-index="0"] { --stagger: 0; }
+.ilf-card[data-ilf-index="1"] { --stagger: 1; }
+.ilf-card[data-ilf-index="2"] { --stagger: 2; }
+.ilf-card[data-ilf-index="3"] { --stagger: 3; }
+.ilf-card[data-ilf-index="4"] { --stagger: 4; }
+.ilf-card[data-ilf-index="5"] { --stagger: 5; }
+.ilf-card[data-ilf-index="6"] { --stagger: 6; }
+.ilf-card[data-ilf-index="7"] { --stagger: 7; }
+
+/* ---------- Image aspect ratio from setting ---------- */
+[data-ilf-mode] .ilf-card__img {
+  aspect-ratio: var(--ilf-img-aspect, 3/4);
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 999px) {
+  .ilf-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 599px) {
+  .ilf-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ilf-header {
+    margin-bottom: 28px;
+  }
+
+  .ilf-card__body {
+    padding: 12px 14px 16px;
+  }
+
+  .ilf-lightbox__arrow--prev {
+    left: 10px;
+  }
+
+  .ilf-lightbox__arrow--next {
+    right: 10px;
+  }
+}
