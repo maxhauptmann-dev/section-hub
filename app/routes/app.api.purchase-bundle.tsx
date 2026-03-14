@@ -97,6 +97,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     const sectionIdsParam = validSections.map((s) => s.id).join(",");
     const returnUrl = `${appUrl}/app/billing/complete?shop=${encodeURIComponent(shop)}&bundle=${encodeURIComponent(sectionIdsParam)}&discount=${bundleDiscount}`;
 
+    // Development stores cannot accept real charges – use test mode
+    const isTestCharge = shop.includes("sections-test") || process.env.NODE_ENV === "development";
+
     const response = await admin.graphql(
       `#graphql
       mutation appPurchaseOneTimeCreate($name: String!, $price: MoneyInput!, $returnUrl: URL!, $test: Boolean!) {
@@ -120,7 +123,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
             currencyCode: "EUR",
           },
           returnUrl,
-          test: false,
+          test: isTestCharge,
         },
       },
     );
