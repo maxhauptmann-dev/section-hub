@@ -1,0 +1,526 @@
+{% comment %}
+  Section Hub – Upsell Spotlight Bar Block
+  Elegant horizontal bar with product image + editorial info, savings badge, urgency & trust
+{% endcomment %}
+
+{% if shop.metafields.sectioniq.premium == "active" %}
+
+<style>
+.sh-usb {
+  margin: {{ block.settings.margin_y }}px 0;
+  padding: {{ block.settings.padding }}px;
+  background: {{ block.settings.bg_color }};
+  border: 1px solid {{ block.settings.border_color }};
+  border-radius: {{ block.settings.radius }}px;
+  overflow: hidden;
+}
+
+.sh-usb__inner {
+  display: flex;
+  gap: {{ block.settings.gap }}px;
+  align-items: center;
+}
+
+{% if block.settings.layout == 'image_right' %}
+.sh-usb__inner { flex-direction: row-reverse; }
+{% endif %}
+
+.sh-usb__media {
+  flex: 0 0 {{ block.settings.image_width }}px;
+  border-radius: {{ block.settings.img_radius }}px;
+  overflow: hidden;
+  position: relative;
+}
+
+.sh-usb__img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.sh-usb:hover .sh-usb__img {
+  transform: scale(1.04);
+}
+
+.sh-usb__placeholder {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: #9ca3af;
+}
+
+.sh-usb__badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: {{ block.settings.badge_bg }};
+  color: #fff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 4px 10px;
+  border-radius: 6px;
+  letter-spacing: 0.4px;
+  animation: sh-usb-pop 0.5s ease-out;
+}
+
+@keyframes sh-usb-pop {
+  0% { transform: scale(0); }
+  60% { transform: scale(1.15); }
+  100% { transform: scale(1); }
+}
+
+.sh-usb__info {
+  flex: 1;
+  min-width: 0;
+}
+
+.sh-usb__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: {{ block.settings.accent_color }};
+  margin-bottom: 6px;
+}
+
+.sh-usb__vendor {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: {{ block.settings.text_color }};
+  opacity: 0.55;
+  margin-bottom: 4px;
+}
+
+.sh-usb__title {
+  font-size: {{ block.settings.title_size }}px;
+  font-weight: 700;
+  color: {{ block.settings.heading_color }};
+  line-height: 1.25;
+  margin: 0 0 6px;
+}
+
+.sh-usb__desc {
+  font-size: {{ block.settings.font_size }}px;
+  color: {{ block.settings.text_color }};
+  line-height: 1.5;
+  margin: 0 0 10px;
+}
+
+.sh-usb__prices {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sh-usb__price-now {
+  font-size: {{ block.settings.title_size }}px;
+  font-weight: 800;
+  color: {{ block.settings.heading_color }};
+}
+
+.sh-usb__price-old {
+  font-size: {{ block.settings.font_size }}px;
+  color: {{ block.settings.text_color }};
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
+.sh-usb__urgency {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: {{ block.settings.badge_bg }};
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.sh-usb__urgency-dot {
+  width: 7px;
+  height: 7px;
+  background: {{ block.settings.badge_bg }};
+  border-radius: 50%;
+  animation: sh-usb-pulse 1.5s infinite;
+}
+
+@keyframes sh-usb-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+
+.sh-usb__btn {
+  display: inline-block;
+  padding: 10px 22px;
+  background: {{ block.settings.btn_bg }};
+  color: {{ block.settings.btn_color }};
+  font-size: 13px;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.sh-usb__btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+.sh-usb__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: {{ block.settings.text_color }};
+  opacity: 0.6;
+}
+
+.sh-usb__trust span::before {
+  content: '✓ ';
+  color: {{ block.settings.accent_color }};
+  font-weight: 700;
+}
+
+@media (max-width: 600px) {
+  .sh-usb__inner {
+    flex-direction: column !important;
+  }
+  .sh-usb__media {
+    flex: none;
+    width: 100%;
+  }
+}
+</style>
+
+<div class="sh-usb">
+  <div class="sh-usb__inner">
+
+    <div class="sh-usb__media">
+      {% if block.settings.product_image != blank %}
+        <img class="sh-usb__img" src="{{ block.settings.product_image | image_url: width: 400 }}" alt="{{ block.settings.product_name | escape }}" loading="lazy" width="400" height="400">
+      {% else %}
+        <div class="sh-usb__placeholder">📦</div>
+      {% endif %}
+
+      {% if block.settings.show_badge and block.settings.badge_text != blank %}
+        <span class="sh-usb__badge">{{ block.settings.badge_text }}</span>
+      {% endif %}
+    </div>
+
+    <div class="sh-usb__info">
+      {% if block.settings.label_text != blank %}
+        <div class="sh-usb__label">{{ block.settings.label_text }}</div>
+      {% endif %}
+
+      {% if block.settings.product_vendor != blank %}
+        <div class="sh-usb__vendor">{{ block.settings.product_vendor }}</div>
+      {% endif %}
+
+      {% if block.settings.product_name != blank %}
+        <h3 class="sh-usb__title">{{ block.settings.product_name }}</h3>
+      {% endif %}
+
+      {% if block.settings.description != blank %}
+        <p class="sh-usb__desc">{{ block.settings.description }}</p>
+      {% endif %}
+
+      {% if block.settings.show_price and block.settings.product_price != blank %}
+        <div class="sh-usb__prices">
+          <span class="sh-usb__price-now">{{ block.settings.product_price }}</span>
+          {% if block.settings.product_compare_price != blank %}
+            <span class="sh-usb__price-old">{{ block.settings.product_compare_price }}</span>
+          {% endif %}
+        </div>
+      {% endif %}
+
+      {% if block.settings.show_urgency and block.settings.urgency_text != blank %}
+        <div class="sh-usb__urgency">
+          <span class="sh-usb__urgency-dot"></span>
+          {{ block.settings.urgency_text }}
+        </div>
+      {% endif %}
+
+      <button class="sh-usb__btn" type="button">{{ block.settings.btn_text }}</button>
+
+      {% if block.settings.show_trust %}
+        <div class="sh-usb__trust">
+          <span>Free Shipping</span>
+          <span>Easy Returns</span>
+          <span>Secure Payment</span>
+        </div>
+      {% endif %}
+    </div>
+
+  </div>
+</div>
+
+{% else %}
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
+  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
+</div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "SH - Upsell Spotlight",
+  "target": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Product"
+    },
+    {
+      "type": "image_picker",
+      "id": "product_image",
+      "label": "Product Image"
+    },
+    {
+      "type": "text",
+      "id": "product_name",
+      "label": "Product Name",
+      "default": "Premium Leather Case"
+    },
+    {
+      "type": "text",
+      "id": "product_vendor",
+      "label": "Vendor"
+    },
+    {
+      "type": "text",
+      "id": "product_price",
+      "label": "Price",
+      "default": "€39.00"
+    },
+    {
+      "type": "text",
+      "id": "product_compare_price",
+      "label": "Compare Price",
+      "default": "€59.00"
+    },
+    {
+      "type": "text",
+      "id": "description",
+      "label": "Short Description",
+      "default": "The perfect companion for your new purchase."
+    },
+    {
+      "type": "header",
+      "content": "Labels & Badge"
+    },
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Label above title",
+      "default": "Pairs perfectly with your order"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show savings badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Badge Text",
+      "default": "-34%"
+    },
+    {
+      "type": "header",
+      "content": "Features"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_urgency",
+      "label": "Show urgency indicator",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "urgency_text",
+      "label": "Urgency text",
+      "default": "Only 3 left in stock"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_trust",
+      "label": "Show trust badges",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button Text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Image position",
+      "options": [
+        { "value": "image_left", "label": "Image left" },
+        { "value": "image_right", "label": "Image right" }
+      ],
+      "default": "image_left"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image Width",
+      "min": 80,
+      "max": 200,
+      "step": 10,
+      "default": 140,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Gap",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding",
+      "label": "Padding",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_y",
+      "label": "Vertical Margin",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "radius",
+      "label": "Card Border Radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "img_radius",
+      "label": "Image Border Radius",
+      "min": 0,
+      "max": 16,
+      "step": 2,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size",
+      "label": "Title Size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Body Font Size",
+      "min": 11,
+      "max": 16,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fdfaf6"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border",
+      "default": "#ede8df"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading Color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#6b6b6b"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#b8864e"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge Background",
+      "default": "#ef4444"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button Background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button Text Color",
+      "default": "#ffffff"
+    }
+  ]
+}
+{% endschema %}
