@@ -46,6 +46,9 @@ const ALL_BLOCKS: ConversionBlock[] = [
   { id: "inventory-status", name: "Inventory Status", description: "Display stock status badges with pulsing indicator", preview: "/previews/blocks/inventory-status.svg", premium: true, category: "Urgency" },
   { id: "countdown-shipping", name: "Countdown Shipping Bar", description: "Order within X hours for same-day shipping with live timer", preview: "/previews/blocks/countdown-shipping.svg", premium: true, category: "Urgency" },
   { id: "smart-upsell", name: "Smart Upsell Carousel", description: "Dynamic product recommendations with one-click add to cart", preview: "/previews/blocks/smart-upsell.svg", premium: true, category: "Conversion" },
+  { id: "upsell-spotlight-bar", name: "Upsell Spotlight Bar", description: "Elegant horizontal bar with product image, savings badge, urgency indicator and trust badges", preview: "/previews/blocks/upsell-spotlight-bar.svg", premium: true, category: "Upsell" },
+  { id: "upsell-card-stack", name: "Upsell Card Stack", description: "Dark-themed stacked product cards with glow effects, shine animation and savings badges", preview: "/previews/blocks/upsell-card-stack.svg", premium: true, category: "Upsell" },
+  { id: "upsell-carousel-drawer", name: "Upsell Carousel", description: "Snap carousel with glassmorphism cards, navigation arrows, dot indicators and progress bar", preview: "/previews/blocks/upsell-carousel-drawer.svg", premium: true, category: "Upsell" },
 ];
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string }> = {
@@ -55,6 +58,7 @@ const CATEGORY_COLORS: Record<string, { bg: string; text: string; border: string
   Info: { bg: "rgba(59,130,246,0.08)", text: "#1d4ed8", border: "rgba(59,130,246,0.2)" },
   Media: { bg: "rgba(168,85,247,0.08)", text: "#7e22ce", border: "rgba(168,85,247,0.2)" },
   Layout: { bg: "rgba(107,114,128,0.08)", text: "#374151", border: "rgba(107,114,128,0.2)" },
+  Upsell: { bg: "rgba(184,134,78,0.1)", text: "#92400e", border: "rgba(184,134,78,0.25)" },
 };
 
 export default function ConversionBlocksPage() {
@@ -163,6 +167,9 @@ export default function ConversionBlocksPage() {
         .sh-blk-card:nth-child(14){animation-delay:.42s}
         .sh-blk-card:nth-child(15){animation-delay:.45s}
         .sh-blk-card:nth-child(16){animation-delay:.48s}
+        .sh-blk-card:nth-child(17){animation-delay:.51s}
+        .sh-blk-card:nth-child(18){animation-delay:.54s}
+        .sh-blk-card:nth-child(19){animation-delay:.57s}
         .sh-blk-card:hover{
           box-shadow:0 8px 28px rgba(0,0,0,0.08);
           border-color:#c7d2fe;
@@ -283,7 +290,8 @@ export default function ConversionBlocksPage() {
                 { label: "Urgency", value: ALL_BLOCKS.filter(b => b.category === "Urgency").length, icon: "🔥" },
                 { label: "Trust", value: ALL_BLOCKS.filter(b => b.category === "Trust").length, icon: "🛡️" },
                 { label: "Conversion", value: ALL_BLOCKS.filter(b => b.category === "Conversion").length, icon: "💰" },
-                { label: "Info & More", value: ALL_BLOCKS.filter(b => !["Urgency","Trust","Conversion"].includes(b.category)).length, icon: "📦" },
+                { label: "Upsell", value: ALL_BLOCKS.filter(b => b.category === "Upsell").length, icon: "🛒" },
+                { label: "Info & More", value: ALL_BLOCKS.filter(b => !["Urgency","Trust","Conversion","Upsell"].includes(b.category)).length, icon: "📦" },
               ].map((s) => (
                 <div key={s.label} className="sh-blk-stat">
                   <div style={{ fontSize: 11, color: "#64748b", marginBottom: 4 }}>{s.icon} {s.label}</div>
