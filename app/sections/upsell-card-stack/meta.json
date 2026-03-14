@@ -1,0 +1,35 @@
+{
+  "id": "upsell-card-stack",
+  "name": "SS - Upsell Stack",
+  "description": "Eye-catching upsell section with multiple product cards arranged in a visually stacked, overlapping layout that fans out on scroll. Each card shows product image, title, vendor, price comparison, and a savings percentage badge. The stacked presentation creates depth and visual hierarchy, drawing attention to each upsell offer. Cards animate into view with staggered delays. Includes configurable card count, overlap amount, image ratio, badge style, CTA buttons, and full color customization. Ideal for product page cross-sells, bundle suggestions, and post-purchase upsells.",
+  "category": ["Upsell"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 27,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Upsell",
+    "Cross-sell",
+    "Product",
+    "Card Stack",
+    "Premium",
+    "Animation",
+    "Dark",
+    "Interactive"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#0e0e18",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14"
+}

@@ -1,0 +1,35 @@
+{
+  "id": "upsell-spotlight-bar",
+  "name": "SS - Upsell Bar",
+  "description": "Premium upsell spotlight bar that highlights a single product in an elegant horizontal layout with a lifestyle image on one side and compelling product details on the other. Features an animated savings badge, compare-at-price with strikethrough, configurable urgency text, a bold Add to Cart CTA with hover effects, and optional trust icons. The bar can be placed anywhere on product pages, cart pages, or landing pages. Configurable layout direction, image ratio, badge style, typography, colors, and spacing. Perfect for cross-selling, frequently bought together, and last-chance upsells.",
+  "category": ["Upsell"],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 25,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Upsell",
+    "Cross-sell",
+    "Product",
+    "Spotlight",
+    "Conversion",
+    "Premium",
+    "Animation",
+    "CTA"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "Section Hub",
+  "previewColor": "#fdfaf6",
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "os2": true
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14"
+}

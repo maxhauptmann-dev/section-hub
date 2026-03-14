@@ -1,0 +1,392 @@
+{% comment %}
+  SectionHub – Upsell Card Stack  (ucs-)
+  Stacked overlapping product cards with savings badges
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_savings
+  assign img_ratio    = section.settings.image_ratio
+-%}
+
+<style>
+  {{ heading_font | font_face }}
+  {{ body_font | font_face }}
+
+  #ucs-{{ section.id }} {
+    --ucs-bg: {{ section.settings.bg_color }};
+    --ucs-heading-c: {{ section.settings.heading_color }};
+    --ucs-text-c: {{ section.settings.text_color }};
+    --ucs-accent: {{ section.settings.accent_color }};
+    --ucs-card-bg: {{ section.settings.card_bg }};
+    --ucs-badge-bg: {{ section.settings.badge_color }};
+    --ucs-btn-bg: {{ section.settings.btn_bg }};
+    --ucs-btn-c: {{ section.settings.btn_color }};
+    --ucs-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --ucs-heading-fw: {{ heading_font.weight }};
+    --ucs-heading-fs: {{ heading_font.style }};
+    --ucs-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --ucs-body-fw: {{ body_font.weight }};
+    --ucs-radius: {{ section.settings.card_radius }}px;
+    --ucs-py: {{ section.settings.padding_top }}px;
+    --ucs-pb: {{ section.settings.padding_bottom }}px;
+    --ucs-px: {{ section.settings.padding_sides }}px;
+    --ucs-max-w: {{ section.settings.max_width }}px;
+    --ucs-img-ratio: {{ img_ratio }};
+  }
+</style>
+
+<section id="ucs-{{ section.id }}" class="ucs-wrap">
+
+  {%- if section.settings.eyebrow != blank or section.settings.heading != blank -%}
+    <div class="ucs-header" data-ucs-el>
+      {%- if section.settings.eyebrow != blank -%}
+        <span class="ucs-header__eyebrow">{{ section.settings.eyebrow }}</span>
+      {%- endif -%}
+      {%- if section.settings.heading != blank -%}
+        <h2 class="ucs-header__heading">{{ section.settings.heading }}</h2>
+      {%- endif -%}
+      {%- if section.settings.subtext != blank -%}
+        <p class="ucs-header__subtext">{{ section.settings.subtext }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="ucs-grid">
+    {%- for block in section.blocks -%}
+      {%- if block.type == 'product_card' -%}
+        {%- assign p = block.settings.product -%}
+
+        <div
+          class="ucs-card"
+          data-ucs-card
+          style="--ucs-delay: {{ forloop.index0 | times: 0.12 }}s;"
+          {{ block.shopify_attributes }}
+        >
+          {%- comment -%} Card glow {%- endcomment -%}
+          <div class="ucs-card__glow"></div>
+
+          {%- comment -%} Image {%- endcomment -%}
+          <div class="ucs-card__media">
+            {%- if block.settings.custom_image != blank -%}
+              <img
+                src="{{ block.settings.custom_image | image_url: width: 500 }}"
+                alt="{{ p.title | default: 'Product' | escape }}"
+                loading="lazy"
+                class="ucs-card__img"
+              >
+            {%- elsif p != blank and p.featured_image -%}
+              <img
+                src="{{ p.featured_image | image_url: width: 500 }}"
+                alt="{{ p.featured_image.alt | default: p.title | escape }}"
+                loading="lazy"
+                class="ucs-card__img"
+              >
+            {%- else -%}
+              <div class="ucs-card__placeholder">
+                {{ 'product-1' | placeholder_svg_tag: 'ucs-card__svg' }}
+              </div>
+            {%- endif -%}
+
+            {%- if show_badge and p != blank and p.compare_at_price > p.price -%}
+              {%- assign save_pct = p.compare_at_price | minus: p.price | times: 100 | divided_by: p.compare_at_price -%}
+              <span class="ucs-card__badge">-{{ save_pct }}%</span>
+            {%- endif -%}
+
+            <div class="ucs-card__shine"></div>
+          </div>
+
+          {%- comment -%} Info {%- endcomment -%}
+          <div class="ucs-card__info">
+            {%- if block.settings.tag_text != blank -%}
+              <span class="ucs-card__tag">{{ block.settings.tag_text }}</span>
+            {%- endif -%}
+
+            {%- if p != blank -%}
+              {%- if show_vendor and p.vendor != blank -%}
+                <span class="ucs-card__vendor">{{ p.vendor }}</span>
+              {%- endif -%}
+              <h3 class="ucs-card__title">
+                <a href="{{ p.url }}">{{ p.title }}</a>
+              </h3>
+
+              {%- if show_price -%}
+                <div class="ucs-card__price">
+                  {%- if p.compare_at_price > p.price -%}
+                    <span class="ucs-card__price-old">{{ p.compare_at_price | money }}</span>
+                  {%- endif -%}
+                  <span class="ucs-card__price-now">{{ p.price | money }}</span>
+                </div>
+              {%- endif -%}
+
+              <a href="{{ p.url }}" class="ucs-card__btn">
+                {{ section.settings.btn_text }}
+              </a>
+            {%- else -%}
+              <p class="ucs-card__empty">Select a product</p>
+            {%- endif -%}
+          </div>
+        </div>
+
+      {%- endif -%}
+    {%- endfor -%}
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var w = document.getElementById('ucs-{{ section.id }}');
+  if (!w) return;
+  var obs = new IntersectionObserver(function(es){
+    es.forEach(function(e){
+      if (e.isIntersecting){ e.target.classList.add('ucs-visible'); obs.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  w.querySelectorAll('[data-ucs-el]').forEach(function(el){ obs.observe(el); });
+  w.querySelectorAll('[data-ucs-card]').forEach(function(el){ obs.observe(el); });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Upsell Card Stack",
+  "tag": "section",
+  "class": "ucs-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Don't Miss Out"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Bought Together"
+    },
+    {
+      "type": "textarea",
+      "id": "subtext",
+      "label": "Subtext",
+      "default": "Customers who viewed this also loved these picks."
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square 1:1" },
+        { "value": "4 / 5", "label": "Portrait 4:5" },
+        { "value": "3 / 4", "label": "Portrait 3:4" }
+      ],
+      "default": "4 / 5"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max section width",
+      "min": 800,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Product Details"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings badge",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "Add to Cart"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "space_grotesk_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#0e0e18"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#18182e"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#f0f0f8"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#8888a0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#8b6cf5"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge",
+      "default": "#ef4444"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button bg",
+      "default": "#8b6cf5"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product_card",
+      "name": "Upsell Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "image_picker",
+          "id": "custom_image",
+          "label": "Custom image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "tag_text",
+          "label": "Tag label",
+          "default": "Best Seller"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SS - Upsell Stack",
+      "settings": {
+        "eyebrow": "Don't Miss Out",
+        "heading": "Frequently Bought Together",
+        "subtext": "Customers who viewed this also loved these picks.",
+        "show_vendor": true,
+        "show_price": true,
+        "show_savings": true,
+        "btn_text": "Add to Cart"
+      },
+      "blocks": [
+        { "type": "product_card", "settings": { "tag_text": "Best Seller" } },
+        { "type": "product_card", "settings": { "tag_text": "Staff Pick" } },
+        { "type": "product_card", "settings": { "tag_text": "Trending" } }
+      ]
+    }
+  ]
+}
+{% endschema %}
