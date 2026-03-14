@@ -143,7 +143,7 @@ export default function DashboardPage() {
       <style>{`
         .sh-steps{display:grid;grid-template-columns:1fr;gap:10px}
         @media(min-width:640px){.sh-steps{grid-template-columns:repeat(3,1fr)}}
-        .sh-two-col{display:grid;grid-template-columns:1fr;gap:12px}
+        .sh-two-col{display:grid;grid-template-columns:1fr;gap:12px;align-items:stretch}
         @media(min-width:640px){.sh-two-col{grid-template-columns:3fr 2fr;gap:16px}}
         .sh-actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
         @media(min-width:640px){.sh-actions{grid-template-columns:repeat(5,1fr);gap:12px}}
@@ -185,6 +185,7 @@ export default function DashboardPage() {
           background-size:300% 300%;
           animation:sh-gradient-move 8s ease infinite;
           min-height:180px;
+          display:flex;flex-direction:column;justify-content:center;
         }
         .sh-premium-card::before{
           content:'';position:absolute;top:0;left:0;right:0;bottom:0;
@@ -196,6 +197,26 @@ export default function DashboardPage() {
         .sh-premium-card::after{
           content:'';position:absolute;top:-40%;right:-20%;width:60%;height:80%;
           background:radial-gradient(circle,rgba(52,211,153,0.12) 0%,transparent 70%);
+          pointer-events:none;
+        }
+        .sh-premium-upsell{
+          position:relative;overflow:hidden;border-radius:16px;padding:24px;
+          background:linear-gradient(-45deg,#4c1d95,#5b21b6,#7c3aed,#8b5cf6);
+          background-size:300% 300%;
+          animation:sh-gradient-move 8s ease infinite;
+          min-height:180px;
+          display:flex;flex-direction:column;justify-content:space-between;
+        }
+        .sh-premium-upsell::before{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;
+          background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.15) 50%,transparent 60%);
+          background-size:200% 200%;
+          animation:sh-shimmer 4s ease-in-out infinite;
+          pointer-events:none;
+        }
+        .sh-premium-upsell::after{
+          content:'';position:absolute;top:-40%;right:-20%;width:60%;height:80%;
+          background:radial-gradient(circle,rgba(167,139,250,0.18) 0%,transparent 70%);
           pointer-events:none;
         }
 
@@ -458,29 +479,39 @@ export default function DashboardPage() {
             </div>
 
             {!isPremium ? (
-              <Card padding="0">
-                <div style={{
-                  background: "linear-gradient(135deg, #7c3aed 0%, #8b5cf6 40%, #a78bfa 100%)",
-                  borderRadius: 12, padding: "18px 20px", height: "100%",
-                  display: "flex", flexDirection: "column", justifyContent: "space-between",
-                }}>
-                  <BlockStack gap="200">
+              <div className="sh-premium-upsell" onClick={() => navigate("/app/premium")} onKeyDown={() => {}} role="button" tabIndex={0} style={{ cursor: "pointer" }}>
+                <div style={{ position: "relative", zIndex: 1, display: "flex", flexDirection: "column", height: "100%", gap: 14 }}>
+                  <div>
                     <InlineStack gap="200" blockAlign="center" wrap>
-                      <span style={{ fontSize: 22 }}>👑</span>
+                      <span style={{ fontSize: 24 }}>👑</span>
                       <Text as="h2" variant="headingMd"><span style={{ color: "white" }}>Premium</span></Text>
-                      <Badge tone="info">€8/mo</Badge>
+                      <span style={{
+                        background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)",
+                        color: "white", fontSize: 12, fontWeight: 700, padding: "2px 10px", borderRadius: 20,
+                      }}>€8/mo</span>
                     </InlineStack>
-                    <BlockStack gap="050">
+                    <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
                       {["📦 All sections included", "🔓 All Premium Blocks", "🆕 New sections monthly", "⚡ Priority support"].map((t) => (
                         <Text key={t} as="p" variant="bodySm"><span style={{ color: "rgba(255,255,255,0.9)" }}>{t}</span></Text>
                       ))}
-                    </BlockStack>
-                  </BlockStack>
-                  <div style={{ marginTop: 12 }}>
-                    <Button variant="primary" onClick={() => navigate("/app/premium")}>Upgrade →</Button>
+                    </div>
+                  </div>
+                  <div>
+                    <button
+                      onClick={(e) => { e.stopPropagation(); navigate("/app/premium"); }}
+                      style={{
+                        background: "white", color: "#5b21b6", border: "none", borderRadius: 10,
+                        padding: "10px 20px", fontWeight: 700, fontSize: 14, cursor: "pointer",
+                        transition: "all .2s ease", display: "inline-flex", alignItems: "center", gap: 6,
+                      }}
+                      onMouseEnter={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = "translateY(-2px)"; (e.currentTarget as HTMLButtonElement).style.boxShadow = "0 4px 16px rgba(0,0,0,0.2)"; }}
+                      onMouseLeave={(e) => { (e.currentTarget as HTMLButtonElement).style.transform = ""; (e.currentTarget as HTMLButtonElement).style.boxShadow = ""; }}
+                    >
+                      Upgrade → 
+                    </button>
                   </div>
                 </div>
-              </Card>
+              </div>
             ) : (
               <div className="sh-premium-card">
                 <div style={{ position: "relative", zIndex: 1 }}>
