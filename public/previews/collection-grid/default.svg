@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360" viewBox="0 0 600 360">
+<rect width="600" height="360" fill="#f8f8f8"/>
+<text x="300" y="35" text-anchor="middle" font-family="system-ui" font-size="20" fill="#1a1a1a" font-weight="700">Shop Collections</text>
+<rect x="20" y="55" width="275" height="135" rx="10" fill="#ffffff"/>
+<line x1="28" y1="63" x2="287" y2="182" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<line x1="287" y1="63" x2="28" y2="182" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<rect x="305" y="55" width="275" height="135" rx="10" fill="#ffffff"/>
+<line x1="313" y1="63" x2="572" y2="182" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<line x1="572" y1="63" x2="313" y2="182" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<rect x="20" y="200" width="275" height="135" rx="10" fill="#ffffff"/>
+<line x1="28" y1="208" x2="287" y2="327" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<line x1="287" y1="208" x2="28" y2="327" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<rect x="305" y="200" width="275" height="135" rx="10" fill="#ffffff"/>
+<line x1="313" y1="208" x2="572" y2="327" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<line x1="572" y1="208" x2="313" y2="327" stroke="#ffffff" stroke-width="1" opacity=".3"/>
+<text x="157" y="133" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1a1a1a" font-weight="600">Summer</text>
+<text x="442" y="133" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1a1a1a" font-weight="600">Winter</text>
+<text x="157" y="278" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1a1a1a" font-weight="600">New In</text>
+<text x="442" y="278" text-anchor="middle" font-family="system-ui" font-size="14" fill="#1a1a1a" font-weight="600">Sale</text>
+</svg>

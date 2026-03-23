@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="360" viewBox="0 0 600 360">
+<rect width="600" height="360" fill="#0f0f1a"/>
+<text x="300" y="30" text-anchor="middle" font-family="system-ui" font-size="16" fill="#ffffff" font-weight="700">Highlight Text</text>
+<text x="300" y="50" text-anchor="middle" font-family="system-ui" font-size="10" fill="#8888aa">Words highlight as you scroll</text>
+<text x="300" y="170" text-anchor="middle" font-family="system-ui" font-size="24" fill="#8888aa">
+<tspan fill="#ffffff">We craft </tspan><tspan fill="#818cf8">beautiful</tspan><tspan fill="#8888aa"> products</tspan>
+</text>
+<text x="300" y="210" text-anchor="middle" font-family="system-ui" font-size="24" fill="#8888aa">
+<tspan fill="#818cf8">designed</tspan><tspan fill="#8888aa"> to </tspan><tspan fill="#8888aa">inspire</tspan>
+</text>
+<text x="300" y="345" text-anchor="middle" font-family="system-ui" font-size="10" fill="#8888aa">↓ Scroll to activate</text>
+</svg>
