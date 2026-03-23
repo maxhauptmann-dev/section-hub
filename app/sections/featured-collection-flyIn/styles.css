@@ -1,0 +1,421 @@
+/* ===================================
+   FC Fly-In – styles.css
+   Products fly into view on scroll
+   =================================== */
+
+/* ── Reset ────────────────────── */
+.fcfi-section *,
+.fcfi-section *::before,
+.fcfi-section *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Section ─────────────────── */
+.fcfi-section {
+  padding-top: var(--fcfi-pt);
+  padding-bottom: var(--fcfi-pb);
+  overflow: hidden;
+}
+
+/* ── Container ───────────────── */
+.fcfi-container {
+  max-width: var(--page-width, 1200px);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* Container width variants */
+.fcfi-section .fcfi-container--narrow { max-width: 960px; }
+.fcfi-section .fcfi-container--wide   { max-width: 1440px; }
+.fcfi-section .fcfi-container--full   { max-width: 100%; padding: 0 2rem; }
+
+/* ── Header ──────────────────── */
+.fcfi-header {
+  margin-bottom: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 8px 40px;
+}
+
+/* Alignment */
+.fcfi-align--left .fcfi-header   { text-align: left; justify-content: flex-start; }
+.fcfi-align--center .fcfi-header { text-align: center; justify-content: center; }
+.fcfi-align--right .fcfi-header  { text-align: right; justify-content: flex-end; }
+
+/* Make heading and description full width so text-align works */
+.fcfi-heading,
+.fcfi-description,
+.fcfi-btn-wrap {
+  width: 100%;
+}
+
+/* ── Heading ─────────────────── */
+.fcfi-heading {
+  font-family: var(--font-heading-family, inherit);
+  font-weight: var(--font-heading-weight, 700);
+  line-height: 1.1;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: inherit;
+  margin-bottom: 12px;
+}
+
+.fcfi-heading--small  { font-size: clamp(18px, 2.5vw, 24px); }
+.fcfi-heading--medium { font-size: clamp(22px, 3vw, 32px); }
+.fcfi-heading--large  { font-size: clamp(28px, 4vw, 44px); }
+
+/* ── Description ─────────────── */
+.fcfi-description {
+  line-height: 1.65;
+  color: inherit;
+  opacity: 0.7;
+  margin-bottom: 20px;
+  max-width: 640px;
+}
+
+.fcfi-align--center .fcfi-description { margin-left: auto; margin-right: auto; }
+
+.fcfi-description--small  { font-size: 13px; }
+.fcfi-description--medium { font-size: 14px; }
+.fcfi-description--normal { font-size: 15px; }
+.fcfi-description--large  { font-size: 17px; }
+
+.fcfi-description p { margin: 0; }
+
+/* ── Button ──────────────────── */
+.fcfi-btn-wrap {
+  margin-top: 4px;
+  margin-bottom: 8px;
+}
+
+.fcfi-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 4px;
+  padding: 12px 28px;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.2s ease;
+  line-height: 1.4;
+  border: 1.5px solid transparent;
+}
+
+.fcfi-btn--solid {
+  background: var(--color-button, #1a1a1a);
+  color: var(--color-button-text, #fff);
+  border-color: var(--color-button, #1a1a1a);
+}
+.fcfi-btn--solid:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.fcfi-btn--outline {
+  background: transparent;
+  color: inherit;
+  border-color: currentColor;
+}
+.fcfi-btn--outline:hover {
+  background: var(--color-button, #1a1a1a);
+  color: var(--color-button-text, #fff);
+  border-color: var(--color-button, #1a1a1a);
+  transform: translateY(-1px);
+}
+
+.fcfi-btn--link {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  border: none;
+  text-decoration: none;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  position: relative;
+}
+.fcfi-btn--link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.3s ease;
+}
+.fcfi-btn--link:hover::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ── Carousel Navigation ─────── */
+.fcfi-nav {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+  align-self: center;
+}
+
+.fcfi-align--center .fcfi-nav {
+  margin-left: 0;
+  width: 100%;
+  justify-content: center;
+}
+.fcfi-align--right .fcfi-nav {
+  margin-left: 0;
+  width: auto;
+}
+
+.fcfi-nav__btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.15);
+  background: transparent;
+  color: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+}
+.fcfi-nav__btn:hover {
+  background: rgba(0, 0, 0, 0.06);
+  border-color: rgba(0, 0, 0, 0.3);
+  transform: scale(1.06);
+}
+
+/* ── Products Container ──────── */
+.fcfi-products {
+  position: relative;
+}
+
+/* ── Grid (Stacked) ──────────── */
+.fcfi-products--stacked .fcfi-track {
+  display: grid;
+  grid-template-columns: repeat(var(--fcfi-cols, 4), 1fr);
+  gap: 24px;
+}
+
+/* ── Carousel ────────────────── */
+.fcfi-products--carousel .fcfi-track {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  scroll-behavior: smooth;
+  padding-bottom: 4px;
+}
+.fcfi-products--carousel .fcfi-track::-webkit-scrollbar {
+  display: none;
+}
+
+.fcfi-products--carousel .fcfi-product-card {
+  flex: 0 0 calc((100% - (var(--fcfi-cols, 4) - 1) * 24px) / var(--fcfi-cols, 4));
+  scroll-snap-align: start;
+}
+
+/* ── Product Card ────────────── */
+.fcfi-product-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: rgba(var(--color-background-rgb, 255, 255, 255), 0.6);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.35s ease;
+}
+.fcfi-product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.fcfi-product-card__link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.fcfi-product-card__media {
+  position: relative;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.03);
+}
+
+/* Image ratio variants */
+.fcfi-ratio--auto .fcfi-product-card__media {
+  aspect-ratio: 3 / 4;
+}
+.fcfi-ratio--auto .fcfi-product-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fcfi-ratio--square .fcfi-product-card__media {
+  aspect-ratio: 1 / 1;
+}
+.fcfi-ratio--portrait .fcfi-product-card__media {
+  aspect-ratio: 2 / 3;
+}
+.fcfi-ratio--landscape .fcfi-product-card__media {
+  aspect-ratio: 3 / 2;
+}
+
+.fcfi-ratio--square .fcfi-product-card__img,
+.fcfi-ratio--portrait .fcfi-product-card__img,
+.fcfi-ratio--landscape .fcfi-product-card__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.fcfi-product-card__img {
+  transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.fcfi-product-card:hover .fcfi-product-card__img {
+  transform: scale(1.06);
+}
+
+/* Placeholder */
+.fcfi-product-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  background: rgba(0, 0, 0, 0.03);
+}
+.fcfi-placeholder-svg {
+  width: 50%;
+  height: auto;
+  opacity: 0.12;
+}
+
+/* Card info */
+.fcfi-product-card__info {
+  padding: 14px 16px 18px;
+}
+
+.fcfi-product-card__title {
+  font-family: inherit;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 1.4;
+  color: inherit;
+  margin-bottom: 6px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fcfi-product-card__price {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.fcfi-product-card__price-compare {
+  text-decoration: line-through;
+  opacity: 0.45;
+  font-size: 13px;
+}
+
+.fcfi-product-card__price-current {
+  font-weight: 600;
+}
+
+/* ── Mobile Swipeable (stacked mode on mobile) ── */
+@media (max-width: 749px) {
+  .fcfi-products--swipeable .fcfi-track {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .fcfi-products--swipeable .fcfi-track::-webkit-scrollbar {
+    display: none;
+  }
+  .fcfi-products--swipeable .fcfi-product-card {
+    flex: 0 0 65%;
+    scroll-snap-align: start;
+  }
+}
+
+/* ── Responsive ──────────────── */
+@media (max-width: 749px) {
+  .fcfi-section {
+    padding-top: var(--fcfi-pt-m);
+    padding-bottom: var(--fcfi-pb-m);
+  }
+
+  .fcfi-container {
+    padding: 0 1rem;
+  }
+
+  .fcfi-header {
+    margin-bottom: 28px;
+  }
+
+  /* Stack grid to 2 cols on mobile */
+  .fcfi-products--stacked:not(.fcfi-products--swipeable) .fcfi-track {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+  }
+
+  /* Carousel becomes scrollable with 2 visible */
+  .fcfi-products--carousel .fcfi-product-card {
+    flex: 0 0 calc(55% - 8px);
+  }
+
+  .fcfi-nav__btn {
+    width: 38px;
+    height: 38px;
+  }
+
+  .fcfi-product-card__info {
+    padding: 10px 12px 14px;
+  }
+
+  .fcfi-product-card__title {
+    font-size: 13px;
+  }
+
+  /* No fly-in animation on mobile – cards are always visible */
+  .fcfi-product-card {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── Prefers reduced motion ──── */
+@media (prefers-reduced-motion: reduce) {
+  .fcfi-product-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+  .fcfi-product-card__img {
+    transition: none !important;
+  }
+}

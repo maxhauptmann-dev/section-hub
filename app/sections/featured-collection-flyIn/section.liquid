@@ -1,0 +1,562 @@
+{% comment %}
+  SectionHub – Featured Collection Fly-In  (fcfi-)
+  Products fly into the grid/carousel on scroll (desktop only)
+{% endcomment %}
+
+{%- liquid
+  assign col           = section.settings.collection
+  assign col_obj       = collections[col]
+  assign limit         = section.settings.products_to_show
+  assign columns       = section.settings.columns_desktop
+  assign layout        = section.settings.layout_style
+  assign align         = section.settings.content_alignment
+  assign img_ratio     = section.settings.image_ratio
+  assign enable_swipe  = section.settings.enable_mobile_swipe
+  assign heading       = section.settings.heading
+  assign heading_size  = section.settings.heading_size
+  assign heading_tag   = section.settings.heading_tag
+  assign description   = section.settings.description
+  assign desc_size     = section.settings.description_text_size
+  assign btn_label     = section.settings.button_label
+  assign btn_link      = section.settings.button_link
+  assign btn_style     = section.settings.button_style
+  assign color_scheme  = section.settings.color_scheme
+  assign pt_desktop    = section.settings.padding_top
+  assign pb_desktop    = section.settings.padding_bottom
+  assign pt_mobile     = section.settings.padding_top_mobile
+  assign pb_mobile     = section.settings.padding_bottom_mobile
+-%}
+
+{%- style -%}
+  #fcfi-{{ section.id }} {
+    --fcfi-pt: {{ pt_desktop }}px;
+    --fcfi-pb: {{ pb_desktop }}px;
+    --fcfi-pt-m: {{ pt_mobile }}px;
+    --fcfi-pb-m: {{ pb_mobile }}px;
+    --fcfi-cols: {{ columns }};
+  }
+{%- endstyle -%}
+
+{%- capture ratio_class -%}
+  {%- case img_ratio -%}
+    {%- when 'square' -%}fcfi-ratio--square
+    {%- when 'portrait' -%}fcfi-ratio--portrait
+    {%- when 'landscape' -%}fcfi-ratio--landscape
+    {%- else -%}fcfi-ratio--auto
+  {%- endcase -%}
+{%- endcapture -%}
+
+{%- capture align_class -%}
+  {%- case align -%}
+    {%- when 'center' -%}fcfi-align--center
+    {%- when 'right' -%}fcfi-align--right
+    {%- else -%}fcfi-align--left
+  {%- endcase -%}
+{%- endcapture -%}
+
+<section
+  id="fcfi-{{ section.id }}"
+  class="fcfi-section color-{{ color_scheme }} {{ align_class | strip }}"
+  data-fcfi-section
+>
+  <div class="fcfi-container">
+
+    {%- comment -%} ── Header ── {%- endcomment -%}
+    <div class="fcfi-header">
+      {%- if heading != blank -%}
+        <{{ heading_tag }} class="fcfi-heading fcfi-heading--{{ heading_size }}">
+          {{ heading }}
+        </{{ heading_tag }}>
+      {%- endif -%}
+
+      {%- if description != blank -%}
+        <div class="fcfi-description fcfi-description--{{ desc_size }}">
+          {{ description }}
+        </div>
+      {%- endif -%}
+
+      {%- if btn_label != blank -%}
+        <div class="fcfi-btn-wrap">
+          <a
+            href="{{ btn_link }}"
+            class="fcfi-btn fcfi-btn--{{ btn_style }}"
+          >
+            {{ btn_label }}
+          </a>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Carousel navigation arrows (only in carousel mode) {%- endcomment -%}
+      {%- if layout == 'carousel' -%}
+        <div class="fcfi-nav">
+          <button class="fcfi-nav__btn fcfi-nav__btn--prev" data-fcfi-prev aria-label="Previous">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button class="fcfi-nav__btn fcfi-nav__btn--next" data-fcfi-next aria-label="Next">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Products ── {%- endcomment -%}
+    {%- if col_obj != blank and col_obj.products_count > 0 -%}
+
+      <div
+        class="fcfi-products fcfi-products--{{ layout }}{% if enable_swipe and layout == 'stacked' %} fcfi-products--swipeable{% endif %}"
+        data-fcfi-products
+      >
+        <div class="fcfi-track" data-fcfi-track>
+          {%- for product in col_obj.products limit: limit -%}
+            <div
+              class="fcfi-product-card"
+              data-fcfi-card
+              data-fcfi-index="{{ forloop.index0 }}"
+            >
+              <a href="{{ product.url }}" class="fcfi-product-card__link">
+                <div class="fcfi-product-card__media {{ ratio_class | strip }}">
+                  {%- if product.featured_image -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 600 }}"
+                      srcset="
+                        {{ product.featured_image | image_url: width: 300 }} 300w,
+                        {{ product.featured_image | image_url: width: 450 }} 450w,
+                        {{ product.featured_image | image_url: width: 600 }} 600w
+                      "
+                      sizes="(max-width: 749px) 50vw, calc(100vw / {{ columns }})"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      loading="lazy"
+                      width="{{ product.featured_image.width }}"
+                      height="{{ product.featured_image.height }}"
+                      class="fcfi-product-card__img"
+                    >
+                  {%- else -%}
+                    <div class="fcfi-product-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'fcfi-placeholder-svg' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+                <div class="fcfi-product-card__info">
+                  <h3 class="fcfi-product-card__title">{{ product.title }}</h3>
+                  <div class="fcfi-product-card__price">
+                    {%- if product.compare_at_price > product.price -%}
+                      <span class="fcfi-product-card__price-compare">{{ product.compare_at_price | money }}</span>
+                    {%- endif -%}
+                    <span class="fcfi-product-card__price-current">{{ product.price | money }}</span>
+                  </div>
+                </div>
+              </a>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    {%- else -%}
+
+      {%- comment -%} Placeholder products for the editor {%- endcomment -%}
+      <div
+        class="fcfi-products fcfi-products--{{ layout }}{% if enable_swipe and layout == 'stacked' %} fcfi-products--swipeable{% endif %}"
+        data-fcfi-products
+      >
+        <div class="fcfi-track" data-fcfi-track>
+          {%- for i in (1..limit) -%}
+            {%- assign placeholder_index = i | modulo: 6 | plus: 1 -%}
+            <div
+              class="fcfi-product-card"
+              data-fcfi-card
+              data-fcfi-index="{{ forloop.index0 }}"
+            >
+              <div class="fcfi-product-card__link">
+                <div class="fcfi-product-card__media {{ ratio_class | strip }}">
+                  <div class="fcfi-product-card__placeholder">
+                    {{ 'product-' | append: placeholder_index | placeholder_svg_tag: 'fcfi-placeholder-svg' }}
+                  </div>
+                </div>
+                <div class="fcfi-product-card__info">
+                  <h3 class="fcfi-product-card__title">Example product title</h3>
+                  <div class="fcfi-product-card__price">
+                    <span class="fcfi-product-card__price-current">$19.99 USD</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      </div>
+
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var section = document.getElementById('fcfi-{{ section.id }}');
+  if (!section) return;
+
+  var cards = section.querySelectorAll('[data-fcfi-card]');
+  var track = section.querySelector('[data-fcfi-track]');
+  var isCarousel = section.querySelector('.fcfi-products--carousel') !== null;
+  var isMobile = window.innerWidth < 750;
+
+  /* ─── Fly-In Scroll Animation (desktop only) ─── */
+  if (!isMobile && cards.length > 0) {
+    /* Set initial hidden state */
+    cards.forEach(function(card) {
+      card.style.opacity = '0';
+      card.style.transform = 'translateY(60px) scale(0.92)';
+      card.style.transition = 'none';
+    });
+
+    var revealed = false;
+
+    var observer = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !revealed) {
+          revealed = true;
+          cards.forEach(function(card, i) {
+            var delay = i * 120; /* stagger 120ms per card */
+            setTimeout(function() {
+              card.style.transition = 'opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1), transform 0.7s cubic-bezier(0.22, 1, 0.36, 1)';
+              card.style.opacity = '1';
+              card.style.transform = 'translateY(0) scale(1)';
+            }, delay);
+          });
+          observer.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.15,
+      rootMargin: '0px 0px -50px 0px'
+    });
+
+    observer.observe(section.querySelector('[data-fcfi-products]') || section);
+  }
+
+  /* ─── Carousel functionality ─── */
+  if (isCarousel && track) {
+    var prevBtn = section.querySelector('[data-fcfi-prev]');
+    var nextBtn = section.querySelector('[data-fcfi-next]');
+
+    function getScrollAmount() {
+      var card = cards[0];
+      if (!card) return 300;
+      var style = window.getComputedStyle(track);
+      var gap = parseFloat(style.gap) || parseFloat(style.columnGap) || 16;
+      return card.offsetWidth + gap;
+    }
+
+    if (prevBtn) {
+      prevBtn.addEventListener('click', function() {
+        track.scrollBy({ left: -getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', function() {
+        track.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
+      });
+    }
+  }
+
+  /* ─── Re-check on resize ─── */
+  var resizeTimer;
+  window.addEventListener('resize', function() {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(function() {
+      var nowMobile = window.innerWidth < 750;
+      if (nowMobile && !isMobile) {
+        /* Switched to mobile – remove animation styles */
+        cards.forEach(function(card) {
+          card.style.opacity = '';
+          card.style.transform = '';
+          card.style.transition = '';
+        });
+      }
+      isMobile = nowMobile;
+    }, 200);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FC Fly-In",
+  "tag": "section",
+  "class": "fcfi-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Featured Collection"
+    },
+    {
+      "type": "select",
+      "id": "heading_font_style",
+      "label": "Heading mark font",
+      "options": [
+        { "value": "accent", "label": "Accent" },
+        { "value": "body",   "label": "Body" },
+        { "value": "heading","label": "Heading" }
+      ],
+      "default": "accent"
+    },
+    {
+      "type": "select",
+      "id": "heading_mark_style",
+      "label": "Heading mark text style",
+      "options": [
+        { "value": "none",      "label": "None" },
+        { "value": "italic",    "label": "Italic" },
+        { "value": "bold",      "label": "Bold" },
+        { "value": "underline", "label": "Underline" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "small",  "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large",  "label": "Large" }
+      ],
+      "default": "large"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "h4", "label": "H4" },
+        { "value": "h5", "label": "H5" },
+        { "value": "h6", "label": "H6" },
+        { "value": "p",  "label": "p" }
+      ],
+      "default": "h2",
+      "info": "Set heading tag for SEO and crawling purposes."
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Discover our handpicked selection of must-have products, curated just for you.</p>"
+    },
+    {
+      "type": "select",
+      "id": "description_text_size",
+      "label": "Description text size",
+      "options": [
+        { "value": "small",  "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "normal", "label": "Normal" },
+        { "value": "large",  "label": "Large" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Label",
+      "default": "View All"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Link"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Style",
+      "options": [
+        { "value": "solid",   "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "link",    "label": "Link" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "select",
+      "id": "content_alignment",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "select",
+      "id": "layout_style",
+      "label": "Style",
+      "options": [
+        { "value": "stacked",  "label": "Stacked" },
+        { "value": "carousel", "label": "Carousel" }
+      ],
+      "default": "stacked"
+    },
+    {
+      "type": "range",
+      "id": "products_to_show",
+      "label": "Products to show",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop columns per row",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_mobile_swipe",
+      "label": "Enable swipe on mobile devices",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "auto",      "label": "Auto" },
+        { "value": "square",    "label": "Square (1:1)" },
+        { "value": "portrait",  "label": "Portrait (2:3)" },
+        { "value": "landscape", "label": "Landscape (3:2)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "header",
+      "content": "Color scheme"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "select",
+      "id": "section_bg_style",
+      "label": "Section background",
+      "options": [
+        { "value": "solid",    "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "select",
+      "id": "container_width",
+      "label": "Container width",
+      "options": [
+        { "value": "global", "label": "Global" },
+        { "value": "narrow", "label": "Narrow" },
+        { "value": "wide",   "label": "Wide" },
+        { "value": "full",   "label": "Full width" }
+      ],
+      "default": "global"
+    },
+    {
+      "type": "header",
+      "content": "Section spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Desktop top space",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Desktop bottom space",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 52,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Mobile top space",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Mobile bottom space",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FC Fly-In",
+      "settings": {
+        "heading": "Featured Collection",
+        "heading_size": "large",
+        "heading_tag": "h2",
+        "description": "<p>Discover our handpicked selection of must-have products, curated just for you.</p>",
+        "description_text_size": "normal",
+        "button_label": "View All",
+        "button_style": "outline",
+        "content_alignment": "left",
+        "layout_style": "stacked",
+        "products_to_show": 8,
+        "columns_desktop": 4,
+        "enable_mobile_swipe": true,
+        "image_ratio": "portrait",
+        "color_scheme": "scheme-1",
+        "section_bg_style": "solid",
+        "container_width": "global",
+        "padding_top": 60,
+        "padding_bottom": 52,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40
+      }
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,56 @@
+{
+  "id": "featured-collection-flyIn",
+  "name": "SIQ - FC Fly-In",
+  "description": "Eye-catching featured collection section where products fly into view with a staggered scroll-triggered animation. Products animate into the grid when the section enters the viewport, creating a dynamic entrance effect. Supports stacked grid and carousel layouts, configurable columns, product count, image aspect ratios, content alignment, and a CTA button. The fly-in animation only triggers on desktop for optimal performance. Includes full section spacing controls and color scheme support. Perfect for highlighting curated collections with a modern, engaging feel.",
+  "category": [
+    "Featured Collection"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Fly-In",
+    "Animation",
+    "Scroll Effect",
+    "Grid",
+    "Carousel",
+    "Products",
+    "Interactive",
+    "Premium"
+  ],
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
+    "os2": true
+  },
+  "createdAt": "2026-03-23",
+  "updatedAt": "2026-03-23",
+  "previews": [
+    {
+      "src": "/previews/featured-collection-flyIn/default.webp",
+      "alt": "SIQ - FC Fly-In - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
+}
