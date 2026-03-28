@@ -24,6 +24,7 @@ export interface SectionMeta {
     amount?: number;
     currency?: "EUR" | "USD";
   };
+  tier?: "basic" | "advanced" | "premium";
   tags: string[];
   author: string;
   previewColor: string;

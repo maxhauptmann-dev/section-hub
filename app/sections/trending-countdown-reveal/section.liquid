@@ -1,0 +1,714 @@
+{% comment %}
+  SectionHub – Trending Countdown Reveal  (tcr-)
+  Fullscreen pinned scroll: hero + timer → tilted colour cards fan out →
+  rotate to horizontal → separate to vertical list → shrink to reveal product details
+  Mobile: Static flow – no scroll pinning
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign heading      = section.settings.heading | default: "TRENDING STYLES YOU CAN'T MISS!"
+  assign description  = section.settings.description
+  assign desc_2       = section.settings.description_2
+  assign btn_text     = section.settings.button_text | default: 'SHOP NOW'
+  assign btn_url      = section.settings.button_url | default: '#'
+  assign btn_style    = section.settings.btn_style | default: 'solid'
+  assign countdown_to = section.settings.countdown_date
+
+  assign card_colors_arr = '#f8e1e8,#faf5d0,#c5cae9,#e1bee7,#dce775' | split: ','
+
+  assign product_blocks = section.blocks | where: "type", "product"
+  assign block_count = product_blocks.size
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #tcr-{{ section.id }} {
+    --tcr-bg: {{ section.settings.bg_color }};
+    --tcr-heading-c: {{ section.settings.heading_color }};
+    --tcr-text-c: {{ section.settings.text_color }};
+    --tcr-btn-bg: {{ section.settings.btn_bg }};
+    --tcr-btn-c: {{ section.settings.btn_color }};
+    --tcr-timer-bg: {{ section.settings.timer_bg }};
+    --tcr-timer-c: {{ section.settings.timer_color }};
+    --tcr-card-detail-bg: {{ section.settings.card_detail_bg }};
+    --tcr-card-price-c: {{ section.settings.card_price_color }};
+    --tcr-card-arrow-c: {{ section.settings.card_arrow_color }};
+    --tcr-card-radius: {{ section.settings.card_radius }}px;
+
+    --tcr-grad-1: {{ section.settings.grad_color_1 }};
+    --tcr-grad-2: {{ section.settings.grad_color_2 }};
+    --tcr-grad-3: {{ section.settings.grad_color_3 }};
+
+    --tcr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --tcr-heading-fw: {{ heading_font.weight }};
+    --tcr-heading-fst: {{ heading_font.style }};
+    --tcr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --tcr-body-fw: {{ body_font.weight }};
+  }
+</style>
+
+<section id="tcr-{{ section.id }}" class="tcr" data-tcr-root>
+
+  {%- comment -%} ════════════ DESKTOP: scroll-driven ════════════ {%- endcomment -%}
+  <div class="tcr-desktop-only">
+    <div class="tcr-track" data-tcr-track>
+      <div class="tcr-sticky" data-tcr-sticky>
+
+        {%- comment -%} Gradient BG {%- endcomment -%}
+        <div class="tcr-bg">
+          <div class="tcr-mesh">
+            <div class="tcr-mesh__blob tcr-mesh__blob--1"></div>
+            <div class="tcr-mesh__blob tcr-mesh__blob--2"></div>
+            <div class="tcr-mesh__blob tcr-mesh__blob--3"></div>
+            <div class="tcr-mesh__noise"></div>
+          </div>
+        </div>
+
+        {%- comment -%} Hero content – bottom-left {%- endcomment -%}
+        <div class="tcr-hero" data-tcr-hero>
+          {%- if heading != blank -%}
+            <h2 class="tcr-hero__heading tcr-hero__heading--{{ section.settings.heading_size | default: 'lg' }}">
+              {{ heading }}
+            </h2>
+          {%- endif -%}
+
+          {%- if description != blank -%}
+            <p class="tcr-hero__desc">{{ description }}</p>
+          {%- endif -%}
+          {%- if desc_2 != blank -%}
+            <p class="tcr-hero__desc">{{ desc_2 }}</p>
+          {%- endif -%}
+
+          <div class="tcr-cta">
+            <a href="{{ btn_url }}" class="tcr-cta__arrow" aria-label="Shop">
+              <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <a href="{{ btn_url }}" class="tcr-cta__btn tcr-cta__btn--{{ btn_style }}">{{ btn_text }}</a>
+          </div>
+
+          {%- if countdown_to != blank -%}
+            <div class="tcr-timer" data-tcr-timer data-tcr-target="{{ countdown_to }}">
+              <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-days>00</span><span class="tcr-timer__label">Days</span></div>
+              <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-hours>00</span><span class="tcr-timer__label">Hours</span></div>
+              <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-mins>00</span><span class="tcr-timer__label">Minutes</span></div>
+              <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-secs>00</span><span class="tcr-timer__label">Seconds</span></div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Card stage {%- endcomment -%}
+        <div class="tcr-cards" data-tcr-cards>
+          {%- if block_count > 0 -%}
+            {%- for block in product_blocks -%}
+              {%- assign idx = forloop.index0 -%}
+              {%- assign blk_product = block.settings.product -%}
+              {%- assign p_img = blk_product.featured_image -%}
+              {%- assign card_bg = block.settings.card_color | default: card_colors_arr[idx] | default: '#e8b4c8' -%}
+              {%- assign bar_bg = block.settings.bar_color | default: card_bg -%}
+              {%- assign title_c = block.settings.title_color | default: '#000' -%}
+              <div class="tcr-card" data-tcr-card="{{ idx }}"
+                   style="--tcr-card-color:{{ card_bg }};--tcr-bar-color:{{ bar_bg }};--tcr-title-c:{{ title_c }};" {{ block.shopify_attributes }}>
+                <div class="tcr-card__color" data-tcr-color></div>
+                <div class="tcr-card__detail">
+                  <div class="tcr-card__img-wrap">
+                    {%- if p_img != blank -%}
+                      <img src="{{ p_img | image_url: width: 240 }}" alt="{{ p_img.alt | default: blk_product.title | escape }}" loading="lazy">
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag }}
+                    {%- endif -%}
+                  </div>
+                  <div class="tcr-card__info">
+                    <div class="tcr-card__info-bar" data-tcr-bar>
+                      <span class="tcr-card__info-title">{{ blk_product.title | default: 'Product' }}</span>
+                    </div>
+                    <div class="tcr-card__info-price">{{ blk_product.price | money }}</div>
+                  </div>
+                  <a href="{{ blk_product.url }}" class="tcr-card__arrow" aria-label="{{ blk_product.title | default: 'Product' | escape }}">
+                    <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- else -%}
+            {%- comment -%} Placeholder cards when no blocks added {%- endcomment -%}
+            {%- for i in (1..5) -%}
+              {%- assign idx = forloop.index0 -%}
+              {%- assign card_bg = card_colors_arr[idx] | default: '#e8b4c8' -%}
+              <div class="tcr-card" data-tcr-card="{{ idx }}"
+                   style="--tcr-card-color:{{ card_bg }};">
+                <div class="tcr-card__color" data-tcr-color></div>
+                <div class="tcr-card__detail">
+                  <div class="tcr-card__img-wrap">{{ 'product-1' | placeholder_svg_tag }}</div>
+                  <div class="tcr-card__info">
+                    <div class="tcr-card__info-bar" data-tcr-bar>
+                      <span class="tcr-card__info-title">Example product title</span>
+                    </div>
+                    <div class="tcr-card__info-price">$19.99 USD</div>
+                  </div>
+                  <a href="#" class="tcr-card__arrow" aria-label="View product">
+                    <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ════════════ MOBILE: static ════════════ {%- endcomment -%}
+  <div class="tcr-mobile-only">
+    <div class="tcr-m">
+      <div class="tcr-mesh tcr-mesh--mobile">
+        <div class="tcr-mesh__blob tcr-mesh__blob--1"></div>
+        <div class="tcr-mesh__blob tcr-mesh__blob--2"></div>
+        <div class="tcr-mesh__blob tcr-mesh__blob--3"></div>
+        <div class="tcr-mesh__noise"></div>
+      </div>
+
+      <div class="tcr-m__hero">
+        {%- if heading != blank -%}
+          <h2 class="tcr-m__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if description != blank -%}
+          <p class="tcr-m__desc">{{ description }}</p>
+        {%- endif -%}
+        {%- if desc_2 != blank -%}
+          <p class="tcr-m__desc">{{ desc_2 }}</p>
+        {%- endif -%}
+        <div class="tcr-m__cta">
+          <a href="{{ btn_url }}" class="tcr-cta__arrow" aria-label="Shop">
+            <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </a>
+          <a href="{{ btn_url }}" class="tcr-cta__btn tcr-cta__btn--{{ btn_style }}">{{ btn_text }}</a>
+        </div>
+        {%- if countdown_to != blank -%}
+          <div class="tcr-m__timer" data-tcr-timer data-tcr-target="{{ countdown_to }}">
+            <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-days>00</span><span class="tcr-timer__label">Days</span></div>
+            <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-hours>00</span><span class="tcr-timer__label">Hours</span></div>
+            <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-mins>00</span><span class="tcr-timer__label">Minutes</span></div>
+            <div class="tcr-timer__unit"><span class="tcr-timer__num" data-tcr-secs>00</span><span class="tcr-timer__label">Seconds</span></div>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="tcr-m__list">
+        {%- if block_count > 0 -%}
+          {%- for block in product_blocks -%}
+            {%- assign idx = forloop.index0 -%}
+            {%- assign blk_product = block.settings.product -%}
+            {%- assign p_img = blk_product.featured_image -%}
+            {%- assign card_bg = block.settings.card_color | default: card_colors_arr[idx] | default: '#e8b4c8' -%}
+            {%- assign bar_bg = block.settings.bar_color | default: card_bg -%}
+            {%- assign title_c = block.settings.title_color | default: '#000' -%}
+            <a href="{{ blk_product.url }}" class="tcr-m__item" style="--tcr-item-color:{{ card_bg }};--tcr-bar-color:{{ bar_bg }};--tcr-title-c:{{ title_c }}" {{ block.shopify_attributes }}>
+              <div class="tcr-m__item-img">
+                {%- if p_img != blank -%}
+                  <img src="{{ p_img | image_url: width: 140 }}" alt="{{ p_img.alt | default: blk_product.title | escape }}" loading="lazy">
+                {%- else -%}
+                  {{ 'product-1' | placeholder_svg_tag }}
+                {%- endif -%}
+              </div>
+              <div class="tcr-m__item-info">
+                <div class="tcr-m__item-title">{{ blk_product.title | default: 'Product' }}</div>
+                <div class="tcr-m__item-price">{{ blk_product.price | money }}</div>
+              </div>
+              <span class="tcr-m__item-arrow">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </a>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for i in (1..5) -%}
+            {%- assign idx = forloop.index0 -%}
+            {%- assign card_bg = card_colors_arr[idx] | default: '#e8b4c8' -%}
+            <div class="tcr-m__item" style="--tcr-item-color:{{ card_bg }}">
+              <div class="tcr-m__item-img">{{ 'product-1' | placeholder_svg_tag }}</div>
+              <div class="tcr-m__item-info">
+                <div class="tcr-m__item-title">Example product title</div>
+                <div class="tcr-m__item-price">$19.99 USD</div>
+              </div>
+              <span class="tcr-m__item-arrow">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </span>
+            </div>
+          {%- endfor -%}
+        {%- endif -%}
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+(function(){
+  if(window.innerWidth < 750) return;
+
+  var root  = document.querySelector('#tcr-{{ section.id }}');
+  if(!root) return;
+
+  var track   = root.querySelector('[data-tcr-track]');
+  var sticky  = root.querySelector('[data-tcr-sticky]');
+  var hero    = root.querySelector('[data-tcr-hero]');
+  var cards   = Array.from(root.querySelectorAll('[data-tcr-card]'));
+  var N       = cards.length;
+
+  if(!N) return;
+
+  /* ─── Scroll height: 7 viewports to drive all phases ─── */
+  var PHASES = 7;
+  track.style.height = (PHASES * 100) + 'vh';
+
+  /* ─── Helper: clamp ─── */
+  function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+  function lerp(a,b,t){ return a + (b-a) * t; }
+  function easeInOutCubic(t){ return t < 0.5 ? 4*t*t*t : 1-Math.pow(-2*t+2,3)/2; }
+  function easeOutCubic(t){ return 1-Math.pow(1-t,3); }
+
+  /* ─── Card final positions (vertical list, right side) ─── */
+  var CARD_H_LIST   = 136;  /* final list card height — tall like the reference */
+  var LIST_GAP      = 4;    /* tight gap between cards */
+  var LIST_RIGHT    = 40;   /* gap from right edge */
+  var LIST_TOP_START;        /* computed on resize */
+
+  function computeListLayout(){
+    var vh = window.innerHeight;
+    var totalH = N * CARD_H_LIST + (N-1) * LIST_GAP;
+    LIST_TOP_START = Math.max(10, (vh - totalH) / 2);
+  }
+  computeListLayout();
+  window.addEventListener('resize', computeListLayout);
+
+  /* ─── Card sizing helper (responsive) ─── */
+  function getCardListWidth(){
+    return Math.min(580, window.innerWidth * 0.48);
+  }
+  function getCardSmallWidth(){
+    return Math.min(400, window.innerWidth * 0.34);
+  }
+
+  /* ═══════════════════════════════════
+     SCROLL HANDLER – 7 PHASE ANIMATION
+     ═══════════════════════════════════
+
+     Phase 0 (0.00 – 0.12): Hero only, cards invisible
+     Phase 1 (0.12 – 0.26): Cards appear as tilted stack (right-centre), all stacked
+     Phase 2 (0.26 – 0.42): Rotate to 0°, move to right column, all stacked at vertical centre
+     Phase 3 (0.42 – 0.58): Spread from centre — cards fan out up/down to final list positions
+     Phase 4 (0.58 – 0.74): Colour overlay fades out, product detail revealed
+     Phase 5 (0.74 – 1.00): Hold final state
+  */
+
+  var ticking = false;
+
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(update);
+  }
+
+  function update(){
+    ticking = false;
+
+    var rect = track.getBoundingClientRect();
+    var trackH = track.offsetHeight - window.innerHeight;
+    var scrolled = -rect.top;
+    var progress = clamp(scrolled / trackH, 0, 1);
+
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var listW = getCardListWidth();
+    var smallW = getCardSmallWidth();
+    var smallH = 100;
+
+    /* Compute the final X once — right column */
+    var finalListX = vw - listW - LIST_RIGHT;
+
+    /* Vertical centre Y for stacked cards */
+    var centreY = (vh - CARD_H_LIST) / 2;
+
+    /* ── Hero fade ── */
+    if(progress < 0.12){
+      hero.style.opacity = '1';
+      hero.style.transform = 'translateY(0)';
+    } else if(progress < 0.26){
+      var f = (progress - 0.12) / 0.14;
+      hero.style.opacity = String(1 - f * 0.2);
+      hero.style.transform = 'translateY(0)';
+    } else {
+      var fadeMore = clamp((progress - 0.26) / 0.40, 0, 1);
+      hero.style.opacity = String(0.8 - fadeMore * 0.5);
+      hero.style.transform = 'translateY(' + (-fadeMore * 30) + 'px)';
+    }
+
+    /* ── Card animation ── */
+    for(var i = 0; i < N; i++){
+      var card = cards[i];
+      var colorEl = card.querySelector('[data-tcr-color]');
+      var barEl   = card.querySelector('[data-tcr-bar]');
+
+      /* ── Stack origin: right-centre of viewport ── */
+      var stackCX = vw * 0.62;
+      var stackCY = vh * 0.35;
+
+      /* Phase 0: Hidden */
+      if(progress < 0.12){
+        card.style.opacity = '0';
+        card.style.width = smallW + 'px';
+        card.style.height = smallH + 'px';
+        card.style.transform = 'translate(' + stackCX + 'px,' + stackCY + 'px) rotate(-30deg) scale(0.6)';
+        if(colorEl){ colorEl.style.clipPath = 'inset(0)'; colorEl.style.opacity = '1'; }
+        if(barEl) barEl.style.opacity = '0';
+        continue;
+      }
+
+      /* Phase 1 (0.12–0.26): Appear as tilted stack — all cards perfectly on top of each other */
+      if(progress < 0.26){
+        var p1 = easeOutCubic(clamp((progress - 0.12) / 0.14, 0, 1));
+        var stagger = clamp((p1 - i * 0.06) / (1 - i * 0.06), 0, 1);
+
+        card.style.opacity = String(stagger);
+        card.style.width = smallW + 'px';
+        card.style.height = smallH + 'px';
+        card.style.transform = 'translate(' + stackCX + 'px,' + stackCY + 'px) rotate(-30deg) scale(' + lerp(0.6, 1, stagger) + ')';
+        if(colorEl){ colorEl.style.clipPath = 'inset(0)'; colorEl.style.opacity = '1'; }
+        if(barEl) barEl.style.opacity = '0';
+        continue;
+      }
+
+      /* Phase 2 (0.26–0.42): Rotate to 0°, move to right column, ALL stacked at vertical centre */
+      if(progress < 0.42){
+        var p2 = easeInOutCubic(clamp((progress - 0.26) / 0.16, 0, 1));
+
+        var curX = lerp(stackCX, finalListX, p2);
+        var curY = lerp(stackCY, centreY, p2);
+        var curW = lerp(smallW, listW, p2);
+        var curH = lerp(smallH, CARD_H_LIST, p2);
+        var rot2 = lerp(-30, 0, p2);
+
+        card.style.opacity = '1';
+        card.style.width = curW + 'px';
+        card.style.height = curH + 'px';
+        card.style.transform = 'translate(' + curX + 'px,' + curY + 'px) rotate(' + rot2 + 'deg)';
+        if(colorEl){ colorEl.style.clipPath = 'inset(0)'; colorEl.style.opacity = '1'; }
+        if(barEl) barEl.style.opacity = '0';
+        continue;
+      }
+
+      /* Phase 3 (0.42–0.58): Spread from centre to final list positions (up & down) */
+      if(progress < 0.58){
+        var p3 = easeInOutCubic(clamp((progress - 0.42) / 0.16, 0, 1));
+
+        var finalY = LIST_TOP_START + i * (CARD_H_LIST + LIST_GAP);
+        var curY = lerp(centreY, finalY, p3);
+
+        card.style.opacity = '1';
+        card.style.width = listW + 'px';
+        card.style.height = CARD_H_LIST + 'px';
+        card.style.transform = 'translate(' + finalListX + 'px,' + curY + 'px) rotate(0deg)';
+        if(colorEl){ colorEl.style.clipPath = 'inset(0)'; colorEl.style.opacity = '1'; }
+        if(barEl) barEl.style.opacity = '0';
+        continue;
+      }
+
+      /* Phase 4 (0.58–0.74): Colour overlay fades out, title-bar fades in */
+      if(progress < 0.74){
+        var p4 = easeInOutCubic(clamp((progress - 0.58) / 0.16, 0, 1));
+        var finalY = LIST_TOP_START + i * (CARD_H_LIST + LIST_GAP);
+
+        card.style.opacity = '1';
+        card.style.width = listW + 'px';
+        card.style.height = CARD_H_LIST + 'px';
+        card.style.transform = 'translate(' + finalListX + 'px,' + finalY + 'px) rotate(0deg)';
+        if(colorEl) colorEl.style.opacity = String(1 - p4);
+        if(barEl) barEl.style.opacity = String(p4);
+        continue;
+      }
+
+      /* Phase 5 (0.74–1.0): Hold final — colour gone, title bar visible */
+      var finalY = LIST_TOP_START + i * (CARD_H_LIST + LIST_GAP);
+      card.style.opacity = '1';
+      card.style.width = listW + 'px';
+      card.style.height = CARD_H_LIST + 'px';
+      card.style.transform = 'translate(' + finalListX + 'px,' + finalY + 'px) rotate(0deg)';
+      if(colorEl) colorEl.style.opacity = '0';
+      if(barEl) barEl.style.opacity = '1';
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, { passive: true });
+  update();
+
+  /* ═══════════════════════════════
+     COUNTDOWN TIMER
+     ═══════════════════════════════ */
+  var timers = root.querySelectorAll('[data-tcr-timer]');
+  timers.forEach(function(timer){
+    var target = timer.getAttribute('data-tcr-target');
+    if(!target) return;
+    var end = new Date(target).getTime();
+
+    function tick(){
+      var now  = Date.now();
+      var diff = Math.max(0, end - now);
+      var d = Math.floor(diff / 86400000);
+      var h = Math.floor((diff % 86400000) / 3600000);
+      var m = Math.floor((diff % 3600000) / 60000);
+      var s = Math.floor((diff % 60000) / 1000);
+
+      var dEl = timer.querySelector('[data-tcr-days]');
+      var hEl = timer.querySelector('[data-tcr-hours]');
+      var mEl = timer.querySelector('[data-tcr-mins]');
+      var sEl = timer.querySelector('[data-tcr-secs]');
+      if(dEl) dEl.textContent = String(d);
+      if(hEl) hEl.textContent = String(h).padStart(2,'0');
+      if(mEl) mEl.textContent = String(m).padStart(2,'0');
+      if(sEl) sEl.textContent = String(s).padStart(2,'0');
+    }
+    tick();
+    setInterval(tick, 1000);
+  });
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Countdown Reveal",
+  "tag": "section",
+  "class": "tcr-section",
+  "max_blocks": 5,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Hero Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "TRENDING STYLES YOU CAN'T MISS!"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description paragraph 1",
+      "default": "Explore our collection of top-selling fashion favorites, featuring the latest trends and must-have styles loved by our customers."
+    },
+    {
+      "type": "textarea",
+      "id": "description_2",
+      "label": "Description paragraph 2",
+      "default": "From everyday essentials to standout statement looks, our bestsellers offer something for every wardrobe."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "SHOP NOW"
+    },
+    {
+      "type": "url",
+      "id": "button_url",
+      "label": "Button URL"
+    },
+    {
+      "type": "select",
+      "id": "btn_style",
+      "label": "Button style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "animated", "label": "Animated pulse" },
+        { "value": "shimmer", "label": "Solid shimmer" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "text",
+      "id": "countdown_date",
+      "label": "Countdown target date",
+      "info": "Format: YYYY-MM-DD (e.g. 2026-09-01)",
+      "default": "2026-09-01"
+    },
+    {
+      "type": "header",
+      "content": "Fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button text color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "timer_bg",
+      "label": "Timer background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "timer_color",
+      "label": "Timer text color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "card_detail_bg",
+      "label": "Product card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_price_color",
+      "label": "Product price color",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "card_arrow_color",
+      "label": "Product arrow color",
+      "default": "#333333"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "header",
+      "content": "Gradient Background"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_1",
+      "label": "Gradient color 1",
+      "default": "#1a472a"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_2",
+      "label": "Gradient color 2",
+      "default": "#4a3f0a"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_3",
+      "label": "Gradient color 3",
+      "default": "#0a2a1a"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "limit": 5,
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product"
+        },
+        {
+          "type": "header",
+          "content": "Colors"
+        },
+        {
+          "type": "color",
+          "id": "card_color",
+          "label": "Card color",
+          "default": "#f8e1e8"
+        },
+        {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "bar_color",
+          "label": "Title background",
+          "default": "#f6ea8c"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Countdown Reveal",
+      "blocks": [
+        { "type": "product", "settings": { "card_color": "#f8e1e8", "bar_color": "#f8e1e8", "title_color": "#000000" } },
+        { "type": "product", "settings": { "card_color": "#faf5d0", "bar_color": "#faf5d0", "title_color": "#000000" } },
+        { "type": "product", "settings": { "card_color": "#c5cae9", "bar_color": "#c5cae9", "title_color": "#000000" } },
+        { "type": "product", "settings": { "card_color": "#e1bee7", "bar_color": "#e1bee7", "title_color": "#000000" } },
+        { "type": "product", "settings": { "card_color": "#dce775", "bar_color": "#dce775", "title_color": "#000000" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

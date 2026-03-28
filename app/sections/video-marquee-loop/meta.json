@@ -1,12 +1,12 @@
 {
   "id": "video-marquee-loop",
-  "name": "SS - Video Marquee",
+  "name": "SIQ - Video Marquee",
   "description": "Experimental editorial video marquee section with a continuously scrolling horizontal strip of video tiles. Features infinite loop CSS animation, hover-to-pause interaction, editorial mega typography overlay, diagonal divider accents, rounded tile shapes, ambient glow, and scroll-triggered reveal. Each tile supports Shopify hosted video, YouTube/Vimeo, and MP4 URLs with poster fallback. Ideal for showreels, portfolio pages, and creative agencies. 60+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +22,31 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/video-marquee-loop/default.webp",
-      "alt": "Video Marquee Loop - Default",
+      "alt": "SS - Video Marquee - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Refresh",
+      "Spotlight",
+      "Studio",
+      "Publisher",
+      "Trade",
+      "Taste",
+      "Colorblock",
+      "Ride",
+      "Origin",
+      "Crave"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +59,10 @@
     {
       "version": "1.0.0",
       "date": "2025-07-09",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

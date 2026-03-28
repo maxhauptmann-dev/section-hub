@@ -19,6 +19,8 @@
   assign text_lh       = section.settings.text_line_height
   assign text_align    = section.settings.text_alignment
   assign max_w         = section.settings.content_max_width
+  assign padding_h_desktop = section.settings.padding_h_desktop
+  assign padding_h_mobile  = section.settings.padding_h_mobile
   assign scroll_per    = section.settings.scroll_per_block
   assign bg_image      = section.settings.bg_image
   assign bg_img_op     = section.settings.bg_image_opacity
@@ -63,6 +65,8 @@
     --shht-text-lh: {{ text_lh | divided_by: 10.0 }};
     --shht-align: {{ text_align }};
     --shht-max-w: {{ max_w }}px;
+    --shht-padding-h-desktop: {{ padding_h_desktop }}px;
+    --shht-padding-h-mobile: {{ padding_h_mobile }}px;
     --shht-bg-img-op: {{ bg_img_op | divided_by: 100.0 }};
     --shht-noise-op: {{ noise_op | divided_by: 100.0 }};
     --shht-btn-radius: {{ btn_radius }}px;
@@ -116,9 +120,7 @@
           <p class="shht-paragraph" data-shht-paragraph="{{ forloop.index0 }}" {{ block.shopify_attributes }}>
             {%- assign words = block.settings.text | split: ' ' -%}
             {%- for word in words -%}
-              <span class="shht-word{% if use_gradient %} shht-word--gradient{% endif %}" data-shht-word="{{ global_word_index }}">{{ word }}</span>
-              {%- assign global_word_index = global_word_index | plus: 1 -%}
-              {%- unless forloop.last %} {% endunless -%}
+              <span class="shht-word{% if use_gradient %} shht-word--gradient{% endif %}" data-shht-word="{{ global_word_index }}">{{ word }}</span> {%- assign global_word_index = global_word_index | plus: 1 -%}
             {%- endfor -%}
           </p>
         {%- endfor -%}
@@ -214,7 +216,7 @@
 
 {% schema %}
 {
-  "name": "SS - Highlight Text",
+  "name": "SIQ - Highlight Text",
   "tag": "section",
   "class": "shht-section",
   "settings": [
@@ -271,6 +273,28 @@
       "step": 50,
       "default": 900,
       "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_h_desktop",
+      "label": "Horizontal padding (desktop)",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px",
+      "info": "Left and right padding on desktop (1200px+)"
+    },
+    {
+      "type": "range",
+      "id": "padding_h_mobile",
+      "label": "Horizontal padding (mobile)",
+      "min": 8,
+      "max": 50,
+      "step": 2,
+      "default": 16,
+      "unit": "px",
+      "info": "Left and right padding on mobile (under 750px)"
     },
     {
       "type": "header",
@@ -469,7 +493,7 @@
   ],
   "presets": [
     {
-      "name": "SS - Highlight Text",
+      "name": "SIQ - Highlight Text",
       "blocks": [
         {
           "type": "paragraph",

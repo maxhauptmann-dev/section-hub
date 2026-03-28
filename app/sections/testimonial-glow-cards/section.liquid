@@ -1,0 +1,497 @@
+{{ 'section-testimonial-glow-cards.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign glow1 = section.settings.glow_color_1
+  assign glow2 = section.settings.glow_color_2
+  assign glow3 = section.settings.glow_color_3
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign quote_color = section.settings.quote_color
+  assign name_color = section.settings.name_color
+  assign role_color = section.settings.role_color
+  assign star_color = section.settings.star_color
+  assign badge_color = section.settings.badge_color
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.quote_size
+  assign radius = section.settings.border_radius
+  assign columns = section.settings.columns
+  assign gap = section.settings.gap
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign show_stars = section.settings.show_stars
+  assign show_badge = section.settings.show_badge
+  assign show_photo = section.settings.show_photo
+  assign glow_anim = section.settings.glow_animation
+  assign glassmorphism = section.settings.glassmorphism
+  assign glow_speed = section.settings.glow_speed
+-%}
+
+<div
+  id="tg-glow-{{ sid }}"
+  class="tg-glow"
+  style="
+    --tg-bg:{{ bg }};
+    --tg-text:{{ text_color }};
+    --tg-glow1:{{ glow1 }};
+    --tg-glow2:{{ glow2 }};
+    --tg-glow3:{{ glow3 }};
+    --tg-card-bg:{{ card_bg }};
+    --tg-card-border:{{ card_border }};
+    --tg-quote:{{ quote_color }};
+    --tg-name:{{ name_color }};
+    --tg-role:{{ role_color }};
+    --tg-star:{{ star_color }};
+    --tg-badge:{{ badge_color }};
+    --tg-max-w:{{ max_w }}px;
+    --tg-pad-y:{{ pad_y }}px;
+    --tg-mt:{{ mt }}px;
+    --tg-mb:{{ mb }}px;
+    --tg-q-size:{{ q_size }}px;
+    --tg-radius:{{ radius }}px;
+    --tg-cols:{{ columns }};
+    --tg-gap:{{ gap }}px;
+    --tg-glow-speed:{{ glow_speed }}s;
+  "
+>
+  <!-- Ambient bg orbs -->
+  <div class="tg-glow__ambient">
+    <div class="tg-glow__orb tg-glow__orb--1"></div>
+    <div class="tg-glow__orb tg-glow__orb--2"></div>
+    <div class="tg-glow__orb tg-glow__orb--3"></div>
+  </div>
+
+  <div class="tg-glow__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="tg-glow__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="tg-glow__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="tg-glow__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="tg-glow__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign quote = block.settings.quote
+          assign name = block.settings.name
+          assign role = block.settings.role
+          assign rating = block.settings.rating
+          assign photo = block.settings.photo
+          assign badge = block.settings.badge
+        -%}
+        <div
+          class="tg-glow__card{% if glow_anim %} tg-glow__card--animated{% endif %}{% if glassmorphism %} tg-glow__card--glass{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="tg-glow__card-border" aria-hidden="true"></div>
+          <div class="tg-glow__card-content">
+            <div class="tg-glow__card-top">
+              <div class="tg-glow__author-row">
+                {%- if show_photo -%}
+                  {%- if photo != blank -%}
+                    <img class="tg-glow__avatar" src="{{ photo | image_url: width: 80 }}" alt="{{ name | escape }}" width="40" height="40" loading="lazy">
+                  {%- else -%}
+                    <span class="tg-glow__avatar-ph">{{ name | slice: 0, 1 }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+                <div>
+                  <span class="tg-glow__name">{{ name }}</span>
+                  {%- if role != blank -%}
+                    <span class="tg-glow__role">{{ role }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+              {%- if show_badge and badge != blank -%}
+                <span class="tg-glow__badge">{{ badge }}</span>
+              {%- endif -%}
+            </div>
+
+            {%- if show_stars -%}
+              <div class="tg-glow__stars" aria-label="{{ rating }} out of 5 stars">
+                {%- for i in (1..5) -%}
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="{% if i <= rating %}var(--tg-star){% else %}none{% endif %}" stroke="var(--tg-star)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+
+            <blockquote class="tg-glow__quote">{{ quote }}</blockquote>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "SIQ - Glow Reviews",
+  "tag": "section",
+  "class": "section-testimonial-glow-cards",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Trusted By Thousands"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Join the community of people who already love what we do."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card gap",
+      "min": 12,
+      "max": 40,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "checkbox",
+      "id": "glow_animation",
+      "label": "Animated glow border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "glassmorphism",
+      "label": "Glassmorphism effect",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show star ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show badge label",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_photo",
+      "label": "Show profile photo",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "glow_speed",
+      "label": "Glow animation speed",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Glow colors"
+    },
+    {
+      "type": "color",
+      "id": "glow_color_1",
+      "label": "Glow color 1",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "glow_color_2",
+      "label": "Glow color 2",
+      "default": "#ec4899"
+    },
+    {
+      "type": "color",
+      "id": "glow_color_3",
+      "label": "Glow color 3",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#12122a"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#1e1e3a"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote text",
+      "default": "#cbd5e1"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "role_color",
+      "label": "Role color",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#facc15"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Badge color",
+      "default": "#a855f7"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Quote text size",
+      "min": 13,
+      "max": 20,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Incredible quality!"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Customer"
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Role / Title",
+          "default": "Verified Buyer"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge label",
+          "default": "Top Reviewer"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Profile photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Glow Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "I have never seen a product presented with this much care. From the moment I opened the box to using it daily — pure excellence. This brand has completely redefined my expectations for online shopping.",
+            "name": "Maximilian Steiner",
+            "role": "Tech Enthusiast",
+            "badge": "VIP Buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "The attention to detail is mind-blowing. Every single element feels intentional and premium. I keep discovering small touches that make me love this brand even more.",
+            "name": "Aria Nakamura",
+            "role": "Design Professional",
+            "badge": "Top Reviewer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Ordered at midnight, shipped by morning, arrived in pristine condition two days later. The speed and quality of service is honestly unprecedented. A seamless experience from start to finish.",
+            "name": "Luca Bianchi",
+            "role": "Repeat Customer",
+            "badge": "Loyal Fan",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Bought this as a gift and it was such a hit that I ended up ordering two more for myself. The quality truly speaks for itself and everyone notices.",
+            "name": "Charlotte Hayes",
+            "role": "Verified Buyer",
+            "badge": "Gift Expert",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Five stars is not enough. This brand operates on a different level. From customer support to product quality, everything is best in class. I will never go anywhere else.",
+            "name": "Omar Al-Rashid",
+            "role": "Premium Member",
+            "badge": "Power User",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "My entire team now uses this brand exclusively. When you find something this good, you share it with everyone. Absolute game-changer for us professionally and personally.",
+            "name": "Freya Lindqvist",
+            "role": "Team Lead",
+            "badge": "Advocate",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

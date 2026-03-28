@@ -36,7 +36,9 @@ export default function App() {
           <s-link href="/app/my-sections">My Sections</s-link>
           <s-link href="/app/updates">Updates 🔄</s-link>
           <s-link href="/app/analyzer">Store Analyzer 📊</s-link>
+          <s-link href="/app/image-optimizer">Image Optimizer 🖼️</s-link>
           <s-link href="/app/explore">Explore Sections</s-link>
+          <s-link href="/app/bundles">Bundles 📦</s-link>
           <s-link href="/app/premium">Premium 👑</s-link>
           <s-link href="/app/blocks">Conversion Blocks</s-link>
           <s-link href="/app/help">Help Center</s-link>

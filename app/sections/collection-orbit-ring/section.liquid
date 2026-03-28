@@ -61,6 +61,29 @@
     --cor-pb: {{ pb }}px;
     --cor-px: {{ px }}px;
   }
+
+  /* Tablet */
+  @media (max-width: 768px) {
+    #cor-{{ section.id }} {
+      --cor-orbit-r: {{ orbit_r | times: 0.65 }}px;
+      --cor-card-w: {{ card_w | times: 0.7 }}px;
+      --cor-card-h: {{ card_h | times: 0.7 }}px;
+      --cor-py: {{ py | times: 0.6 }}px;
+      --cor-pb: {{ pb | times: 0.6 }}px;
+    }
+  }
+
+  /* Mobile */
+  @media (max-width: 480px) {
+    #cor-{{ section.id }} {
+      --cor-orbit-r: {{ orbit_r | times: 0.45 }}px;
+      --cor-card-w: {{ card_w | times: 0.55 }}px;
+      --cor-card-h: {{ card_h | times: 0.55 }}px;
+      --cor-py: {{ py | times: 0.45 }}px;
+      --cor-pb: {{ pb | times: 0.45 }}px;
+      --cor-px: 12px;
+    }
+  }
 </style>
 
 <section id="cor-{{ section.id }}" class="cor-wrap" data-cor-reveal>
@@ -180,7 +203,7 @@
 
 {% schema %}
 {
-  "name": "Collection Orbit",
+  "name": "SIQ - Collection Orbit",
   "tag": "section",
   "class": "cor-section",
   "settings": [
@@ -447,7 +470,7 @@
   ],
   "presets": [
     {
-      "name": "SS - Collection Orbit",
+      "name": "SIQ - Collection Orbit",
       "settings": {
         "eyebrow": "Discover",
         "heading": "Explore Our Universe",

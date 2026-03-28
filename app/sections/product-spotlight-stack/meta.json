@@ -1,0 +1,56 @@
+{
+  "id": "product-spotlight-stack",
+  "name": "SIQ - Spotlight Stack",
+  "description": "Premium 3D product spotlight with stacked card deck animation. Products are displayed as a layered card stack that peels away with a dramatic 3D flip on autoplay or user interaction. Each card features a full-bleed product image, animated badge, price reveal, and a glowing CTA button. Includes a sleek side panel that slides in with product details, bullet features, and social proof. Supports autoplay, pause-on-hover, touch swipe, keyboard nav, 70+ customization options, and is fully responsive. Perfect for hero product showcases, featured collections, and luxury product launches.",
+  "category": [
+    "Products"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Products",
+    "Carousel",
+    "3D",
+    "Animated",
+    "Autoplay",
+    "Stack",
+    "Featured",
+    "Premium",
+    "Hero"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/product-spotlight-stack/default.webp",
+      "alt": "SIQ - Spotlight Stack - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-17",
+  "updatedAt": "2026-03-17",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-17",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "premium"
+}

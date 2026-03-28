@@ -1,0 +1,496 @@
+{{ 'section-testimonial-orbit-carousel.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign accent2 = section.settings.accent_color_2
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign quote_color = section.settings.quote_color
+  assign name_color = section.settings.name_color
+  assign role_color = section.settings.role_color
+  assign star_color = section.settings.star_color
+  assign dot_color = section.settings.dot_color
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.quote_size
+  assign radius = section.settings.border_radius
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign show_stars = section.settings.show_stars
+  assign show_role = section.settings.show_role
+  assign show_photo = section.settings.show_photo
+  assign autoplay = section.settings.autoplay
+  assign speed = section.settings.autoplay_speed
+  assign show_glow = section.settings.show_glow
+  assign total = section.blocks.size
+-%}
+
+<div
+  id="to-orbit-{{ sid }}"
+  class="to-orbit"
+  data-autoplay="{{ autoplay }}"
+  data-speed="{{ speed }}"
+  data-total="{{ total }}"
+  style="
+    --to-bg:{{ bg }};
+    --to-text:{{ text_color }};
+    --to-accent:{{ accent }};
+    --to-accent2:{{ accent2 }};
+    --to-card-bg:{{ card_bg }};
+    --to-card-border:{{ card_border }};
+    --to-quote:{{ quote_color }};
+    --to-name:{{ name_color }};
+    --to-role:{{ role_color }};
+    --to-star:{{ star_color }};
+    --to-dot:{{ dot_color }};
+    --to-max-w:{{ max_w }}px;
+    --to-pad-y:{{ pad_y }}px;
+    --to-mt:{{ mt }}px;
+    --to-mb:{{ mb }}px;
+    --to-q-size:{{ q_size }}px;
+    --to-radius:{{ radius }}px;
+    --to-total:{{ total }};
+  "
+>
+  <div class="to-orbit__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="to-orbit__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="to-orbit__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="to-orbit__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="to-orbit__stage">
+      {%- if show_glow -%}
+        <div class="to-orbit__glow"></div>
+      {%- endif -%}
+
+      <div class="to-orbit__track">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign rating = block.settings.rating
+            assign name = block.settings.name
+            assign role = block.settings.role
+            assign quote = block.settings.quote
+            assign photo = block.settings.photo
+          -%}
+          <div
+            class="to-orbit__card{% if forloop.index0 == 0 %} to-orbit__card--active{% endif %}"
+            data-index="{{ forloop.index0 }}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="to-orbit__card-inner">
+              {%- if show_stars -%}
+                <div class="to-orbit__stars" aria-label="{{ rating }} out of 5 stars">
+                  {%- for i in (1..5) -%}
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="{% if i <= rating %}var(--to-star){% else %}none{% endif %}" stroke="var(--to-star)" stroke-width="1.5"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                  {%- endfor -%}
+                </div>
+              {%- endif -%}
+
+              <blockquote class="to-orbit__quote">{{ quote }}</blockquote>
+
+              <div class="to-orbit__author">
+                {%- if show_photo -%}
+                  {%- if photo != blank -%}
+                    <img class="to-orbit__avatar" src="{{ photo | image_url: width: 96 }}" alt="{{ name | escape }}" width="48" height="48" loading="lazy">
+                  {%- else -%}
+                    <span class="to-orbit__avatar-ph">{{ name | slice: 0, 1 }}</span>
+                  {%- endif -%}
+                {%- endif -%}
+                <div>
+                  <span class="to-orbit__name">{{ name }}</span>
+                  {%- if show_role and role != blank -%}
+                    <span class="to-orbit__role">{{ role }}</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      <!-- Navigation -->
+      <button class="to-orbit__arrow to-orbit__arrow--prev" aria-label="Previous testimonial" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M15 18l-6-6 6-6"/></svg>
+      </button>
+      <button class="to-orbit__arrow to-orbit__arrow--next" aria-label="Next testimonial" type="button">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 18l6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- Dots -->
+    <div class="to-orbit__dots">
+      {%- for block in section.blocks -%}
+        <button class="to-orbit__dot{% if forloop.index0 == 0 %} to-orbit__dot--active{% endif %}" data-goto="{{ forloop.index0 }}" aria-label="Go to review {{ forloop.index }}" type="button"></button>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const el = document.getElementById('to-orbit-{{ sid }}');
+  if(!el) return;
+  const total = parseInt(el.dataset.total) || 0;
+  if(total < 1) return;
+  let cur = 0;
+  let timer = null;
+  const cards = el.querySelectorAll('.to-orbit__card');
+  const dots  = el.querySelectorAll('.to-orbit__dot');
+  const autoplay = el.dataset.autoplay === 'true';
+  const speed = (parseInt(el.dataset.speed) || 5) * 1000;
+
+  function goTo(n){
+    cur = ((n % total) + total) % total;
+    cards.forEach(function(c, i){
+      c.classList.toggle('to-orbit__card--active', i === cur);
+      c.classList.toggle('to-orbit__card--prev', i === ((cur - 1 + total) % total));
+      c.classList.toggle('to-orbit__card--next', i === ((cur + 1) % total));
+      if(i !== cur && i !== ((cur - 1 + total) % total) && i !== ((cur + 1) % total)){
+        c.classList.add('to-orbit__card--hidden');
+      } else {
+        c.classList.remove('to-orbit__card--hidden');
+      }
+    });
+    dots.forEach(function(d, i){ d.classList.toggle('to-orbit__dot--active', i === cur); });
+  }
+
+  function next(){ goTo(cur + 1); }
+  function prev(){ goTo(cur - 1); }
+
+  function startAP(){ if(autoplay){ timer = setInterval(next, speed); } }
+  function stopAP(){ clearInterval(timer); }
+
+  el.querySelector('.to-orbit__arrow--next').addEventListener('click', function(){ stopAP(); next(); startAP(); });
+  el.querySelector('.to-orbit__arrow--prev').addEventListener('click', function(){ stopAP(); prev(); startAP(); });
+  dots.forEach(function(d){
+    d.addEventListener('click', function(){ stopAP(); goTo(parseInt(d.dataset.goto)); startAP(); });
+  });
+
+  el.addEventListener('mouseenter', stopAP);
+  el.addEventListener('mouseleave', startAP);
+
+  goTo(0);
+  startAP();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Orbit Reviews",
+  "tag": "section",
+  "class": "section-testimonial-orbit-carousel",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Voices That Matter"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real stories from people who love what we create."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Carousel"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Autoplay speed (seconds)",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show star rating",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_role",
+      "label": "Show role / title",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_photo",
+      "label": "Show profile photo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show background glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent 1",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#16162a"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#2a2a4a"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote text",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "role_color",
+      "label": "Role color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#facc15"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color",
+      "default": "#a855f7"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 800,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Quote text size",
+      "min": 14,
+      "max": 24,
+      "step": 1,
+      "default": 18,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Amazing product!"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Name",
+          "default": "Customer"
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Role / Title",
+          "default": "Verified Buyer"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Profile photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Orbit Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "I have tried countless brands before but nothing comes close to this. The quality is on another level — every detail is perfect. I genuinely feel like a VIP customer every single time I order. This brand has earned a customer for life.",
+            "name": "Alexander Reed",
+            "role": "Loyal Customer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "The packaging, the product, the experience — everything is absolutely immaculate. My friends keep asking me where I got this from and I proudly tell them every time!",
+            "name": "Sophia Laurent",
+            "role": "Premium Member",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Customer support was insanely fast and helpful. They went above and beyond to make sure I was satisfied. This is what real customer care looks like.",
+            "name": "James Mitchell",
+            "role": "Verified Buyer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Ordered internationally and it arrived earlier than expected. Beautifully wrapped, zero damage, and the product exceeded my high expectations. Truly world-class.",
+            "name": "Elena Vasquez",
+            "role": "International Customer",
+            "rating": 5
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Third purchase this month. I keep coming back because the consistency is unmatched. Whether it is a gift or for myself, this brand never disappoints.",
+            "name": "Marcus Kim",
+            "role": "Repeat Buyer",
+            "rating": 5
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

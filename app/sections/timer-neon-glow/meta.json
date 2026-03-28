@@ -1,12 +1,14 @@
 {
   "id": "timer-neon-glow",
-  "name": "SS - Neon Glow Timer",
+  "name": "SIQ - Neon Glow Timer",
   "description": "Cyberpunk-inspired neon countdown timer with realistic glowing tube effects. Each digit pulses with customizable neon colors, flicker animation, and reflection effects. Perfect for flash sales, event launches, and limited-time offers with an electric nightclub aesthetic.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 21,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a1a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/timer-neon-glow/default.webp",
-      "alt": "Timer Neon Glow - Default",
+      "alt": "SS - Neon Glow Timer - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

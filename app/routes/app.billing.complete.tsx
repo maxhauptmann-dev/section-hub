@@ -83,7 +83,6 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       console.log(`Marked ${pendingRecords.length} purchase(s) COMPLETED for ${appPurchaseId}`);
 
       // Redirect back into the Shopify Admin embedded app
-      // The shop handle is the subdomain part (e.g. "sections-test-2021" from "sections-test-2021.myshopify.com")
       const shopHandle = shop.replace(".myshopify.com", "");
       const clientId = process.env.SHOPIFY_API_KEY || "";
 

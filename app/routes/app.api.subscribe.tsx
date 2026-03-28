@@ -28,9 +28,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     process.env.SHOPIFY_APP_URL || "https://section-hub-app.fly.dev";
   const returnUrl = `${appUrl}/app/billing/subscription-complete?shop=${encodeURIComponent(shop)}`;
 
-  // Development stores cannot accept real charges – use test mode
-  const isTestCharge = shop.includes("sections-test") || process.env.NODE_ENV === "development";
-
   const response = await admin.graphql(
     `#graphql
     mutation appSubscriptionCreate($name: String!, $lineItems: [AppSubscriptionLineItemInput!]!, $returnUrl: URL!, $test: Boolean!) {
@@ -48,14 +45,14 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     }`,
     {
       variables: {
-        name: "Section Hub Premium",
+        name: "SectionIQ Premium",
         returnUrl,
-        test: isTestCharge,
+        test: false,
         lineItems: [
           {
             plan: {
               appRecurringPricingDetails: {
-                price: { amount: "8.00", currencyCode: "EUR" },
+                price: { amount: "19.00", currencyCode: "EUR" },
                 interval: "EVERY_30_DAYS",
               },
             },

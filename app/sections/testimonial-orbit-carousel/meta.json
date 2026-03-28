@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-orbit-carousel",
+  "name": "SIQ - Testimonial Orbit Carousel",
+  "description": "Spectacular 3D orbit carousel where testimonial cards rotate in a circular perspective. The active card scales up in a spotlight center while others recede into depth. Features smooth CSS 3D transforms, autoplay, and dramatic visual depth.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "3D",
+    "Orbit",
+    "Carousel",
+    "Perspective",
+    "Premium",
+    "Animated"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-orbit-carousel/default.webp",
+      "alt": "Testimonial Orbit Carousel - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

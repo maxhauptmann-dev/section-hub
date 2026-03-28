@@ -1,0 +1,56 @@
+/* ===== SIQ Scroll Text Reveal – styles.css ===== */
+/* prefix: str */
+
+.str {
+  position: relative;
+  background: var(--str-bg, #1a1a2e);
+}
+
+.str__content {
+  max-width: var(--str-max-w, 1100px);
+  margin: 0 auto;
+  padding: var(--str-py, 80px) var(--str-px, 40px);
+  width: 100%;
+  text-align: var(--str-align, left);
+}
+
+/* ── characters ── */
+.str__text {
+  font-size: var(--str-fs, 48px);
+  font-weight: var(--str-fw, 400);
+  line-height: var(--str-lh, 1.35);
+  letter-spacing: -0.01em;
+  color: var(--str-muted, rgba(255,255,255,0.18));
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* each character span */
+.str__char {
+  transition: color 0.08s ease;
+  color: var(--str-muted, rgba(255,255,255,0.18));
+}
+
+.str__char.is-lit {
+  color: var(--str-lit, #ffffff);
+}
+
+/* spaces need width */
+.str__space {
+  display: inline;
+}
+
+/* ── mobile: no scroll animation, just show text ── */
+@media (max-width: 767px) {
+  .str__content {
+    padding: var(--str-py-m, 48px) var(--str-px-m, 20px);
+  }
+
+  .str__text {
+    font-size: var(--str-fs-m, 28px);
+  }
+
+  .str__char {
+    transition: none;
+  }
+}

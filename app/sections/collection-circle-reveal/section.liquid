@@ -1,0 +1,600 @@
+{% comment %}
+  SectionHub – Collection Circle Reveal  (ccv-)
+  Scroll-driven: colored background shrinks to circle, product circles arc around badge
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign col           = section.settings.collection
+  assign products      = col.products
+  assign max_products  = section.settings.max_products
+  assign spinning_text = section.settings.spinning_text | default: 'SALE · HURRY UP · SALE · 50% OFF · '
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #ccv-{{ section.id }} {
+    --ccv-bg: {{ section.settings.bg_color }};
+    --ccv-page-bg: {{ section.settings.page_bg }};
+    --ccv-heading-c: {{ section.settings.heading_color }};
+    --ccv-text-c: {{ section.settings.text_color }};
+    --ccv-card-bg: {{ section.settings.card_bg }};
+    --ccv-badge-border-c: {{ section.settings.badge_border_color }};
+
+    --ccv-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --ccv-heading-fw: {{ heading_font.weight }};
+    --ccv-heading-fst: {{ heading_font.style }};
+    --ccv-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --ccv-body-fw: {{ body_font.weight }};
+
+    --ccv-badge-size: {{ section.settings.badge_size }}px;
+    --ccv-card-w: {{ section.settings.card_size }}px;
+    --ccv-card-w-m: {{ section.settings.card_size_mobile }}px;
+
+    --ccv-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --ccv-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+  }
+</style>
+
+<section id="ccv-{{ section.id }}" class="ccv" data-ccv-root>
+
+  {%- comment -%} ══════════════ DESKTOP: scroll-driven layout ══════════════ {%- endcomment -%}
+  <div class="ccv-desktop-only">
+    <div class="ccv-scroll" data-ccv-scroll>
+      <div class="ccv-scroll__inner">
+
+        {%- comment -%} Product circles – BEHIND colored layer (z-index 2)
+             They are positioned via JS in an arc around the badge {%- endcomment -%}
+        <div class="ccv-cards" data-ccv-cards>
+          {%- for product in products limit: max_products -%}
+            {%- assign p_img = product.featured_image -%}
+            <div class="ccv-card" data-ccv-card>
+              <a href="{{ product.url }}" class="ccv-card__link" aria-label="{{ product.title | escape }}">
+                <div class="ccv-card__media">
+                  {%- if p_img != blank -%}
+                    <img
+                      src="{{ p_img | image_url: width: 400 }}"
+                      srcset="{{ p_img | image_url: width: 200 }} 200w,
+                              {{ p_img | image_url: width: 300 }} 300w,
+                              {{ p_img | image_url: width: 400 }} 400w"
+                      sizes="160px"
+                      alt="{{ p_img.alt | default: product.title | escape }}"
+                      loading="lazy"
+                      class="ccv-card__img"
+                    >
+                  {%- else -%}
+                    <div class="ccv-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'ccv-card__svg' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </a>
+            </div>
+          {%- endfor -%}
+
+          {%- if col == blank -%}
+            {%- for i in (1..8) -%}
+              <div class="ccv-card" data-ccv-card>
+                <div class="ccv-card__link">
+                  <div class="ccv-card__media">
+                    <div class="ccv-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'ccv-card__svg' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Colored background – clips down to circle (z-index 3) {%- endcomment -%}
+        <div class="ccv-bg" data-ccv-bg></div>
+
+        {%- comment -%} Text content (z-index 5) {%- endcomment -%}
+        <div class="ccv-content" data-ccv-content>
+          <div class="ccv-content__inner">
+            {%- if section.settings.subheading != blank -%}
+              <p class="ccv-subheading ccv-subheading--{{ section.settings.subheading_size }}">{{ section.settings.subheading }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.heading != blank -%}
+              <{{ section.settings.heading_tag }} class="ccv-heading ccv-heading--{{ section.settings.heading_size }}">
+                {{ section.settings.heading }}
+              </{{ section.settings.heading_tag }}>
+            {%- endif -%}
+
+            {%- if section.settings.description != blank -%}
+              <p class="ccv-desc ccv-desc--{{ section.settings.desc_size }}">{{ section.settings.description }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Spinning badge – bottom center, fully visible, cool design {%- endcomment -%}
+        <div class="ccv-badge" data-ccv-badge>
+          <div class="ccv-badge__glow"></div>
+          <svg class="ccv-badge__ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <path id="ccv-tp-{{ section.id }}" d="M 100,100 m -78,0 a 78,78 0 1,1 156,0 a 78,78 0 1,1 -156,0" fill="none"/>
+            </defs>
+            {%- comment -%} Outer ring – solid {%- endcomment -%}
+            <circle cx="100" cy="100" r="97" fill="none" stroke="var(--ccv-badge-border-c, #1a1a1a)" stroke-width="2"/>
+            {%- comment -%} Inner ring – dashed {%- endcomment -%}
+            <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ccv-badge-border-c, #1a1a1a)" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
+            {%- comment -%} Spinning text on path {%- endcomment -%}
+            <text font-family="var(--ccv-heading-ff)" font-weight="700" font-size="15" fill="var(--ccv-heading-c, #1a1a1a)" letter-spacing="4.5" text-transform="uppercase">
+              <textPath href="#ccv-tp-{{ section.id }}" startOffset="0%">{{ spinning_text }}</textPath>
+            </text>
+          </svg>
+          <div class="ccv-badge__center">
+            <div class="ccv-badge__inner-ring"></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ══════════════ MOBILE: static layout ══════════════ {%- endcomment -%}
+  <div class="ccv-mobile-only">
+    <div class="ccv-static">
+      <div class="ccv-static__text">
+        {%- if section.settings.subheading != blank -%}
+          <p class="ccv-subheading ccv-subheading--{{ section.settings.subheading_size }}">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.heading != blank -%}
+          <{{ section.settings.heading_tag }} class="ccv-heading ccv-heading--{{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+
+        {%- if section.settings.description != blank -%}
+          <p class="ccv-desc ccv-desc--{{ section.settings.desc_size }}">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Badge + cards together at bottom {%- endcomment -%}
+      <div class="ccv-static__bottom">
+        <div class="ccv-static__cards-row">
+          {%- for product in products limit: max_products -%}
+            {%- assign p_img = product.featured_image -%}
+            <div class="ccv-card">
+              <a href="{{ product.url }}" class="ccv-card__link" aria-label="{{ product.title | escape }}">
+                <div class="ccv-card__media">
+                  {%- if p_img != blank -%}
+                    <img
+                      src="{{ p_img | image_url: width: 300 }}"
+                      alt="{{ p_img.alt | default: product.title | escape }}"
+                      loading="lazy"
+                      class="ccv-card__img"
+                    >
+                  {%- else -%}
+                    <div class="ccv-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'ccv-card__svg' }}
+                    </div>
+                  {%- endif -%}
+                </div>
+              </a>
+            </div>
+          {%- endfor -%}
+
+          {%- if col == blank -%}
+            {%- for i in (1..8) -%}
+              <div class="ccv-card">
+                <div class="ccv-card__link">
+                  <div class="ccv-card__media">
+                    <div class="ccv-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'ccv-card__svg' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          {%- endif -%}
+        </div>
+
+        <div class="ccv-static__badge-wrap">
+          <div class="ccv-badge__glow"></div>
+          <svg class="ccv-badge__ring" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <path id="ccv-tp-m-{{ section.id }}" d="M 100,100 m -78,0 a 78,78 0 1,1 156,0 a 78,78 0 1,1 -156,0" fill="none"/>
+            </defs>
+            <circle cx="100" cy="100" r="97" fill="none" stroke="var(--ccv-badge-border-c, #1a1a1a)" stroke-width="2"/>
+            <circle cx="100" cy="100" r="88" fill="none" stroke="var(--ccv-badge-border-c, #1a1a1a)" stroke-width="1" stroke-dasharray="4 4" opacity="0.5"/>
+            <text font-family="var(--ccv-heading-ff)" font-weight="700" font-size="15" fill="var(--ccv-heading-c, #1a1a1a)" letter-spacing="4.5" text-transform="uppercase">
+              <textPath href="#ccv-tp-m-{{ section.id }}" startOffset="0%">{{ spinning_text }}</textPath>
+            </text>
+          </svg>
+          <div class="ccv-badge__center">
+            <div class="ccv-badge__inner-ring"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('#ccv-{{ section.id }}[data-ccv-root]');
+  if (!root) return;
+
+  /* Only run scroll effect on desktop */
+  if (window.innerWidth < 750) return;
+
+  var scrollEl  = root.querySelector('[data-ccv-scroll]');
+  var bgEl      = root.querySelector('[data-ccv-bg]');
+  var content   = root.querySelector('[data-ccv-content]');
+  var badge     = root.querySelector('[data-ccv-badge]');
+  var cardsWrap = root.querySelector('[data-ccv-cards]');
+  var cards     = root.querySelectorAll('[data-ccv-card]');
+  if (!scrollEl || !bgEl) return;
+
+  var numCards = cards.length;
+
+  /* ── Set scroll stage height ── */
+  function setHeight() {
+    scrollEl.style.height = (window.innerHeight * 3) + 'px';
+  }
+  setHeight();
+  window.addEventListener('resize', setHeight);
+
+  /* ── Calculate arc positions for cards around the badge ──
+     Cards are placed in a semi-circle/arc centered at bottom center
+     with the badge in the center. Cards to the left go from -spread to center,
+     cards to the right from center to +spread */
+  function getArcPositions() {
+    var badgeW = badge ? badge.offsetWidth : 160;
+    var cardW  = cards.length > 0 ? cards[0].offsetWidth : 110;
+    var viewW  = window.innerWidth;
+    var viewH  = window.innerHeight;
+
+    /* Arc center: badge center position
+       Badge is at bottom: 20px, so its center is at viewH - 20 - badgeW/2 */
+    var cx = viewW / 2;
+    var cy = viewH - 20 - badgeW / 2;
+
+    /* Radius of the arc – cards sit at this distance from the badge center */
+    var arcRadius = badgeW * 0.5 + cardW * 0.5 + 8;
+
+    /* Angular spread: cards spread in a semi-circle above the badge */
+    var totalSpread = Math.min(170, 55 + numCards * 14);
+    var startAngle  = -(90 + totalSpread / 2);
+    var angleStep   = numCards > 1 ? totalSpread / (numCards - 1) : 0;
+
+    var positions = [];
+    for (var i = 0; i < numCards; i++) {
+      var angleDeg = startAngle + (i * angleStep);
+      var angleRad = angleDeg * Math.PI / 180;
+      var x = cx + arcRadius * Math.cos(angleRad);
+      var y = cy + arcRadius * Math.sin(angleRad);
+      positions.push({ x: x, y: y });
+    }
+    return positions;
+  }
+
+  /* ── Main scroll handler ── */
+  function onScroll() {
+    var rect     = scrollEl.getBoundingClientRect();
+    var scrollH  = scrollEl.offsetHeight;
+    var viewH    = window.innerHeight;
+    var travel   = scrollH - viewH;
+    if (travel <= 0) return;
+
+    var scrolled = Math.max(0, -rect.top);
+    var progress = Math.max(0, Math.min(1, scrolled / travel));
+
+    /* ── Phase 1: Background shrinks from full screen to small circle
+       at badge center position ── */
+    var badgeH = badge ? badge.offsetHeight : 160;
+    var clipCenterY = ((viewH - 20 - badgeH / 2) / viewH * 100).toFixed(1);
+    var clipPhase = Math.min(1, progress / 0.6);
+    var eased = 1 - Math.pow(1 - clipPhase, 3);
+    var radius = 150 - (150 - 7) * eased;
+    bgEl.style.clipPath = 'circle(' + radius.toFixed(1) + '% at 50% ' + clipCenterY + '%)';
+
+    /* ── Text stays visible always (z-index keeps it on top) ── */
+
+    /* ── Badge stays visible always ── */
+
+    /* ── Phase 2: Cards arc out from behind badge ──
+       Cards start stacked at badge center (cx, cy) and
+       move to their arc positions */
+    var cardPhase = Math.max(0, Math.min(1, (progress - 0.2) / 0.65));
+    var cardEased = 1 - Math.pow(1 - cardPhase, 2.5);
+
+    /* Cards fade in */
+    var cardOpacity = Math.max(0, Math.min(1, (progress - 0.15) / 0.2));
+    if (cardsWrap) {
+      cardsWrap.style.opacity = cardOpacity.toFixed(3);
+    }
+
+    var viewW = window.innerWidth;
+    var viewH = window.innerHeight;
+    var badgeSize = badge ? badge.offsetWidth : 160;
+    var cx = viewW / 2;
+    var cy = viewH - 20 - badgeSize / 2;
+
+    var positions = getArcPositions();
+
+    for (var i = 0; i < numCards; i++) {
+      var cardW = cards[i].offsetWidth;
+      var halfCard = cardW / 2;
+
+      /* Start position: stacked at badge center */
+      var startX = cx - halfCard;
+      var startY = cy - halfCard;
+
+      /* Target position: arc position */
+      var targetX = positions[i].x - halfCard;
+      var targetY = positions[i].y - halfCard;
+
+      /* Interpolate */
+      var currentX = startX + (targetX - startX) * cardEased;
+      var currentY = startY + (targetY - startY) * cardEased;
+
+      /* Scale: start small, grow to full */
+      var scale = 0.3 + 0.7 * cardEased;
+
+      cards[i].style.position = 'absolute';
+      cards[i].style.left = '0';
+      cards[i].style.top = '0';
+      cards[i].style.transform = 'translate(' + currentX.toFixed(1) + 'px, ' + currentY.toFixed(1) + 'px) scale(' + scale.toFixed(3) + ')';
+    }
+  }
+
+  /* ── Intersection-driven activation ── */
+  var active = false;
+  var ticking = false;
+  function onScrollThrottled() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(function() { onScroll(); ticking = false; });
+    }
+  }
+
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !active) {
+        active = true;
+        window.addEventListener('scroll', onScrollThrottled, { passive: true });
+        onScroll();
+      } else if (!e.isIntersecting && active) {
+        active = false;
+        window.removeEventListener('scroll', onScrollThrottled);
+      }
+    });
+  }, { rootMargin: '200px 0px' });
+  io.observe(scrollEl);
+  onScroll();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Circle Reveal",
+  "tag": "section",
+  "class": "ccv-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Sammlung"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Sammlung"
+    },
+    {
+      "type": "range",
+      "id": "max_products",
+      "label": "Anzahl Produkte",
+      "min": 4,
+      "max": 12,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "header",
+      "content": "Text"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Sub heading",
+      "default": "Sub heading  here"
+    },
+    {
+      "type": "select",
+      "id": "subheading_size",
+      "label": "Sub-heading size",
+      "options": [
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }
+      ],
+      "default": "sm"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "MAYA BLENDS TIMELESS ELEGANCE WITH MODERN TRENDS, CRAFTING FASHION THAT EMPOWERS CONFIDENCE AND GRACE."
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p",  "label": "P"  }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Beschreibung"
+    },
+    {
+      "type": "select",
+      "id": "desc_size",
+      "label": "Description size",
+      "options": [
+        { "value": "xs", "label": "Extra Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }
+      ],
+      "default": "sm"
+    },
+    {
+      "type": "header",
+      "content": "Kreis-Badge"
+    },
+    {
+      "type": "text",
+      "id": "spinning_text",
+      "label": "Drehender Text",
+      "default": "SALE · HURRY UP · SALE · 50% OFF · ",
+      "info": "Text der im Kreis rotiert. Punkte/Leerzeichen fuer Abstand."
+    },
+    {
+      "type": "range",
+      "id": "badge_size",
+      "label": "Badge-Groesse",
+      "min": 80,
+      "max": 250,
+      "step": 10,
+      "default": 160,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Produkt-Kreise"
+    },
+    {
+      "type": "range",
+      "id": "card_size",
+      "label": "Kreis-Groesse (Desktop)",
+      "min": 60,
+      "max": 200,
+      "step": 10,
+      "default": 110,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_size_mobile",
+      "label": "Kreis-Groesse (Mobil)",
+      "min": 50,
+      "max": 130,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Schriften"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "Farben"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Hintergrundfarbe",
+      "default": "#c8ff00"
+    },
+    {
+      "type": "color",
+      "id": "page_bg",
+      "label": "Seiten-Hintergrund (hinter Reveal)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading-Farbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Textfarbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Kreis-Hintergrund",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "badge_border_color",
+      "label": "Badge Rand-Farbe",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Mobil-Abstände"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top Padding (Mobil)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom Padding (Mobil)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Circle Reveal"
+    }
+  ]
+}
+{% endschema %}

@@ -1,12 +1,12 @@
 {
   "id": "header-aurora",
-  "name": "SS - Header Aurora",
+  "name": "SIQ - Header Aurora",
   "description": "Stunning header with animated aurora gradient border, full-screen overlay navigation, split-reveal menu animation, customizable gradient mesh background, scroll-reactive effects, and comprehensive design controls. A truly unique header experience.",
   "category": "Header",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -23,8 +23,8 @@
     "Sticky",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/header-aurora/default.webp",
@@ -82,5 +82,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

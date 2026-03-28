@@ -64,18 +64,27 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         (s) => `sections/section-${s.id}.liquid`
       );
 
-      const filesResponse = await admin.graphql(
-        `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
-          theme(id: $themeId) {
-            files(first: 250, filenames: $filenames) {
-              nodes { filename }
+      // Shopify limits filenames to 50 per request, so we batch
+      const BATCH_SIZE = 50;
+      let themeFiles: { filename: string }[] = [];
+
+      for (let i = 0; i < expectedFilenames.length; i += BATCH_SIZE) {
+        const batch = expectedFilenames.slice(i, i + BATCH_SIZE);
+        const filesResponse = await admin.graphql(
+          `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
+            theme(id: $themeId) {
+              files(first: 250, filenames: $filenames) {
+                nodes { filename }
+              }
             }
-          }
-        }`,
-        { variables: { themeId: mainTheme.id, filenames: expectedFilenames } }
-      );
-      const filesData = (await filesResponse.json()) as any;
-      const themeFiles = filesData.data?.theme?.files?.nodes || [];
+          }`,
+          { variables: { themeId: mainTheme.id, filenames: batch } }
+        );
+        const filesData = (await filesResponse.json()) as any;
+        const batchFiles = filesData.data?.theme?.files?.nodes || [];
+        themeFiles = [...themeFiles, ...batchFiles];
+      }
+
       themeSectionIds = themeFiles
         .map((f: { filename: string }) => {
           const m = f.filename.match(/^sections\/section-(.+)\.liquid$/);
@@ -161,9 +170,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
       const sectionFileName = `section-${sectionId}.liquid`;
       const liquidWithStyles = `{% comment %}
-  Section Hub - ${section.name}
+  SectionIQ - ${section.name}
   Version: ${section.version}
-  Updated via Section Hub App
+  Updated via SectionIQ App
 {% endcomment %}
 
 <style>
@@ -172,41 +181,29 @@ ${section.cssContent || ""}
 
 ${section.liquidContent || ""}`;
 
-      const fileInput = {
-        filename: `sections/${sectionFileName}`,
-        body: { type: "TEXT", value: liquidWithStyles },
-      };
+      const themeId = mainTheme.id.split("/").pop();
 
-      const themeFilesResponse = await admin.graphql(
-        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-          themeFilesUpsert(files: $files, themeId: $themeId) {
-            upsertedThemeFiles { filename }
-            userErrors { field message }
-            job { id }
-          }
-        }`,
-        { variables: { files: [fileInput], themeId: mainTheme.id } }
+      const assetResponse = await fetch(
+        `https://${session.shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": session.accessToken || "",
+          },
+          body: JSON.stringify({
+            asset: {
+              key: `sections/${sectionFileName}`,
+              value: liquidWithStyles,
+            },
+          }),
+        }
       );
 
-      const themeFilesData = (await themeFilesResponse.json()) as any;
-
-      if (themeFilesData.errors) {
-        const errorMsg =
-          themeFilesData.errors[0]?.message ||
-          JSON.stringify(themeFilesData.errors);
-        return { success: false, error: `GraphQL Error: ${errorMsg}` };
-      }
-
-      const userErrors =
-        themeFilesData.data?.themeFilesUpsert?.userErrors || [];
-      if (userErrors.length > 0) {
-        const errorMsg = userErrors
-          .map(
-            (e: { field?: string[]; message: string }) =>
-              `${(e.field || []).join(".")}: ${e.message}`
-          )
-          .join(", ");
-        return { success: false, error: `Error: ${errorMsg}` };
+      if (!assetResponse.ok) {
+        const errorData = await assetResponse.json().catch(() => ({}));
+        console.error("Asset upload error:", errorData);
+        return { success: false, error: "Error uploading section to theme." };
       }
 
       // Update installation record
@@ -267,18 +264,28 @@ ${section.liquidContent || ""}`;
     const expectedFilenames = allSections.map(
       (s) => `sections/section-${s.id}.liquid`
     );
-    const filesResponse = await admin.graphql(
-      `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
-        theme(id: $themeId) {
-          files(first: 250, filenames: $filenames) {
-            nodes { filename }
+
+    // Shopify limits filenames to 50 per request, so we batch
+    const BATCH_SIZE = 50;
+    let themeFiles: { filename: string }[] = [];
+
+    for (let i = 0; i < expectedFilenames.length; i += BATCH_SIZE) {
+      const batch = expectedFilenames.slice(i, i + BATCH_SIZE);
+      const filesResponse = await admin.graphql(
+        `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
+          theme(id: $themeId) {
+            files(first: 250, filenames: $filenames) {
+              nodes { filename }
+            }
           }
-        }
-      }`,
-      { variables: { themeId: mainTheme.id, filenames: expectedFilenames } }
-    );
-    const filesData = (await filesResponse.json()) as any;
-    const themeFiles = filesData.data?.theme?.files?.nodes || [];
+        }`,
+        { variables: { themeId: mainTheme.id, filenames: batch } }
+      );
+      const filesData = (await filesResponse.json()) as any;
+      const batchFiles = filesData.data?.theme?.files?.nodes || [];
+      themeFiles = [...themeFiles, ...batchFiles];
+    }
+
     const themeSectionIds = themeFiles
       .map((f: { filename: string }) => {
         const m = f.filename.match(/^sections\/section-(.+)\.liquid$/);
@@ -299,9 +306,9 @@ ${section.liquidContent || ""}`;
 
       if (isNewerVersion(section.version, installedVersion)) {
         const liquidWithStyles = `{% comment %}
-  Section Hub - ${section.name}
+  SectionIQ - ${section.name}
   Version: ${section.version}
-  Updated via Section Hub App
+  Updated via SectionIQ App
 {% endcomment %}
 
 <style>
@@ -323,24 +330,28 @@ ${section.liquidContent || ""}`;
     }
 
     try {
-      // Shopify allows up to 20 files per upsert call, batch if needed
-      for (let i = 0; i < fileInputs.length; i += 20) {
-        const batch = fileInputs.slice(i, i + 20);
-        const response = await admin.graphql(
-          `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-            themeFilesUpsert(files: $files, themeId: $themeId) {
-              upsertedThemeFiles { filename }
-              userErrors { field message }
-              job { id }
-            }
-          }`,
-          { variables: { files: batch, themeId: mainTheme.id } }
-        );
+      const themeId = mainTheme.id.split("/").pop();
 
-        const data = (await response.json()) as any;
-        const userErrors = data.data?.themeFilesUpsert?.userErrors || [];
-        if (userErrors.length > 0) {
-          console.error("Batch update errors:", userErrors);
+      // Upload each file via REST Asset API
+      for (const fileInput of fileInputs) {
+        const assetResponse = await fetch(
+          `https://${session.shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Shopify-Access-Token": session.accessToken || "",
+            },
+            body: JSON.stringify({
+              asset: {
+                key: fileInput.filename,
+                value: fileInput.body.value,
+              },
+            }),
+          }
+        );
+        if (!assetResponse.ok) {
+          console.error("Batch update REST error for:", fileInput.filename);
         }
       }
 
@@ -516,6 +527,14 @@ export default function UpdatesPage() {
           padding:4px;
         }
         .sh-upd-ok-inner{background:rgba(255,255,255,0.75);border-radius:12px;padding:16px 20px;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .sh-upd-hero{padding:20px 16px;border-radius:14px}
+          .sh-upd-glass{padding:14px 16px}
+          .sh-upd-row{padding:12px 16px}
+          .sh-upd-changelog{padding:12px 16px}
+        }
       `}</style>
 
       <div style={{ maxWidth: "100%", overflowX: "hidden" }}>

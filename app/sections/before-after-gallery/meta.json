@@ -1,12 +1,17 @@
 {
   "id": "before-after-gallery",
-  "name": "Before / After Gallery",
+  "name": "SIQ - Before / After Gallery",
   "description": "A stunning before/after image gallery grid. Add unlimited before/after pairs as blocks, hover or tap to reveal transformations. 4 reveal animations (fade, slide, zoom, curtain split), category filter tabs, fullscreen lightbox with drag-slider, staggered entrance animations, and complete color/typography customization. Perfect for portfolios, salons, clinics, and fitness brands.",
-  "category": ["Conversion", "Image", "before and after", "Gallery"],
+  "category": [
+    "Conversion",
+    "Image",
+    "before and after",
+    "Gallery"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 14,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,7 +26,7 @@
     "Transformation",
     "Mobile First"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -31,7 +36,10 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "All OS2.0 themes"],
+    "themes": [
+      "Dawn",
+      "All OS2.0 themes"
+    ],
     "os2": true
   },
   "files": {
@@ -39,5 +47,6 @@
     "css": ""
   },
   "createdAt": "2026-03-10",
-  "updatedAt": "2026-03-10"
+  "updatedAt": "2026-03-10",
+  "tier": "premium"
 }

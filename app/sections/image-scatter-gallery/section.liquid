@@ -215,29 +215,30 @@
 
       card.addEventListener('mouseenter', function() {
         isHovering = true;
+        this.style.setProperty('--isg-tilt-x', '0deg');
+        this.style.setProperty('--isg-tilt-y', '0deg');
         this.classList.add('isg-card--hover');
       });
 
       card.addEventListener('mouseleave', function() {
         isHovering = false;
         if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-        this.classList.remove('isg-card--hover');
-        /* Reset tilt via CSS custom properties — smooth transition handled by CSS */
         this.style.setProperty('--isg-tilt-x', '0deg');
         this.style.setProperty('--isg-tilt-y', '0deg');
+        this.classList.remove('isg-card--hover');
       });
 
       card.addEventListener('mousemove', function(e) {
         if (!isHovering) return;
         var self = this;
-        if (rafId) return; /* Throttle to 1 rAF at a time */
+        if (rafId) return;
         rafId = requestAnimationFrame(function() {
           rafId = null;
           var rect = self.getBoundingClientRect();
           var x = (e.clientX - rect.left) / rect.width - 0.5;
           var y = (e.clientY - rect.top) / rect.height - 0.5;
-          self.style.setProperty('--isg-tilt-x', (y * -6) + 'deg');
-          self.style.setProperty('--isg-tilt-y', (x * 6) + 'deg');
+          self.style.setProperty('--isg-tilt-x', (y * -5) + 'deg');
+          self.style.setProperty('--isg-tilt-y', (x * 5) + 'deg');
         });
       });
     });
@@ -317,7 +318,7 @@
 
 {% schema %}
 {
-  "name": "SS - Scatter Gallery",
+  "name": "SIQ - Scatter Gallery",
   "tag": "section",
   "class": "isg-section",
   "settings": [
@@ -596,7 +597,7 @@
   ],
   "presets": [
     {
-      "name": "SS - Scatter Gallery",
+      "name": "SIQ - Scatter Gallery",
       "settings": {
         "eyebrow": "Memories",
         "heading": "Scattered Moments",

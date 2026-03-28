@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 from PIL import Image
 
-PREVIEWS_DIR = "/Users/maximilianhauptmannl/shopify/section-hub/public/previews"
+PREVIEWS_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "public", "previews")
 MAX_WIDTH = 1200
 WEBP_QUALITY = 82
 SUPPORTED = {".png", ".jpg", ".jpeg", ".webp"}

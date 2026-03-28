@@ -25,8 +25,9 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/app/sections ./app/sections
 COPY --from=builder /app/start-server.cjs ./start-server.cjs
 COPY --from=builder /app/start-server.js ./start-server.js
+COPY --from=builder /app/server.js ./server.js
 COPY --from=builder /app/public ./public
 
 EXPOSE 8080
 
-CMD ["sh", "-c", "npm run setup && HOST=0.0.0.0 PORT=8080 npx react-router-serve ./build/server/index.js"]
+CMD ["sh", "-c", "npm run setup && HOST=0.0.0.0 PORT=8080 node server.js"]

@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-magazine-layout",
+  "name": "SIQ - Testimonial Magazine Layout",
+  "description": "Editorial magazine-style testimonials with a hero featured quote, elegant serif typography, decorative drop caps, thin rule dividers, and a multi-column grid for additional reviews. Inspired by print editorial design for a high-end luxury feel.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Magazine",
+    "Editorial",
+    "Typography",
+    "Luxury",
+    "Premium",
+    "Elegant"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    { 
+      "src": "/previews/testimonial-magazine-layout/default.webp",
+      "alt": "Testimonial Magazine Layout - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "countdown-deal-popup",
+  "name": "SIQ - Countdown Deal Popup",
+  "description": "Urgency-driven deal popup with animated countdown timer, product image, discount code reveal, pulsing CTA button, and confetti celebration on copy. Trigger by delay, scroll, or exit-intent. Cookie-based display control.",
+  "category": [
+    "Premium",
+    "Pop-up"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Popup",
+    "Countdown",
+    "Urgency",
+    "Timer",
+    "Discount",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/countdown-deal-popup/default.webp",
+      "alt": "Countdown Deal Popup - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": false,
+    "maxBlocks": 0
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-14",
+  "createdAt": "2026-03-14",
+  "tier": "advanced"
+}

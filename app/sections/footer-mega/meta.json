@@ -1,0 +1,70 @@
+{
+  "id": "footer-mega",
+  "name": "SIQ - Footer Mega",
+  "description": "Premium multi-layer footer with animated CTA banner, brand area with logo, multi-column navigation, newsletter signup with glow effect, social media icons, payment badges, and bottom bar. Fully customizable with hover animations and premium feel.",
+  "category": "Footer",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Footer",
+    "Premium",
+    "Newsletter",
+    "Social",
+    "Navigation",
+    "CTA",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/footer-mega/default.webp",
+      "alt": "Footer Mega - Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/footer-mega/white.webp",
+      "alt": "Footer Mega - White",
+      "label": "White"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 16
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-14",
+  "createdAt": "2026-03-14",
+  "tier": "advanced"
+}

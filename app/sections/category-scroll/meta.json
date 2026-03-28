@@ -1,12 +1,12 @@
 {
   "id": "category-scroll",
-  "name": "Category Scroll",
+  "name": "SIQ - Category Scroll",
   "description": "Horizontal scrolling category cards with large images and bold labels. Editorial layout perfect for showcasing collections or product categories.",
   "category": "Collection",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 10,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -18,8 +18,8 @@
     "Editorial",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#f5f5f5",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/category-scroll/default.webp",
@@ -75,5 +75,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

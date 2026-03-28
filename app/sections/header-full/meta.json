@@ -1,12 +1,12 @@
 {
   "id": "header-full",
-  "name": "Header Full",
+  "name": "SIQ - Header Full",
   "description": "Complete header with optional top announcement bar, centered logo navigation, and trust/review bar. Three-layer header like premium brands.",
   "category": "Header",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 14,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -18,7 +18,7 @@
     "Reviews",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -68,5 +68,6 @@
     }
   ],
   "updatedAt": "2026-03-04",
-  "createdAt": "2026-01-15"
+  "createdAt": "2026-01-15",
+  "tier": "advanced"
 }

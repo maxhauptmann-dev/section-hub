@@ -1,0 +1,57 @@
+{
+  "id": "faq-tabbed-categories",
+  "name": "SIQ - FAQ Tabbed Categories",
+  "description": "Premium FAQ section with tabbed category navigation. Each tab reveals its own set of FAQ items with smooth accordion animation. Features customizable tab colors, icon support, animated indicators, glassmorphism option, and fully responsive design. 40+ customization settings.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Tabs",
+    "Categories",
+    "Animated",
+    "Accordion",
+    "Support",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-tabbed-categories/default.webp",
+      "alt": "FAQ Tabbed Categories - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

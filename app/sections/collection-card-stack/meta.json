@@ -1,12 +1,14 @@
 {
   "id": "collection-card-stack",
-  "name": "SS - Collection Stack",
+  "name": "SIQ - Collection Stack",
   "description": "Interactive stacked card collection display where cards fan out on hover with smooth 3D perspective transforms. Each card features full-bleed imagery, gradient overlays, and animated content reveals. Configurable stack depth, fan angle, card sizing, and content positioning. Features collection picker, custom images, and scroll-triggered entrance animations. Perfect for curated collections and brand categories.",
-  "category": ["Collection"],
+  "category": [
+    "Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 22,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -25,12 +27,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#f5f0eb",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "src": "/previews/collection-card-stack/default.webp",
+      "alt": "SS - Collection Stack - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

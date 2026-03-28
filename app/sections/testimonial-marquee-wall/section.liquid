@@ -1,0 +1,661 @@
+{% comment %}
+  Section Hub – Testimonial Marquee Wall v1.0
+  Multiple counter-rotating infinite marquee lanes with
+  glassmorphism cards, 3D hover, star pop, avatar glow.
+  Prefix: tmw-
+{% endcomment %}
+
+{{ 'section-testimonial-marquee-wall.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid           = section.id
+  assign eyebrow       = section.settings.eyebrow
+  assign heading       = section.settings.heading
+  assign subheading    = section.settings.subheading
+  assign bg            = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_b      = section.settings.accent_color_b
+  assign heading_color = section.settings.heading_color
+  assign sub_color     = section.settings.sub_color
+  assign quote_color   = section.settings.quote_color
+  assign name_color    = section.settings.name_color
+  assign role_color    = section.settings.role_color
+  assign star_color    = section.settings.star_color
+  assign card_bg       = section.settings.card_bg
+  assign card_border   = section.settings.card_border
+  assign card_w        = section.settings.card_width
+  assign card_w_mob    = section.settings.card_width_mobile
+  assign card_radius   = section.settings.card_radius
+  assign card_gap      = section.settings.card_gap
+  assign lane_gap      = section.settings.lane_gap
+  assign line_clamp    = section.settings.line_clamp
+  assign py            = section.settings.padding_y
+  assign lanes         = section.settings.lanes
+  assign speed_1       = section.settings.speed_lane_1
+  assign speed_2       = section.settings.speed_lane_2
+  assign speed_3       = section.settings.speed_lane_3
+  assign show_verified = section.settings.show_verified
+  assign show_stats    = section.settings.show_stats
+  assign stat_1_val    = section.settings.stat_1_value
+  assign stat_1_lbl    = section.settings.stat_1_label
+  assign stat_2_val    = section.settings.stat_2_value
+  assign stat_2_lbl    = section.settings.stat_2_label
+  assign stat_3_val    = section.settings.stat_3_value
+  assign stat_3_lbl    = section.settings.stat_3_label
+  assign cta_text      = section.settings.cta_text
+  assign cta_link      = section.settings.cta_link
+  assign total         = section.blocks.size
+
+  assign third = total | divided_by: 3
+  if third < 1
+    assign third = total
+  endif
+  assign two_thirds = third | times: 2
+-%}
+
+<style>
+  .tmw-section--{{ sid }} {
+    --tmw-bg: {{ bg }};
+    --tmw-accent: {{ accent }};
+    --tmw-accent-b: {{ accent_b }};
+    --tmw-heading-color: {{ heading_color }};
+    --tmw-sub-color: {{ sub_color }};
+    --tmw-quote-color: {{ quote_color }};
+    --tmw-name-color: {{ name_color }};
+    --tmw-role-color: {{ role_color }};
+    --tmw-star-color: {{ star_color }};
+    --tmw-card-bg: {{ card_bg }};
+    --tmw-card-border: {{ card_border }};
+    --tmw-card-w: {{ card_w }}px;
+    --tmw-card-w-mob: {{ card_w_mob }}px;
+    --tmw-card-radius: {{ card_radius }}px;
+    --tmw-card-gap: {{ card_gap }}px;
+    --tmw-lane-gap: {{ lane_gap }}px;
+    --tmw-line-clamp: {{ line_clamp }};
+    --tmw-py: {{ py }}px;
+    --tmw-glow-card: {{ accent | color_modify: 'alpha', 0.15 }};
+    --tmw-glow-a: {{ accent | color_modify: 'alpha', 0.08 }};
+    --tmw-glow-b: {{ accent_b | color_modify: 'alpha', 0.06 }};
+    --tmw-verified-color: {{ section.settings.verified_color }};
+  }
+</style>
+
+<section class="tmw-section tmw-section--{{ sid }}">
+
+  {%- if eyebrow != blank or heading != blank or subheading != blank -%}
+    <div class="tmw-header">
+      {%- if eyebrow != blank -%}
+        <span class="tmw-header__eyebrow">{{ eyebrow }}</span>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <h2 class="tmw-header__heading">{{ heading }}</h2>
+      {%- endif -%}
+      {%- if subheading != blank -%}
+        <p class="tmw-header__sub">{{ subheading }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="tmw-lanes">
+
+    {%- comment -%} Lane 1 → left {%- endcomment -%}
+    <div class="tmw-lane">
+      <div class="tmw-ribbon tmw-ribbon--left" style="--tmw-lane-speed:{{ speed_1 }}s;">
+        {%- for pass in (1..2) -%}
+          {%- for block in section.blocks -%}
+            {%- if forloop.index0 < third or total <= 4 -%}
+              <div class="tmw-card" {{ block.shopify_attributes }}>
+                {%- if block.settings.stars > 0 -%}
+                  <div class="tmw-stars" aria-label="{{ block.settings.stars }} stars">
+                    {%- for i in (1..5) -%}<span class="tmw-star">{%- if i <= block.settings.stars -%}★{%- else -%}☆{%- endif -%}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.quote != blank -%}
+                  <p class="tmw-quote">{{ block.settings.quote }}</p>
+                {%- endif -%}
+                <div class="tmw-author">
+                  {%- if block.settings.avatar != blank -%}
+                    <img src="{{ block.settings.avatar | image_url: width: 100 }}" alt="{{ block.settings.name | escape }}" class="tmw-avatar" width="40" height="40" loading="lazy">
+                  {%- elsif block.settings.name != blank -%}
+                    <div class="tmw-avatar-ph">{{ block.settings.name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    {%- if block.settings.name != blank -%}<span class="tmw-author-name">{{ block.settings.name }}</span>{%- endif -%}
+                    {%- if block.settings.role != blank -%}<span class="tmw-author-role">{{ block.settings.role }}</span>{%- endif -%}
+                  </div>
+                  {%- if show_verified -%}
+                    <span class="tmw-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+
+    {%- comment -%} Lane 2 → right {%- endcomment -%}
+    {%- if lanes >= 2 -%}
+    <div class="tmw-lane">
+      <div class="tmw-ribbon tmw-ribbon--right" style="--tmw-lane-speed:{{ speed_2 }}s;">
+        {%- for pass in (1..2) -%}
+          {%- for block in section.blocks -%}
+            {%- if total <= 4 -%}
+              <div class="tmw-card" {{ block.shopify_attributes }}>
+                {%- if block.settings.stars > 0 -%}
+                  <div class="tmw-stars" aria-label="{{ block.settings.stars }} stars">
+                    {%- for i in (1..5) -%}<span class="tmw-star">{%- if i <= block.settings.stars -%}★{%- else -%}☆{%- endif -%}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.quote != blank -%}
+                  <p class="tmw-quote">{{ block.settings.quote }}</p>
+                {%- endif -%}
+                <div class="tmw-author">
+                  {%- if block.settings.avatar != blank -%}
+                    <img src="{{ block.settings.avatar | image_url: width: 100 }}" alt="{{ block.settings.name | escape }}" class="tmw-avatar" width="40" height="40" loading="lazy">
+                  {%- elsif block.settings.name != blank -%}
+                    <div class="tmw-avatar-ph">{{ block.settings.name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    {%- if block.settings.name != blank -%}<span class="tmw-author-name">{{ block.settings.name }}</span>{%- endif -%}
+                    {%- if block.settings.role != blank -%}<span class="tmw-author-role">{{ block.settings.role }}</span>{%- endif -%}
+                  </div>
+                  {%- if show_verified -%}
+                    <span class="tmw-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- else -%}
+              {%- if forloop.index0 >= third and forloop.index0 < two_thirds -%}
+              <div class="tmw-card" {{ block.shopify_attributes }}>
+                {%- if block.settings.stars > 0 -%}
+                  <div class="tmw-stars" aria-label="{{ block.settings.stars }} stars">
+                    {%- for i in (1..5) -%}<span class="tmw-star">{%- if i <= block.settings.stars -%}★{%- else -%}☆{%- endif -%}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.quote != blank -%}
+                  <p class="tmw-quote">{{ block.settings.quote }}</p>
+                {%- endif -%}
+                <div class="tmw-author">
+                  {%- if block.settings.avatar != blank -%}
+                    <img src="{{ block.settings.avatar | image_url: width: 100 }}" alt="{{ block.settings.name | escape }}" class="tmw-avatar" width="40" height="40" loading="lazy">
+                  {%- elsif block.settings.name != blank -%}
+                    <div class="tmw-avatar-ph">{{ block.settings.name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    {%- if block.settings.name != blank -%}<span class="tmw-author-name">{{ block.settings.name }}</span>{%- endif -%}
+                    {%- if block.settings.role != blank -%}<span class="tmw-author-role">{{ block.settings.role }}</span>{%- endif -%}
+                  </div>
+                  {%- if show_verified -%}
+                    <span class="tmw-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified</span>
+                  {%- endif -%}
+                </div>
+              </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- endif -%}
+
+    {%- comment -%} Lane 3 → left {%- endcomment -%}
+    {%- if lanes >= 3 -%}
+    <div class="tmw-lane">
+      <div class="tmw-ribbon tmw-ribbon--left" style="--tmw-lane-speed:{{ speed_3 }}s;">
+        {%- for pass in (1..2) -%}
+          {%- for block in section.blocks -%}
+            {%- if total <= 4 -%}
+              <div class="tmw-card" {{ block.shopify_attributes }}>
+                {%- if block.settings.stars > 0 -%}
+                  <div class="tmw-stars" aria-label="{{ block.settings.stars }} stars">
+                    {%- for i in (1..5) -%}<span class="tmw-star">{%- if i <= block.settings.stars -%}★{%- else -%}☆{%- endif -%}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.quote != blank -%}
+                  <p class="tmw-quote">{{ block.settings.quote }}</p>
+                {%- endif -%}
+                <div class="tmw-author">
+                  {%- if block.settings.avatar != blank -%}
+                    <img src="{{ block.settings.avatar | image_url: width: 100 }}" alt="{{ block.settings.name | escape }}" class="tmw-avatar" width="40" height="40" loading="lazy">
+                  {%- elsif block.settings.name != blank -%}
+                    <div class="tmw-avatar-ph">{{ block.settings.name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    {%- if block.settings.name != blank -%}<span class="tmw-author-name">{{ block.settings.name }}</span>{%- endif -%}
+                    {%- if block.settings.role != blank -%}<span class="tmw-author-role">{{ block.settings.role }}</span>{%- endif -%}
+                  </div>
+                  {%- if show_verified -%}
+                    <span class="tmw-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified</span>
+                  {%- endif -%}
+                </div>
+              </div>
+            {%- else -%}
+              {%- if forloop.index0 >= two_thirds -%}
+              <div class="tmw-card" {{ block.shopify_attributes }}>
+                {%- if block.settings.stars > 0 -%}
+                  <div class="tmw-stars" aria-label="{{ block.settings.stars }} stars">
+                    {%- for i in (1..5) -%}<span class="tmw-star">{%- if i <= block.settings.stars -%}★{%- else -%}☆{%- endif -%}</span>{%- endfor -%}
+                  </div>
+                {%- endif -%}
+                {%- if block.settings.quote != blank -%}
+                  <p class="tmw-quote">{{ block.settings.quote }}</p>
+                {%- endif -%}
+                <div class="tmw-author">
+                  {%- if block.settings.avatar != blank -%}
+                    <img src="{{ block.settings.avatar | image_url: width: 100 }}" alt="{{ block.settings.name | escape }}" class="tmw-avatar" width="40" height="40" loading="lazy">
+                  {%- elsif block.settings.name != blank -%}
+                    <div class="tmw-avatar-ph">{{ block.settings.name | slice: 0 }}</div>
+                  {%- endif -%}
+                  <div>
+                    {%- if block.settings.name != blank -%}<span class="tmw-author-name">{{ block.settings.name }}</span>{%- endif -%}
+                    {%- if block.settings.role != blank -%}<span class="tmw-author-role">{{ block.settings.role }}</span>{%- endif -%}
+                  </div>
+                  {%- if show_verified -%}
+                    <span class="tmw-verified"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Verified</span>
+                  {%- endif -%}
+                </div>
+              </div>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+        {%- endfor -%}
+      </div>
+    </div>
+    {%- endif -%}
+
+  </div>
+
+  {%- comment -%} Footer: Stats + CTA {%- endcomment -%}
+  {%- if show_stats or cta_text != blank -%}
+    <div class="tmw-footer">
+      {%- if show_stats -%}
+        <div class="tmw-stats">
+          {%- if stat_1_val != blank -%}
+            <div class="tmw-stat">
+              <span class="tmw-stat__value">{{ stat_1_val }}</span>
+              <span class="tmw-stat__label">{{ stat_1_lbl }}</span>
+            </div>
+          {%- endif -%}
+          {%- if stat_2_val != blank -%}
+            <div class="tmw-stat">
+              <span class="tmw-stat__value">{{ stat_2_val }}</span>
+              <span class="tmw-stat__label">{{ stat_2_lbl }}</span>
+            </div>
+          {%- endif -%}
+          {%- if stat_3_val != blank -%}
+            <div class="tmw-stat">
+              <span class="tmw-stat__value">{{ stat_3_val }}</span>
+              <span class="tmw-stat__label">{{ stat_3_lbl }}</span>
+            </div>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+      {%- if cta_text != blank and cta_link != blank -%}
+        <div>
+          <a href="{{ cta_link }}" class="tmw-footer__cta">
+            {{ cta_text }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+</section>
+
+{% schema %}
+{
+  "name": "SIQ - Marquee Wall",
+  "tag": "section",
+  "class": "section-testimonial-marquee-wall",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Testimonials"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Wall of Love"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Thousands trust us. Here's what they have to say."
+    },
+    {
+      "type": "header",
+      "content": "Lanes"
+    },
+    {
+      "type": "range",
+      "id": "lanes",
+      "label": "Number of lanes",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 3,
+      "info": "Testimonials are distributed across lanes"
+    },
+    {
+      "type": "range",
+      "id": "speed_lane_1",
+      "label": "Lane 1 speed",
+      "min": 15,
+      "max": 80,
+      "step": 5,
+      "default": 35,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "speed_lane_2",
+      "label": "Lane 2 speed",
+      "min": 15,
+      "max": 80,
+      "step": 5,
+      "default": 45,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "speed_lane_3",
+      "label": "Lane 3 speed",
+      "min": 15,
+      "max": 80,
+      "step": 5,
+      "default": 30,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Card Style"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 240,
+      "max": 460,
+      "step": 10,
+      "default": 340,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width (mobile)",
+      "min": 220,
+      "max": 360,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Gap between cards",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "lane_gap",
+      "label": "Gap between lanes",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "line_clamp",
+      "label": "Max quote lines",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#0c0a1a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#818cf8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_b",
+      "label": "Accent color (secondary glow)",
+      "default": "#a78bfa"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "sub_color",
+      "label": "Subheading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Author name color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "role_color",
+      "label": "Author role color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#fbbf24"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border color",
+      "default": "#2a2a3e"
+    },
+    {
+      "type": "header",
+      "content": "Verified Badge"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_verified",
+      "label": "Show verified badge",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "verified_color",
+      "label": "Verified badge color",
+      "default": "#34d399"
+    },
+    {
+      "type": "header",
+      "content": "Footer Stats"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stats",
+      "label": "Show stats row",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "stat_1_value",
+      "label": "Stat 1 value",
+      "default": "4.9★"
+    },
+    {
+      "type": "text",
+      "id": "stat_1_label",
+      "label": "Stat 1 label",
+      "default": "Avg Rating"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_value",
+      "label": "Stat 2 value",
+      "default": "12k+"
+    },
+    {
+      "type": "text",
+      "id": "stat_2_label",
+      "label": "Stat 2 label",
+      "default": "Happy Customers"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_value",
+      "label": "Stat 3 value",
+      "default": "98%"
+    },
+    {
+      "type": "text",
+      "id": "stat_3_label",
+      "label": "Stat 3 label",
+      "default": "Would Recommend"
+    },
+    {
+      "type": "header",
+      "content": "CTA"
+    },
+    {
+      "type": "text",
+      "id": "cta_text",
+      "label": "CTA button text",
+      "default": "See All Reviews"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "range",
+          "id": "stars",
+          "label": "Star rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Absolutely stunning quality. The attention to detail exceeded every expectation."
+        },
+        {
+          "type": "image_picker",
+          "id": "avatar",
+          "label": "Avatar image"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Author name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Role / location",
+          "default": "Verified Buyer"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Marquee Wall",
+      "blocks": [
+        { "type": "review", "settings": { "stars": 5, "quote": "Absolutely stunning quality. This exceeded every expectation I had. Will definitely order again!", "name": "Sarah M.", "role": "Verified Buyer" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "The best investment I've made for my store this year. My customers love the new look and feel.", "name": "James K.", "role": "Store Owner" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "Incredible attention to detail. You can tell this was made by someone who actually cares about quality.", "name": "Elena R.", "role": "Verified Buyer" } },
+        { "type": "review", "settings": { "stars": 4, "quote": "Really beautiful design. Setup was easy and it looks amazing on mobile too. Highly recommend!", "name": "Marcus T.", "role": "Designer" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "Our conversion rate jumped 35% after installing this. The visual impact is just on another level.", "name": "Lisa Chen", "role": "Marketing Lead" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "Worth every penny. The premium feel of this section makes our whole store feel more professional.", "name": "David P.", "role": "Verified Buyer" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "I've tried many Shopify apps — nothing comes close to this quality. It's like having a custom developer.", "name": "Anna S.", "role": "Brand Founder" } },
+        { "type": "review", "settings": { "stars": 4, "quote": "Clean, fast, and gorgeous. Exactly what I was looking for to showcase our testimonials.", "name": "Ryan B.", "role": "Verified Buyer" } },
+        { "type": "review", "settings": { "stars": 5, "quote": "The animations are so smooth! Customers keep telling us how premium our store looks now.", "name": "Mia W.", "role": "E-commerce Manager" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

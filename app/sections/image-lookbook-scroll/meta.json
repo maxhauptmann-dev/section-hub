@@ -1,12 +1,14 @@
 {
   "id": "image-lookbook-scroll",
-  "name": "SS - Lookbook Scroll",
+  "name": "SIQ - Lookbook Scroll",
   "description": "Cinematic horizontal-scroll lookbook gallery. Full-bleed images with editorial captions, Ken Burns zoom on hover, autoplay with progress bar, dot + arrow navigation, parallax depth, and overlay text positioning. Each slide has its own image, headline, subtitle, link, and badge. Supports light/dark themes, glassmorphism captions, custom fonts, and scroll-snap navigation. 70+ customization options. Perfect for fashion lookbooks, editorial campaigns, and visual storytelling.",
-  "category": ["images"],
+  "category": [
+    "images"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 16,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +23,31 @@
     "Cinematic",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/image-lookbook-scroll/default.webp",
-      "alt": "Lookbook Scroll Gallery - Default",
+      "alt": "SS - Lookbook Scroll - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Refresh",
+      "Spotlight",
+      "Studio",
+      "Publisher",
+      "Trade",
+      "Taste",
+      "Colorblock",
+      "Ride",
+      "Origin",
+      "Crave"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +60,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

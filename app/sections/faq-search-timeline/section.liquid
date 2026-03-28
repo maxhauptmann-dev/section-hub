@@ -1,0 +1,540 @@
+{{ 'section-faq-search-timeline.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign accent2 = section.settings.accent_end
+  assign line_color = section.settings.line_color
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign answer_color = section.settings.answer_color
+  assign search_bg = section.settings.search_bg
+  assign search_text = section.settings.search_text
+  assign num_bg = section.settings.number_bg
+  assign num_text = section.settings.number_text
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.question_size
+  assign a_size = section.settings.answer_size
+  assign radius = section.settings.border_radius
+  assign show_search = section.settings.show_search
+  assign show_numbers = section.settings.show_numbers
+  assign show_line = section.settings.show_timeline_line
+  assign open_first = section.settings.open_first
+  assign show_icon = section.settings.show_toggle_icon
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign search_placeholder = section.settings.search_placeholder
+  assign line_style = section.settings.line_style
+  assign card_shadow = section.settings.card_shadow
+  assign heading_align = section.settings.heading_align
+-%}
+
+<div
+  id="faq-st-{{ sid }}"
+  class="faq-st"
+  style="
+    --faq-st-bg: {{ bg }};
+    --faq-st-text: {{ text_color }};
+    --faq-st-accent: {{ accent }};
+    --faq-st-accent2: {{ accent2 }};
+    --faq-st-line: {{ line_color }};
+    --faq-st-card-bg: {{ card_bg }};
+    --faq-st-card-border: {{ card_border }};
+    --faq-st-answer: {{ answer_color }};
+    --faq-st-search-bg: {{ search_bg }};
+    --faq-st-search-text: {{ search_text }};
+    --faq-st-num-bg: {{ num_bg }};
+    --faq-st-num-text: {{ num_text }};
+    --faq-st-max-w: {{ max_w }}px;
+    --faq-st-pad-y: {{ pad_y }}px;
+    --faq-st-mt: {{ mt }}px;
+    --faq-st-mb: {{ mb }}px;
+    --faq-st-q-size: {{ q_size }}px;
+    --faq-st-a-size: {{ a_size }}px;
+    --faq-st-radius: {{ radius }}px;
+  "
+>
+  <div class="faq-st__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="faq-st__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="faq-st__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="faq-st__subheading">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- if show_search -%}
+      <div class="faq-st__search-wrap">
+        <div class="faq-st__search-box">
+          <svg class="faq-st__search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input
+            type="text"
+            class="faq-st__search-input"
+            placeholder="{{ search_placeholder }}"
+            aria-label="{{ search_placeholder }}"
+            data-faq-search="{{ sid }}"
+          >
+          <button class="faq-st__search-clear" data-faq-clear="{{ sid }}" aria-label="Clear search" style="display:none">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+        <p class="faq-st__no-results" data-faq-noresults="{{ sid }}" style="display:none">No matching questions found.</p>
+      </div>
+    {%- endif -%}
+
+    <div class="faq-st__timeline{% if show_line %} faq-st__timeline--line{% endif %}{% if line_style == 'dashed' %} faq-st__timeline--dashed{% endif %}{% if line_style == 'dotted' %} faq-st__timeline--dotted{% endif %}">
+      {%- assign idx = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- assign idx = idx | plus: 1 -%}
+        {%- liquid
+          assign q = block.settings.question
+          assign a = block.settings.answer
+          assign is_open = false
+          if open_first and idx == 1
+            assign is_open = true
+          endif
+        -%}
+        <div
+          class="faq-st__item{% if card_shadow %} faq-st__item--shadow{% endif %}"
+          data-faq-item="{{ sid }}"
+          data-question="{{ q | downcase | escape }}"
+          data-answer="{{ a | downcase | strip_html | escape }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if show_numbers -%}
+            <div class="faq-st__number">
+              <span class="faq-st__num-circle">{{ idx }}</span>
+            </div>
+          {%- endif -%}
+          <div class="faq-st__card">
+            <button
+              class="faq-st__question{% if is_open %} faq-st__question--open{% endif %}"
+              aria-expanded="{{ is_open }}"
+              data-faq-toggle="{{ sid }}"
+            >
+              <span class="faq-st__q-text">{{ q }}</span>
+              {%- if show_icon -%}
+                <span class="faq-st__toggle-icon" aria-hidden="true">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+              {%- endif -%}
+            </button>
+            <div class="faq-st__answer" {% if is_open %}style="display:block"{% endif %}>
+              <div class="faq-st__answer-inner">{{ a }}</div>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const sid = '{{ sid }}';
+  const root = document.getElementById('faq-st-' + sid);
+  if (!root) return;
+
+  /* Accordion toggle */
+  root.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-faq-toggle="' + sid + '"]');
+    if (!btn) return;
+    const item = btn.closest('.faq-st__item');
+    const answer = item.querySelector('.faq-st__answer');
+    const isOpen = btn.classList.contains('faq-st__question--open');
+
+    /* Close all others */
+    root.querySelectorAll('[data-faq-toggle="' + sid + '"].faq-st__question--open').forEach(function(ob) {
+      if (ob !== btn) {
+        ob.classList.remove('faq-st__question--open');
+        ob.setAttribute('aria-expanded', 'false');
+        ob.closest('.faq-st__item').querySelector('.faq-st__answer').style.display = 'none';
+      }
+    });
+
+    if (isOpen) {
+      btn.classList.remove('faq-st__question--open');
+      btn.setAttribute('aria-expanded', 'false');
+      answer.style.display = 'none';
+    } else {
+      btn.classList.add('faq-st__question--open');
+      btn.setAttribute('aria-expanded', 'true');
+      answer.style.display = 'block';
+    }
+  });
+
+  /* Search */
+  const input = root.querySelector('[data-faq-search="' + sid + '"]');
+  const clearBtn = root.querySelector('[data-faq-clear="' + sid + '"]');
+  const noResults = root.querySelector('[data-faq-noresults="' + sid + '"]');
+  if (input) {
+    input.addEventListener('input', function() {
+      const val = this.value.toLowerCase().trim();
+      clearBtn.style.display = val ? 'flex' : 'none';
+      const items = root.querySelectorAll('[data-faq-item="' + sid + '"]');
+      let visible = 0;
+      items.forEach(function(item) {
+        const q = item.getAttribute('data-question') || '';
+        const a = item.getAttribute('data-answer') || '';
+        if (!val || q.indexOf(val) !== -1 || a.indexOf(val) !== -1) {
+          item.style.display = '';
+          visible++;
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      if (noResults) noResults.style.display = visible === 0 ? 'block' : 'none';
+    });
+    if (clearBtn) {
+      clearBtn.addEventListener('click', function() {
+        input.value = '';
+        input.dispatchEvent(new Event('input'));
+        input.focus();
+      });
+    }
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FAQ Timeline",
+  "tag": "section",
+  "class": "section-faq-search-timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Frequently Asked Questions"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Search or browse our most common questions below."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_search",
+      "label": "Show search bar",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Search placeholder",
+      "default": "Search questions..."
+    },
+    {
+      "type": "header",
+      "content": "Timeline"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_numbers",
+      "label": "Show question numbers",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_timeline_line",
+      "label": "Show connecting line",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "line_style",
+      "label": "Line style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "dashed", "label": "Dashed" },
+        { "value": "dotted", "label": "Dotted" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toggle_icon",
+      "label": "Show +/- icon",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "open_first",
+      "label": "Open first item",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent start",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_end",
+      "label": "Accent end",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Timeline line",
+      "default": "#334155"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#334155"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer text",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "search_bg",
+      "label": "Search background",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "search_text",
+      "label": "Search text",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "number_bg",
+      "label": "Number background",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "number_text",
+      "label": "Number text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 860,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "question_size",
+      "label": "Question size",
+      "min": 14,
+      "max": 26,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_size",
+      "label": "Answer size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Your question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your answer here.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FAQ Timeline",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping takes 3–7 business days. Express shipping is available at checkout and typically arrives within 1–2 business days.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer free shipping?",
+            "answer": "<p>Yes! We offer free standard shipping on all orders over $50. International shipping rates vary by destination.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We accept returns within 30 days of purchase. Items must be unused and in original packaging. Contact our support team to start a return.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I track my order?",
+            "answer": "<p>Once your order ships, you will receive a confirmation email with a tracking link. You can also check your order status in your account dashboard.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Which payment methods do you accept?",
+            "answer": "<p>We accept Visa, Mastercard, American Express, PayPal, Apple Pay, Google Pay, and Shop Pay for a seamless checkout experience.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I change or cancel my order?",
+            "answer": "<p>Orders can be modified or cancelled within 1 hour of placement. After that, the order enters processing and changes may not be possible.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes, we ship to over 50 countries worldwide. Shipping rates and delivery times vary by destination. Customs fees may apply.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I contact customer support?",
+            "answer": "<p>You can reach us via email at support@example.com or use our live chat during business hours (Mon–Fri, 9am–6pm EST). We typically respond within 24 hours.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

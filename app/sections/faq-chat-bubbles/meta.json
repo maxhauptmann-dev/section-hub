@@ -1,0 +1,57 @@
+{
+  "id": "faq-chat-bubbles",
+  "name": "SIQ - FAQ Chat Bubbles",
+  "description": "Unique messenger-style FAQ section that presents questions and answers as chat bubbles. Features a realistic chat UI with avatars, typing animation on reveal, timestamp display, and alternating bubble positions. Makes FAQ feel like a friendly conversation.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Chat",
+    "Messenger",
+    "Bubbles",
+    "Animated",
+    "Unique",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-chat-bubbles/default.webp",
+      "alt": "FAQ Chat Bubbles - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

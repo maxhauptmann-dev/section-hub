@@ -1,12 +1,12 @@
 {
   "id": "video-split-player",
-  "name": "SS - Video Split",
+  "name": "SIQ - Video Split",
   "description": "Premium split-layout video section with video on one side and editorial content on the other. Features animated circular play button with progress ring, custom poster images, multiple layout options (video left/right/full), muted autoplay mode, scroll-triggered reveal, ambient glow, and glassmorphism cards. Blocks for multiple video slides with scroll-based transitions. 70+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -20,17 +20,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0f0f0f",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/video-split-player/default.webp",
-      "alt": "Video Split Player - Default",
+      "src": "/previews/video-split-player/video-split.webp",
+      "alt": "SS - Video Split - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -43,7 +49,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

@@ -1,0 +1,563 @@
+{{ 'section-burst-effect-confetti.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign mode = section.settings.effect_mode
+  assign trigger = section.settings.trigger_type
+  assign trigger_offset = section.settings.trigger_offset
+  assign particle_count = section.settings.particle_count
+  assign gravity = section.settings.gravity
+  assign spread = section.settings.spread
+  assign speed = section.settings.speed
+  assign size_min = section.settings.size_min
+  assign size_max = section.settings.size_max
+  assign duration = section.settings.duration
+  assign repeat_enabled = section.settings.repeat_enabled
+  assign repeat_interval = section.settings.repeat_interval
+  assign color1 = section.settings.color_1
+  assign color2 = section.settings.color_2
+  assign color3 = section.settings.color_3
+  assign color4 = section.settings.color_4
+  assign color5 = section.settings.color_5
+  assign show_emoji = section.settings.show_emoji
+  assign emoji_list = section.settings.emoji_list
+  assign opacity_val = section.settings.opacity
+  assign z_index = section.settings.z_index
+  assign pointer_events = section.settings.pointer_events
+-%}
+
+<!-- Invisible trigger point – takes no visible space -->
+<div
+  id="bec-{{ sid }}"
+  class="bec-trigger"
+  data-mode="{{ mode }}"
+  data-trigger="{{ trigger }}"
+  data-trigger-offset="{{ trigger_offset }}"
+  data-particle-count="{{ particle_count }}"
+  data-gravity="{{ gravity }}"
+  data-spread="{{ spread }}"
+  data-speed="{{ speed }}"
+  data-size-min="{{ size_min }}"
+  data-size-max="{{ size_max }}"
+  data-duration="{{ duration }}"
+  data-repeat="{{ repeat_enabled }}"
+  data-repeat-interval="{{ repeat_interval }}"
+  data-colors='["{{ color1 }}","{{ color2 }}","{{ color3 }}","{{ color4 }}","{{ color5 }}"]'
+  data-show-emoji="{{ show_emoji }}"
+  data-emoji-list="{{ emoji_list }}"
+  data-opacity="{{ opacity_val }}"
+  data-z="{{ z_index }}"
+  data-pointer="{{ pointer_events }}"
+  aria-hidden="true"
+></div>
+
+<script>
+(function(){
+  var el = document.getElementById('bec-{{ sid }}');
+  if (!el) return;
+
+  /* --- Create canvas overlay in body (not inside section) --- */
+  var canvas = document.createElement('canvas');
+  canvas.setAttribute('aria-hidden', 'true');
+  var zIdx = el.dataset.z || '9900';
+  var allowPointer = el.dataset.pointer === 'true';
+  canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;z-index:' + zIdx + ';pointer-events:' + (allowPointer ? 'auto' : 'none') + ';display:none;';
+  document.body.appendChild(canvas);
+  var ctx = canvas.getContext('2d');
+
+  /* --- Config --- */
+  var CFG = {
+    mode: el.dataset.mode || 'cannon',
+    trigger: el.dataset.trigger || 'scroll',
+    triggerOffset: parseInt(el.dataset.triggerOffset) || 50,
+    count: parseInt(el.dataset.particleCount) || 80,
+    gravity: parseFloat(el.dataset.gravity) / 100 || 0.25,
+    spread: parseInt(el.dataset.spread) || 70,
+    speed: parseFloat(el.dataset.speed) / 10 || 1,
+    sizeMin: parseInt(el.dataset.sizeMin) || 4,
+    sizeMax: parseInt(el.dataset.sizeMax) || 10,
+    duration: parseInt(el.dataset.duration) || 4000,
+    repeat: el.dataset.repeat === 'true',
+    repeatInterval: parseInt(el.dataset.repeatInterval) || 5000,
+    colors: JSON.parse(el.dataset.colors || '["#ff577f","#ff884b","#ffd384","#fff9b0","#6c5ce7"]'),
+    showEmoji: el.dataset.showEmoji === 'true',
+    emojiList: (el.dataset.emojiList || '🎉,⭐,🎊,✨').split(','),
+    opacity: parseInt(el.dataset.opacity) / 100 || 1
+  };
+
+  var particles = [];
+  var animId = null;
+  var fired = false;
+  var repeatTimer = null;
+
+  /* --- Resize --- */
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  /* --- Particle --- */
+  function Particle(x, y, angle, v, mode) {
+    var rad = (angle * Math.PI) / 180;
+    var vel = v * (0.5 + Math.random() * 0.5) * CFG.speed;
+    this.x = x;
+    this.y = y;
+    this.vx = Math.cos(rad) * vel;
+    this.vy = Math.sin(rad) * vel;
+    this.gravity = CFG.gravity;
+    this.size = CFG.sizeMin + Math.random() * (CFG.sizeMax - CFG.sizeMin);
+    this.color = CFG.colors[Math.floor(Math.random() * CFG.colors.length)];
+    this.rotation = Math.random() * 360;
+    this.rotSpeed = (Math.random() - 0.5) * 10;
+    this.alpha = 1;
+    this.decay = 0.003 + Math.random() * 0.006;
+    this.shape = Math.random() > 0.5 ? 'rect' : 'circle';
+    this.drag = 0.98 + Math.random() * 0.015;
+    this.wobble = Math.random() * 10;
+    this.wobbleSpeed = 0.05 + Math.random() * 0.1;
+    this.isEmoji = CFG.showEmoji && Math.random() > 0.7;
+    this.emoji = CFG.emojiList[Math.floor(Math.random() * CFG.emojiList.length)];
+    this.mode = mode;
+    this.trail = mode === 'fireworks' ? [] : null;
+    this.trailMax = 4;
+    if (mode === 'rain') {
+      this.vy = Math.abs(this.vy) * 0.3 + 1;
+      this.vx = (Math.random() - 0.5) * 2;
+      this.gravity = CFG.gravity * 0.5;
+      this.drag = 0.995;
+      this.decay = 0.002 + Math.random() * 0.003;
+    }
+  }
+
+  Particle.prototype.update = function() {
+    if (this.trail) {
+      this.trail.push({ x: this.x, y: this.y, a: this.alpha });
+      if (this.trail.length > this.trailMax) this.trail.shift();
+    }
+    this.vx *= this.drag;
+    this.vy *= this.drag;
+    this.vy += this.gravity;
+    this.wobble += this.wobbleSpeed;
+    this.x += this.vx + Math.sin(this.wobble) * 0.5;
+    this.y += this.vy;
+    this.rotation += this.rotSpeed;
+    this.alpha -= this.decay;
+  };
+
+  Particle.prototype.draw = function(c) {
+    if (this.alpha <= 0) return;
+    c.save();
+    c.globalAlpha = this.alpha * CFG.opacity;
+    if (this.trail) {
+      for (var i = 0; i < this.trail.length; i++) {
+        var t = this.trail[i];
+        c.globalAlpha = t.a * 0.3 * CFG.opacity;
+        c.fillStyle = this.color;
+        c.beginPath();
+        c.arc(t.x, t.y, this.size * 0.5, 0, Math.PI * 2);
+        c.fill();
+      }
+      c.globalAlpha = this.alpha * CFG.opacity;
+    }
+    c.translate(this.x, this.y);
+    c.rotate((this.rotation * Math.PI) / 180);
+    if (this.isEmoji) {
+      c.font = this.size * 2 + 'px serif';
+      c.textAlign = 'center';
+      c.textBaseline = 'middle';
+      c.fillText(this.emoji, 0, 0);
+    } else if (this.shape === 'rect') {
+      c.fillStyle = this.color;
+      c.fillRect(-this.size / 2, -this.size / 2, this.size, this.size * 0.6);
+    } else {
+      c.fillStyle = this.color;
+      c.beginPath();
+      c.arc(0, 0, this.size / 2, 0, Math.PI * 2);
+      c.fill();
+    }
+    c.restore();
+  };
+
+  /* --- Spawn Functions --- */
+  function spawnCannon() {
+    var hs = CFG.spread / 2;
+    for (var i = 0; i < CFG.count / 2; i++) {
+      var a = -hs + Math.random() * hs;
+      particles.push(new Particle(0, canvas.height * 0.6, -45 + a, 12 + Math.random() * 6, 'cannon'));
+    }
+    for (var j = 0; j < CFG.count / 2; j++) {
+      var b = -hs + Math.random() * hs;
+      particles.push(new Particle(canvas.width, canvas.height * 0.6, -135 + b, 12 + Math.random() * 6, 'cannon'));
+    }
+  }
+
+  function spawnRain() {
+    for (var i = 0; i < CFG.count; i++) {
+      particles.push(new Particle(Math.random() * canvas.width, -20 - Math.random() * 200, 90, 2 + Math.random() * 2, 'rain'));
+    }
+  }
+
+  function spawnFireworks() {
+    var cx = [
+      { x: canvas.width * 0.2, y: canvas.height * 0.35 },
+      { x: canvas.width * 0.5, y: canvas.height * 0.25 },
+      { x: canvas.width * 0.8, y: canvas.height * 0.35 }
+    ];
+    for (var c = 0; c < cx.length; c++) {
+      var pb = Math.floor(CFG.count / 3);
+      for (var i = 0; i < pb; i++) {
+        var ang = (360 / pb) * i + (Math.random() - 0.5) * 20;
+        particles.push(new Particle(cx[c].x, cx[c].y, ang, 6 + Math.random() * 5, 'fireworks'));
+      }
+    }
+  }
+
+  function spawnSparkle() {
+    for (var i = 0; i < CFG.count; i++) {
+      var p = new Particle(Math.random() * canvas.width, Math.random() * canvas.height, Math.random() * 360, 1 + Math.random() * 2, 'sparkle');
+      p.gravity = 0; p.drag = 0.96; p.decay = 0.008 + Math.random() * 0.008;
+      p.shape = 'circle'; p.size = CFG.sizeMin + Math.random() * 3;
+      particles.push(p);
+    }
+  }
+
+  function spawnParty() {
+    var i;
+    for (i = 0; i < CFG.count * 0.4; i++)
+      particles.push(new Particle(0, canvas.height, -30 - Math.random() * 50, 10 + Math.random() * 8, 'cannon'));
+    for (i = 0; i < CFG.count * 0.4; i++)
+      particles.push(new Particle(canvas.width, canvas.height, -130 - Math.random() * 50, 10 + Math.random() * 8, 'cannon'));
+    for (i = 0; i < CFG.count * 0.2; i++)
+      particles.push(new Particle(canvas.width / 2, canvas.height * 0.8, -70 - Math.random() * 40, 8 + Math.random() * 6, 'cannon'));
+  }
+
+  function spawnSides() {
+    var h = Math.floor(CFG.count / 2);
+    for (var i = 0; i < h; i++)
+      particles.push(new Particle(0, canvas.height * (0.2 + Math.random() * 0.6), -20 + Math.random() * 40, 6 + Math.random() * 6, 'cannon'));
+    for (var j = 0; j < h; j++)
+      particles.push(new Particle(canvas.width, canvas.height * (0.2 + Math.random() * 0.6), 140 + Math.random() * 40, 6 + Math.random() * 6, 'cannon'));
+  }
+
+  /* --- Fire --- */
+  function fire() {
+    particles = [];
+    canvas.style.display = 'block';
+    switch (CFG.mode) {
+      case 'cannon':   spawnCannon(); break;
+      case 'rain':     spawnRain(); break;
+      case 'fireworks':spawnFireworks(); break;
+      case 'sparkle':  spawnSparkle(); break;
+      case 'party':    spawnParty(); break;
+      case 'sides':    spawnSides(); break;
+      default:         spawnCannon();
+    }
+    if (!animId) loop();
+  }
+
+  /* --- Animation Loop --- */
+  function loop() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    var alive = 0;
+    for (var i = particles.length - 1; i >= 0; i--) {
+      var p = particles[i];
+      p.update();
+      p.draw(ctx);
+      if (p.alpha > 0 && p.y < canvas.height + 50 && p.x > -50 && p.x < canvas.width + 50) {
+        alive++;
+      } else {
+        particles.splice(i, 1);
+      }
+    }
+    if (alive > 0) {
+      animId = requestAnimationFrame(loop);
+    } else {
+      animId = null;
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      canvas.style.display = 'none';
+    }
+  }
+
+  /* --- Trigger --- */
+  function startBurst() {
+    if (fired && !CFG.repeat) return;
+    fired = true;
+    fire();
+    if (CFG.repeat) {
+      clearInterval(repeatTimer);
+      repeatTimer = setInterval(fire, CFG.repeatInterval);
+    }
+  }
+
+  if (CFG.trigger === 'load') {
+    if (document.readyState === 'complete') { startBurst(); }
+    else { window.addEventListener('load', startBurst); }
+  } else if (CFG.trigger === 'scroll') {
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          startBurst();
+          if (!CFG.repeat) obs.disconnect();
+        }
+      });
+    }, { threshold: 0.01 });
+    obs.observe(el);
+  } else if (CFG.trigger === 'click') {
+    document.addEventListener('click', function() { startBurst(); }, { once: !CFG.repeat });
+  }
+
+  /* Shopify editor */
+  if (window.Shopify && window.Shopify.designMode) {
+    document.addEventListener('shopify:section:unload', function(e) {
+      if (e.detail.sectionId === '{{ sid }}') {
+        cancelAnimationFrame(animId);
+        clearInterval(repeatTimer);
+        if (canvas.parentNode) canvas.parentNode.removeChild(canvas);
+      }
+    });
+    document.addEventListener('shopify:section:select', function(e) {
+      if (e.detail.sectionId === '{{ sid }}') fire();
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Burst Effect",
+  "tag": "section",
+  "class": "section-burst-effect-confetti",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Effect Mode"
+    },
+    {
+      "type": "select",
+      "id": "effect_mode",
+      "label": "Effect type",
+      "options": [
+        { "value": "cannon", "label": "🎊 Confetti Cannon" },
+        { "value": "rain", "label": "🌧️ Confetti Rain" },
+        { "value": "fireworks", "label": "🎆 Fireworks" },
+        { "value": "sparkle", "label": "✨ Sparkle Burst" },
+        { "value": "party", "label": "🎉 Party Popper" },
+        { "value": "sides", "label": "💥 Side Streams" }
+      ],
+      "default": "cannon",
+      "info": "Choose the celebration effect style"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger_type",
+      "label": "Trigger type",
+      "options": [
+        { "value": "scroll", "label": "On scroll into view" },
+        { "value": "load", "label": "On page load" },
+        { "value": "click", "label": "On click" }
+      ],
+      "default": "scroll",
+      "info": "When should the effect fire?"
+    },
+    {
+      "type": "range",
+      "id": "trigger_offset",
+      "label": "Scroll trigger offset",
+      "min": 0,
+      "max": 50,
+      "step": 5,
+      "default": 10,
+      "unit": "%",
+      "info": "How far the section needs to be visible before triggering"
+    },
+    {
+      "type": "header",
+      "content": "Particles"
+    },
+    {
+      "type": "range",
+      "id": "particle_count",
+      "label": "Particle count",
+      "min": 20,
+      "max": 200,
+      "step": 10,
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Speed multiplier",
+      "min": 5,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "info": "Higher = faster particles (value ÷ 10)"
+    },
+    {
+      "type": "range",
+      "id": "gravity",
+      "label": "Gravity",
+      "min": 5,
+      "max": 60,
+      "step": 5,
+      "default": 25,
+      "info": "How fast particles fall (value ÷ 100)"
+    },
+    {
+      "type": "range",
+      "id": "spread",
+      "label": "Spread angle",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 70,
+      "unit": "°"
+    },
+    {
+      "type": "range",
+      "id": "size_min",
+      "label": "Min particle size",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "size_max",
+      "label": "Max particle size",
+      "min": 6,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "duration",
+      "label": "Effect duration",
+      "min": 1000,
+      "max": 8000,
+      "step": 500,
+      "default": 4000,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "Repeat"
+    },
+    {
+      "type": "checkbox",
+      "id": "repeat_enabled",
+      "label": "Repeat effect",
+      "default": false,
+      "info": "Continuously repeat the burst effect"
+    },
+    {
+      "type": "range",
+      "id": "repeat_interval",
+      "label": "Repeat interval",
+      "min": 2000,
+      "max": 9500,
+      "step": 500,
+      "default": 5000,
+      "unit": "ms",
+      "info": "Time between repeated bursts"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "color_1",
+      "label": "Color 1",
+      "default": "#ff577f"
+    },
+    {
+      "type": "color",
+      "id": "color_2",
+      "label": "Color 2",
+      "default": "#ff884b"
+    },
+    {
+      "type": "color",
+      "id": "color_3",
+      "label": "Color 3",
+      "default": "#ffd384"
+    },
+    {
+      "type": "color",
+      "id": "color_4",
+      "label": "Color 4",
+      "default": "#4ecdc4"
+    },
+    {
+      "type": "color",
+      "id": "color_5",
+      "label": "Color 5",
+      "default": "#6c5ce7"
+    },
+    {
+      "type": "header",
+      "content": "Emoji Particles"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_emoji",
+      "label": "Include emoji particles",
+      "default": false,
+      "info": "Mix emoji into the confetti"
+    },
+    {
+      "type": "text",
+      "id": "emoji_list",
+      "label": "Emoji list (comma separated)",
+      "default": "🎉,⭐,🎊,✨,🎈,🥳"
+    },
+    {
+      "type": "header",
+      "content": "Advanced"
+    },
+    {
+      "type": "range",
+      "id": "opacity",
+      "label": "Overall opacity",
+      "min": 30,
+      "max": 100,
+      "step": 5,
+      "default": 100,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "z_index",
+      "label": "Z-index layer",
+      "min": 0,
+      "max": 9900,
+      "step": 100,
+      "default": 9900,
+      "info": "Higher = on top of other elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "pointer_events",
+      "label": "Clickable overlay",
+      "default": false,
+      "info": "If disabled, clicks pass through to elements below"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Burst Effect"
+    }
+  ]
+}
+{% endschema %}

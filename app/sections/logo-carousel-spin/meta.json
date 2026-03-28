@@ -1,0 +1,57 @@
+{
+  "id": "logo-carousel-spin",
+  "name": "SIQ - Logo Carousel Spin",
+  "description": "Infinite auto-scrolling logo carousel with smooth seamless loop. Logos glide horizontally in an endless ribbon with optional grayscale-to-color hover, adjustable speed, reverse direction, and pause on hover. Perfect for trust sections and partner logos.",
+  "category": "Trust",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Trust",
+    "Logos",
+    "Carousel",
+    "Infinite",
+    "Auto-scroll",
+    "Animated",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjZjhmOGY4Ii8+Cjx0ZXh0IHg9IjMwMCIgeT0iMTAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjE2IiBmaWxsPSIjMWExYTFhIiBmb250LXdlaWdodD0iNzAwIj5UcnVzdGVkIEJ5PC90ZXh0Pgo8cmVjdCB4PSIyMCIgeT0iMTQwIiB3aWR0aD0iODUiIGhlaWdodD0iNTUiIHJ4PSI4IiBmaWxsPSIjZmZmZmZmIiBzdHJva2U9IiNlNWU3ZWIiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjYyIiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+PHJlY3QgeD0iMTE3IiB5PSIxNDAiIHdpZHRoPSI4NSIgaGVpZ2h0PSI1NSIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iMTU5IiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+PHJlY3QgeD0iMjE0IiB5PSIxNDAiIHdpZHRoPSI4NSIgaGVpZ2h0PSI1NSIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iMjU2IiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+PHJlY3QgeD0iMzExIiB5PSIxNDAiIHdpZHRoPSI4NSIgaGVpZ2h0PSI1NSIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iMzUzIiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+PHJlY3QgeD0iNDA4IiB5PSIxNDAiIHdpZHRoPSI4NSIgaGVpZ2h0PSI1NSIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iNDUwIiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+PHJlY3QgeD0iNTA1IiB5PSIxNDAiIHdpZHRoPSI4NSIgaGVpZ2h0PSI1NSIgcng9IjgiIGZpbGw9IiNmZmZmZmYiIHN0cm9rZT0iI2U1ZTdlYiIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iNTQ3IiB5PSIxNzIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTAiIGZpbGw9IiM2NjY2NjYiPkxvZ288L3RleHQ+Cjx0ZXh0IHg9IjMwMCIgeT0iMjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEwIiBmaWxsPSIjNjY2NjY2Ij7ihpAgSW5maW5pdGUgYXV0by1zY3JvbGwg4oaSPC90ZXh0Pgo8L3N2Zz4=",
+      "alt": "Logo Carousel Spin - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

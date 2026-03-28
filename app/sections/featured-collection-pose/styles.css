@@ -1,0 +1,348 @@
+/* ═══════════════════════════════════════
+   SectionHub – Featured Collection Pose
+   Prefix: fcp-
+   Cinematic slow-crossfade hover effect
+   ═══════════════════════════════════════ */
+
+/* ── Reset & section ── */
+.fcp { position: relative; overflow: hidden; background: var(--fcp-bg, #ededed); }
+.fcp * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Wrapper ── */
+.fcp__wrap {
+  max-width: var(--fcp-max-w, 1600px);
+  margin: 0 auto;
+  padding: var(--fcp-pt, 60px) var(--fcp-px, 48px) var(--fcp-pb, 60px);
+}
+
+/* ════════════════════════════════════════
+   INTRO – Heading + Description + Link
+   ════════════════════════════════════════ */
+.fcp__intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 32px;
+  margin-bottom: 40px;
+  flex-wrap: wrap;
+}
+.fcp__intro-left { max-width: 800px; }
+.fcp__intro-right {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.fcp__heading {
+  font-family: var(--fcp-heading-ff);
+  font-weight: var(--fcp-heading-fw);
+  font-style: var(--fcp-heading-fst, normal);
+  color: var(--fcp-heading-c, #111);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.fcp__heading--sm { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.fcp__heading--md { font-size: clamp(2rem, 4vw, 3.4rem); }
+.fcp__heading--lg { font-size: clamp(2.6rem, 5.5vw, 5rem); }
+.fcp__heading--xl { font-size: clamp(3.2rem, 7vw, 6.5rem); }
+
+.fcp__desc {
+  font-family: var(--fcp-body-ff);
+  font-weight: var(--fcp-body-fw);
+  color: var(--fcp-text-c, #555);
+  font-size: clamp(0.85rem, 1.1vw, 1rem);
+  line-height: 1.65;
+  max-width: 700px;
+  margin-top: 14px;
+}
+
+/* View more link */
+.fcp__view-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--fcp-body-ff);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--fcp-heading-c, #111);
+  text-decoration: none;
+  transition: gap 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fcp__view-link:hover { gap: 10px; }
+.fcp__view-link svg {
+  width: 18px; height: 18px;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.fcp__view-link:hover svg { transform: translate(2px, -2px); }
+
+/* ════════════════════════════════════════
+   PRODUCT GRID
+   ════════════════════════════════════════ */
+.fcp__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fcp-cols, 6), 1fr);
+  gap: var(--fcp-gap, 24px);
+}
+
+/* ════════════════════════════════════════
+   PRODUCT CARD – Cinematic Pose Hover
+   ════════════════════════════════════════ */
+.fcp__card {
+  position: relative;
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+/* Image container */
+.fcp__card-media {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--fcp-radius, 14px);
+  aspect-ratio: var(--fcp-ratio, 3 / 4);
+  background: rgba(0,0,0,0.04);
+}
+
+/* Primary image (always visible) */
+.fcp__card-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: var(--fcp-radius, 14px);
+  transition: transform var(--fcp-hover-speed, 1.2s) cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+/* Secondary image – the "next pose" */
+.fcp__card-img--second {
+  position: absolute;
+  inset: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+  border-radius: var(--fcp-radius, 14px);
+  opacity: 0;
+  transform: scale(1.04);
+  transition:
+    opacity var(--fcp-hover-speed, 1.2s) cubic-bezier(0.25, 0.1, 0.25, 1),
+    transform var(--fcp-hover-speed, 1.2s) cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: 1;
+}
+
+/* ── THE MAGIC: Slow crossfade on hover ── */
+.fcp__card:hover .fcp__card-img {
+  transform: scale(1.03);
+}
+.fcp__card:hover .fcp__card-img--second {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* Subtle directional light overlay – gives a "studio lighting shift" feel */
+.fcp__card-media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--fcp-radius, 14px);
+  background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.04) 100%);
+  opacity: 0;
+  transition: opacity var(--fcp-hover-speed, 1.2s) cubic-bezier(0.25, 0.1, 0.25, 1);
+  z-index: 2;
+  pointer-events: none;
+}
+.fcp__card:hover .fcp__card-media::after { opacity: 1; }
+
+/* Placeholder */
+.fcp__card-placeholder {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  opacity: 0.15;
+}
+
+/* Product info below image */
+.fcp__card-info {
+  text-align: center;
+  padding-top: 14px;
+}
+.fcp__card-title {
+  font-family: var(--fcp-body-ff);
+  font-weight: 600;
+  color: var(--fcp-heading-c, #111);
+  font-size: 0.88rem;
+  line-height: 1.35;
+  margin-bottom: 4px;
+}
+.fcp__card-price {
+  font-family: var(--fcp-body-ff);
+  font-weight: var(--fcp-body-fw);
+  color: var(--fcp-text-c, #555);
+  font-size: 0.82rem;
+}
+.fcp__card-price s {
+  opacity: 0.5;
+  margin-right: 6px;
+  text-decoration: line-through;
+}
+.fcp__card-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  background: var(--fcp-badge-bg, #e53e3e);
+  color: #fff;
+  font-family: var(--fcp-body-ff);
+  font-weight: 700;
+  font-size: 0.7rem;
+  padding: 4px 10px;
+  border-radius: 40px;
+  z-index: 3;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* ════════════════════════════════════════
+   SCROLL ENTRANCE – Sequential Build-In
+   ════════════════════════════════════════ */
+
+/* Cards start invisible, clipped and slightly scaled */
+.fcp__card[data-fcp-reveal] {
+  opacity: 0;
+  transform: translateY(48px) scale(0.92);
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  /* Image inside also gets a clip-path reveal */
+}
+
+/* Image inside: start clipped from bottom */
+.fcp__card[data-fcp-reveal] .fcp__card-media {
+  clip-path: inset(100% 0 0 0 round var(--fcp-radius, 14px));
+  transition: clip-path 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Info text: start shifted */
+.fcp__card[data-fcp-reveal] .fcp__card-info {
+  opacity: 0;
+  transform: translateY(10px);
+  transition:
+    opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Visible state ── */
+.fcp__card[data-fcp-reveal].fcp__card--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.fcp__card[data-fcp-reveal].fcp__card--visible .fcp__card-media {
+  clip-path: inset(0% 0 0 0 round var(--fcp-radius, 14px));
+}
+.fcp__card[data-fcp-reveal].fcp__card--visible .fcp__card-info {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.15s;
+}
+
+/* ════════════════════════════════════════
+   MOBILE
+   ════════════════════════════════════════ */
+@media (max-width: 749px) {
+  .fcp__wrap {
+    padding: var(--fcp-pt-m, 32px) 16px var(--fcp-pb-m, 40px);
+  }
+  .fcp__intro {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .fcp__heading--sm { font-size: 1.4rem; }
+  .fcp__heading--md { font-size: 1.7rem; }
+  .fcp__heading--lg { font-size: 2rem; }
+  .fcp__heading--xl { font-size: 2.5rem; }
+  .fcp__grid {
+    grid-template-columns: repeat(var(--fcp-cols-m, 2), 1fr);
+    gap: var(--fcp-gap-m, 14px);
+  }
+  .fcp__card-info { padding-top: 10px; }
+  .fcp__card-title { font-size: 0.82rem; }
+  .fcp__card-price { font-size: 0.78rem; }
+
+  /* Carousel mobile */
+  .fcp__carousel-outer { padding: 0 16px; }
+  .fcp__carousel-btn { display: none; }
+  .fcp__card--slide { width: clamp(180px, 72vw, var(--fcp-carousel-card-w, 320px)); }
+}
+
+/* ════════════════════════════════════════
+   CAROUSEL
+   ════════════════════════════════════════ */
+.fcp__carousel-outer {
+  position: relative;
+  overflow: hidden;
+  /* Show peek of next slide */
+  padding-right: var(--fcp-carousel-peek, 40px);
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.fcp__carousel-outer:active { cursor: grabbing; }
+
+.fcp__carousel-track {
+  display: flex;
+  gap: var(--fcp-gap, 24px);
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: transform;
+}
+
+/* Each slide: fixed width driven by CSS var */
+.fcp__card--slide {
+  flex: 0 0 var(--fcp-carousel-card-w, 320px);
+  width: var(--fcp-carousel-card-w, 320px);
+}
+
+/* ── Prev/Next buttons ── */
+.fcp__carousel-btn {
+  position: absolute;
+  top: 40%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.9);
+  border: 1px solid rgba(0,0,0,0.08);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+  transition: background 0.2s, box-shadow 0.2s, opacity 0.2s;
+  color: #111;
+}
+.fcp__carousel-btn svg { width: 20px; height: 20px; }
+.fcp__carousel-btn--prev { left: -22px; }
+.fcp__carousel-btn--next { right: calc(var(--fcp-carousel-peek, 40px) - 22px); }
+.fcp__carousel-btn:hover {
+  background: #fff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.fcp__carousel-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ── Dots ── */
+.fcp__carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 24px;
+}
+.fcp__carousel-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.2);
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.3s;
+  padding: 0;
+}
+.fcp__carousel-dot--active {
+  background: var(--fcp-heading-c, #111);
+  transform: scale(1.3);
+}

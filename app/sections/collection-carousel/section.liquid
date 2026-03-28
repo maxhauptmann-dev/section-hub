@@ -1,0 +1,832 @@
+{% comment %}
+  SectionHub – Collection Carousel  (ccr-)
+  Horizontal scroll-driven collection carousel with sticky text header
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign marker_font   = section.settings.marker_font
+  assign body_font     = section.settings.body_font
+  assign content_style = section.settings.content_style
+  assign show_progress = section.settings.show_progress
+  assign aspect        = section.settings.aspect_ratio
+  assign card_radius   = section.settings.card_radius
+  assign show_border   = section.settings.card_border
+
+  assign heading_raw = section.settings.heading
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ marker_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #ccr-{{ section.id }} {
+    --ccr-bg: {{ section.settings.bg_color }};
+    --ccr-heading-c: {{ section.settings.heading_color }};
+    --ccr-marker-c: {{ section.settings.marker_color }};
+    --ccr-text-c: {{ section.settings.text_color }};
+    --ccr-card-bg: {{ section.settings.card_bg }};
+    --ccr-chip-bg: {{ section.settings.chip_bg }};
+    --ccr-chip-c: {{ section.settings.chip_color }};
+    --ccr-btn-bg: {{ section.settings.btn_bg }};
+    --ccr-btn-c: {{ section.settings.btn_color }};
+    --ccr-progress-bg: {{ section.settings.progress_bg }};
+    --ccr-progress-fill: {{ section.settings.progress_fill }};
+
+    --ccr-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --ccr-heading-fw: {{ heading_font.weight }};
+    --ccr-heading-fst: {{ heading_font.style }};
+    --ccr-marker-ff: {{ marker_font.family }}, {{ marker_font.fallback_families }};
+    --ccr-marker-fw: {{ marker_font.weight }};
+    --ccr-marker-fst: {{ marker_font.style }};
+    --ccr-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --ccr-body-fw: {{ body_font.weight }};
+
+    --ccr-radius: {{ card_radius }}px;
+    --ccr-pt: {{ section.settings.padding_top }}px;
+    --ccr-pb: {{ section.settings.padding_bottom }}px;
+    --ccr-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --ccr-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+
+    --ccr-aspect: {% if aspect == 'square' %}1 / 1{% else %}4 / 3{% endif %};
+    --ccr-card-w: {% if aspect == 'square' %}380px{% else %}520px{% endif %};
+    --ccr-card-w-m: {% if aspect == 'square' %}280px{% else %}340px{% endif %};
+  }
+</style>
+
+<section id="ccr-{{ section.id }}" class="ccr" data-ccr-root data-ccr-style="{{ content_style }}">
+
+  {%- if content_style == 'sticky' -%}
+
+    {%- comment -%} ── Sticky layout: text overlaid, cards scroll full-width ── {%- endcomment -%}
+    <div class="ccr-scroll" data-ccr-scroll>
+      <div class="ccr-scroll__inner">
+
+        {%- comment -%} Text overlay – positioned absolutely, fades when cards pass ── {%- endcomment -%}
+        <div class="ccr-text" data-ccr-text>
+          <div class="ccr-text__inner">
+            {%- if heading_raw != blank -%}
+              <{{ section.settings.heading_tag }} class="ccr-text__heading ccr-text__heading--{{ section.settings.heading_size }}">
+                {%- assign parts = heading_raw | split: '[' -%}
+                {%- for part in parts -%}
+                  {%- if part contains ']' -%}
+                    {%- assign sub = part | split: ']' -%}
+                    <span class="ccr-marker">{{ sub[0] }}</span>{{ sub[1] }}
+                  {%- else -%}
+                    {{ part }}
+                  {%- endif -%}
+                {%- endfor -%}
+              </{{ section.settings.heading_tag }}>
+            {%- endif -%}
+
+            {%- if section.settings.description != blank -%}
+              <p class="ccr-text__desc ccr-text__desc--{{ section.settings.desc_size }}">{{ section.settings.description }}</p>
+            {%- endif -%}
+
+            {%- if section.settings.btn_label != blank -%}
+              <div class="ccr-text__actions">
+                {%- if section.settings.btn_style == 'animated' -%}
+                  <a href="{{ section.settings.btn_link }}" class="ccr-btn ccr-btn--icon" aria-label="{{ section.settings.btn_label }}">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M5 15L15 5M15 5H6M15 5V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  </a>
+                {%- endif -%}
+                <a href="{{ section.settings.btn_link }}" class="ccr-btn ccr-btn--{{ section.settings.btn_size }}">{{ section.settings.btn_label }}</a>
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Full-width horizontal card track ── {%- endcomment -%}
+        <div class="ccr-track" data-ccr-track>
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'collection' -%}
+              {%- assign bl_col = collections[block.settings.collection] -%}
+              {%- assign card_img = block.settings.image | default: bl_col.image -%}
+              {%- assign card_title = block.settings.title | default: bl_col.title -%}
+              {%- assign card_url = bl_col.url | default: '#' -%}
+              {%- assign overlay_opacity = block.settings.overlay_opacity -%}
+
+              <div class="ccr-card" data-ccr-card {{ block.shopify_attributes }}>
+                <a href="{{ card_url }}" class="ccr-card__link" aria-label="{{ card_title }}">
+                  <div class="ccr-card__media">
+                    {%- if card_img != blank -%}
+                      <img
+                        src="{{ card_img | image_url: width: 800 }}"
+                        srcset="{{ card_img | image_url: width: 400 }} 400w,
+                                {{ card_img | image_url: width: 600 }} 600w,
+                                {{ card_img | image_url: width: 800 }} 800w,
+                                {{ card_img | image_url: width: 1200 }} 1200w"
+                        sizes="(max-width: 749px) 85vw, 55vw"
+                        alt="{{ card_img.alt | default: card_title | escape }}"
+                        loading="lazy"
+                        class="ccr-card__img"
+                      >
+                    {%- else -%}
+                      <div class="ccr-card__placeholder">
+                        {{ 'collection-1' | placeholder_svg_tag: 'ccr-card__svg' }}
+                      </div>
+                    {%- endif -%}
+                    {%- if overlay_opacity > 0 -%}
+                      <div class="ccr-card__overlay" style="opacity: {{ overlay_opacity }};"></div>
+                    {%- endif -%}
+                  </div>
+
+                  {%- if block.settings.chip_text != blank -%}
+                    <span class="ccr-chip" data-ccr-chip>{{ block.settings.chip_text }}</span>
+                  {%- endif -%}
+                </a>
+
+                {%- if card_title != blank -%}
+                  <div class="ccr-card__info">
+                    <h3 class="ccr-card__title">{{ card_title }}</h3>
+                    {%- if block.settings.btn_label != blank -%}
+                      <a href="{{ card_url }}" class="ccr-card__btn ccr-card__btn--{{ block.settings.btn_size }} ccr-card__btn--{{ block.settings.btn_style }}">{{ block.settings.btn_label }}</a>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+
+        {%- if show_progress -%}
+          <div class="ccr-progress" data-ccr-progress>
+            <div class="ccr-progress__fill" data-ccr-progress-fill></div>
+          </div>
+        {%- endif -%}
+
+      </div>
+    </div>
+
+  {%- else -%}
+
+    {%- comment -%} ── Scroll mode: normal vertical layout, cards horizontally scrollable ── {%- endcomment -%}
+    <div class="ccr-static">
+      <div class="ccr-static__header">
+        {%- if heading_raw != blank -%}
+          <{{ section.settings.heading_tag }} class="ccr-text__heading ccr-text__heading--{{ section.settings.heading_size }}">
+            {%- assign parts = heading_raw | split: '[' -%}
+            {%- for part in parts -%}
+              {%- if part contains ']' -%}
+                {%- assign sub = part | split: ']' -%}
+                <span class="ccr-marker">{{ sub[0] }}</span>{{ sub[1] }}
+              {%- else -%}
+                {{ part }}
+              {%- endif -%}
+            {%- endfor -%}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+
+        {%- if section.settings.description != blank -%}
+          <p class="ccr-text__desc ccr-text__desc--{{ section.settings.desc_size }}">{{ section.settings.description }}</p>
+        {%- endif -%}
+
+        {%- if section.settings.btn_label != blank -%}
+          <div class="ccr-text__actions">
+            <a href="{{ section.settings.btn_link }}" class="ccr-btn ccr-btn--{{ section.settings.btn_size }}">{{ section.settings.btn_label }}</a>
+          </div>
+        {%- endif -%}
+      </div>
+
+      <div class="ccr-track ccr-track--free" data-ccr-track>
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'collection' -%}
+            {%- assign bl_col = collections[block.settings.collection] -%}
+            {%- assign card_img = block.settings.image | default: bl_col.image -%}
+            {%- assign card_title = block.settings.title | default: bl_col.title -%}
+            {%- assign card_url = bl_col.url | default: '#' -%}
+
+            <div class="ccr-card" {{ block.shopify_attributes }}>
+              <a href="{{ card_url }}" class="ccr-card__link" aria-label="{{ card_title }}">
+                <div class="ccr-card__media">
+                  {%- if card_img != blank -%}
+                    <img
+                      src="{{ card_img | image_url: width: 800 }}"
+                      srcset="{{ card_img | image_url: width: 400 }} 400w,
+                              {{ card_img | image_url: width: 600 }} 600w,
+                              {{ card_img | image_url: width: 800 }} 800w"
+                      sizes="(max-width: 749px) 80vw, 40vw"
+                      alt="{{ card_img.alt | default: card_title | escape }}"
+                      loading="lazy"
+                      class="ccr-card__img"
+                    >
+                  {%- else -%}
+                    <div class="ccr-card__placeholder">
+                      {{ 'collection-1' | placeholder_svg_tag: 'ccr-card__svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if block.settings.overlay_opacity > 0 -%}
+                    <div class="ccr-card__overlay" style="opacity: {{ block.settings.overlay_opacity }};"></div>
+                  {%- endif -%}
+                </div>
+                {%- if block.settings.chip_text != blank -%}
+                  <span class="ccr-chip">{{ block.settings.chip_text }}</span>
+                {%- endif -%}
+              </a>
+              {%- if card_title != blank -%}
+                <div class="ccr-card__info">
+                  <h3 class="ccr-card__title">{{ card_title }}</h3>
+                </div>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+
+      {%- if show_progress -%}
+        <div class="ccr-progress" data-ccr-progress>
+          <div class="ccr-progress__fill" data-ccr-progress-fill></div>
+        </div>
+      {%- endif -%}
+    </div>
+
+  {%- endif -%}
+
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('#ccr-{{ section.id }}[data-ccr-root]');
+  if (!root) return;
+  var style = root.getAttribute('data-ccr-style');
+
+  /* ═══════════════════════════════════════
+     Sticky mode: full-width horizontal scroll driven by vertical scroll
+     Text fades when first card passes over it, chips animate in
+     ═══════════════════════════════════════ */
+  if (style === 'sticky') {
+    var scrollEl     = root.querySelector('[data-ccr-scroll]');
+    var track        = root.querySelector('[data-ccr-track]');
+    var textEl       = root.querySelector('[data-ccr-text]');
+    var cards        = root.querySelectorAll('[data-ccr-card]');
+    var chips        = root.querySelectorAll('[data-ccr-chip]');
+    var progressFill = root.querySelector('[data-ccr-progress-fill]');
+    if (!scrollEl || !track) return;
+
+    /* ── Mobile: skip sticky effect, use free horizontal scroll ── */
+    var isMobile = window.innerWidth < 1000;
+
+    if (isMobile) {
+      /* Reset any JS-set heights */
+      scrollEl.style.height = 'auto';
+
+      /* Let native touch scroll handle everything – no JS drag needed.
+         Just wire up the progress bar to the native scroll position. */
+      if (progressFill) {
+        track.addEventListener('scroll', function() {
+          var max = track.scrollWidth - track.clientWidth;
+          if (max <= 0) return;
+          progressFill.style.width = (track.scrollLeft / max * 100).toFixed(1) + '%';
+        }, { passive: true });
+      }
+      return;
+    }
+
+    /* ── Desktop: sticky scroll-driven horizontal carousel ── */
+
+    var stickyInner = root.querySelector('.ccr-scroll__inner');
+
+    /* Set the tall scroll stage height —
+       must be large enough that the section stays pinned while ALL cards scroll through */
+    function setScrollHeight() {
+      var trackW  = track.scrollWidth;
+      var viewW   = root.offsetWidth;
+      /* Total horizontal travel = full track width minus one viewport (last card visible) */
+      var travel   = Math.max(0, trackW - viewW);
+      /* Add one full viewport so the sticky element actually sticks for the full travel */
+      scrollEl.style.height = (travel + window.innerHeight) + 'px';
+    }
+    setScrollHeight();
+    window.addEventListener('resize', setScrollHeight);
+
+    /* Position progress bar right below the cards */
+    function positionProgress() {
+      if (!progressFill) return;
+      var firstCard = root.querySelector('[data-ccr-card]');
+      if (!firstCard) return;
+      var innerRect = stickyInner.getBoundingClientRect();
+      var cardRect  = firstCard.getBoundingClientRect();
+      /* Card bottom = card top + media height + info height.
+         We want the bar just below the card bottom. */
+      var cardBottom = (cardRect.top + firstCard.offsetHeight) - innerRect.top;
+      var gap = stickyInner.offsetHeight - cardBottom;
+      /* Place bar 12px below where the cards end */
+      var bottomVal = Math.max(8, gap - 12);
+      stickyInner.style.setProperty('--ccr-progress-bottom', bottomVal + 'px');
+    }
+    positionProgress();
+    window.addEventListener('resize', positionProgress);
+
+    function onScroll() {
+      var rect    = scrollEl.getBoundingClientRect();
+      var scrollH = scrollEl.offsetHeight;
+      var viewH   = window.innerHeight;
+      var viewW   = root.offsetWidth;
+      /* travel = how much the user must scroll before the sticky releases */
+      var travel  = scrollH - viewH;
+      if (travel <= 0) return;
+
+      var scrolled = Math.max(0, -rect.top);
+      var progress = Math.max(0, Math.min(1, scrolled / travel));
+
+      /* ── Translate the track horizontally ── */
+      var trackW   = track.scrollWidth;
+      var maxShift = Math.max(0, trackW - viewW);
+      var shift    = progress * maxShift;
+      track.style.transform = 'translateX(' + (-shift).toFixed(1) + 'px)';
+
+      /* ── Fade out text when first card overlaps it ── */
+      if (textEl) {
+        /* Text should start fading very early and be gone by ~15% progress */
+        var textFade = 1 - Math.min(1, progress * 6);
+        textEl.style.opacity = Math.max(0, textFade).toFixed(3);
+        textEl.style.transform = 'translateX(' + (-(1 - textFade) * 60).toFixed(1) + 'px)';
+        textEl.style.pointerEvents = textFade < 0.1 ? 'none' : '';
+      }
+
+      /* ── Chip animate-in per card ── */
+      for (var i = 0; i < cards.length; i++) {
+        var card = cards[i];
+        var cardRect = card.getBoundingClientRect();
+        var chip = card.querySelector('[data-ccr-chip]');
+        if (!chip) continue;
+
+        /* Card center relative to viewport */
+        var cardCenter = cardRect.left + cardRect.width / 2;
+        /* Visible ratio: 1 = center of viewport, 0 = off-screen */
+        var visRatio = 1 - Math.abs(cardCenter - viewW / 2) / (viewW / 2);
+        visRatio = Math.max(0, Math.min(1, visRatio));
+
+        /* Chip fades in + slides up when card is in the viewport center area */
+        if (visRatio > 0.3) {
+          var chipProgress = Math.min(1, (visRatio - 0.3) / 0.4);
+          chip.style.opacity = chipProgress.toFixed(3);
+          chip.style.transform = 'translateY(' + ((1 - chipProgress) * 20).toFixed(1) + 'px)';
+        } else {
+          chip.style.opacity = '0';
+          chip.style.transform = 'translateY(20px)';
+        }
+      }
+
+      /* ── Progress bar ── */
+      if (progressFill) {
+        progressFill.style.width = (progress * 100).toFixed(1) + '%';
+      }
+    }
+
+    /* Init chips hidden */
+    for (var c = 0; c < chips.length; c++) {
+      chips[c].style.opacity = '0';
+      chips[c].style.transform = 'translateY(20px)';
+    }
+
+    var active = false;
+    var ticking = false;
+    function onScrollThrottled() {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(function() { onScroll(); ticking = false; });
+      }
+    }
+
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting && !active) {
+          active = true;
+          window.addEventListener('scroll', onScrollThrottled, { passive: true });
+          onScroll();
+        } else if (!e.isIntersecting && active) {
+          active = false;
+          window.removeEventListener('scroll', onScrollThrottled);
+        }
+      });
+    }, { rootMargin: '200px 0px' });
+    io.observe(scrollEl);
+    onScroll();
+  }
+
+  /* ═══════════════════════════════════════
+     Scroll mode: free horizontal scroll with drag + progress
+     ═══════════════════════════════════════ */
+  if (style === 'scroll') {
+    var track = root.querySelector('[data-ccr-track]');
+    var progressFill = root.querySelector('[data-ccr-progress-fill]');
+    if (!track) return;
+
+    /* Drag to scroll */
+    var isDown = false, startX = 0, scrollLeft = 0;
+    track.addEventListener('mousedown', function(e) {
+      isDown = true; startX = e.pageX - track.offsetLeft; scrollLeft = track.scrollLeft;
+      track.style.cursor = 'grabbing';
+    });
+    track.addEventListener('mouseleave', function() { isDown = false; track.style.cursor = 'grab'; });
+    track.addEventListener('mouseup', function() { isDown = false; track.style.cursor = 'grab'; });
+    track.addEventListener('mousemove', function(e) {
+      if (!isDown) return; e.preventDefault();
+      var x = e.pageX - track.offsetLeft;
+      track.scrollLeft = scrollLeft - (x - startX) * 1.5;
+    });
+
+    /* Progress on scroll */
+    if (progressFill) {
+      track.addEventListener('scroll', function() {
+        var max = track.scrollWidth - track.clientWidth;
+        if (max <= 0) return;
+        var p = track.scrollLeft / max;
+        progressFill.style.width = (p * 100).toFixed(1) + '%';
+      }, { passive: true });
+    }
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Collection Carousel",
+  "tag": "section",
+  "class": "ccr-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "──── Layout ────"
+    },
+    {
+      "type": "select",
+      "id": "content_style",
+      "label": "Content style",
+      "options": [
+        { "value": "sticky", "label": "Sticky" },
+        { "value": "scroll", "label": "Scroll" }
+      ],
+      "default": "sticky"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "──── Content ────"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "[FASHION] THAT FLOWS WITH THE SEASONS",
+      "info": "Wrap words in [brackets] for accent/marker font."
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "X-Large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Explore our latest collection of timeless fashion. From classic styles to modern trends, find the perfect look for every season. Shop now and elevate your wardrobe!"
+    },
+    {
+      "type": "select",
+      "id": "desc_size",
+      "label": "Description size",
+      "options": [
+        { "value": "xs", "label": "XX-Small" },
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" }
+      ],
+      "default": "xs"
+    },
+    {
+      "type": "header",
+      "content": "──── Button ────"
+    },
+    {
+      "type": "text",
+      "id": "btn_label",
+      "label": "Button label",
+      "default": "Button"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "btn_size",
+      "label": "Button size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "md"
+    },
+    {
+      "type": "select",
+      "id": "btn_style",
+      "label": "Button style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "animated", "label": "Animated" }
+      ],
+      "default": "animated"
+    },
+    {
+      "type": "header",
+      "content": "──── Typography ────"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "marker_font",
+      "label": "Marker font (highlighted text)",
+      "default": "playfair_display_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "──── Card settings ────"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_border",
+      "label": "Show card border",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 35
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image aspect ratio",
+      "options": [
+        { "value": "landscape", "label": "Landscape" },
+        { "value": "square", "label": "Square" }
+      ],
+      "default": "landscape"
+    },
+    {
+      "type": "header",
+      "content": "──── Colors ────"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "marker_color",
+      "label": "Marker text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#444444"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#f0f0f0"
+    },
+    {
+      "type": "color",
+      "id": "chip_bg",
+      "label": "Chip background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "chip_color",
+      "label": "Chip text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "progress_bg",
+      "label": "Progress bar background",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "progress_fill",
+      "label": "Progress bar fill",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "──── Spacing ────"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom (desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top space (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom space (mobile)",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection",
+      "name": "Collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Collection"
+        },
+        {
+          "type": "header",
+          "content": "──── Icons ────"
+        },
+        {
+          "type": "select",
+          "id": "icon",
+          "label": "Icon",
+          "options": [
+            { "value": "none", "label": "None" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "select",
+          "id": "emoji",
+          "label": "Emoji",
+          "options": [
+            { "value": "none", "label": "None" }
+          ],
+          "default": "none"
+        },
+        {
+          "type": "header",
+          "content": "──── Custom content ────"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Collection image"
+        },
+        {
+          "type": "range",
+          "id": "overlay_opacity",
+          "label": "Overlay opacity",
+          "min": 0,
+          "max": 1,
+          "step": 0.1,
+          "default": 0.1
+        },
+        {
+          "type": "text",
+          "id": "chip_text",
+          "label": "Highlighted text",
+          "default": "Highlighted text here"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "info": "Overrides the collection title."
+        },
+        {
+          "type": "header",
+          "content": "──── Button ────"
+        },
+        {
+          "type": "text",
+          "id": "btn_label",
+          "label": "Button label",
+          "default": "Button"
+        },
+        {
+          "type": "select",
+          "id": "btn_size",
+          "label": "Button size",
+          "options": [
+            { "value": "sm", "label": "Small" },
+            { "value": "md", "label": "Medium" }
+          ],
+          "default": "sm"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Button style",
+          "options": [
+            { "value": "outline", "label": "Outline" },
+            { "value": "filled", "label": "Filled" }
+          ],
+          "default": "outline"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Collection Carousel",
+      "blocks": [
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" },
+        { "type": "collection" }
+      ]
+    }
+  ]
+}
+{% endschema %}

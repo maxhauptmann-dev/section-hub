@@ -16,9 +16,11 @@
   background: var(--shsr-bg, #0a0a0a);
 }
 
-/* Scroll container */
+/* Scroll container – clip-path keeps the sticky visible while it sticks
+   but hides the empty "tail" below it, preventing any background bleed. */
 .shsr-scroll {
   position: relative;
+  clip-path: inset(0 0 0 0);
 }
 
 /* Sticky viewport */
@@ -29,6 +31,7 @@
   width: 100%;
   overflow: hidden;
   display: flex;
+  background: var(--shsr-bg, #0a0a0a);
 }
 
 /* ---- Left / Right panels ---- */
@@ -394,64 +397,207 @@
 
 /* ---- Responsive ---- */
 @media screen and (max-width: 749px) {
-  .shsr-sticky {
+  .shsr-wrap {
+    overflow: visible;
+  }
+
+  /* On mobile: disable sticky scroll entirely - use simple stack layout */
+  .shsr-scroll {
+    height: auto !important;
+    clip-path: none;
+    display: flex;
     flex-direction: column;
   }
 
+  .shsr-sticky {
+    position: static !important;
+    height: auto !important;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* Each slide becomes a full-width card */
   .shsr-panel {
-    flex: 1;
-    min-height: 50vh;
+    flex: 1 1 auto;
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+    position: relative;
+    display: flex;
+    flex-direction: column;
   }
 
-  .shsr-divider {
-    top: auto;
-    left: 0;
+  .shsr-panel--left {
+    margin-bottom: 0;
+    z-index: auto;
+  }
+
+  .shsr-panel--right {
+    margin-top: 0;
+  }
+
+  /* Images: responsive height, not fixed */
+  .shsr-panel__media {
+    inset: auto;
+    position: relative;
     width: 100%;
-    height: var(--shsr-divider-w, 2px);
-    top: 50%;
-    transform: translateY(-50%);
+    height: 280px;
+    overflow: hidden;
   }
 
+  .shsr-panel__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* Hide both panels content initially, show only active */
+  .shsr-panel__media {
+    display: none;
+  }
+
+  .shsr-panel__media.shsr-panel--active {
+    display: block;
+  }
+
+  /* Hide divider on mobile */
+  .shsr-divider,
   .shsr-divider__glow {
-    width: 100%;
-    height: 40px;
-    top: 50%;
-    left: 0;
-    transform: translateY(-50%);
+    display: none;
   }
 
+  /* Content: positioned below image, not overlaid */
   .shsr-content {
-    padding: 30px;
+    position: static !important;
+    width: 100% !important;
+    inset: auto !important;
+    padding: 20px 16px;
+    justify-content: flex-start;
+    align-items: flex-start;
+    text-align: left;
+    opacity: 1 !important;
+    transform: none !important;
+    transition: opacity 0.4s ease;
   }
 
-  .shsr-content--right {
+  .shsr-content.shsr-panel--active {
+    opacity: 1;
+  }
+
+  .shsr-content:not(.shsr-panel--active) {
+    display: none;
+  }
+
+  .shsr-content--left {
+    inset: auto !important;
+    right: auto !important;
     align-items: flex-start;
     text-align: left;
   }
 
-  .shsr-content--right .shsr-desc {
-    margin-left: 0;
+  .shsr-content--right {
+    inset: auto !important;
+    left: auto !important;
+    align-items: flex-start;
+    text-align: left;
   }
 
-  .shsr-content--right .shsr-eyebrow {
-    flex-direction: row;
+  .shsr-content--center {
+    inset: auto !important;
+    align-items: flex-start;
+    text-align: left;
   }
 
+  .shsr-eyebrow {
+    font-size: 10px;
+    margin-bottom: 10px;
+    letter-spacing: 0.2em;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .shsr-eyebrow::before {
+    width: 20px;
+    height: 1px;
+  }
+
+  .shsr-heading {
+    font-size: clamp(20px, 5.5vw, 28px);
+    margin-bottom: 10px;
+    line-height: 1.2;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .shsr-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 14px;
+    max-width: 100%;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .shsr-btn {
+    padding: 10px 24px;
+    font-size: 12px;
+    display: inline-flex;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Hide non-essential decorations on mobile */
   .shsr-side-label {
     display: none;
   }
 
+  .shsr-scroll-hint {
+    display: none;
+  }
+
   .shsr-progress {
-    bottom: 20px;
+    position: static;
+    transform: none;
+    margin-top: 12px;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+
+  .shsr-progress-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .shsr-progress-dot--active {
+    width: 24px;
   }
 
   .shsr-counter {
-    bottom: 20px;
-    right: 20px;
+    position: static;
+    transform: none;
+    font-size: 12px;
+    margin-top: 12px;
+    color: rgba(255,255,255,0.5);
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .shsr-content {
+    padding: 14px 12px;
   }
 
-  .shsr-scroll-hint {
-    bottom: 20px;
-    left: 20px;
+  .shsr-heading {
+    font-size: clamp(18px, 5.5vw, 26px);
+  }
+
+  .shsr-desc {
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+
+  .shsr-btn {
+    padding: 8px 20px;
+    font-size: 11px;
   }
 }

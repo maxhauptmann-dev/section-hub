@@ -1,0 +1,52 @@
+{
+  "id": "top-info-bar",
+  "name": "SIQ - Top Info Bar",
+  "description": "A sleek 3-column top bar displayed above the header. Left column shows clickable social media icons (Instagram, TikTok, Facebook, YouTube, X/Twitter, Pinterest, LinkedIn, Snapchat). Center column shows a rotating announcement text with optional link and autoplay. Right column provides a locale switcher for language and/or currency. Fully configurable: colors, bar height, font size, icon size, dividers, number of social icons, and which locale controls to show. Hides gracefully on mobile with configurable behavior.",
+  "category": "Header",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 9,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Top Bar",
+    "Social Media",
+    "Locale Switcher",
+    "Announcement",
+    "Header",
+    "Currency",
+    "Language"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/top-info-bar/default.webp",
+      "alt": "SIQ - Top Info Bar - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-18",
+  "updatedAt": "2026-03-18",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-18",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "premium"
+}

@@ -1,312 +1,51 @@
-{% comment %}
-  Section Hub - Upsell Block
-  Display upsell products with images, prices, variant selectors and add-to-cart
-{% endcomment %}
-
 {% if shop.metafields.sectioniq.premium == "active" %}
-
 <style>
-.sh-upsell {
-  margin: 12px 0;
-}
-
-.sh-upsell__title {
-  font-size: {{ block.settings.title_size }}px;
-  font-weight: 700;
-  color: {{ block.settings.text_color }};
-  margin-bottom: 10px;
-}
-
-.sh-upsell__list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.sh-upsell__item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 12px;
-  background: {{ block.settings.item_bg }};
-  border: 1px solid {{ block.settings.border_color }};
-  border-radius: {{ block.settings.border_radius }}px;
-}
-
-.sh-upsell__img {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  object-fit: cover;
-  flex-shrink: 0;
-}
-
-.sh-upsell__img-placeholder {
-  width: 48px;
-  height: 48px;
-  border-radius: 8px;
-  background: #e5e7eb;
-  flex-shrink: 0;
-}
-
-.sh-upsell__info {
-  flex: 1;
-  min-width: 0;
-}
-
-.sh-upsell__name {
-  font-size: {{ block.settings.font_size }}px;
-  font-weight: 600;
-  color: {{ block.settings.text_color }};
-  line-height: 1.3;
-}
-
-.sh-upsell__prices {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  margin-top: 2px;
-}
-
-.sh-upsell__price {
-  font-size: {{ block.settings.font_size }}px;
-  font-weight: 700;
-  color: {{ block.settings.accent_color }};
-}
-
-.sh-upsell__compare {
-  font-size: {{ block.settings.font_size | minus: 2 }}px;
-  color: {{ block.settings.text_color }};
-  opacity: 0.5;
-  text-decoration: line-through;
-}
-
-.sh-upsell__variant {
-  margin-top: 4px;
-  padding: 3px 8px;
-  font-size: 11px;
-  border: 1px solid {{ block.settings.border_color }};
-  border-radius: 4px;
-  background: transparent;
-  color: {{ block.settings.text_color }};
-  cursor: pointer;
-}
-
-.sh-upsell__add {
-  flex-shrink: 0;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 8px 14px;
-  background: {{ block.settings.button_bg }};
-  color: {{ block.settings.button_text }};
-  border: none;
-  border-radius: 6px;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: opacity .15s;
-}
-
-.sh-upsell__add:hover {
-  opacity: 0.85;
-}
+.sh-up{margin:12px 0}
+.sh-up__t{font-size:{{ block.settings.title_size }}px;font-weight:700;color:{{ block.settings.text_color }};margin-bottom:10px}
+.sh-up__l{display:flex;flex-direction:column;gap:8px}
+.sh-up__i{display:flex;align-items:center;gap:12px;padding:10px 12px;background:{{ block.settings.item_bg }};border:1px solid {{ block.settings.border_color }};border-radius:{{ block.settings.border_radius }}px}
+.sh-up__img{width:48px;height:48px;border-radius:8px;object-fit:cover;flex-shrink:0}
+.sh-up__ph{width:48px;height:48px;border-radius:8px;background:#e5e7eb;flex-shrink:0}
+.sh-up__inf{flex:1;min-width:0}
+.sh-up__nm{font-size:{{ block.settings.font_size }}px;font-weight:600;color:{{ block.settings.text_color }};line-height:1.3}
+.sh-up__pr{display:flex;align-items:center;gap:6px;margin-top:2px}
+.sh-up__pn{font-size:{{ block.settings.font_size }}px;font-weight:700;color:{{ block.settings.accent_color }}}
+.sh-up__pc{font-size:{{ block.settings.font_size | minus: 2 }}px;color:{{ block.settings.text_color }};opacity:.5;text-decoration:line-through}
+.sh-up__add{flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:8px 14px;background:{{ block.settings.button_bg }};color:{{ block.settings.button_text }};border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.sh-up__add:hover{opacity:.85}
 </style>
-
-<div class="sh-upsell">
-  {% if block.settings.title != blank %}
-    <div class="sh-upsell__title">{{ block.settings.title }}</div>
-  {% endif %}
-
-  <div class="sh-upsell__list">
-    {% if block.settings.product_1_name != blank %}
-      <div class="sh-upsell__item">
-        {% if block.settings.product_1_image != blank %}
-          <img class="sh-upsell__img"
-            src="{{ block.settings.product_1_image | image_url: width: 96 }}"
-            alt="{{ block.settings.product_1_name }}"
-            width="96" height="96" loading="lazy">
-        {% else %}
-          <div class="sh-upsell__img-placeholder"></div>
-        {% endif %}
-        <div class="sh-upsell__info">
-          <div class="sh-upsell__name">{{ block.settings.product_1_name }}</div>
-          <div class="sh-upsell__prices">
-            <span class="sh-upsell__price">{{ block.settings.product_1_price }}</span>
-            {% if block.settings.product_1_compare != blank %}
-              <span class="sh-upsell__compare">{{ block.settings.product_1_compare }}</span>
-            {% endif %}
-          </div>
-          {% if block.settings.product_1_variant != blank %}
-            <select class="sh-upsell__variant">
-              <option>{{ block.settings.product_1_variant }}</option>
-            </select>
-          {% endif %}
-        </div>
-        <button class="sh-upsell__add" type="button">+ Add</button>
-      </div>
-    {% endif %}
-
-    {% if block.settings.product_2_name != blank %}
-      <div class="sh-upsell__item">
-        {% if block.settings.product_2_image != blank %}
-          <img class="sh-upsell__img"
-            src="{{ block.settings.product_2_image | image_url: width: 96 }}"
-            alt="{{ block.settings.product_2_name }}"
-            width="96" height="96" loading="lazy">
-        {% else %}
-          <div class="sh-upsell__img-placeholder"></div>
-        {% endif %}
-        <div class="sh-upsell__info">
-          <div class="sh-upsell__name">{{ block.settings.product_2_name }}</div>
-          <div class="sh-upsell__prices">
-            <span class="sh-upsell__price">{{ block.settings.product_2_price }}</span>
-            {% if block.settings.product_2_compare != blank %}
-              <span class="sh-upsell__compare">{{ block.settings.product_2_compare }}</span>
-            {% endif %}
-          </div>
-        </div>
-        <button class="sh-upsell__add" type="button">+ Add</button>
-      </div>
-    {% endif %}
-  </div>
-</div>
-
+<div class="sh-up">{% if block.settings.title != blank %}<div class="sh-up__t">{{ block.settings.title }}</div>{% endif %}<div class="sh-up__l">
+{% if block.settings.product_1_name != blank %}<div class="sh-up__i">{% if block.settings.product_1_image != blank %}<img class="sh-up__img" src="{{ block.settings.product_1_image | image_url: width: 96 }}" alt="{{ block.settings.product_1_name }}" width="96" height="96" loading="lazy">{% else %}<div class="sh-up__ph"></div>{% endif %}<div class="sh-up__inf"><div class="sh-up__nm">{{ block.settings.product_1_name }}</div><div class="sh-up__pr"><span class="sh-up__pn">{{ block.settings.product_1_price }}</span>{% if block.settings.product_1_compare != blank %}<span class="sh-up__pc">{{ block.settings.product_1_compare }}</span>{% endif %}</div></div><button class="sh-up__add" type="button">+ Add</button></div>{% endif %}
+{% if block.settings.product_2_name != blank %}<div class="sh-up__i">{% if block.settings.product_2_image != blank %}<img class="sh-up__img" src="{{ block.settings.product_2_image | image_url: width: 96 }}" alt="{{ block.settings.product_2_name }}" width="96" height="96" loading="lazy">{% else %}<div class="sh-up__ph"></div>{% endif %}<div class="sh-up__inf"><div class="sh-up__nm">{{ block.settings.product_2_name }}</div><div class="sh-up__pr"><span class="sh-up__pn">{{ block.settings.product_2_price }}</span>{% if block.settings.product_2_compare != blank %}<span class="sh-up__pc">{{ block.settings.product_2_compare }}</span>{% endif %}</div></div><button class="sh-up__add" type="button">+ Add</button></div>{% endif %}
+</div></div>
 {% else %}
-<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">
-  👑 This block requires <strong style="color:#4f46e5;">SectionIQ Premium</strong>
-</div>
+<div style="padding:12px;margin:12px 0;background:#f8f5ff;border:1px solid #ddd6fe;border-radius:8px;text-align:center;font-size:13px;color:#6b7280;">👑 Requires <strong style="color:#4f46e5;">SectionIQ Premium</strong></div>
 {% endif %}
-
 {% schema %}
 {
   "name": "Upsell",
   "target": "section",
   "settings": [
-    {
-      "type": "text",
-      "id": "title",
-      "label": "Title",
-      "default": "Frequently bought together"
-    },
-    {
-      "type": "header",
-      "content": "Product 1"
-    },
-    {
-      "type": "image_picker",
-      "id": "product_1_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "product_1_name",
-      "label": "Name",
-      "default": "Blender"
-    },
-    {
-      "type": "text",
-      "id": "product_1_price",
-      "label": "Price",
-      "default": "€29,00"
-    },
-    {
-      "type": "text",
-      "id": "product_1_compare",
-      "label": "Compare Price",
-      "default": "€49,00"
-    },
-    {
-      "type": "header",
-      "content": "Product 2"
-    },
-    {
-      "type": "image_picker",
-      "id": "product_2_image",
-      "label": "Image"
-    },
-    {
-      "type": "text",
-      "id": "product_2_name",
-      "label": "Name",
-      "default": "Galaxy Projector"
-    },
-    {
-      "type": "text",
-      "id": "product_2_price",
-      "label": "Price",
-      "default": "€19,95"
-    },
-    {
-      "type": "header",
-      "content": "Style"
-    },
-    {
-      "type": "color",
-      "id": "text_color",
-      "label": "Text Color",
-      "default": "#1a1a1a"
-    },
-    {
-      "type": "color",
-      "id": "accent_color",
-      "label": "Price Color",
-      "default": "#1a1a1a"
-    },
-    {
-      "type": "color",
-      "id": "item_bg",
-      "label": "Item Background",
-      "default": "#f9fafb"
-    },
-    {
-      "type": "color",
-      "id": "border_color",
-      "label": "Border Color",
-      "default": "#e5e7eb"
-    },
-    {
-      "type": "color",
-      "id": "button_bg",
-      "label": "Button Background",
-      "default": "#1a1a1a"
-    },
-    {
-      "type": "color",
-      "id": "button_text",
-      "label": "Button Text",
-      "default": "#ffffff"
-    },
-    {
-      "type": "range",
-      "id": "border_radius",
-      "label": "Border Radius",
-      "min": 0,
-      "max": 16,
-      "step": 2,
-      "default": 10,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "font_size",
-      "label": "Font Size",
-      "min": 12,
-      "max": 16,
-      "step": 1,
-      "default": 14,
-      "unit": "px"
-    },
-    {
-      "type": "range",
-      "id": "title_size",
-      "label": "Title Size",
-      "min": 14,
-      "max": 22,
-      "step": 1,
-      "default": 16,
-      "unit": "px"
-    }
+    { "type": "text", "id": "title", "label": "Title", "default": "Frequently bought together" },
+    { "type": "header", "content": "Product 1" },
+    { "type": "image_picker", "id": "product_1_image", "label": "Image" },
+    { "type": "text", "id": "product_1_name", "label": "Name", "default": "Blender" },
+    { "type": "text", "id": "product_1_price", "label": "Price", "default": "€29,00" },
+    { "type": "text", "id": "product_1_compare", "label": "Compare Price", "default": "€49,00" },
+    { "type": "header", "content": "Product 2" },
+    { "type": "image_picker", "id": "product_2_image", "label": "Image" },
+    { "type": "text", "id": "product_2_name", "label": "Name", "default": "Galaxy Projector" },
+    { "type": "text", "id": "product_2_price", "label": "Price", "default": "€19,95" },
+    { "type": "header", "content": "Style" },
+    { "type": "color", "id": "text_color", "label": "Text", "default": "#1a1a1a" },
+    { "type": "color", "id": "accent_color", "label": "Price", "default": "#1a1a1a" },
+    { "type": "color", "id": "item_bg", "label": "Item BG", "default": "#f9fafb" },
+    { "type": "color", "id": "border_color", "label": "Border", "default": "#e5e7eb" },
+    { "type": "color", "id": "button_bg", "label": "Button BG", "default": "#1a1a1a" },
+    { "type": "color", "id": "button_text", "label": "Button Text", "default": "#ffffff" },
+    { "type": "range", "id": "border_radius", "label": "Radius", "min": 0, "max": 16, "step": 2, "default": 10, "unit": "px" },
+    { "type": "range", "id": "font_size", "label": "Font Size", "min": 12, "max": 16, "step": 1, "default": 14, "unit": "px" },
+    { "type": "range", "id": "title_size", "label": "Title Size", "min": 14, "max": 22, "step": 1, "default": 16, "unit": "px" }
   ]
 }
 {% endschema %}

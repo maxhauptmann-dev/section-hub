@@ -1,12 +1,14 @@
 {
   "id": "collection-reveal-tiles",
-  "name": "SS - Reveal Tiles",
+  "name": "SIQ - Reveal Tiles",
   "description": "Dramatic masonry tile layout where each collection tile reveals itself with a sliding curtain wipe animation on scroll. A colored overlay curtain slides away to uncover the full image beneath. Features configurable curtain color, reveal direction (left, right, top, bottom), stagger timing, tile gap, and overlay content with animated entrance. Perfect for high-end fashion, art galleries, and editorial brands.",
-  "category": ["Collection"],
+  "category": [
+    "Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 24,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -25,12 +27,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#1a1a1a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "src": "/previews/collection-reveal-tiles/default.webp",
+      "alt": "SS - Reveal Tiles - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

@@ -1,0 +1,218 @@
+/* ===== testimonial-social-stack ===== */
+
+.ts-stack {
+  background: var(--ts-bg);
+  color: var(--ts-text);
+  padding: var(--ts-pad-y) 20px;
+  margin-top: var(--ts-mt);
+  margin-bottom: var(--ts-mb);
+}
+
+.ts-stack__inner {
+  max-width: var(--ts-max-w);
+  margin: 0 auto;
+}
+
+/* ---- Header ---- */
+.ts-stack__header {
+  margin-bottom: 40px;
+}
+
+.ts-stack__heading {
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0 0 8px;
+  color: var(--ts-text);
+  letter-spacing: -0.02em;
+}
+
+.ts-stack__sub {
+  font-size: 16px;
+  margin: 0;
+  color: var(--ts-handle);
+  max-width: 520px;
+}
+
+.ts-stack__header[style*="center"] .ts-stack__sub {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ---- Grid ---- */
+.ts-stack__grid {
+  display: grid;
+  grid-template-columns: repeat(var(--ts-cols), 1fr);
+  gap: var(--ts-gap);
+}
+
+.ts-stack__grid--masonry {
+  display: block;
+  column-count: var(--ts-cols);
+  column-gap: var(--ts-gap);
+}
+
+.ts-stack__grid--masonry .ts-stack__card {
+  break-inside: avoid;
+  margin-bottom: var(--ts-gap);
+}
+
+/* ---- Card ---- */
+.ts-stack__card {
+  background: var(--ts-card-bg);
+  border: 1px solid var(--ts-card-border);
+  border-radius: var(--ts-radius);
+  padding: 20px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  animation: tsStackFadeIn 0.5s ease both;
+}
+
+.ts-stack__card:nth-child(1) { animation-delay: 0s; }
+.ts-stack__card:nth-child(2) { animation-delay: 0.06s; }
+.ts-stack__card:nth-child(3) { animation-delay: 0.12s; }
+.ts-stack__card:nth-child(4) { animation-delay: 0.18s; }
+.ts-stack__card:nth-child(5) { animation-delay: 0.24s; }
+.ts-stack__card:nth-child(6) { animation-delay: 0.3s; }
+.ts-stack__card:nth-child(7) { animation-delay: 0.36s; }
+.ts-stack__card:nth-child(8) { animation-delay: 0.42s; }
+
+.ts-stack__card--shadow {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.04);
+}
+
+.ts-stack__card--lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+}
+
+@keyframes tsStackFadeIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ---- Post Header ---- */
+.ts-stack__post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.ts-stack__avatar,
+.ts-stack__avatar-ph {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  object-fit: cover;
+}
+
+.ts-stack__avatar-ph {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  color: #fff;
+  background: var(--ts-accent);
+}
+
+.ts-stack__user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.ts-stack__name-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ts-stack__name {
+  font-weight: 700;
+  font-size: 14px;
+  color: var(--ts-name);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ts-stack__verified {
+  flex-shrink: 0;
+}
+
+.ts-stack__handle {
+  font-size: 13px;
+  color: var(--ts-handle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: block;
+}
+
+.ts-stack__source {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--ts-accent);
+  background: color-mix(in srgb, var(--ts-accent) 8%, transparent);
+  border-radius: 6px;
+  padding: 3px 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  line-height: 1.4;
+}
+
+/* ---- Quote ---- */
+.ts-stack__quote {
+  font-size: var(--ts-q-size);
+  line-height: 1.6;
+  color: var(--ts-quote);
+  margin: 0 0 16px;
+  word-break: break-word;
+}
+
+/* ---- Footer ---- */
+.ts-stack__footer {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  border-top: 1px solid var(--ts-card-border);
+}
+
+.ts-stack__likes {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ts-meta);
+}
+
+.ts-stack__likes svg {
+  flex-shrink: 0;
+}
+
+.ts-stack__reaction {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.ts-stack__date {
+  font-size: 13px;
+  color: var(--ts-meta);
+  margin-left: auto;
+}
+
+/* ---- Responsive ---- */
+@media (max-width: 768px) {
+  .ts-stack__grid {
+    grid-template-columns: 1fr;
+  }
+  .ts-stack__grid--masonry {
+    column-count: 1;
+  }
+  .ts-stack__heading {
+    font-size: 26px;
+  }
+}

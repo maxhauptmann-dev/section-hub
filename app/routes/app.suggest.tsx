@@ -63,7 +63,7 @@ export default function SuggestIdeaPage() {
     if (!idea.trim()) return;
     fetcher.submit(
       {
-        name: "Section Hub User",
+        name: "SectionIQ User",
         topic: "feature",
         message: `[IDEA SUGGESTION]\n\nCategory: ${IDEA_CATEGORIES.find((c) => c.value === category)?.label || category}\n\nIdea:\n${idea}${reference ? `\n\nReference/Example URL:\n${reference}` : ""}`,
       },
@@ -212,6 +212,13 @@ export default function SuggestIdeaPage() {
 
         .sh-sug-icon-float{animation:sh-float 3s ease-in-out infinite;display:inline-block}
         .sh-sug-bulb{animation:sh-bulb-glow 2s ease-in-out infinite;display:inline-block}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .sh-sug-hero{padding:20px 16px;border-radius:14px}
+          .sh-sug-glass{padding:14px 16px}
+          .sh-sug-submit-bar{padding:16px}
+        }
       `}</style>
 
       <div style={{ maxWidth: "100%", overflowX: "hidden" }}>

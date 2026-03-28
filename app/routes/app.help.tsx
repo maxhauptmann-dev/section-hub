@@ -41,7 +41,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: "How do I add a section to my page after installing?",
-        a: "1. Go to your Shopify Admin → Online Store → Themes\n2. Click 'Customize' on your active theme\n3. Click 'Add section' in the left sidebar\n4. Search for the section name (e.g. 'Section Hub - Hero Banner')\n5. Click to add it and customize the settings",
+        a: "1. Go to your Shopify Admin → Online Store → Themes\n2. Click 'Customize' on your active theme\n3. Click 'Add section' in the left sidebar\n4. Search for the section name (e.g. 'SectionIQ - Hero Banner')\n5. Click to add it and customize the settings",
       },
       {
         q: "What does 'OS 2.0 Ready' mean?",
@@ -55,10 +55,10 @@ const FAQ_SECTIONS = [
     items: [
       {
         q: "How does payment work?",
-        a: "Section Hub Premium is a monthly subscription (€8/month) billed through Shopify. The charge appears on your regular Shopify invoice. You can cancel anytime.",
+        a: "SectionIQ Premium is a monthly subscription (€8/month) billed through Shopify. The charge appears on your regular Shopify invoice. You can cancel anytime.",
       },
       {
-        q: "What is Section Hub Premium?",
+        q: "What is SectionIQ Premium?",
         a: "Premium is a monthly subscription (€8/mo) that gives you:\n• Access to all sections in the library\n• Unlimited installs\n• All Premium Conversion Blocks\n• New sections as soon as they release\n• Hands-on support — we fix issues and handle customization requests within 24–48h",
       },
       {
@@ -88,7 +88,7 @@ const FAQ_SECTIONS = [
         a: "Go to 'Updates' in the sidebar. If updates are available, you'll see them listed with changelogs. Click 'Update' to install the latest version. Your customizations in the Theme Editor will be preserved.",
       },
       {
-        q: "What happens if I uninstall the Section Hub app?",
+        q: "What happens if I uninstall the SectionIQ app?",
         a: "Your sections stay in your theme! They're installed as regular Liquid files. Uninstalling the app won't remove them. However, you won't receive updates or be able to install new sections.",
       },
       {
@@ -125,7 +125,7 @@ const FAQ_SECTIONS = [
       },
       {
         q: "Are Conversion Blocks free?",
-        a: "9 blocks are free for all users. 7 premium blocks require a Section Hub Premium subscription (€8/mo).",
+        a: "9 blocks are free for all users. 7 premium blocks require a SectionIQ Premium subscription (€8/mo).",
       },
     ],
   },
@@ -401,6 +401,12 @@ export default function HelpcenterPage() {
         .sh-help-badge-premium{background:rgba(139,92,246,0.12);color:#7c3aed;border:1px solid rgba(139,92,246,0.25)}
         .sh-help-badge-success{background:rgba(22,163,74,0.12);color:#15803d;border:1px solid rgba(22,163,74,0.25)}
         .sh-help-badge-info{background:rgba(99,102,241,0.1);color:#4338ca;border:1px solid rgba(99,102,241,0.2)}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .sh-help-hero{padding:20px 16px;border-radius:14px}
+          .sh-help-glass{padding:14px 16px}
+        }
       `}</style>
 
       <div style={{ maxWidth: "100%", overflowX: "hidden" }}>
@@ -426,7 +432,7 @@ export default function HelpcenterPage() {
                   <div style={{ fontSize: 13, color: "#64748b", marginTop: 2 }}>
                     {isPremium
                       ? "We personally handle your requests within 24–48h"
-                      : "Guides, FAQs, and support for Section Hub"}
+                      : "Guides, FAQs, and support for SectionIQ"}
                   </div>
                 </div>
               </div>

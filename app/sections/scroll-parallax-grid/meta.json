@@ -1,12 +1,15 @@
 {
   "id": "scroll-parallax-grid",
-  "name": "SS - Parallax Grid",
+  "name": "SIQ - Parallax Grid",
   "description": "Stunning scroll-triggered masonry gallery where each image floats at a different parallax depth. Cards reveal with stagger, tilt on hover, show cinematic overlays with gradient badges, and feature smooth zoom transitions. Multiple layout modes (masonry, columns, alternating sizes). 60+ settings.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#111111",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/scroll-parallax-grid/default.webp",
-      "alt": "Scroll Parallax Grid - Default",
+      "alt": "SS - Parallax Grid - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

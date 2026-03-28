@@ -1,12 +1,14 @@
 {
   "id": "featured-collection-spotlight",
-  "name": "SS - FC Spotlight",
+  "name": "SIQ - FC Spotlight",
   "description": "Dramatic dark-themed featured collection with a large center-stage spotlight product and a horizontal carousel of supporting products beneath. The spotlight product features cinematic lighting effects, glassmorphism price tag, and animated badge. The carousel supports drag scrolling, snap points, and auto-play. Configurable spotlight size, carousel speed, product details visibility, and rich color customization. Ideal for electronics, luxury goods, and premium product showcases.",
-  "category": ["Featured Collection"],
+  "category": [
+    "Featured Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 25,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -25,12 +27,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#0c0c14",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "src": "/previews/featured-collection-spotlight/default.webp",
+      "alt": "SS - FC Spotlight - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

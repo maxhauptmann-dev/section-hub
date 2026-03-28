@@ -1,12 +1,14 @@
 {
   "id": "collection-magazine",
-  "name": "SS - Collection Magazine",
+  "name": "SIQ - Collection Magazine",
   "description": "Editorial magazine-style collection showcase with alternating large hero and compact sidebar cards. Rich hover animations with image zoom and content slide-up. Features collection picker, custom images, flexible grid ratios, gradient overlays, and staggered scroll-reveal. Perfect for fashion, lifestyle, and premium brand storefronts.",
-  "category": ["Collection"],
+  "category": [
+    "Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 19,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -25,12 +27,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#f8f6f3",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "src": "/previews/collection-magazine/default.webp",
+      "alt": "SS - Collection Magazine - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

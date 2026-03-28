@@ -1,0 +1,68 @@
+{
+  "id": "quiz-popup",
+  "name": "SIQ - Quiz Popup",
+  "description": "Interactive multi-step quiz popup with progress bar, emoji option cards, personalized results, and email capture. Gamify product discovery and grow your email list. Trigger by delay, scroll, or exit-intent.",
+  "category": [
+    "Premium",
+    "Pop-up"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Popup",
+    "Quiz",
+    "Interactive",
+    "Email",
+    "Gamification",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMjIyIi8+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSJyZ2JhKDAsMCwwLDAuNSkiLz4KPHJlY3QgeD0iMTIwIiB5PSI0MCIgd2lkdGg9IjM2MCIgaGVpZ2h0PSIyODAiIHJ4PSIxNiIgZmlsbD0iIzBmMGYxYSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMzAwIiB5PSIxMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMzIiPvCfjq88L3RleHQ+Cjx0ZXh0IHg9IjMwMCIgeT0iMTQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjE4IiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj5GaW5kIFlvdXIgTWF0Y2g8L3RleHQ+Cjx0ZXh0IHg9IjMwMCIgeT0iMTc1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5RdWVzdGlvbiAxIG9mIDM8L3RleHQ+CjxyZWN0IHg9IjE4MCIgeT0iMTgzIiB3aWR0aD0iMjQwIiBoZWlnaHQ9IjQiIHJ4PSIyIiBmaWxsPSIjMWExYTJlIi8+CjxyZWN0IHg9IjE4MCIgeT0iMTgzIiB3aWR0aD0iODAiIGhlaWdodD0iNCIgcng9IjIiIGZpbGw9IiM4MThjZjgiLz4KPHJlY3QgeD0iMTU1IiB5PSIyMDAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMjIwIiB5PSIyMjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTYiPuKcqDwvdGV4dD4KPHRleHQgeD0iMjIwIiB5PSIyNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iI2ZmZmZmZiI+U29tZXRoaW5nIG5ldzwvdGV4dD4KPHJlY3QgeD0iMzE1IiB5PSIyMDAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMzgwIiB5PSIyMjEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTYiPvCfjoE8L3RleHQ+Cjx0ZXh0IHg9IjM4MCIgeT0iMjQwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjkiIGZpbGw9IiNmZmZmZmYiPkEgZ2lmdDwvdGV4dD4KPHJlY3QgeD0iMTU1IiB5PSIyNjAiIHdpZHRoPSIxMzAiIGhlaWdodD0iNTAiIHJ4PSIxMCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMjIwIiB5PSIyODEiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTYiPvCfko48L3RleHQ+Cjx0ZXh0IHg9IjIyMCIgeT0iMzAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjkiIGZpbGw9IiNmZmZmZmYiPlByZW1pdW08L3RleHQ+CjxyZWN0IHg9IjMxNSIgeT0iMjYwIiB3aWR0aD0iMTMwIiBoZWlnaHQ9IjUwIiByeD0iMTAiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzJhMmE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjM4MCIgeT0iMjgxIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE2Ij7wn4+377iPPC90ZXh0Pgo8dGV4dCB4PSIzODAiIHk9IjMwMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSI5IiBmaWxsPSIjZmZmZmZmIj5CZXN0IGRlYWw8L3RleHQ+CjxjaXJjbGUgY3g9IjQ1OCIgY3k9IjYwIiByPSIxNCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iNDU4IiB5PSI2NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzg4ODhhYSI+w5c8L3RleHQ+Cjwvc3ZnPg==",
+      "alt": "Quiz Popup - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 8
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-14",
+  "createdAt": "2026-03-14",
+  "tier": "advanced"
+}

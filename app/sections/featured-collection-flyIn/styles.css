@@ -35,20 +35,32 @@
 .fcfi-header {
   margin-bottom: 40px;
   display: flex;
-  flex-wrap: wrap;
   align-items: flex-start;
-  gap: 8px 40px;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.fcfi-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.fcfi-header__actions {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding-top: 6px;
 }
 
 /* Alignment */
-.fcfi-align--left .fcfi-header   { text-align: left; justify-content: flex-start; }
-.fcfi-align--center .fcfi-header { text-align: center; justify-content: center; }
-.fcfi-align--right .fcfi-header  { text-align: right; justify-content: flex-end; }
+.fcfi-align--center .fcfi-header { text-align: center; justify-content: center; flex-direction: column; align-items: center; }
+.fcfi-align--center .fcfi-header__actions { justify-content: center; }
+.fcfi-align--right .fcfi-header  { text-align: right; flex-direction: row-reverse; }
 
 /* Make heading and description full width so text-align works */
 .fcfi-heading,
-.fcfi-description,
-.fcfi-btn-wrap {
+.fcfi-description {
   width: 100%;
 }
 
@@ -86,11 +98,6 @@
 .fcfi-description p { margin: 0; }
 
 /* ── Button ──────────────────── */
-.fcfi-btn-wrap {
-  margin-top: 4px;
-  margin-bottom: 8px;
-}
-
 .fcfi-btn {
   display: inline-flex;
   align-items: center;
@@ -162,18 +169,10 @@
 .fcfi-nav {
   display: flex;
   gap: 8px;
-  margin-left: auto;
-  align-self: center;
 }
 
 .fcfi-align--center .fcfi-nav {
-  margin-left: 0;
-  width: 100%;
   justify-content: center;
-}
-.fcfi-align--right .fcfi-nav {
-  margin-left: 0;
-  width: auto;
 }
 
 .fcfi-nav__btn {
@@ -252,10 +251,10 @@
 }
 
 /* Image ratio variants */
-.fcfi-ratio--auto .fcfi-product-card__media {
+.fcfi-product-card__media.fcfi-ratio--auto {
   aspect-ratio: 3 / 4;
 }
-.fcfi-ratio--auto .fcfi-product-card__img {
+.fcfi-product-card__media.fcfi-ratio--auto .fcfi-product-card__img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -264,19 +263,19 @@
   display: block;
 }
 
-.fcfi-ratio--square .fcfi-product-card__media {
+.fcfi-product-card__media.fcfi-ratio--square {
   aspect-ratio: 1 / 1;
 }
-.fcfi-ratio--portrait .fcfi-product-card__media {
+.fcfi-product-card__media.fcfi-ratio--portrait {
   aspect-ratio: 2 / 3;
 }
-.fcfi-ratio--landscape .fcfi-product-card__media {
+.fcfi-product-card__media.fcfi-ratio--landscape {
   aspect-ratio: 3 / 2;
 }
 
-.fcfi-ratio--square .fcfi-product-card__img,
-.fcfi-ratio--portrait .fcfi-product-card__img,
-.fcfi-ratio--landscape .fcfi-product-card__img {
+.fcfi-product-card__media.fcfi-ratio--square .fcfi-product-card__img,
+.fcfi-product-card__media.fcfi-ratio--portrait .fcfi-product-card__img,
+.fcfi-product-card__media.fcfi-ratio--landscape .fcfi-product-card__img {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -364,6 +363,20 @@
 
 /* ── Responsive ──────────────── */
 @media (max-width: 749px) {
+  .fcfi-header {
+    flex-direction: column;
+    gap: 16px;
+  }
+  .fcfi-header__actions {
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .fcfi-align--center .fcfi-header__actions {
+    justify-content: center;
+  }
+  .fcfi-align--right .fcfi-header__actions {
+    justify-content: flex-end;
+  }
   .fcfi-section {
     padding-top: var(--fcfi-pt-m);
     padding-bottom: var(--fcfi-pb-m);

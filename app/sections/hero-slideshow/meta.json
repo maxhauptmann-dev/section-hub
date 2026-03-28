@@ -1,6 +1,6 @@
 {
   "id": "hero-slideshow",
-  "name": "Hero Slideshow",
+  "name": "SIQ - Hero Slideshow",
   "description": "Fullscreen hero slideshow with autoplay, thumbnail navigation and animated progress border. Clean editorial look without text overlays — images speak for themselves.",
   "category": [
     "Hero",
@@ -9,7 +9,7 @@
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 12,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -22,8 +22,8 @@
     "Editorial",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#1a1a1a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/hero-slideshow/default.webp",
@@ -79,5 +79,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

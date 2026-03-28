@@ -1,12 +1,14 @@
 {
   "id": "featured-collection-lookbook",
-  "name": "SS - FC Lookbook",
+  "name": "SIQ - FC Lookbook",
   "description": "Editorial lookbook-style featured collection with large hero product image alongside a vertical product strip. The hero slot spotlights one product with full-bleed image, editorial overlay text, and price badge. Remaining products appear as a scrollable vertical film-strip with hover zoom and quick-view details. Configurable hero position, product count, image ratios, sale badges, and staggered scroll reveals. Perfect for fashion, lifestyle, and premium brands.",
-  "category": ["Featured Collection"],
+  "category": [
+    "Featured Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 24,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -24,12 +26,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#f5f1ec",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "src": "/previews/featured-collection-lookbook/default.webp",
+      "alt": "SS - FC Lookbook - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

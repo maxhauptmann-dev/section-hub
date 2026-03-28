@@ -1,0 +1,61 @@
+{
+  "id": "scroll-fade-layers",
+  "name": "SIQ - Fade Layers",
+  "description": "Sticky full-screen scroll experience where each block fades in as a new visual layer — image zooms in, headline and text reveal with staggered animations as the user scrolls. Cinematic and immersive with progress dots, counter, and progress bar.",
+  "category": [
+    "Scroll Triggered",
+    "Hero",
+    "animated"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Fade",
+    "Cinematic",
+    "Immersive",
+    "Layers",
+    "Fullscreen",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scroll-fade-layers/default.webp",
+      "alt": "SIQ - Fade Layers- Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-15",
+  "updatedAt": "2026-03-15",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-15",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

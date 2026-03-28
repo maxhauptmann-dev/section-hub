@@ -1,12 +1,14 @@
 {
   "id": "slider-cinema-strip",
-  "name": "SS - Cinema Strip",
+  "name": "SIQ - Cinema Strip",
   "description": "Film-strip inspired horizontal slider with authentic sprocket-hole borders and vintage cinema aesthetics. Frames scroll continuously with smooth drag interaction and parallax image movement within each frame. Warm white palette with terracotta accents. Features autoplay marquee mode, click-to-focus, caption overlays, and responsive strip sizing. Ideal for visual portfolios, lookbooks, and creative showcases.",
-  "category": ["Slider"],
+  "category": [
+    "Slider"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 23,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -26,12 +28,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#faf7f2",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-12",
-  "updatedAt": "2026-03-12"
+  "updatedAt": "2026-03-12",
+  "previews": [
+    {
+      "src": "/previews/slider-cinema-strip/default.webp",
+      "alt": "SS - Cinema Strip - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

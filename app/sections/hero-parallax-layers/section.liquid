@@ -17,7 +17,6 @@
 {%- assign shpl_speed1 = section.settings.layer1_speed -%}
 {%- assign shpl_speed2 = section.settings.layer2_speed -%}
 {%- assign shpl_speed3 = section.settings.layer3_speed -%}
-{%- assign shpl_parallax = section.settings.enable_parallax -%}
 
 {%- assign shpl_duotone = section.settings.enable_duotone -%}
 {%- assign shpl_duo_c1 = section.settings.duotone_color1 -%}
@@ -153,12 +152,12 @@
   }
 </style>
 
-<section class="shpl-wrap shpl-wrap--{{ section.id }}" data-shpl-parallax="{{ shpl_parallax }}" data-section-id="{{ section.id }}">
+<section class="shpl-wrap shpl-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
 
   {%- comment -%} Parallax layers {%- endcomment -%}
   <div class="shpl-layers">
     {%- if shpl_img1 != blank -%}
-      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed1 }}">
+      <div class="shpl-layer shpl-layer--bg" data-shpl-speed="{{ shpl_speed1 }}">
         <img
           src="{{ shpl_img1 | image_url: width: 2400 }}"
           srcset="{{ shpl_img1 | image_url: width: 800 }} 800w,
@@ -176,14 +175,13 @@
     {%- endif -%}
 
     {%- if shpl_img2 != blank -%}
-      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed2 }}" style="opacity:0.7;">
+      <div class="shpl-layer shpl-layer--mid" data-shpl-speed="{{ shpl_speed2 }}">
         <img
-          src="{{ shpl_img2 | image_url: width: 2400 }}"
-          srcset="{{ shpl_img2 | image_url: width: 800 }} 800w,
-                  {{ shpl_img2 | image_url: width: 1200 }} 1200w,
-                  {{ shpl_img2 | image_url: width: 1800 }} 1800w,
-                  {{ shpl_img2 | image_url: width: 2400 }} 2400w"
-          sizes="100vw"
+          src="{{ shpl_img2 | image_url: width: 1200 }}"
+          srcset="{{ shpl_img2 | image_url: width: 600 }} 600w,
+                  {{ shpl_img2 | image_url: width: 900 }} 900w,
+                  {{ shpl_img2 | image_url: width: 1200 }} 1200w"
+          sizes="40vw"
           alt="{{ shpl_img2.alt | escape }}"
           loading="eager"
           width="{{ shpl_img2.width }}"
@@ -193,14 +191,13 @@
     {%- endif -%}
 
     {%- if shpl_img3 != blank -%}
-      <div class="shpl-layer" data-shpl-speed="{{ shpl_speed3 }}" style="opacity:0.5;">
+      <div class="shpl-layer shpl-layer--front" data-shpl-speed="{{ shpl_speed3 }}">
         <img
-          src="{{ shpl_img3 | image_url: width: 2400 }}"
-          srcset="{{ shpl_img3 | image_url: width: 800 }} 800w,
-                  {{ shpl_img3 | image_url: width: 1200 }} 1200w,
-                  {{ shpl_img3 | image_url: width: 1800 }} 1800w,
-                  {{ shpl_img3 | image_url: width: 2400 }} 2400w"
-          sizes="100vw"
+          src="{{ shpl_img3 | image_url: width: 1200 }}"
+          srcset="{{ shpl_img3 | image_url: width: 600 }} 600w,
+                  {{ shpl_img3 | image_url: width: 900 }} 900w,
+                  {{ shpl_img3 | image_url: width: 1200 }} 1200w"
+          sizes="35vw"
           alt="{{ shpl_img3.alt | escape }}"
           loading="eager"
           width="{{ shpl_img3.width }}"
@@ -306,49 +303,58 @@
 
 <script>
   (function() {
-    const section = document.querySelector('.shpl-wrap--{{ section.id }}');
+    var section = document.querySelector('.shpl-wrap--{{ section.id }}');
     if (!section) return;
 
-    const parallaxEnabled = section.dataset.shplParallax === 'true';
-    const layers = section.querySelectorAll('.shpl-layer');
-    const progressBar = section.querySelector('[data-shpl-progress]');
+    var layers = section.querySelectorAll('.shpl-layer');
+    var progressBar = section.querySelector('[data-shpl-progress]');
 
-    if (parallaxEnabled && layers.length > 0) {
-      let ticking = false;
-      function onScroll() {
-        if (ticking) return;
-        ticking = true;
-        requestAnimationFrame(function() {
-          const rect = section.getBoundingClientRect();
-          const scrolled = -rect.top;
-          const sectionH = section.offsetHeight;
+    if (layers.length === 0) return;
 
-          if (rect.bottom > 0 && rect.top < window.innerHeight) {
-            layers.forEach(function(layer) {
-              const speed = parseFloat(layer.dataset.shplSpeed) || 0;
-              const yOffset = scrolled * speed * 0.1;
-              layer.style.transform = 'translate3d(0,' + yOffset + 'px,0)';
-            });
+    var ticking = false;
+
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function() {
+        /* Simple: use raw scroll position (window.scrollY) */
+        var scrollY = window.pageYOffset || document.documentElement.scrollTop;
+
+        layers.forEach(function(layer) {
+          var speed = parseFloat(layer.dataset.shplSpeed) || 0;
+          /* Direct pixel offset: speed 1 → 1px per 10px scrolled
+             speed 5 → 5px per 10px scrolled */
+          var yOffset = scrollY * speed * -0.15;
+
+          if (layer.classList.contains('shpl-layer--bg')) {
+            layer.style.transform = 'translate3d(0,' + yOffset + 'px,0) scale(1.1)';
+          } else {
+            layer.style.transform = 'translate3d(0,' + yOffset + 'px,0)';
           }
-
-          if (progressBar) {
-            const progress = Math.min(Math.max(scrolled / (sectionH - window.innerHeight), 0), 1);
-            progressBar.style.width = (progress * 100) + '%';
-          }
-
-          ticking = false;
         });
-      }
 
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
+        if (progressBar) {
+          var rect = section.getBoundingClientRect();
+          var sectionH = section.offsetHeight;
+          var winH = window.innerHeight;
+          var maxScroll = sectionH - winH;
+          var p = maxScroll > 0 ? Math.min(Math.max(-rect.top / maxScroll, 0), 1) : 0;
+          progressBar.style.width = (p * 100) + '%';
+        }
+
+        ticking = false;
+      });
     }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    onScroll();
   })();
 </script>
 
 {% schema %}
 {
-  "name": "SS - Hero Parallax Layers",
+  "name": "SIQ - Hero Parallax",
   "tag": "section",
   "class": "shpl-section",
   "settings": [
@@ -406,12 +412,6 @@
     {
       "type": "header",
       "content": "Parallax layers"
-    },
-    {
-      "type": "checkbox",
-      "id": "enable_parallax",
-      "label": "Enable parallax scroll effect",
-      "default": true
     },
     {
       "type": "image_picker",
@@ -907,7 +907,7 @@
   ],
   "presets": [
     {
-      "name": "SS - Hero Parallax Layers"
+      "name": "SIQ - Hero Parallax"
     }
   ]
 }

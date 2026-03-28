@@ -1,0 +1,880 @@
+{% comment %}
+  SectionHub – Collection Tabs Scroll  (cts-)
+  Desktop: Multi-phase scroll: glass tabs → image reveal → products
+  Mobile: Static flow – no scroll effect
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign heading      = section.settings.heading
+  assign description  = section.settings.description
+  assign btn_text     = section.settings.button_text | default: 'Explore Collection'
+  assign bg_style     = section.settings.bg_style | default: 'solid'
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #cts-{{ section.id }} {
+    --cts-bg: {{ section.settings.bg_color }};
+    --cts-heading-c: {{ section.settings.heading_color }};
+    --cts-text-c: {{ section.settings.text_color }};
+    --cts-tab-bg: {{ section.settings.tab_bg }};
+    --cts-tab-active-bg: {{ section.settings.tab_active_bg }};
+    --cts-tab-c: {{ section.settings.tab_color }};
+    --cts-btn-bg: {{ section.settings.btn_bg }};
+    --cts-btn-c: {{ section.settings.btn_color }};
+
+    --cts-grad-1: {{ section.settings.grad_color_1 }};
+    --cts-grad-2: {{ section.settings.grad_color_2 }};
+    --cts-grad-3: {{ section.settings.grad_color_3 }};
+
+    --cts-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --cts-heading-fw: {{ heading_font.weight }};
+    --cts-heading-fst: {{ heading_font.style }};
+    --cts-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --cts-body-fw: {{ body_font.weight }};
+  }
+</style>
+
+<section id="cts-{{ section.id }}" class="cts{% if bg_style == 'gradient' %} cts--gradient{% endif %}" data-cts-root data-cts-bg-style="{{ bg_style }}">
+
+  {%- comment -%} ════════════ DESKTOP: scroll-driven ════════════ {%- endcomment -%}
+  <div class="cts-desktop-only">
+    <div class="cts-scroll" data-cts-scroll>
+      <div class="cts-scroll__inner">
+        <div class="cts-bg">
+          {%- if bg_style == 'gradient' -%}
+            <div class="cts-mesh">
+              <div class="cts-mesh__blob cts-mesh__blob--1"></div>
+              <div class="cts-mesh__blob cts-mesh__blob--2"></div>
+              <div class="cts-mesh__blob cts-mesh__blob--3"></div>
+              <div class="cts-mesh__blob cts-mesh__blob--4"></div>
+              <div class="cts-mesh__noise"></div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Intro text {%- endcomment -%}
+        <div class="cts-intro" data-cts-intro>
+          <div class="cts-intro__inner">
+            {%- if heading != blank -%}
+              <{{ section.settings.heading_tag }} class="cts-intro__heading cts-intro__heading--{{ section.settings.heading_size }}">
+                {{ heading }}
+              </{{ section.settings.heading_tag }}>
+            {%- endif -%}
+            {%- if description != blank -%}
+              <p class="cts-intro__desc">{{ description }}</p>
+            {%- endif -%}
+          </div>
+        </div>
+
+        {%- comment -%} Glass tab bar {%- endcomment -%}
+        <div class="cts-tabs" data-cts-tabs>
+          <div class="cts-tabs__inner">
+            {%- for block in section.blocks -%}
+              {%- assign col = block.settings.collection -%}
+              {%- assign tab_img = block.settings.tab_icon | default: col.image -%}
+              <button class="cts-tab{% if forloop.first %} cts-tab--active{% endif %}" data-cts-tab="{{ forloop.index0 }}" type="button" {{ block.shopify_attributes }}>
+                <span class="cts-tab__icon">
+                  {%- if tab_img != blank -%}
+                    <img src="{{ tab_img | image_url: width: 120 }}" alt="{{ col.title | default: 'Collection' | escape }}" class="cts-tab__icon-img" loading="lazy">
+                  {%- else -%}
+                    {{ 'collection-1' | placeholder_svg_tag: 'cts-tab__icon-svg' }}
+                  {%- endif -%}
+                </span>
+                <span class="cts-tab__label">{{ block.settings.tab_label | default: col.title | default: 'Collection' }}</span>
+              </button>
+            {%- endfor -%}
+          </div>
+        </div>
+
+        {%- comment -%} Collection panels {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- assign col = block.settings.collection -%}
+          {%- assign hero_img = block.settings.hero_image | default: col.image -%}
+          {%- assign hero_mp4 = block.settings.hero_video_mp4 -%}
+          {%- assign hero_video = block.settings.hero_video -%}
+          {%- assign hero_video_file = block.settings.hero_video_file -%}
+          <div class="cts-panel{% if forloop.first %} cts-panel--active{% endif %}" data-cts-panel="{{ forloop.index0 }}">
+            <div class="cts-hero" data-cts-hero>
+              <div class="cts-hero__glow"></div>
+              {%- if hero_mp4 != blank -%}
+                <video class="cts-hero__video" autoplay loop muted playsinline>
+                  {%- for source in hero_mp4.sources -%}
+                    <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                  {%- endfor -%}
+                </video>
+              {%- elsif hero_video_file != blank -%}
+                <video src="{{ hero_video_file }}" class="cts-hero__video" autoplay loop muted playsinline></video>
+              {%- elsif hero_video != blank -%}
+                <iframe src="{{ hero_video }}" class="cts-hero__iframe" allow="autoplay; encrypted-media" allowfullscreen frameborder="0"></iframe>
+              {%- elsif hero_img != blank -%}
+                <img src="{{ hero_img | image_url: width: 1200 }}" srcset="{{ hero_img | image_url: width: 600 }} 600w, {{ hero_img | image_url: width: 900 }} 900w, {{ hero_img | image_url: width: 1200 }} 1200w" sizes="60vw" alt="{{ hero_img.alt | default: col.title | escape }}" loading="lazy" class="cts-hero__img">
+              {%- else -%}
+                <div class="cts-hero__placeholder">{{ 'collection-1' | placeholder_svg_tag: 'cts-hero__svg' }}</div>
+              {%- endif -%}
+            </div>
+            {%- comment -%} Button – separate from final, appears on hero BEFORE products {%- endcomment -%}
+            <div class="cts-hero-btn" data-cts-btn>
+              <a href="{{ col.url | default: '#' }}" class="cts-hero__btn">
+                <span class="cts-hero__btn-text">{{ block.settings.button_text | default: btn_text }}</span>
+                <span class="cts-hero__btn-arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+              </a>
+            </div>
+            <div class="cts-side" data-cts-side>
+              {%- if block.settings.side_heading != blank or col.title != blank -%}
+                <h3 class="cts-side__title" data-cts-side-title>{{ block.settings.side_heading | default: col.title | default: 'Collection' }}</h3>
+              {%- endif -%}
+              {%- if block.settings.side_text != blank -%}
+                <p class="cts-side__text" data-cts-words>{{ block.settings.side_text }}</p>
+              {%- endif -%}
+              {%- if block.settings.side_text_2 != blank -%}
+                <p class="cts-side__text cts-side__text--secondary" data-cts-words>{{ block.settings.side_text_2 }}</p>
+              {%- endif -%}
+            </div>
+            {%- comment -%} Product layout: 2 top, 1 bottom wide (button NOT inside) {%- endcomment -%}
+            <div class="cts-final" data-cts-final>
+              <div class="cts-final__top" data-cts-prodtop>
+                {%- for product in col.products limit: 2 -%}
+                  {%- assign p_img = product.featured_image -%}
+                  <a href="{{ product.url }}" class="cts-product" aria-label="{{ product.title | escape }}">
+                    <div class="cts-product__media">
+                      {%- if p_img != blank -%}
+                        <img src="{{ p_img | image_url: width: 500 }}" srcset="{{ p_img | image_url: width: 300 }} 300w, {{ p_img | image_url: width: 500 }} 500w" sizes="200px" alt="{{ p_img.alt | default: product.title | escape }}" loading="lazy" class="cts-product__img">
+                      {%- else -%}
+                        <div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                {%- endfor -%}
+                {%- if col == blank -%}
+                  <div class="cts-product"><div class="cts-product__media"><div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div></div></div>
+                  <div class="cts-product"><div class="cts-product__media"><div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div></div></div>
+                {%- endif -%}
+              </div>
+              <div class="cts-final__bottom" data-cts-prodbottom>
+                {%- for product in col.products offset: 2 limit: 1 -%}
+                  {%- assign p_img = product.featured_image -%}
+                  <a href="{{ product.url }}" class="cts-product cts-product--wide" aria-label="{{ product.title | escape }}">
+                    <div class="cts-product__media cts-product__media--wide">
+                      {%- if p_img != blank -%}
+                        <img src="{{ p_img | image_url: width: 800 }}" alt="{{ p_img.alt | default: product.title | escape }}" loading="lazy" class="cts-product__img">
+                      {%- else -%}
+                        <div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                {%- endfor -%}
+                {%- if col == blank -%}
+                  <div class="cts-product cts-product--wide"><div class="cts-product__media cts-product__media--wide"><div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div></div></div>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+
+      </div>
+    </div>
+  </div>
+
+  {%- comment -%} ════════════ MOBILE: static flow ════════════ {%- endcomment -%}
+  <div class="cts-mobile-only">
+    <div class="cts-m">
+      {%- if bg_style == 'gradient' -%}
+        <div class="cts-mesh cts-mesh--mobile">
+          <div class="cts-mesh__blob cts-mesh__blob--1"></div>
+          <div class="cts-mesh__blob cts-mesh__blob--2"></div>
+          <div class="cts-mesh__blob cts-mesh__blob--3"></div>
+          <div class="cts-mesh__noise"></div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Intro {%- endcomment -%}
+      <div class="cts-m__intro">
+        {%- if heading != blank -%}
+          <{{ section.settings.heading_tag }} class="cts-intro__heading cts-intro__heading--{{ section.settings.heading_size }}">
+            {{ heading }}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+        {%- if description != blank -%}
+          <p class="cts-intro__desc">{{ description }}</p>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Tabs – horizontal scroll {%- endcomment -%}
+      <div class="cts-m__tabs">
+        {%- for block in section.blocks -%}
+          {%- assign col = block.settings.collection -%}
+          {%- assign tab_img = block.settings.tab_icon | default: col.image -%}
+          <button class="cts-tab{% if forloop.first %} cts-tab--active{% endif %}" data-cts-mtab="{{ forloop.index0 }}" type="button">
+            <span class="cts-tab__icon">
+              {%- if tab_img != blank -%}
+                <img src="{{ tab_img | image_url: width: 120 }}" alt="{{ col.title | default: 'Collection' | escape }}" class="cts-tab__icon-img" loading="lazy">
+              {%- else -%}
+                {{ 'collection-1' | placeholder_svg_tag: 'cts-tab__icon-svg' }}
+              {%- endif -%}
+            </span>
+            <span class="cts-tab__label">{{ block.settings.tab_label | default: col.title | default: 'Collection' }}</span>
+          </button>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Collection content panels {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- assign col = block.settings.collection -%}
+        {%- assign hero_img = block.settings.hero_image | default: col.image -%}
+        {%- assign hero_mp4 = block.settings.hero_video_mp4 -%}
+        {%- assign hero_video = block.settings.hero_video -%}
+        {%- assign hero_video_file = block.settings.hero_video_file -%}
+        <div class="cts-m__panel{% if forloop.first %} cts-m__panel--active{% endif %}" data-cts-mpanel="{{ forloop.index0 }}">
+
+          {%- comment -%} Side text {%- endcomment -%}
+          <div class="cts-m__text">
+            <h3 class="cts-side__title">{{ block.settings.side_heading | default: col.title | default: 'Collection' }}</h3>
+            {%- if block.settings.side_text != blank -%}
+              <p class="cts-side__text">{{ block.settings.side_text }}</p>
+            {%- endif -%}
+            {%- if block.settings.side_text_2 != blank -%}
+              <p class="cts-side__text cts-side__text--secondary">{{ block.settings.side_text_2 }}</p>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Hero image / video {%- endcomment -%}
+          <div class="cts-m__hero">
+            {%- if hero_mp4 != blank -%}
+              <video class="cts-m__hero-video" autoplay loop muted playsinline>
+                {%- for source in hero_mp4.sources -%}
+                  <source src="{{ source.url }}" type="{{ source.mime_type }}">
+                {%- endfor -%}
+              </video>
+            {%- elsif hero_video_file != blank -%}
+              <video src="{{ hero_video_file }}" class="cts-m__hero-video" autoplay loop muted playsinline></video>
+            {%- elsif hero_video != blank -%}
+              <iframe src="{{ hero_video }}" class="cts-m__hero-iframe" allow="autoplay; encrypted-media" allowfullscreen frameborder="0"></iframe>
+            {%- elsif hero_img != blank -%}
+              <img src="{{ hero_img | image_url: width: 800 }}" alt="{{ hero_img.alt | default: col.title | escape }}" loading="lazy" class="cts-m__hero-img">
+            {%- else -%}
+              <div class="cts-hero__placeholder">{{ 'collection-1' | placeholder_svg_tag: 'cts-hero__svg' }}</div>
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} Product grid {%- endcomment -%}
+          <div class="cts-m__products">
+            {%- for product in col.products limit: block.settings.max_products -%}
+              {%- assign p_img = product.featured_image -%}
+              <a href="{{ product.url }}" class="cts-product" aria-label="{{ product.title | escape }}">
+                <div class="cts-product__media">
+                  {%- if p_img != blank -%}
+                    <img src="{{ p_img | image_url: width: 400 }}" alt="{{ p_img.alt | default: product.title | escape }}" loading="lazy" class="cts-product__img">
+                  {%- else -%}
+                    <div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div>
+                  {%- endif -%}
+                </div>
+              </a>
+            {%- endfor -%}
+            {%- if col == blank -%}
+              {%- for i in (1..4) -%}
+                <div class="cts-product"><div class="cts-product__media"><div class="cts-product__placeholder">{{ 'product-1' | placeholder_svg_tag: 'cts-product__svg' }}</div></div></div>
+              {%- endfor -%}
+            {%- endif -%}
+          </div>
+
+          {%- comment -%} CTA button {%- endcomment -%}
+          <div class="cts-m__btn-wrap">
+            <a href="{{ col.url | default: '#' }}" class="cts-hero__btn">
+              <span class="cts-hero__btn-text">{{ block.settings.button_text | default: btn_text }}</span>
+              <span class="cts-hero__btn-arrow"><svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M4 12L12 4M12 4H5M12 4V11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+            </a>
+          </div>
+
+        </div>
+      {%- endfor -%}
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('#cts-{{ section.id }}[data-cts-root]');
+  if (!root) return;
+
+  /* ════════ MOBILE: simple tab switching ════════ */
+  var mTabs   = root.querySelectorAll('[data-cts-mtab]');
+  var mPanels = root.querySelectorAll('[data-cts-mpanel]');
+  mTabs.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(btn.getAttribute('data-cts-mtab'), 10);
+      mTabs.forEach(function(b) { b.classList.remove('cts-tab--active'); });
+      btn.classList.add('cts-tab--active');
+      mPanels.forEach(function(p) { p.classList.remove('cts-m__panel--active'); });
+      if (mPanels[idx]) mPanels[idx].classList.add('cts-m__panel--active');
+    });
+  });
+
+  /* ════════ DESKTOP: scroll-driven effect ════════ */
+  if (window.innerWidth < 750) return;
+
+  var scrollEl = root.querySelector('[data-cts-scroll]');
+  var introEl  = root.querySelector('[data-cts-intro]');
+  var tabsEl   = root.querySelector('[data-cts-tabs]');
+  var tabBtns  = root.querySelectorAll('[data-cts-tab]');
+  var panels   = root.querySelectorAll('[data-cts-panel]');
+  if (!scrollEl) return;
+
+  var activeIdx = 0;
+
+  /* Wrap words in spans for word-by-word reveal */
+  root.querySelectorAll('[data-cts-words]').forEach(function(el) {
+    var text = el.textContent.trim();
+    if (!text) return;
+    var words = text.split(/\s+/);
+    el.innerHTML = words.map(function(w, i) {
+      return '<span class="cts-word" style="transition-delay:' + (i * 0.04) + 's">' + w + '</span>';
+    }).join(' ');
+  });
+
+  function getActiveEls() {
+    var p = panels[activeIdx] || panels[0];
+    if (!p) return {};
+    return {
+      hero:      p.querySelector('[data-cts-hero]'),
+      glow:      p.querySelector('.cts-hero__glow'),
+      side:      p.querySelector('[data-cts-side]'),
+      sideTitle: p.querySelector('[data-cts-side-title]'),
+      btn:       p.querySelector('[data-cts-btn]'),
+      final:     p.querySelector('[data-cts-final]'),
+      prodTop:   p.querySelector('[data-cts-prodtop]'),
+      prodBot:   p.querySelector('[data-cts-prodbottom]'),
+      prodCards: p.querySelectorAll('[data-cts-prodtop] .cts-product, [data-cts-prodbottom] .cts-product'),
+      words:     p.querySelectorAll('.cts-word')
+    };
+  }
+
+  /* Tab switching */
+  tabBtns.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var idx = parseInt(btn.getAttribute('data-cts-tab'), 10);
+      if (idx === activeIdx) return;
+      tabBtns.forEach(function(b) { b.classList.remove('cts-tab--active'); });
+      btn.classList.add('cts-tab--active');
+      panels.forEach(function(p) { p.classList.remove('cts-panel--active'); });
+      if (panels[idx]) panels[idx].classList.add('cts-panel--active');
+      activeIdx = idx;
+      onScroll();
+    });
+  });
+
+  /* Scroll height – shorter for snappier feel */
+  function setHeight() { scrollEl.style.height = (window.innerHeight * 5.5) + 'px'; }
+  setHeight();
+  window.addEventListener('resize', setHeight);
+
+  /* Main scroll handler */
+  /* Smooth easing helpers */
+  function easeOutExpo(t) { return t === 1 ? 1 : 1 - Math.pow(2, -10 * t); }
+  function easeOutQuart(t) { return 1 - Math.pow(1 - t, 4); }
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  function easeInOutCubic(t) { return t < 0.5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }
+  function easeOutBack(t) { var c = 1.7; return 1 + (c + 1) * Math.pow(t - 1, 3) + c * Math.pow(t - 1, 2); }
+
+  /* BG gradient element */
+  var bgEl = root.querySelector('.cts-bg');
+
+  /* Mesh gradient blobs – scroll-reactive */
+  var meshBlobs = root.querySelectorAll('.cts-mesh__blob');
+  var isMesh = root.getAttribute('data-cts-bg-style') === 'gradient';
+
+  function onScroll() {
+    var rect = scrollEl.getBoundingClientRect();
+    var viewH = window.innerHeight;
+    var travel = scrollEl.offsetHeight - viewH;
+    if (travel <= 0) return;
+    var scrolled = Math.max(0, -rect.top);
+    var progress = Math.max(0, Math.min(1, scrolled / travel));
+    var els = getActiveEls();
+
+    /* ═══════════════════════════════════════════
+       PHASE A (0–12%): Intro fades + slides up
+       ═══════════════════════════════════════════ */
+    var pA = Math.min(1, progress / 0.12);
+    var pAe = easeOutCubic(pA);
+    if (introEl) {
+      introEl.style.opacity = Math.max(0, 1 - pAe * 1.8).toFixed(3);
+      introEl.style.transform = 'translateY(' + (-pAe * 50).toFixed(1) + 'px)';
+    }
+
+    /* ═══════════════════════════════════════════
+       PHASE B (5–20%): Tabs slide to top
+       PARALLEL with hero brighten + move start
+       ═══════════════════════════════════════════ */
+    var pB = Math.max(0, Math.min(1, (progress - 0.05) / 0.15));
+    var pBe = easeOutExpo(pB);
+    if (tabsEl) {
+      var tabStart = viewH * 0.48;
+      var tabEnd = 80;
+      var tabY = tabStart - (tabStart - tabEnd) * pBe;
+      /* Tabs also scale up slightly during move */
+      var tabScale = 1 + 0.06 * pBe;
+      tabsEl.style.transform = 'translateX(-50%) translateY(' + tabY.toFixed(1) + 'px) scale(' + tabScale.toFixed(3) + ')';
+    }
+
+    /* ═══════════════════════════════════════════
+       PHASE C (6–22%): Hero brightens + slight grow + subtle rotate
+       Starts ALMOST with tabs → parallel feel
+       ═══════════════════════════════════════════ */
+    var pC = Math.max(0, Math.min(1, (progress - 0.06) / 0.16));
+    var pCe = easeOutQuart(pC);
+
+    /* ═══════════════════════════════════════════
+       PHASE D (8–26%): Hero moves RIGHT + grows big
+       Overlaps heavily with C → everything moves together
+       ═══════════════════════════════════════════ */
+    var pD = Math.max(0, Math.min(1, (progress - 0.08) / 0.18));
+    var pDe = easeOutExpo(pD);
+
+    /* ═══════════════════════════════════════════
+       PHASE E (18–30%): Side HEADING fades in
+       Starts WHILE hero is still moving → parallel
+       ═══════════════════════════════════════════ */
+    var pE = Math.max(0, Math.min(1, (progress - 0.18) / 0.12));
+    var pEe = easeOutExpo(pE);
+    if (els.sideTitle) {
+      els.sideTitle.style.opacity = pEe.toFixed(3);
+      els.sideTitle.style.transform = 'translateY(' + (16 - 16 * pEe).toFixed(1) + 'px)';
+    }
+
+    /* ═══════════════════════════════════════════
+       PHASE F (22–42%): Side text word-by-word
+       Starts overlapping with hero settle
+       ═══════════════════════════════════════════ */
+    var pF = Math.max(0, Math.min(1, (progress - 0.22) / 0.20));
+    var pFe = easeInOutCubic(pF);
+    if (els.side) {
+      els.side.style.opacity = '1';
+      /* Side slides in from left, tracks with heading */
+      var sideSlide = easeOutCubic(Math.min(1, Math.max(0, pE) * 1.4));
+      els.side.style.transform = 'translateX(' + (-30 + 30 * sideSlide).toFixed(1) + 'px)';
+      var totalW = els.words.length;
+      if (totalW > 0) {
+        var wordsVisible = Math.floor(pFe * totalW);
+        for (var wi = 0; wi < totalW; wi++) {
+          els.words[wi].style.opacity = wi <= wordsVisible && pF > 0 ? '1' : '0';
+          els.words[wi].style.transform = wi <= wordsVisible && pF > 0 ? 'translateY(0)' : 'translateY(8px)';
+        }
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       PHASE G (38–50%): Button appears with scale-bounce
+       Starts BEFORE words finish → overlapping
+       ═══════════════════════════════════════════ */
+    var pG = Math.max(0, Math.min(1, (progress - 0.38) / 0.12));
+    var pGe = easeOutBack(pG);
+
+    /* ═══════════════════════════════════════════
+       PHASE G2 (45–58%): Button widens
+       ═══════════════════════════════════════════ */
+    var pG2 = Math.max(0, Math.min(1, (progress - 0.45) / 0.13));
+    var pG2e = easeOutQuart(pG2);
+
+    /* ═══════════════════════════════════════════
+       PHASE H (58–80%): Hero fades + blurs, products appear
+       ═══════════════════════════════════════════ */
+    var pH = Math.max(0, Math.min(1, (progress - 0.58) / 0.22));
+    var pHe = easeOutExpo(pH);
+
+    /* ═══════════════════════════════════════════
+       APPLY: Hero transforms (C + D combined)
+       ═══════════════════════════════════════════ */
+    var heroX = -14 + 24 * pDe;
+    var heroY = -42 - pCe * 6;
+    if (els.hero) {
+      var heroOpacity = 0.55 + 0.45 * pCe;
+      var heroScale = 1 + 0.10 * pCe + 0.32 * pDe;
+      /* Subtle rotation: tilt then straighten */
+      var heroRotate = -2 * pCe * (1 - pDe * 0.8);
+      /* Fade + blur in phase H */
+      if (pH > 0) heroOpacity = heroOpacity * Math.max(0, 1 - pH);
+      els.hero.style.opacity = heroOpacity.toFixed(3);
+      els.hero.style.transform = 'translate(calc(-50% + ' + heroX.toFixed(1) + 'vw), ' + heroY.toFixed(1) + '%) scale(' + heroScale.toFixed(3) + ') rotate(' + heroRotate.toFixed(2) + 'deg)';
+      els.hero.style.zIndex = progress > 0.12 ? '4' : '2';
+      var heroBlur = pH > 0 ? (pH * 10).toFixed(1) : '0';
+      els.hero.style.filter = 'blur(' + heroBlur + 'px)';
+    }
+
+    /* ═══════════════════════════════════════════
+       APPLY: Glow – tracks hero, pulses
+       ═══════════════════════════════════════════ */
+    if (els.glow) {
+      var glowOpacity = pCe * 0.5 + 0.15 * Math.sin(progress * Math.PI * 3);
+      if (pH > 0) glowOpacity *= (1 - pH);
+      glowOpacity = Math.max(0, glowOpacity);
+      els.glow.style.opacity = glowOpacity.toFixed(3);
+      els.glow.style.transform = 'scale(' + (1.15 + 0.35 * pDe).toFixed(2) + ')';
+    }
+
+    /* ═══════════════════════════════════════════
+       APPLY: Background gradient follows hero
+       ═══════════════════════════════════════════ */
+    if (bgEl) {
+      var gradX = 50 + heroX * 0.6;
+      var gradY = 40 - 10 * pCe;
+      var gradOpacity = 0.02 + 0.04 * pCe;
+      bgEl.style.setProperty('--grad-x', gradX.toFixed(1) + '%');
+      bgEl.style.setProperty('--grad-y', gradY.toFixed(1) + '%');
+      bgEl.style.setProperty('--grad-o', gradOpacity.toFixed(3));
+    }
+
+    /* ═══════════════════════════════════════════
+       APPLY: Mesh blobs react to scroll
+       Blobs shift position, scale & opacity as user scrolls
+       ═══════════════════════════════════════════ */
+    if (isMesh && meshBlobs.length > 0) {
+      /* Blob 1: drifts right + down on scroll, intensifies during hero phase */
+      var b1x = progress * 15;
+      var b1y = progress * 10;
+      var b1s = 1 + 0.2 * pCe - 0.1 * pHe;
+      var b1o = 0.5 + 0.35 * pCe - 0.15 * pHe;
+      if (meshBlobs[0]) meshBlobs[0].style.transform = 'translate(' + b1x.toFixed(1) + 'vw, ' + b1y.toFixed(1) + 'vh) scale(' + b1s.toFixed(3) + ')';
+      if (meshBlobs[0]) meshBlobs[0].style.opacity = b1o.toFixed(3);
+
+      /* Blob 2: drifts left + up, opposes blob 1 */
+      var b2x = -progress * 12;
+      var b2y = -progress * 8;
+      var b2s = 1 + 0.15 * pDe - 0.1 * pHe;
+      var b2o = 0.5 + 0.3 * pDe - 0.1 * pHe;
+      if (meshBlobs[1]) meshBlobs[1].style.transform = 'translate(' + b2x.toFixed(1) + 'vw, ' + b2y.toFixed(1) + 'vh) scale(' + b2s.toFixed(3) + ')';
+      if (meshBlobs[1]) meshBlobs[1].style.opacity = b2o.toFixed(3);
+
+      /* Blob 3: follows hero X position, creates "light source" feel */
+      var b3x = heroX * 0.5;
+      var b3y = -progress * 5;
+      var b3s = 1 + 0.25 * easeOutCubic(Math.min(1, progress * 1.5));
+      var b3o = 0.4 + 0.4 * pCe * (1 - pHe * 0.5);
+      if (meshBlobs[2]) meshBlobs[2].style.transform = 'translate(' + b3x.toFixed(1) + 'vw, ' + b3y.toFixed(1) + 'vh) scale(' + b3s.toFixed(3) + ')';
+      if (meshBlobs[2]) meshBlobs[2].style.opacity = b3o.toFixed(3);
+
+      /* Blob 4: emerges during product phase */
+      var b4x = progress * 8 - 4;
+      var b4y = -progress * 12;
+      var b4s = 0.8 + 0.4 * pHe;
+      var b4o = 0.2 + 0.5 * pHe;
+      if (meshBlobs[3]) meshBlobs[3].style.transform = 'translate(' + b4x.toFixed(1) + 'vw, ' + b4y.toFixed(1) + 'vh) scale(' + b4s.toFixed(3) + ')';
+      if (meshBlobs[3]) meshBlobs[3].style.opacity = b4o.toFixed(3);
+    }
+
+    /* ═══════════════════════════════════════════
+       APPLY: Button – tracks hero, scale-bounce entrance
+       ═══════════════════════════════════════════ */
+    if (els.btn) {
+      var scX = 0.35 + 0.65 * pG2e;
+      var btnScale = pGe;
+      els.btn.style.opacity = Math.min(1, pG * 2).toFixed(3);
+      els.btn.style.transform = 'translate(calc(-50% + ' + heroX.toFixed(1) + 'vw), 0) scaleX(' + scX.toFixed(3) + ') scale(' + btnScale.toFixed(3) + ')';
+      els.btn.style.pointerEvents = pG > 0.5 ? 'auto' : 'none';
+    }
+
+    /* ═══════════════════════════════════════════
+       APPLY: Product grid – staggered entrance
+       ═══════════════════════════════════════════ */
+    if (els.final) {
+      els.final.style.opacity = pHe.toFixed(3);
+      els.final.style.transform = 'translate(calc(-50% + ' + heroX.toFixed(1) + 'vw), -50%)';
+    }
+    if (els.prodCards && els.prodCards.length > 0) {
+      var totalCards = els.prodCards.length;
+      for (var ci = 0; ci < totalCards; ci++) {
+        var staggerStart = 0.58 + ci * 0.05;
+        var staggerDur = 0.16;
+        var cp = Math.max(0, Math.min(1, (progress - staggerStart) / staggerDur));
+        var cpe = easeOutBack(cp);
+        var cardScale = 0.3 + 0.7 * cpe;
+        var cardOp = Math.min(1, cp * 2.5);
+        var cardRotate = (1 - cp) * (ci % 2 === 0 ? -4 : 4);
+        els.prodCards[ci].style.opacity = cardOp.toFixed(3);
+        els.prodCards[ci].style.transform = 'scale(' + cardScale.toFixed(3) + ') rotate(' + cardRotate.toFixed(1) + 'deg)';
+      }
+    }
+    if (els.prodTop) els.prodTop.style.opacity = '1';
+    if (els.prodBot) els.prodBot.style.opacity = '1';
+
+    /* ═══════════════════════════════════════════
+       APPLY: Tabs scale back down after settle
+       ═══════════════════════════════════════════ */
+    if (tabsEl && pB >= 1) {
+      var tabSettle = Math.max(0, Math.min(1, (progress - 0.22) / 0.08));
+      var tabScaleFinal = 1.06 - 0.06 * easeOutCubic(tabSettle);
+      tabsEl.style.transform = 'translateX(-50%) translateY(' + (80).toFixed(1) + 'px) scale(' + tabScaleFinal.toFixed(3) + ')';
+    }
+  }
+
+  /* Intersection observer */
+  var active = false, ticking = false;
+  function throttled() {
+    if (!ticking) { ticking = true; requestAnimationFrame(function() { onScroll(); ticking = false; }); }
+  }
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !active) { active = true; window.addEventListener('scroll', throttled, { passive: true }); onScroll(); }
+      else if (!e.isIntersecting && active) { active = false; window.removeEventListener('scroll', throttled); }
+    });
+  }, { rootMargin: '200px 0px' });
+  io.observe(scrollEl);
+  onScroll();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Tabs Scroll",
+  "tag": "section",
+  "class": "cts-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro Text"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "STYLE CRAFTED TO PERFECTION"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p",  "label": "P"  }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra Large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover fashion that fits every mood! Explore our diverse collections, from casual essentials to statement trends. Find the perfect style for every occasion."
+    },
+    {
+      "type": "text",
+      "id": "button_text",
+      "label": "Default button text",
+      "default": "Explore Collection"
+    },
+    {
+      "type": "header",
+      "content": "Fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "bg_style",
+      "label": "Background style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_1",
+      "label": "Gradient color 1",
+      "default": "#1a0a2e",
+      "info": "Primary gradient blob color"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_2",
+      "label": "Gradient color 2",
+      "default": "#0a1628",
+      "info": "Secondary gradient blob color"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_3",
+      "label": "Gradient color 3",
+      "default": "#16213e",
+      "info": "Accent gradient blob color"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg",
+      "label": "Tab background (glass)",
+      "default": "#333333"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg",
+      "label": "Tab active background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "tab_color",
+      "label": "Tab text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button text color",
+      "default": "#1a1a1a"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_tab",
+      "name": "Sammlung",
+      "limit": 8,
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Sammlung"
+        },
+        {
+          "type": "text",
+          "id": "tab_label",
+          "label": "Tab label"
+        },
+        {
+          "type": "image_picker",
+          "id": "tab_icon",
+          "label": "Tab icon image",
+          "info": "Kleines Bild fuer den Tab-Kreis. Falls leer wird das Sammlungsbild genutzt."
+        },
+        {
+          "type": "image_picker",
+          "id": "hero_image",
+          "label": "Hero image (optional)",
+          "info": "Falls leer wird das Sammlungsbild genutzt."
+        },
+        {
+          "type": "video",
+          "id": "hero_video_mp4",
+          "label": "Hero video (MP4 Upload)",
+          "info": "Lade eine .mp4 Datei hoch. Hat hoechste Prioritaet fuer das Hero-Video."
+        },
+        {
+          "type": "video_url",
+          "id": "hero_video",
+          "label": "Hero video URL (YouTube/Vimeo)",
+          "info": "YouTube oder Vimeo URL als Alternative.",
+          "accept": ["youtube", "vimeo"]
+        },
+        {
+          "type": "url",
+          "id": "hero_video_file",
+          "label": "Hero video file URL (optional)",
+          "info": "Direkte .mp4 URL fuer Autoplay-Video. Hat Prioritaet ueber Hero-Bild und YouTube/Vimeo."
+        },
+        {
+          "type": "text",
+          "id": "side_heading",
+          "label": "Side heading"
+        },
+        {
+          "type": "textarea",
+          "id": "side_text",
+          "label": "Side text paragraph 1",
+          "default": "Stay warm and stylish this winter! Explore cozy layers, trendy outerwear, and must-have essentials for the chilly season."
+        },
+        {
+          "type": "textarea",
+          "id": "side_text_2",
+          "label": "Side text paragraph 2"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text"
+        },
+        {
+          "type": "range",
+          "id": "max_products",
+          "label": "Max products",
+          "min": 2,
+          "max": 8,
+          "step": 1,
+          "default": 4
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Tabs Scroll",
+      "blocks": [
+        { "type": "collection_tab" },
+        { "type": "collection_tab" },
+        { "type": "collection_tab" },
+        { "type": "collection_tab" }
+      ]
+    }
+  ]
+}
+{% endschema %}

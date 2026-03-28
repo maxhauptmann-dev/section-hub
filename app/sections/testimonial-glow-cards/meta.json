@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-glow-cards",
+  "name": "SIQ - Testimonial Glow Cards",
+  "description": "Stunning glassmorphism testimonial cards with animated gradient glow borders, frosted-glass backgrounds, and neon accent lighting. Dark premium aesthetic with smooth hover interactions and flowing color animations. Ultra-modern design.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Glow",
+    "Glassmorphism",
+    "Neon",
+    "Dark",
+    "Premium",
+    "Animated"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-glow-cards/default.webp",
+      "alt": "Testimonial Glow Cards - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

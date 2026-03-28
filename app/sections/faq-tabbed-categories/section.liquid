@@ -1,0 +1,490 @@
+{% comment %}
+  Section Hub – FAQ Tabbed Categories
+  Premium FAQ with tabbed category navigation, accordion items, and rich customization.
+{% endcomment %}
+
+{{ 'section-faq-tabbed-categories.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign tab_style = section.settings.tab_style
+  assign icon_position = section.settings.icon_position
+-%}
+
+<section
+  class="sh-faqtab"
+  style="
+    --sh-ft-bg: {{ section.settings.bg_color }};
+    --sh-ft-text: {{ section.settings.text_color }};
+    --sh-ft-accent: {{ section.settings.accent_color }};
+    --sh-ft-border: {{ section.settings.border_color }};
+    --sh-ft-card-bg: {{ section.settings.card_bg }};
+    --sh-ft-tab-bg: {{ section.settings.tab_bg }};
+    --sh-ft-tab-active-bg: {{ section.settings.tab_active_bg }};
+    --sh-ft-tab-active-text: {{ section.settings.tab_active_text }};
+    --sh-ft-tab-text: {{ section.settings.tab_text_color }};
+    --sh-ft-answer-text: {{ section.settings.answer_color }};
+    --sh-ft-pad-y: {{ section.settings.padding_y }}px;
+    --sh-ft-max-w: {{ section.settings.max_width }}px;
+    --sh-ft-radius: {{ section.settings.border_radius }}px;
+    --sh-ft-q-size: {{ section.settings.question_size }}px;
+    --sh-ft-a-size: {{ section.settings.answer_size }}px;
+    margin-top: {{ section.settings.margin_top }}px;
+    margin-bottom: {{ section.settings.margin_bottom }}px;
+  "
+>
+  <div class="sh-faqtab__inner">
+
+    {% if section.settings.heading != blank %}
+      <div class="sh-faqtab__header">
+        {% if section.settings.eyebrow != blank %}
+          <span class="sh-faqtab__eyebrow">{{ section.settings.eyebrow }}</span>
+        {% endif %}
+        <h2 class="sh-faqtab__heading">{{ section.settings.heading }}</h2>
+        {% if section.settings.subheading != blank %}
+          <p class="sh-faqtab__sub">{{ section.settings.subheading }}</p>
+        {% endif %}
+      </div>
+    {% endif %}
+
+    {%- comment -%} Collect unique categories from blocks {%- endcomment -%}
+    {%- liquid
+      assign categories = ""
+      for block in section.blocks
+        if block.type == "faq_item"
+          assign cat = block.settings.category | strip
+          if cat == blank
+            assign cat = "General"
+          endif
+          assign cat_check = categories | split: "|||"
+          assign already = false
+          for existing in cat_check
+            if existing == cat
+              assign already = true
+            endif
+          endfor
+          unless already
+            if categories == ""
+              assign categories = cat
+            else
+              assign categories = categories | append: "|||" | append: cat
+            endif
+          endunless
+        endif
+      endfor
+      assign cat_array = categories | split: "|||"
+    -%}
+
+    {% if cat_array.size > 1 %}
+      <div class="sh-faqtab__tabs sh-faqtab__tabs--{{ tab_style }}" role="tablist">
+        {% for cat in cat_array %}
+          <button
+            class="sh-faqtab__tab{% if forloop.first %} sh-faqtab__tab--active{% endif %}"
+            role="tab"
+            aria-selected="{% if forloop.first %}true{% else %}false{% endif %}"
+            data-sh-faqtab-cat="{{ cat | handleize }}"
+            type="button"
+          >
+            {{ cat }}
+          </button>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="sh-faqtab__panels">
+      {% for cat in cat_array %}
+        <div
+          class="sh-faqtab__panel{% if forloop.first %} sh-faqtab__panel--active{% endif %}"
+          data-sh-faqtab-panel="{{ cat | handleize }}"
+          role="tabpanel"
+        >
+          {% for block in section.blocks %}
+            {% if block.type == "faq_item" %}
+              {%- liquid
+                assign block_cat = block.settings.category | strip
+                if block_cat == blank
+                  assign block_cat = "General"
+                endif
+              -%}
+              {% if block_cat == cat %}
+                <details class="sh-faqtab__item" {{ block.shopify_attributes }}>
+                  <summary class="sh-faqtab__question">
+                    {% if block.settings.icon != blank and icon_position == "left" %}
+                      <span class="sh-faqtab__q-icon">{{ block.settings.icon }}</span>
+                    {% endif %}
+                    <span class="sh-faqtab__q-text">{{ block.settings.question }}</span>
+                    {% if block.settings.icon != blank and icon_position == "right" %}
+                      <span class="sh-faqtab__q-icon">{{ block.settings.icon }}</span>
+                    {% endif %}
+                    <svg class="sh-faqtab__chevron" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                  </summary>
+                  <div class="sh-faqtab__answer">
+                    <div class="sh-faqtab__answer-inner">
+                      {{ block.settings.answer }}
+                    </div>
+                  </div>
+                </details>
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.currentScript.closest('.sh-faqtab') || document.currentScript.previousElementSibling;
+  if (!root) {
+    var el = document.currentScript.previousElementSibling;
+    while (el && !el.classList.contains('sh-faqtab')) el = el.previousElementSibling;
+    root = el;
+  }
+  if (!root) return;
+
+  var tabs = root.querySelectorAll('[data-sh-faqtab-cat]');
+  var panels = root.querySelectorAll('[data-sh-faqtab-panel]');
+
+  tabs.forEach(function(tab) {
+    tab.addEventListener('click', function() {
+      var cat = this.getAttribute('data-sh-faqtab-cat');
+      tabs.forEach(function(t) {
+        t.classList.remove('sh-faqtab__tab--active');
+        t.setAttribute('aria-selected', 'false');
+      });
+      this.classList.add('sh-faqtab__tab--active');
+      this.setAttribute('aria-selected', 'true');
+      panels.forEach(function(p) {
+        if (p.getAttribute('data-sh-faqtab-panel') === cat) {
+          p.classList.add('sh-faqtab__panel--active');
+        } else {
+          p.classList.remove('sh-faqtab__panel--active');
+        }
+      });
+    });
+  });
+
+  /* Only one item open per panel */
+  root.querySelectorAll('.sh-faqtab__item').forEach(function(item) {
+    item.addEventListener('toggle', function(e) {
+      if (!e.target.open) return;
+      var panel = e.target.closest('.sh-faqtab__panel');
+      if (!panel) return;
+      panel.querySelectorAll('.sh-faqtab__item').forEach(function(other) {
+        if (other !== e.target) other.open = false;
+      });
+    });
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FAQ Tabs",
+  "tag": "section",
+  "class": "sh-faqtab-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Help Center"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "How can we help you?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Browse by category to find quick answers to your questions."
+    },
+    {
+      "type": "header",
+      "content": "Tabs"
+    },
+    {
+      "type": "select",
+      "id": "tab_style",
+      "label": "Tab Style",
+      "default": "pills",
+      "options": [
+        { "value": "pills", "label": "Pills" },
+        { "value": "underline", "label": "Underline" },
+        { "value": "boxed", "label": "Boxed" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "icon_position",
+      "label": "Question Icon Position",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max Width",
+      "min": 600,
+      "max": 1200,
+      "step": 50,
+      "default": 850,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical Padding",
+      "min": 20,
+      "max": 120,
+      "step": 10,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin Top",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card Radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "question_size",
+      "label": "Question Font Size",
+      "min": 14,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_size",
+      "label": "Answer Font Size",
+      "min": 13,
+      "max": 18,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text Color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent Color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card Background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer Text Color",
+      "default": "#475569"
+    },
+    {
+      "type": "color",
+      "id": "tab_bg",
+      "label": "Tab Background",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "tab_text_color",
+      "label": "Tab Text Color",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_bg",
+      "label": "Tab Active Background",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "tab_active_text",
+      "label": "Tab Active Text",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Item",
+      "settings": [
+        {
+          "type": "text",
+          "id": "category",
+          "label": "Category / Tab",
+          "default": "Shipping"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (Emoji)",
+          "default": "📦"
+        },
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "How long does delivery take?"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Standard delivery takes 3-5 business days. Express shipping is available at checkout for next-day delivery.</p>"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FAQ Tabs",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Shipping",
+            "icon": "🚚",
+            "question": "How long does delivery take?",
+            "answer": "<p>Standard delivery takes 3-5 business days. Express shipping is available at checkout for next-day delivery.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Shipping",
+            "icon": "🌍",
+            "question": "Do you ship internationally?",
+            "answer": "<p>Yes! We ship to over 50 countries worldwide. International delivery typically takes 7-14 business days depending on your location.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Shipping",
+            "icon": "📍",
+            "question": "Can I track my order?",
+            "answer": "<p>Absolutely. Once your order ships, you will receive a tracking number via email. You can track your package in real-time through our website.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Returns",
+            "icon": "↩️",
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a 30-day hassle-free return policy. Items must be unused and in original packaging. We provide free return shipping labels.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Returns",
+            "icon": "💰",
+            "question": "How long do refunds take?",
+            "answer": "<p>Refunds are processed within 3-5 business days after we receive your returned item. The amount will be credited to your original payment method.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Returns",
+            "icon": "🔄",
+            "question": "Can I exchange an item?",
+            "answer": "<p>Yes, exchanges are free. Simply contact our support team with your order number and the item you would like instead. We will arrange everything for you.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Payment",
+            "icon": "💳",
+            "question": "What payment methods do you accept?",
+            "answer": "<p>We accept all major credit cards (Visa, Mastercard, Amex), PayPal, Apple Pay, Google Pay, and Klarna for buy-now-pay-later options.</p>"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "category": "Payment",
+            "icon": "🔒",
+            "question": "Is my payment information secure?",
+            "answer": "<p>Absolutely. We use industry-standard SSL encryption and never store your payment details. All transactions are processed securely through Shopify Payments.</p>"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

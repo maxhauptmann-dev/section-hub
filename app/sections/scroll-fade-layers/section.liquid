@@ -1,0 +1,617 @@
+{% comment %}
+  Section Hub – Scroll Fade Layers v1.0
+  Sticky scroll section: each block is a full-screen layer
+  (image + headline + text) that fades in as the user scrolls.
+  Smooth transitions, parallax image zoom, staggered text reveals.
+  Prefix: sfl-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font   = section.settings.heading_font
+  assign body_font      = section.settings.body_font
+  assign bg_color       = section.settings.bg_color
+  assign accent         = section.settings.accent_color
+  assign accent_2       = section.settings.accent_color_2
+  assign heading_color  = section.settings.heading_color
+  assign text_color     = section.settings.text_color
+  assign overlay_op     = section.settings.overlay_opacity
+  assign scroll_per     = section.settings.scroll_per_layer
+  assign heading_size   = section.settings.heading_size
+  assign content_px     = section.settings.content_padding
+  assign content_px_mob = section.settings.content_padding_mobile
+  assign max_w          = section.settings.content_max_width
+  assign text_align     = section.settings.text_alignment
+  assign btn_radius     = section.settings.btn_radius
+  assign show_dots      = section.settings.show_dots
+  assign show_counter   = section.settings.show_counter
+  assign show_progress  = section.settings.show_progress
+  assign progress_h     = section.settings.progress_height
+  assign show_label     = section.settings.show_label
+  assign label_text     = section.settings.label_text
+  assign fade_speed     = section.settings.fade_speed
+
+  assign layer_count    = section.blocks.size
+  assign total_scroll   = layer_count | times: scroll_per | plus: 100
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .sfl-wrap--{{ section.id }} {
+    --sfl-bg: {{ bg_color }};
+    --sfl-accent: {{ accent }};
+    --sfl-accent-2: {{ accent_2 }};
+    --sfl-heading-color: {{ heading_color }};
+    --sfl-text-color: {{ text_color }};
+    --sfl-overlay-op: {{ overlay_op | divided_by: 100.0 }};
+    --sfl-heading-size: {{ heading_size }}vw;
+    --sfl-content-px: {{ content_px }}px;
+    --sfl-content-px-mobile: {{ content_px_mob }}px;
+    --sfl-max-w: {{ max_w }}px;
+    --sfl-align: {{ text_align }};
+    --sfl-btn-radius: {{ btn_radius }}px;
+    --sfl-progress-h: {{ progress_h }}px;
+    --sfl-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --sfl-heading-fw: {{ heading_font.weight }};
+    --sfl-heading-fs: {{ heading_font.style }};
+    --sfl-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --sfl-btn-justify: {{ text_align | replace: 'left', 'flex-start' | replace: 'center', 'center' }};
+  }
+</style>
+
+<section class="sfl-wrap sfl-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  <div class="sfl-scroll" style="height: {{ total_scroll }}vh;"
+    data-sfl-scroll
+    data-sfl-layers="{{ layer_count }}"
+    data-sfl-scroll-per="{{ scroll_per }}"
+    data-sfl-fade-speed="{{ fade_speed }}">
+
+    <div class="sfl-sticky">
+
+      {%- comment -%} Layers {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign btn1_text  = block.settings.btn1_text
+          assign btn1_link  = block.settings.btn1_link
+          assign btn1_style = block.settings.btn1_style
+          assign btn2_text  = block.settings.btn2_text
+          assign btn2_link  = block.settings.btn2_link
+          assign btn2_style = block.settings.btn2_style
+        -%}
+
+        <div
+          class="sfl-layer{% if forloop.first %} sfl-layer--active{% endif %}"
+          data-sfl-layer="{{ forloop.index0 }}"
+          {{ block.shopify_attributes }}
+        >
+          {%- comment -%} Background {%- endcomment -%}
+          <div class="sfl-layer__bg">
+            {%- if block.settings.image != blank -%}
+              <img
+                src="{{ block.settings.image | image_url: width: 1920 }}"
+                srcset="{{ block.settings.image | image_url: width: 800 }} 800w, {{ block.settings.image | image_url: width: 1200 }} 1200w, {{ block.settings.image | image_url: width: 1920 }} 1920w"
+                sizes="100vw"
+                alt="{{ block.settings.image.alt | escape }}"
+                loading="{% if forloop.first %}eager{% else %}lazy{% endif %}"
+                width="{{ block.settings.image.width }}"
+                height="{{ block.settings.image.height }}"
+              >
+            {%- else -%}
+              {%- if block.settings.fallback_color != blank and block.settings.fallback_color != 'rgba(0,0,0,0)' -%}
+                <div class="sfl-layer__bg-color" style="--sfl-layer-color: {{ block.settings.fallback_color }};"></div>
+              {%- else -%}
+                <div class="sfl-layer__bg-color"></div>
+              {%- endif -%}
+            {%- endif -%}
+            <div class="sfl-layer__overlay"></div>
+          </div>
+
+          {%- comment -%} Content {%- endcomment -%}
+          <div class="sfl-layer__content">
+            {%- if block.settings.eyebrow != blank -%}
+              <div class="sfl-layer__eyebrow">{{ block.settings.eyebrow }}</div>
+            {%- endif -%}
+            {%- if block.settings.heading != blank -%}
+              <h2 class="sfl-layer__heading">{{ block.settings.heading }}</h2>
+            {%- endif -%}
+            {%- if block.settings.text != blank -%}
+              <p class="sfl-layer__text">{{ block.settings.text }}</p>
+            {%- endif -%}
+
+            {%- if btn1_text != blank or btn2_text != blank -%}
+              <div class="sfl-layer__btns">
+                {%- if btn1_text != blank -%}
+                  <a href="{{ btn1_link | default: '#' }}" class="sfl-btn sfl-btn--{{ btn1_style }}">
+                    {{ btn1_text }}
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                  </a>
+                {%- endif -%}
+                {%- if btn2_text != blank -%}
+                  <a href="{{ btn2_link | default: '#' }}" class="sfl-btn sfl-btn--{{ btn2_style }}">
+                    {{ btn2_text }}
+                  </a>
+                {%- endif -%}
+              </div>
+            {%- endif -%}
+          </div>
+
+        </div>
+      {%- endfor -%}
+
+      {%- comment -%} Progress dots {%- endcomment -%}
+      {%- if show_dots -%}
+        <div class="sfl-dots" data-sfl-dots>
+          {%- for block in section.blocks -%}
+            <div class="sfl-dot{% if forloop.first %} sfl-dot--active{% endif %}" data-sfl-dot="{{ forloop.index0 }}"></div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Counter {%- endcomment -%}
+      {%- if show_counter -%}
+        <div class="sfl-counter" data-sfl-counter>
+          <span class="sfl-counter__current" data-sfl-current>01</span>
+          <span> / </span>
+          <span>{{ layer_count | prepend: '0' | slice: -2, 2 }}</span>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Progress bar {%- endcomment -%}
+      {%- if show_progress -%}
+        <div class="sfl-progress-bar">
+          <div class="sfl-progress-bar__fill" data-sfl-progress></div>
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Side label {%- endcomment -%}
+      {%- if show_label and label_text != blank -%}
+        <div class="sfl-label">{{ label_text }}</div>
+      {%- endif -%}
+
+    </div>
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var section = document.querySelector('.sfl-wrap--{{ section.id }}');
+  if (!section) return;
+
+  var scrollEl  = section.querySelector('[data-sfl-scroll]');
+  var layers    = section.querySelectorAll('[data-sfl-layer]');
+  var dots      = section.querySelectorAll('[data-sfl-dot]');
+  var counter   = section.querySelector('[data-sfl-current]');
+  var progress  = section.querySelector('[data-sfl-progress]');
+
+  if (!scrollEl || layers.length === 0) return;
+
+  var layerCount  = layers.length;
+  var scrollPer   = parseInt(scrollEl.dataset.sflScrollPer) || 120;
+  var fadeMs      = parseInt(scrollEl.dataset.sflFadeSpeed) || 500;
+  var current     = 0;
+  var ticking     = false;
+
+  /* Apply CSS transition speed from setting */
+  layers.forEach(function(l) {
+    l.style.transition = 'opacity ' + (fadeMs / 1000).toFixed(1) + 's ease';
+  });
+
+  function setActive(idx) {
+    if (idx === current) return;
+
+    /* Fade out old */
+    layers[current].classList.remove('sfl-layer--active');
+    layers[current].classList.add('sfl-layer--prev');
+    if (dots[current]) dots[current].classList.remove('sfl-dot--active');
+
+    /* Fade in new */
+    current = idx;
+    layers[current].classList.remove('sfl-layer--prev');
+    layers[current].classList.add('sfl-layer--active');
+    if (dots[current]) dots[current].classList.add('sfl-dot--active');
+
+    /* Update counter */
+    if (counter) {
+      var n = current + 1;
+      counter.textContent = (n < 10 ? '0' : '') + n;
+    }
+
+    /* Clean up --prev after transition */
+    setTimeout(function(){
+      layers.forEach(function(l, i){
+        if (i !== current) {
+          l.classList.remove('sfl-layer--active', 'sfl-layer--prev');
+        }
+      });
+    }, fadeMs + 50);
+  }
+
+  function update() {
+    var rect     = scrollEl.getBoundingClientRect();
+    var scrolled = Math.max(0, -rect.top);
+    var total    = scrollEl.offsetHeight - window.innerHeight;
+
+    if (total <= 0) return;
+
+    var globalProgress = Math.min(scrolled / total, 1);
+
+    /* Which layer should be active */
+    var layerProgress = scrolled / (window.innerHeight * scrollPer / 100);
+    var idx = Math.min(Math.floor(layerProgress), layerCount - 1);
+    idx = Math.max(0, idx);
+
+    setActive(idx);
+
+    /* Progress bar */
+    if (progress) {
+      progress.style.width = (globalProgress * 100) + '%';
+    }
+
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function(){
+    if (!ticking) {
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  update();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Fade Layers",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "scroll_per_layer",
+      "label": "Scroll per layer",
+      "min": 60,
+      "max": 250,
+      "step": 10,
+      "default": 130,
+      "unit": "vh",
+      "info": "How far the user scrolls per layer."
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 500,
+      "max": 1400,
+      "step": 50,
+      "default": 900,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding",
+      "min": 20,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "content_padding_mobile",
+      "label": "Content padding (mobile)",
+      "min": 16,
+      "max": 60,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (vw)",
+      "min": 3,
+      "max": 12,
+      "step": 1,
+      "default": 5,
+      "unit": "vw"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0c0c0c"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#60a5fa"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2",
+      "default": "#3b82f6"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text / body color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 90,
+      "step": 5,
+      "default": 55,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "fade_speed",
+      "label": "Fade transition speed",
+      "min": 200,
+      "max": 1000,
+      "step": 100,
+      "default": 500,
+      "unit": "ms"
+    },
+    {
+      "type": "header",
+      "content": "UI indicators"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_dots",
+      "label": "Show progress dots",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show layer counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "progress_height",
+      "label": "Progress bar height",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 3,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_label",
+      "label": "Show side label",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "label_text",
+      "label": "Side label text",
+      "default": "Scroll"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "layer",
+      "name": "Layer",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Background image"
+        },
+        {
+          "type": "color",
+          "id": "fallback_color",
+          "label": "Background color (if no image)",
+          "default": "#000000"
+        },
+        {
+          "type": "text",
+          "id": "eyebrow",
+          "label": "Eyebrow / label",
+          "default": "Chapter One"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Where Light Meets Shadow"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Body text",
+          "default": "Every great collection begins with a feeling. A tension between opposites that creates something entirely new."
+        },
+        {
+          "type": "header",
+          "content": "Primary button"
+        },
+        {
+          "type": "text",
+          "id": "btn1_text",
+          "label": "Button 1 text",
+          "default": "Explore"
+        },
+        {
+          "type": "url",
+          "id": "btn1_link",
+          "label": "Button 1 link"
+        },
+        {
+          "type": "select",
+          "id": "btn1_style",
+          "label": "Button 1 style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Glass" }
+          ],
+          "default": "solid"
+        },
+        {
+          "type": "header",
+          "content": "Secondary button"
+        },
+        {
+          "type": "text",
+          "id": "btn2_text",
+          "label": "Button 2 text"
+        },
+        {
+          "type": "url",
+          "id": "btn2_link",
+          "label": "Button 2 link"
+        },
+        {
+          "type": "select",
+          "id": "btn2_style",
+          "label": "Button 2 style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "glass", "label": "Glass" }
+          ],
+          "default": "outline"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Fade Layers",
+      "blocks": [
+        {
+          "type": "layer",
+          "settings": {
+            "fallback_color": "#1a1a2e",
+            "eyebrow": "Collection 2025",
+            "heading": "Where Light Meets Shadow",
+            "text": "Every great collection begins with a feeling — a tension between opposites that creates something entirely new.",
+            "btn1_text": "Shop Now",
+            "btn1_style": "solid",
+            "btn2_text": "Learn More",
+            "btn2_style": "outline"
+          }
+        },
+        {
+          "type": "layer",
+          "settings": {
+            "fallback_color": "#0f2027",
+            "eyebrow": "The Craft",
+            "heading": "Made to Last Generations",
+            "text": "We source only the finest natural materials, working with artisans who have perfected their craft over decades.",
+            "btn1_text": "Our Process",
+            "btn1_style": "glass",
+            "btn2_text": "",
+            "btn2_style": "outline"
+          }
+        },
+        {
+          "type": "layer",
+          "settings": {
+            "fallback_color": "#16213e",
+            "eyebrow": "Sustainability",
+            "heading": "Designed for Tomorrow",
+            "text": "Carbon neutral shipping, ethical sourcing and zero-waste packaging. Because the future deserves our best work.",
+            "btn1_text": "Our Values",
+            "btn1_style": "outline",
+            "btn2_text": "",
+            "btn2_style": "outline"
+          }
+        },
+        {
+          "type": "layer",
+          "settings": {
+            "fallback_color": "#2d1b69",
+            "eyebrow": "Join Us",
+            "heading": "Your Story Starts Here",
+            "text": "Become part of a growing community of people who believe that the things we choose to own should bring lasting joy.",
+            "btn1_text": "Shop Collection",
+            "btn1_style": "solid",
+            "btn2_text": "Get in Touch",
+            "btn2_style": "outline"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

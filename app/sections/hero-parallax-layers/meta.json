@@ -1,12 +1,12 @@
 {
   "id": "hero-parallax-layers",
-  "name": "SS - Hero Parallax Layers",
+  "name": "SIQ - Hero Parallax Layers",
   "description": "Multi-layer parallax hero with stacked depth planes that move at different speeds on scroll. Includes floating shapes, duotone filter, horizontal progress bar, animated gradient border, and staggered text reveals. 80+ customization options for an immersive 3D-depth experience.",
   "category": "Hero",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +22,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/hero-parallax-layers/default.webp",
-      "alt": "Hero Parallax Layers - Default",
+      "alt": "SS - Hero Parallax Layers - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +51,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

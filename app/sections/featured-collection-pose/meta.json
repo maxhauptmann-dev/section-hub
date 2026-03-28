@@ -1,0 +1,46 @@
+{
+  "id": "featured-collection-pose",
+  "name": "SIQ - Collection Pose",
+  "description": "Cinematic featured collection with a slow-motion hover effect that crossfades to each product's second image – making models appear to shift into the next pose. Clean horizontal product grid with editorial heading layout. Configurable columns, image ratio, hover speed, rounded corners, colors, fonts, and full spacing control. Light or dark background. Perfect for fashion, beauty, and lifestyle brands.",
+  "category": [
+    "Featured Collection"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Hover",
+    "Cinematic",
+    "Pose",
+    "Crossfade",
+    "Fashion",
+    "Products",
+    "Premium",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#ededed",
+  "previews": [
+    {
+      "src": "/previews/featured-collection-pose/default.webp",
+      "alt": "SIQ - Collection Pose - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Taste", "Refresh", "Ride", "Studio", "Publisher", "Crave", "Origin", "Colorblock", "Spotlight"],
+    "os2": true
+  },
+  "createdAt": "2026-03-27",
+  "updatedAt": "2026-03-27"
+}

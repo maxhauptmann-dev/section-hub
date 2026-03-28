@@ -1,0 +1,480 @@
+{{ 'section-faq-flip-cards.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign accent2 = section.settings.accent_end
+  assign front_bg = section.settings.front_bg
+  assign front_border = section.settings.front_border
+  assign back_bg = section.settings.back_bg
+  assign back_text = section.settings.back_text
+  assign back_border = section.settings.back_border
+  assign icon_bg = section.settings.icon_bg
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.question_size
+  assign a_size = section.settings.answer_size
+  assign radius = section.settings.border_radius
+  assign columns = section.settings.columns
+  assign gap = section.settings.gap
+  assign card_height = section.settings.card_height
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign flip_hint = section.settings.flip_hint
+  assign front_shadow = section.settings.front_shadow
+  assign back_gradient = section.settings.back_gradient
+-%}
+
+<div
+  id="faq-fc-{{ sid }}"
+  class="faq-fc"
+  style="
+    --faq-fc-bg:{{ bg }};
+    --faq-fc-text:{{ text_color }};
+    --faq-fc-accent:{{ accent }};
+    --faq-fc-accent2:{{ accent2 }};
+    --faq-fc-front-bg:{{ front_bg }};
+    --faq-fc-front-border:{{ front_border }};
+    --faq-fc-back-bg:{{ back_bg }};
+    --faq-fc-back-text:{{ back_text }};
+    --faq-fc-back-border:{{ back_border }};
+    --faq-fc-icon-bg:{{ icon_bg }};
+    --faq-fc-max-w:{{ max_w }}px;
+    --faq-fc-pad-y:{{ pad_y }}px;
+    --faq-fc-mt:{{ mt }}px;
+    --faq-fc-mb:{{ mb }}px;
+    --faq-fc-q-size:{{ q_size }}px;
+    --faq-fc-a-size:{{ a_size }}px;
+    --faq-fc-radius:{{ radius }}px;
+    --faq-fc-cols:{{ columns }};
+    --faq-fc-gap:{{ gap }}px;
+    --faq-fc-height:{{ card_height }}px;
+  "
+>
+  <div class="faq-fc__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="faq-fc__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="faq-fc__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="faq-fc__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="faq-fc__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign q = block.settings.question
+          assign a = block.settings.answer
+          assign icon = block.settings.icon
+          assign card_color = block.settings.card_color
+        -%}
+        <div
+          class="faq-fc__card-wrap{% if front_shadow %} faq-fc__card-wrap--shadow{% endif %}"
+          data-faq-fc-card="{{ sid }}"
+          {{ block.shopify_attributes }}
+        >
+          <div class="faq-fc__card">
+            <!-- Front -->
+            <div class="faq-fc__front">
+              {%- if icon != blank -%}
+                <span class="faq-fc__icon">{{ icon }}</span>
+              {%- endif -%}
+              <p class="faq-fc__question">{{ q }}</p>
+              {%- if flip_hint -%}
+                <span class="faq-fc__hint">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg>
+                  Tap to reveal
+                </span>
+              {%- endif -%}
+            </div>
+            <!-- Back -->
+            <div class="faq-fc__back{% if back_gradient %} faq-fc__back--gradient{% endif %}" {% if card_color != blank %}style="--faq-fc-card-color:{{ card_color }}"{% endif %}>
+              <div class="faq-fc__answer">{{ a }}</div>
+              <button class="faq-fc__back-btn" data-faq-fc-close="{{ sid }}" aria-label="Flip back">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var sid='{{ sid }}',root=document.getElementById('faq-fc-'+sid);
+  if(!root)return;
+  root.addEventListener('click',function(e){
+    var closeBtn=e.target.closest('[data-faq-fc-close="'+sid+'"]');
+    if(closeBtn){
+      var wrap=closeBtn.closest('[data-faq-fc-card="'+sid+'"]');
+      if(wrap)wrap.classList.remove('faq-fc__card-wrap--flipped');
+      return;
+    }
+    var cardEl=e.target.closest('[data-faq-fc-card="'+sid+'"]');
+    if(!cardEl)return;
+    /* Only flip if clicking on front side */
+    var front=e.target.closest('.faq-fc__front');
+    if(front||!cardEl.classList.contains('faq-fc__card-wrap--flipped')){
+      cardEl.classList.toggle('faq-fc__card-wrap--flipped');
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FAQ Flip Cards",
+  "tag": "section",
+  "class": "section-faq-flip-cards",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Quick Answers"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Tap any card to flip it and reveal the answer."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card gap",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height",
+      "min": 180,
+      "max": 400,
+      "step": 10,
+      "default": 260,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "flip_hint",
+      "label": "Show flip hint",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "front_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "back_gradient",
+      "label": "Gradient back side",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f0f4ff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent start",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_end",
+      "label": "Accent end",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "front_bg",
+      "label": "Front background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "front_border",
+      "label": "Front border",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "back_bg",
+      "label": "Back background",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "back_text",
+      "label": "Back text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "back_border",
+      "label": "Back border",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon background",
+      "default": "#ede9fe"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "question_size",
+      "label": "Question size",
+      "min": 14,
+      "max": 26,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_size",
+      "label": "Answer size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Your question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your answer here.</p>"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji)",
+          "default": "❓"
+        },
+        {
+          "type": "color",
+          "id": "card_color",
+          "label": "Custom back color"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FAQ Flip Cards",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How fast is delivery?",
+            "answer": "<p>Standard shipping takes 3–7 business days. Express shipping delivers within 1–2 days for domestic orders.</p>",
+            "icon": "📦",
+            "card_color": "#6366f1"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I return items?",
+            "answer": "<p>Absolutely! We offer a 30-day hassle-free return policy on all purchases. Items must be in original condition.</p>",
+            "icon": "🔄",
+            "card_color": "#ec4899"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What payment options?",
+            "answer": "<p>We accept Visa, Mastercard, PayPal, Apple Pay, Google Pay, Shop Pay, and more for a seamless checkout.</p>",
+            "icon": "💳",
+            "card_color": "#10b981"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is there a warranty?",
+            "answer": "<p>Yes — all products include a 1-year warranty. Premium members receive an extended 2-year warranty for free.</p>",
+            "icon": "🛡️",
+            "card_color": "#f59e0b"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "International shipping?",
+            "answer": "<p>We ship to 60+ countries worldwide. International delivery typically takes 7–14 days. Tracking is included.</p>",
+            "icon": "🌍",
+            "card_color": "#0ea5e9"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How to track my order?",
+            "answer": "<p>Once your order ships, you receive a tracking email. You can also check the status anytime in your account.</p>",
+            "icon": "📍",
+            "card_color": "#8b5cf6"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I cancel an order?",
+            "answer": "<p>Orders can be modified or cancelled within 1 hour of placement. Contact our support team for urgent requests.</p>",
+            "icon": "⚡",
+            "card_color": "#ef4444"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Need help? Contact us!",
+            "answer": "<p>Reach us via live chat, email at support@example.com, or our contact form. We reply within 4 hours.</p>",
+            "icon": "💬",
+            "card_color": "#14b8a6"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is my data safe?",
+            "answer": "<p>100% — we use industry-leading SSL encryption and never store sensitive payment data on our servers.</p>",
+            "icon": "🔒",
+            "card_color": "#6366f1"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

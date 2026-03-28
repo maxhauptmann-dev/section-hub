@@ -1,6 +1,6 @@
 {
   "id": "newsletter-banner",
-  "name": "Newsletter Banner",
+  "name": "SIQ - Newsletter Banner",
   "description": "Clean email signup banner with customizable layout, background image support, and flexible styling. Perfect for building your email list.",
   "category": "Free",
   "version": "1.1.0",
@@ -15,7 +15,7 @@
     "Responsive",
     "Conversion"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -59,5 +59,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

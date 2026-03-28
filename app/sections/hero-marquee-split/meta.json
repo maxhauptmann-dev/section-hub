@@ -1,12 +1,12 @@
 {
   "id": "hero-marquee-split",
-  "name": "SS - Hero Marquee Split",
+  "name": "SIQ - Hero Marquee Split",
   "description": "Bold split-screen hero with a rotating diagonal marquee text-band slicing through the section. Features oversized heading that breaks across the split, two image zones, floating tags, horizontal rule accents, and staggered reveal animations. 80+ customization options for a magazine-editorial look.",
   "category": "Hero",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +21,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0c0c0c",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/hero-marquee-split/default.webp",
-      "alt": "Hero Marquee Split - Default",
+      "alt": "SS - Hero Marquee Split - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +50,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

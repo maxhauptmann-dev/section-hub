@@ -1,0 +1,573 @@
+{% comment %}
+  Section Hub – Scroll Pin Timeline v1.0
+  Scroll-driven vertical timeline. Items animate in left/right
+  alternating as the user scrolls. IntersectionObserver driven.
+  Prefix: spt-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font  = section.settings.heading_font
+  assign body_font     = section.settings.body_font
+  assign bg_color      = section.settings.bg_color
+  assign accent        = section.settings.accent_color
+  assign accent_2      = section.settings.accent_color_2
+  assign heading_color = section.settings.heading_color
+  assign text_color    = section.settings.text_color
+  assign card_bg       = section.settings.card_bg
+  assign card_radius   = section.settings.card_radius
+  assign card_px       = section.settings.card_padding
+  assign line_color    = section.settings.line_color
+  assign line_w        = section.settings.line_width
+  assign dot_size      = section.settings.dot_size
+  assign dot_color     = section.settings.dot_color
+  assign btn_radius    = section.settings.btn_radius
+  assign max_w         = section.settings.content_max_width
+  assign item_gap      = section.settings.item_gap
+  assign pt            = section.settings.padding_top
+  assign pb            = section.settings.padding_bottom
+  assign show_eyebrow  = section.settings.show_header
+  assign section_eyebrow = section.settings.eyebrow
+  assign section_heading = section.settings.heading
+  assign section_sub   = section.settings.subheading
+  assign shadow_color  = section.settings.shadow_color
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  .spt-wrap--{{ section.id }} {
+    --spt-bg: {{ bg_color }};
+    --spt-accent: {{ accent }};
+    --spt-accent-2: {{ accent_2 }};
+    --spt-accent-glow: {{ accent | color_modify: 'alpha', 0.15 }};
+    --spt-heading-color: {{ heading_color }};
+    --spt-text-color: {{ text_color }};
+    --spt-card-bg: {{ card_bg }};
+    --spt-card-radius: {{ card_radius }}px;
+    --spt-card-px: {{ card_px }}px;
+    --spt-line-color: {{ line_color }};
+    --spt-line-w: {{ line_w }}px;
+    --spt-dot-size: {{ dot_size }}px;
+    --spt-dot-color: {{ card_bg }};
+    --spt-btn-radius: {{ btn_radius }}px;
+    --spt-max-w: {{ max_w }}px;
+    --spt-item-gap: {{ item_gap }}px;
+    --spt-pt: {{ pt }}px;
+    --spt-pb: {{ pb }}px;
+    --spt-pt-mobile: {{ pt | divided_by: 2 | at_least: 40 }}px;
+    --spt-pb-mobile: {{ pb | divided_by: 2 | at_least: 40 }}px;
+    --spt-shadow-color: {{ shadow_color | color_modify: 'alpha', 0.08 }};
+    --spt-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --spt-heading-fw: {{ heading_font.weight }};
+    --spt-heading-fs: {{ heading_font.style }};
+    --spt-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+  }
+</style>
+
+<section class="spt-wrap spt-wrap--{{ section.id }}" data-section-id="{{ section.id }}">
+
+  {%- if show_eyebrow -%}
+    <div class="spt-header">
+      {%- if section_eyebrow != blank -%}
+        <div class="spt-header__eyebrow">{{ section_eyebrow }}</div>
+      {%- endif -%}
+      {%- if section_heading != blank -%}
+        <h2 class="spt-header__heading">{{ section_heading }}</h2>
+      {%- endif -%}
+      {%- if section_sub != blank -%}
+        <p class="spt-header__sub">{{ section_sub }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="spt-timeline" data-spt-timeline>
+
+    {%- comment -%} Animated axis line {%- endcomment -%}
+    <div class="spt-axis" data-spt-axis>
+      <div class="spt-axis__fill" data-spt-axis-fill></div>
+    </div>
+
+    {%- for block in section.blocks -%}
+      {%- liquid
+        assign is_right = forloop.index0 | modulo: 2
+        if is_right == 0
+          assign side = 'left'
+        else
+          assign side = 'right'
+        endif
+        assign btn_text = block.settings.btn_text
+        assign btn_link = block.settings.btn_link
+        assign btn_style = block.settings.btn_style
+      -%}
+
+      <div class="spt-item spt-item--{{ side }}" data-spt-item {{ block.shopify_attributes }}>
+
+        {%- comment -%} Left slot {%- endcomment -%}
+        <div class="spt-item__left">
+          {%- if side == 'left' -%}
+            <div class="spt-card" data-spt-card>
+              {%- if block.settings.image != blank -%}
+                <div class="spt-card__img">
+                  <img
+                    src="{{ block.settings.image | image_url: width: 900 }}"
+                    srcset="{{ block.settings.image | image_url: width: 500 }} 500w, {{ block.settings.image | image_url: width: 900 }} 900w"
+                    sizes="(max-width:749px) 100vw, 440px"
+                    alt="{{ block.settings.image.alt | escape }}"
+                    loading="lazy"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                  >
+                </div>
+              {%- elsif block.settings.show_image_placeholder -%}
+                <div class="spt-card__img">
+                  <div class="spt-card__img-placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+              {%- endif -%}
+              <div class="spt-card__body">
+                {%- if block.settings.year != blank -%}
+                  <div class="spt-card__year">{{ block.settings.year }}</div>
+                {%- endif -%}
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="spt-card__heading">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="spt-card__text">{{ block.settings.text }}</p>
+                {%- endif -%}
+                {%- if btn_text != blank -%}
+                  <a href="{{ btn_link | default: '#' }}" class="spt-card__btn spt-card__btn--{{ btn_style }}">
+                    {{ btn_text }}
+                    {%- if btn_style != 'ghost' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Center dot {%- endcomment -%}
+        <div class="spt-item__dot-col">
+          <div class="spt-dot" data-spt-dot></div>
+        </div>
+
+        {%- comment -%} Right slot {%- endcomment -%}
+        <div class="spt-item__right">
+          {%- if side == 'right' -%}
+            <div class="spt-card" data-spt-card>
+              {%- if block.settings.image != blank -%}
+                <div class="spt-card__img">
+                  <img
+                    src="{{ block.settings.image | image_url: width: 900 }}"
+                    srcset="{{ block.settings.image | image_url: width: 500 }} 500w, {{ block.settings.image | image_url: width: 900 }} 900w"
+                    sizes="(max-width:749px) 100vw, 440px"
+                    alt="{{ block.settings.image.alt | escape }}"
+                    loading="lazy"
+                    width="{{ block.settings.image.width }}"
+                    height="{{ block.settings.image.height }}"
+                  >
+                </div>
+              {%- elsif block.settings.show_image_placeholder -%}
+                <div class="spt-card__img">
+                  <div class="spt-card__img-placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+                  </div>
+                </div>
+              {%- endif -%}
+              <div class="spt-card__body">
+                {%- if block.settings.year != blank -%}
+                  <div class="spt-card__year">{{ block.settings.year }}</div>
+                {%- endif -%}
+                {%- if block.settings.heading != blank -%}
+                  <h3 class="spt-card__heading">{{ block.settings.heading }}</h3>
+                {%- endif -%}
+                {%- if block.settings.text != blank -%}
+                  <p class="spt-card__text">{{ block.settings.text }}</p>
+                {%- endif -%}
+                {%- if btn_text != blank -%}
+                  <a href="{{ btn_link | default: '#' }}" class="spt-card__btn spt-card__btn--{{ btn_style }}">
+                    {{ btn_text }}
+                    {%- if btn_style != 'ghost' -%}
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    {%- endif -%}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endif -%}
+        </div>
+
+      </div>
+    {%- endfor -%}
+
+  </div>
+
+</section>
+
+<script>
+(function(){
+  var section = document.querySelector('.spt-wrap--{{ section.id }}');
+  if (!section) return;
+
+  var items = section.querySelectorAll('[data-spt-item]');
+  var dots  = section.querySelectorAll('[data-spt-dot]');
+  var axisEl = section.querySelector('[data-spt-axis]');
+  var axisFill = section.querySelector('[data-spt-axis-fill]');
+
+  if (!items.length) return;
+
+  /* IntersectionObserver: animate cards in when they hit viewport */
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (!entry.isIntersecting) return;
+      var card = entry.target.querySelector('[data-spt-card]');
+      var dot  = entry.target.querySelector('[data-spt-dot]');
+      if (card) card.classList.add('spt-card--visible');
+      if (dot)  dot.classList.add('spt-dot--active');
+      io.unobserve(entry.target);
+    });
+  }, { threshold: 0.2, rootMargin: '0px 0px -60px 0px' });
+
+  items.forEach(function(item) { io.observe(item); });
+
+  /* Scroll-driven axis fill */
+  if (axisEl && axisFill) {
+    function updateAxis() {
+      var axisRect = axisEl.getBoundingClientRect();
+      var axisTop  = axisRect.top + window.scrollY;
+      var axisH    = axisEl.offsetHeight;
+      var scrolled = window.scrollY + window.innerHeight * 0.6;
+      var progress = Math.max(0, Math.min(1, (scrolled - axisTop) / axisH));
+      axisFill.style.height = (progress * 100) + '%';
+    }
+
+    window.addEventListener('scroll', function(){ requestAnimationFrame(updateAxis); }, { passive: true });
+    updateAxis();
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Pin Timeline",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header",
+      "label": "Show section header",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Our Journey"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Milestones That Shaped Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "From a small idea to a global brand — every step has been intentional, every milestone a reason to push further."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "label": "Content max width",
+      "min": 800,
+      "max": 1400,
+      "step": 50,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "item_gap",
+      "label": "Gap between items",
+      "min": 40,
+      "max": 160,
+      "step": 8,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom",
+      "min": 0,
+      "max": 160,
+      "step": 8,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card inner padding",
+      "min": 16,
+      "max": 56,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Card shadow color",
+      "default": "#000000"
+    },
+    {
+      "type": "header",
+      "content": "Timeline line"
+    },
+    {
+      "type": "color",
+      "id": "line_color",
+      "label": "Line color",
+      "default": "#e2e0db"
+    },
+    {
+      "type": "range",
+      "id": "line_width",
+      "label": "Line width",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "dot_size",
+      "label": "Dot size",
+      "min": 10,
+      "max": 28,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "dot_color",
+      "label": "Dot color (inactive)",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#f8f7f4"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent color 2",
+      "default": "#8b5cf6"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "inter_n4"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button border radius",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 8,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Timeline Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "show_image_placeholder",
+          "label": "Show placeholder if no image",
+          "default": true
+        },
+        {
+          "type": "text",
+          "id": "year",
+          "label": "Year / label",
+          "default": "2020"
+        },
+        {
+          "type": "textarea",
+          "id": "heading",
+          "label": "Heading",
+          "default": "The Beginning"
+        },
+        {
+          "type": "textarea",
+          "id": "text",
+          "label": "Body text",
+          "default": "It all started with a single idea. A vision to reimagine the way people connect with quality craftsmanship."
+        },
+        {
+          "type": "text",
+          "id": "btn_text",
+          "label": "Button text",
+          "default": "Read More"
+        },
+        {
+          "type": "url",
+          "id": "btn_link",
+          "label": "Button link"
+        },
+        {
+          "type": "select",
+          "id": "btn_style",
+          "label": "Button style",
+          "options": [
+            { "value": "solid", "label": "Solid" },
+            { "value": "outline", "label": "Outline" },
+            { "value": "ghost", "label": "Ghost / Text only" }
+          ],
+          "default": "ghost"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Pin Timeline",
+      "blocks": [
+        {
+          "type": "item",
+          "settings": {
+            "year": "2018",
+            "heading": "The Idea Is Born",
+            "text": "In a small studio, a single question sparked everything: what if great design was accessible to everyone? That question became our north star.",
+            "btn_text": "Our Story",
+            "btn_style": "ghost"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "year": "2020",
+            "heading": "First Collection Launched",
+            "text": "After two years of meticulous craftsmanship and zero compromise on quality, our debut collection sold out in 48 hours.",
+            "btn_text": "View Archive",
+            "btn_style": "ghost"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "year": "2022",
+            "heading": "Going Global",
+            "text": "Partnerships with artisans across three continents. A supply chain built on fairness, transparency and craftsmanship that endures.",
+            "btn_text": "Our Makers",
+            "btn_style": "ghost"
+          }
+        },
+        {
+          "type": "item",
+          "settings": {
+            "year": "2024",
+            "heading": "1 Million Customers",
+            "text": "A community, not just a customer base. One million people who believe in the same values we do — quality, intention, beauty.",
+            "btn_text": "Join Us",
+            "btn_style": "outline"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

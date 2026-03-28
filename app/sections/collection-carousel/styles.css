@@ -1,0 +1,464 @@
+/* ═══════════════════════════════════════════════
+   SectionHub – Collection Carousel   (ccr-)
+   ═══════════════════════════════════════════════ */
+
+/* ── Reset & Base ── */
+.ccr,
+.ccr *,
+.ccr *::before,
+.ccr *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+.ccr {
+  position: relative;
+  background: var(--ccr-bg, #fff);
+  /* NO overflow:hidden here – it breaks position:sticky */
+  padding-top: var(--ccr-pt, 60px);
+  padding-bottom: var(--ccr-pb, 60px);
+}
+
+/* Clip only on the X axis so sticky still works */
+.ccr-scroll {
+  position: relative;
+  overflow: visible;
+}
+
+.ccr-scroll__inner {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;          /* clip the horizontal card overflow HERE */
+  display: flex;
+  align-items: center;
+}
+
+/* In sticky mode, the outer section should have no padding – the scroll container controls it */
+.ccr[data-ccr-style="sticky"] {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+@media (max-width: 749px) {
+  .ccr {
+    padding-top: var(--ccr-pt-m, 20px);
+    padding-bottom: var(--ccr-pb-m, 40px);
+  }
+  .ccr[data-ccr-style="sticky"] {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* ── Text Column – absolute overlay on top of cards ── */
+.ccr-text {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 42%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 40px 48px;
+  z-index: 10;
+  will-change: opacity, transform;
+  transition: none;
+}
+
+.ccr-text__inner {
+  max-width: 480px;
+}
+
+/* Heading */
+.ccr-text__heading {
+  font-family: var(--ccr-heading-ff);
+  font-weight: var(--ccr-heading-fw, 700);
+  font-style: var(--ccr-heading-fst, normal);
+  color: var(--ccr-heading-c, #1a1a1a);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  margin-bottom: 20px;
+}
+
+.ccr-text__heading--sm { font-size: clamp(1.5rem, 3vw, 2rem); }
+.ccr-text__heading--md { font-size: clamp(2rem, 4vw, 3rem); }
+.ccr-text__heading--lg { font-size: clamp(2.5rem, 5vw, 4rem); }
+.ccr-text__heading--xl { font-size: clamp(3rem, 6vw, 5.5rem); }
+
+/* Marker (highlighted text) */
+.ccr-marker {
+  font-family: var(--ccr-marker-ff);
+  font-weight: var(--ccr-marker-fw, 700);
+  font-style: var(--ccr-marker-fst, italic);
+  color: var(--ccr-marker-c, #1a1a1a);
+}
+
+/* Description */
+.ccr-text__desc {
+  font-family: var(--ccr-body-ff);
+  font-weight: var(--ccr-body-fw, 400);
+  color: var(--ccr-text-c, #444);
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.ccr-text__desc--xs { font-size: 0.85rem; }
+.ccr-text__desc--sm { font-size: 0.95rem; }
+.ccr-text__desc--md { font-size: 1.05rem; }
+
+/* Actions */
+.ccr-text__actions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+/* ── Buttons ── */
+.ccr-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+  font-family: var(--ccr-body-ff);
+  font-weight: 600;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ccr-btn--sm { font-size: 0.8rem; padding: 8px 18px; }
+.ccr-btn--md { font-size: 0.9rem; padding: 10px 24px; }
+.ccr-btn--lg { font-size: 1rem; padding: 12px 30px; }
+
+.ccr-btn--icon {
+  width: 46px;
+  height: 46px;
+  padding: 0;
+  border-radius: 50%;
+  background: var(--ccr-btn-bg, #1a1a1a);
+  color: var(--ccr-btn-c, #fff);
+}
+
+.ccr-btn--icon:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+}
+
+.ccr-btn:not(.ccr-btn--icon) {
+  background: transparent;
+  color: var(--ccr-heading-c, #1a1a1a);
+  border: none;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  padding: 8px 4px;
+}
+
+.ccr-btn:not(.ccr-btn--icon):hover {
+  opacity: 0.7;
+}
+
+/* ═══════════════════════════════════════════════
+   CARD TRACK
+   ═══════════════════════════════════════════════ */
+.ccr-track {
+  display: flex;
+  gap: 24px;
+  align-items: center;
+  padding: 40px 40px;
+  will-change: transform;
+  /* First card starts to the right of the text area */
+  padding-left: 42%;
+}
+
+/* Free-scroll (scroll mode) */
+.ccr-track--free {
+  overflow-x: auto;
+  overflow-y: hidden;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding: 20px 24px;
+  cursor: grab;
+  scrollbar-width: none;
+}
+.ccr-track--free::-webkit-scrollbar { display: none; }
+.ccr-track--free .ccr-card { scroll-snap-align: start; }
+
+/* ═══════════════════════════════════════════════
+   CARDS
+   ═══════════════════════════════════════════════ */
+.ccr-card {
+  flex: 0 0 var(--ccr-card-w, 520px);
+  width: var(--ccr-card-w, 520px);
+  position: relative;
+}
+
+.ccr-card__link {
+  display: block;
+  position: relative;
+  text-decoration: none;
+  border-radius: var(--ccr-radius, 35px);
+  overflow: hidden;
+}
+
+.ccr-card__media {
+  position: relative;
+  aspect-ratio: var(--ccr-aspect, 4/3);
+  background: var(--ccr-card-bg, #f0f0f0);
+  overflow: hidden;
+  border-radius: var(--ccr-radius, 35px);
+}
+
+[data-ccr-root] .ccr-card__link:hover .ccr-card__img {
+  transform: scale(1.04);
+}
+
+.ccr-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+
+.ccr-card__placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ccr-card-bg, #f0f0f0);
+}
+
+.ccr-card__svg {
+  width: 60%;
+  height: auto;
+  opacity: 0.35;
+}
+
+/* Overlay */
+.ccr-card__overlay {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+}
+
+/* Chip / Highlighted text – animated in by JS */
+.ccr-chip {
+  position: absolute;
+  bottom: 16px;
+  left: 16px;
+  background: var(--ccr-chip-bg, #fff);
+  color: var(--ccr-chip-c, #1a1a1a);
+  font-family: var(--ccr-body-ff);
+  font-weight: 500;
+  font-size: 0.8rem;
+  padding: 6px 16px;
+  border-radius: 50px;
+  pointer-events: none;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(20px);
+  will-change: opacity, transform;
+}
+
+/* Card border */
+[data-ccr-root] .ccr-card__link {
+  border: 0 solid transparent;
+}
+
+/* Card Info */
+.ccr-card__info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 6px 0;
+  gap: 12px;
+}
+
+.ccr-card__title {
+  font-family: var(--ccr-body-ff);
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--ccr-heading-c, #1a1a1a);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ccr-card__btn {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
+  font-family: var(--ccr-body-ff);
+  font-weight: 600;
+  border-radius: 50px;
+  white-space: nowrap;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+.ccr-card__btn--sm { font-size: 0.75rem; padding: 6px 14px; }
+.ccr-card__btn--md { font-size: 0.85rem; padding: 8px 18px; }
+
+.ccr-card__btn--outline {
+  background: transparent;
+  color: var(--ccr-heading-c, #1a1a1a);
+  border: 1.5px solid var(--ccr-heading-c, #1a1a1a);
+}
+.ccr-card__btn--outline:hover {
+  background: var(--ccr-heading-c, #1a1a1a);
+  color: var(--ccr-btn-c, #fff);
+}
+
+.ccr-card__btn--filled {
+  background: var(--ccr-btn-bg, #1a1a1a);
+  color: var(--ccr-btn-c, #fff);
+  border: 1.5px solid transparent;
+}
+.ccr-card__btn--filled:hover {
+  opacity: 0.85;
+}
+
+/* ═══════════════════════════════════════════════
+   PROGRESS BAR – pinned to bottom of the sticky viewport
+   ═══════════════════════════════════════════════ */
+.ccr-scroll__inner .ccr-progress {
+  position: absolute;
+  bottom: var(--ccr-progress-bottom, 16px);
+  left: 48px;
+  right: 48px;
+  height: 4px;
+  background: var(--ccr-progress-bg, #e0e0e0);
+  border-radius: 4px;
+  overflow: hidden;
+  z-index: 20;
+  margin: 0;
+}
+
+/* Fallback for scroll mode / static mode */
+.ccr-static .ccr-progress,
+.ccr-progress {
+  position: relative;
+  height: 4px;
+  background: var(--ccr-progress-bg, #e0e0e0);
+  border-radius: 4px;
+  margin: 16px 48px 0;
+  overflow: hidden;
+}
+
+.ccr-progress__fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0%;
+  background: var(--ccr-progress-fill, #1a1a1a);
+  border-radius: 4px;
+  transition: width 0.08s linear;
+}
+
+/* ═══════════════════════════════════════════════
+   STATIC / SCROLL MODE
+   ═══════════════════════════════════════════════ */
+.ccr-static {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.ccr-static__header {
+  max-width: 680px;
+  margin-bottom: 36px;
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 999px) {
+  /* On mobile no sticky needed, so overflow-x clip is safe */
+  .ccr {
+    overflow-x: hidden;
+  }
+
+  /* Restore normal section padding on mobile */
+  .ccr[data-ccr-style="sticky"] {
+    padding-top: var(--ccr-pt-m, 20px);
+    padding-bottom: var(--ccr-pb-m, 40px);
+  }
+
+  /* Kill the sticky scroll effect entirely */
+  .ccr-scroll {
+    height: auto !important;
+  }
+
+  .ccr-scroll__inner {
+    position: relative;
+    height: auto;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  /* Text becomes normal block, no absolute overlay */
+  .ccr-text {
+    position: relative;
+    width: 100%;
+    height: auto;
+    padding: 0 24px 20px;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
+  }
+
+  /* Track becomes a free horizontal scroll carousel */
+  .ccr-track {
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    padding: 0 24px 8px;
+    padding-left: 24px;
+    scrollbar-width: none;
+    transform: none !important;
+    touch-action: pan-x;
+    cursor: auto;
+  }
+  .ccr-track::-webkit-scrollbar { display: none; }
+  .ccr-track .ccr-card { scroll-snap-align: start; }
+
+  /* Chips always visible on mobile (no scroll-driven animation) */
+  .ccr-chip {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Progress bar sits below cards normally */
+  .ccr-scroll__inner .ccr-progress {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    margin: 12px 24px 0;
+  }
+}
+
+@media (max-width: 749px) {
+  .ccr-card {
+    flex: 0 0 var(--ccr-card-w-m, 340px);
+    width: var(--ccr-card-w-m, 340px);
+  }
+
+  .ccr-text__heading--lg { font-size: 2rem; }
+  .ccr-text__heading--xl { font-size: 2.5rem; }
+}
+
+@media (min-width: 1000px) {
+  /* Text overlays the cards, z-index already set */
+  .ccr-scroll__inner .ccr-text {
+    z-index: 10;
+  }
+
+  .ccr-scroll__inner .ccr-track {
+    z-index: 1;
+  }
+}

@@ -1,12 +1,14 @@
 {
   "id": "counter-wave-bars",
-  "name": "SS - Wave Bars",
+  "name": "SIQ - Wave Bars",
   "description": "Animated vertical bar chart counter section with wave-like staggered rise animation. Each bar grows to its target height on scroll with gradient fills, floating value labels, and smooth easing. Features horizontal and vertical orientations, adjustable bar widths, glow effects, and grid lines.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0f172a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/counter-wave-bars/default.webp",
-      "alt": "Counter Wave Bars - Default",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPk91ciBOdW1iZXJzPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5BbmltYXRlZCB3YXZlIGJhciBjaGFydDwvdGV4dD4KPHJlY3QgeD0iODAiIHk9IjE4MCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjEzMCIgcng9IjYiIGZpbGw9IiM4MThjZjgiIG9wYWNpdHk9Ii44Ii8+Cjx0ZXh0IHg9IjExMCIgeT0iMTcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj4xLjJLPC90ZXh0Pgo8dGV4dCB4PSIxMTAiIHk9IjMzNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSI5IiBmaWxsPSIjODg4OGFhIj5TYWxlczwvdGV4dD48cmVjdCB4PSIxODAiIHk9IjE0MCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjE3MCIgcng9IjYiIGZpbGw9IiM4MThjZjgiIG9wYWNpdHk9Ii44Ii8+Cjx0ZXh0IHg9IjIxMCIgeT0iMTMyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj45NSU8L3RleHQ+Cjx0ZXh0IHg9IjIxMCIgeT0iMzM1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjkiIGZpbGw9IiM4ODg4YWEiPlJhdGluZzwvdGV4dD48cmVjdCB4PSIyODAiIHk9IjEwMCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjIxMCIgcng9IjYiIGZpbGw9IiM4MThjZjgiIG9wYWNpdHk9Ii44Ii8+Cjx0ZXh0IHg9IjMxMCIgeT0iOTIiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTMiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPjUwMCs8L3RleHQ+Cjx0ZXh0IHg9IjMxMCIgeT0iMzM1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjkiIGZpbGw9IiM4ODg4YWEiPlJldmlld3M8L3RleHQ+PHJlY3QgeD0iMzgwIiB5PSIxNjAiIHdpZHRoPSI2MCIgaGVpZ2h0PSIxNTAiIHJ4PSI2IiBmaWxsPSIjODE4Y2Y4IiBvcGFjaXR5PSIuOCIvPgo8dGV4dCB4PSI0MTAiIHk9IjE1MiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMyIgZmlsbD0iI2ZmZmZmZiIgZm9udC13ZWlnaHQ9IjcwMCI+MjQvNzwvdGV4dD4KPHRleHQgeD0iNDEwIiB5PSIzMzUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iOSIgZmlsbD0iIzg4ODhhYSI+U3VwcG9ydDwvdGV4dD48cmVjdCB4PSI0ODAiIHk9IjEyMCIgd2lkdGg9IjYwIiBoZWlnaHQ9IjE5MCIgcng9IjYiIGZpbGw9IiM4MThjZjgiIG9wYWNpdHk9Ii44Ii8+Cjx0ZXh0IHg9IjUxMCIgeT0iMTEyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEzIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj41MCs8L3RleHQ+Cjx0ZXh0IHg9IjUxMCIgeT0iMzM1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjkiIGZpbGw9IiM4ODg4YWEiPkNvdW50cmllczwvdGV4dD4KPC9zdmc+",
+      "alt": "SS - Wave Bars - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

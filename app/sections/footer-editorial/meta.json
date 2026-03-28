@@ -1,12 +1,12 @@
 {
   "id": "footer-editorial",
-  "name": "Footer Editorial",
+  "name": "SIQ - Footer Editorial",
   "description": "Full-featured editorial footer with brand info, navigation columns, newsletter signup, social icons, and payment badges. Clean, modern layout.",
   "category": "Footer",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 12,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -17,8 +17,8 @@
     "Navigation",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/footer-editorial/default.webp",
@@ -67,5 +67,6 @@
     }
   ],
   "updatedAt": "2026-03-04",
-  "createdAt": "2026-02-15"
+  "createdAt": "2026-02-15",
+  "tier": "basic"
 }

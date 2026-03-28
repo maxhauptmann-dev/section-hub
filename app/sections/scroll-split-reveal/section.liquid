@@ -6,6 +6,11 @@
   Prefix: shsr-
 {% endcomment %}
 
+{% comment %}
+  Optimal scroll height: only scroll as much as needed.
+  For N panels, need (N-1) transitions. Single panel = static view.
+{% endcomment %}
+
 {%- liquid
   assign heading_font   = section.settings.heading_font
   assign body_font      = section.settings.body_font
@@ -29,8 +34,17 @@
   assign btn_radius     = section.settings.btn_radius
 
   assign panel_count    = section.blocks.size
-  assign total_scroll   = panel_count | times: scroll_per | plus: 100
 -%}
+
+{% if panel_count == 1 %}
+  {% assign optimal_scroll_per = 150 %}
+{% elsif panel_count == 2 %}
+  {% assign optimal_scroll_per = 150 %}
+{% else %}
+  {% assign optimal_scroll_per = scroll_per %}
+{% endif %}
+
+{%- assign total_scroll = panel_count | times: optimal_scroll_per | plus: 100 -%}
 
 {%- assign ov_r = overlay_color | color_extract: 'red' -%}
 {%- assign ov_g = overlay_color | color_extract: 'green' -%}
@@ -220,6 +234,31 @@
     var parallaxStr  = parseInt(scrollEl.dataset.shsrParallax) || 20;
     var currentIndex = -1;
     var ticking      = false;
+    var isMobile     = window.innerWidth < 750;
+
+    /* === MOBILE: Disable sticky scroll entirely ===
+       On mobile, we use a simple card stack layout instead.
+       Just show slides one at a time with dot/button navigation. */
+    if (isMobile) {
+      /* Show first slide immediately */
+      setActive(0);
+      
+      /* Disable scroll-based animation on mobile */
+      window.removeEventListener('scroll', onScroll);
+      
+      /* Instead: dots and buttons control which slide shows */
+      dots.forEach(function(dot) {
+        dot.addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = parseInt(dot.dataset.shsrDot);
+          setActive(target);
+        });
+      });
+      
+      return;  /* Exit early - no scroll listener on mobile */
+    }
+
+    /* === DESKTOP: Keep sticky scroll effect === */
 
     function setActive(index) {
       if (index === currentIndex) return;
@@ -272,6 +311,7 @@
       }
     }
 
+    /* Desktop: scroll-driven animation */
     window.addEventListener('scroll', function() {
       if (!ticking) {
         requestAnimationFrame(function() {
@@ -284,21 +324,23 @@
 
     onScroll();
 
-    /* Dot clicks */
-    dots.forEach(function(dot) {
-      dot.addEventListener('click', function() {
-        var target = parseInt(dot.dataset.shsrDot);
-        var totalHeight = scrollEl.offsetHeight - window.innerHeight;
-        var scrollTarget = scrollEl.offsetTop + (target / panelCount) * totalHeight;
-        window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+    /* Dot clicks for desktop: navigate via scroll */
+    if (!isMobile) {
+      dots.forEach(function(dot) {
+        dot.addEventListener('click', function() {
+          var target = parseInt(dot.dataset.shsrDot);
+          var totalHeight = scrollEl.offsetHeight - window.innerHeight;
+          var scrollTarget = scrollEl.offsetTop + (target / panelCount) * totalHeight;
+          window.scrollTo({ top: scrollTarget, behavior: 'smooth' });
+        });
       });
-    });
+    }
   })();
 </script>
 
 {% schema %}
 {
-  "name": "SS - Split Reveal",
+  "name": "SIQ - Split Reveal",
   "tag": "section",
   "class": "shsr-section",
   "settings": [
@@ -465,7 +507,7 @@
       "type": "checkbox",
       "id": "show_side_label",
       "label": "Show side label",
-      "default": true
+      "default": false
     },
     {
       "type": "text",
@@ -477,7 +519,7 @@
       "type": "color",
       "id": "side_label_color",
       "label": "Side label color",
-      "default": "#333333"
+      "default": "#ffffff"
     }
   ],
   "blocks": [
@@ -551,7 +593,7 @@
   ],
   "presets": [
     {
-      "name": "SS - Split Reveal",
+      "name": "SIQ - Split Reveal",
       "blocks": [
         {
           "type": "slide",

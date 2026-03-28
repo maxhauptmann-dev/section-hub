@@ -1,0 +1,413 @@
+{% comment %}
+  Section Hub – Scroll Text Magnify v1.0
+  Jaw-dropping scroll-driven text zoom. Text starts tiny and blurred,
+  scales up massively, becomes crystal clear at full size.
+  Background transitions, secondary content fades in.
+  Prefix: stm-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign bg_end = section.settings.bg_end_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign main_text = section.settings.main_text
+  assign sub_text = section.settings.sub_text
+  assign btn_text = section.settings.btn_text
+  assign btn_link = section.settings.btn_link
+  assign btn_style = section.settings.btn_style
+  assign max_scale = section.settings.max_scale
+  assign max_blur = section.settings.max_blur
+  assign scroll_distance = section.settings.scroll_distance
+  assign font_weight = section.settings.font_weight
+  assign text_transform = section.settings.text_transform
+  assign show_line = section.settings.show_accent_line
+  assign line_pos = section.settings.line_position
+  assign show_gradient_text = section.settings.gradient_text
+  assign grad_start = section.settings.gradient_start
+  assign grad_end = section.settings.gradient_end
+  assign show_glow = section.settings.show_glow
+  assign glow_color = section.settings.glow_color
+  assign show_particles = section.settings.show_bg_particles
+  assign particle_color = section.settings.particle_color
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+-%}
+
+<style>
+  .stm-wrap--{{ sid }}{
+    --stm-bg:{{ bg }};
+    --stm-bg-end:{{ bg_end }};
+    --stm-text:{{ text_color }};
+    --stm-accent:{{ accent }};
+    --stm-max-scale:{{ max_scale }};
+    --stm-max-blur:{{ max_blur }}px;
+    --stm-fw:{{ font_weight }};
+    --stm-tt:{{ text_transform }};
+    --stm-mt:{{ mt }}px;
+    --stm-mb:{{ mb }}px;
+    --stm-glow:{{ glow_color }};
+    --stm-particle:{{ particle_color }};
+    {%- if show_gradient_text -%}
+      --stm-grad-start:{{ grad_start }};
+      --stm-grad-end:{{ grad_end }};
+    {%- endif -%}
+  }
+</style>
+
+<section class="stm-wrap stm-wrap--{{ sid }}" data-stm data-stm-max-scale="{{ max_scale }}" data-stm-max-blur="{{ max_blur }}">
+  <div class="stm-scroll" style="height:{{ scroll_distance }}vh;">
+    <div class="stm-sticky">
+
+      {%- comment -%} Background transition layer {%- endcomment -%}
+      <div class="stm-bg-layer" data-stm-bg></div>
+
+      {%- comment -%} Background particles {%- endcomment -%}
+      {%- if show_particles -%}
+        <div class="stm-particles">
+          {%- for i in (1..20) -%}
+            {%- assign px = i | times: 13 | modulo: 92 | plus: 4 -%}
+            {%- assign py = i | times: 29 | modulo: 88 | plus: 6 -%}
+            {%- assign sz = i | modulo: 4 | plus: 1 -%}
+            {%- assign dur = i | modulo: 5 | plus: 4 -%}
+            {%- assign del = i | times: 600 -%}
+            <span class="stm-particle" style="left:{{ px }}%;top:{{ py }}%;width:{{ sz }}px;height:{{ sz }}px;animation-duration:{{ dur }}s;animation-delay:{{ del }}ms;"></span>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Main text (the star of the show) {%- endcomment -%}
+      {%- if main_text != blank -%}
+        <div class="stm-main" data-stm-main>
+          <span class="stm-main-text{% if show_gradient_text %} stm-main-text--gradient{% endif %}">{{ main_text }}</span>
+          {%- if show_glow -%}
+            <span class="stm-main-glow" aria-hidden="true">{{ main_text }}</span>
+          {%- endif -%}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Accent line {%- endcomment -%}
+      {%- if show_line -%}
+        <div class="stm-line stm-line--{{ line_pos }}" data-stm-line></div>
+      {%- endif -%}
+
+      {%- comment -%} Secondary content (fades in after zoom) {%- endcomment -%}
+      <div class="stm-secondary" data-stm-secondary>
+        {%- if sub_text != blank -%}
+          <p class="stm-sub">{{ sub_text }}</p>
+        {%- endif -%}
+        {%- if btn_text != blank -%}
+          <a href="{{ btn_link | default: '#' }}" class="stm-btn stm-btn--{{ btn_style }}">
+            {{ btn_text }}
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script>
+(function(){
+  var wrap = document.querySelector('.stm-wrap--{{ sid }}');
+  if(!wrap) return;
+
+  var scrollEl = wrap.querySelector('.stm-scroll');
+  var mainEl = wrap.querySelector('[data-stm-main]');
+  var bgLayer = wrap.querySelector('[data-stm-bg]');
+  var lineEl = wrap.querySelector('[data-stm-line]');
+  var secondaryEl = wrap.querySelector('[data-stm-secondary]');
+  var maxScale = parseFloat(wrap.dataset.stmMaxScale) || 8;
+  var maxBlur = parseFloat(wrap.dataset.stmMaxBlur) || 12;
+
+  /* On mobile, reduce zoom scale for smoother experience */
+  if(window.innerWidth < 600){
+    maxScale = Math.min(maxScale, 4);
+    maxBlur = Math.min(maxBlur, 6);
+  }
+
+  function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3); }
+
+  function update(){
+    var rect = scrollEl.getBoundingClientRect();
+    var total = scrollEl.offsetHeight - window.innerHeight;
+    if(total <= 0) return;
+
+    var scrolled = Math.max(0, -rect.top);
+    var progress = Math.min(scrolled / total, 1);
+
+    /* Phase 1 (0-0.6): Text zooms from maxScale to 1, blur from max to 0 */
+    var zoomPhase = Math.min(progress / 0.6, 1);
+    var eased = easeOutCubic(zoomPhase);
+    var scale = maxScale - (maxScale - 1) * eased;
+    var blur = maxBlur * (1 - eased);
+    var textOpacity = Math.min(zoomPhase * 3, 1); /* fade in fast */
+
+    if(mainEl){
+      mainEl.style.transform = 'scale(' + scale + ')';
+      mainEl.style.filter = 'blur(' + blur + 'px)';
+      mainEl.style.opacity = textOpacity;
+    }
+
+    /* Background transition */
+    if(bgLayer){
+      bgLayer.style.opacity = progress;
+    }
+
+    /* Phase 2 (0.5-0.7): Accent line grows */
+    if(lineEl){
+      var lineProgress = Math.max(0, Math.min(1, (progress - 0.5) / 0.2));
+      lineEl.style.transform = 'scaleX(' + lineProgress + ')';
+      lineEl.style.opacity = lineProgress;
+    }
+
+    /* Phase 3 (0.65-0.9): Secondary content fades in */
+    if(secondaryEl){
+      var secProgress = Math.max(0, Math.min(1, (progress - 0.65) / 0.25));
+      secondaryEl.style.opacity = secProgress;
+      secondaryEl.style.transform = 'translateY(' + (30 * (1 - secProgress)) + 'px)';
+    }
+  }
+
+  window.addEventListener('scroll', function(){ requestAnimationFrame(update); }, {passive:true});
+  update();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Text Magnify",
+  "tag": "section",
+  "class": "section-scroll-text-magnify",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Main Text"
+    },
+    {
+      "type": "text",
+      "id": "main_text",
+      "label": "Main text",
+      "default": "ELEVATE"
+    },
+    {
+      "type": "range",
+      "id": "font_weight",
+      "label": "Font weight",
+      "min": 400,
+      "max": 900,
+      "step": 100,
+      "default": 900
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "none", "label": "None" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "Zoom Effect"
+    },
+    {
+      "type": "range",
+      "id": "max_scale",
+      "label": "Initial zoom level",
+      "min": 3,
+      "max": 15,
+      "step": 1,
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "max_blur",
+      "label": "Initial blur",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "scroll_distance",
+      "label": "Scroll distance",
+      "min": 200,
+      "max": 600,
+      "step": 25,
+      "default": 400,
+      "unit": "vh"
+    },
+    {
+      "type": "header",
+      "content": "Gradient Text"
+    },
+    {
+      "type": "checkbox",
+      "id": "gradient_text",
+      "label": "Use gradient fill",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "gradient_start",
+      "label": "Gradient start",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "gradient_end",
+      "label": "Gradient end",
+      "default": "#ec4899"
+    },
+    {
+      "type": "header",
+      "content": "Glow Effect"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Text glow",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "glow_color",
+      "label": "Glow color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Accent Line"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_accent_line",
+      "label": "Show accent line",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "line_position",
+      "label": "Position",
+      "options": [
+        { "value": "below", "label": "Below text" },
+        { "value": "above", "label": "Above text" }
+      ],
+      "default": "below"
+    },
+    {
+      "type": "header",
+      "content": "Secondary Content"
+    },
+    {
+      "type": "textarea",
+      "id": "sub_text",
+      "label": "Subtext",
+      "default": "Redefine what's possible. Premium quality, timeless design, and an experience that goes beyond the ordinary."
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "Discover More"
+    },
+    {
+      "type": "url",
+      "id": "btn_link",
+      "label": "Button link"
+    },
+    {
+      "type": "select",
+      "id": "btn_style",
+      "label": "Button style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "outline", "label": "Outline" },
+        { "value": "ghost", "label": "Ghost" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "header",
+      "content": "Background Particles"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bg_particles",
+      "label": "Floating particles",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "particle_color",
+      "label": "Particle color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background start",
+      "default": "#050505"
+    },
+    {
+      "type": "color",
+      "id": "bg_end_color",
+      "label": "Background end",
+      "default": "#0f0823"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Text Magnify"
+    }
+  ]
+}
+{% endschema %}

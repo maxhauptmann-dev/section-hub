@@ -1,12 +1,14 @@
 {
   "id": "image-lens-focus",
-  "name": "SS - Lens Focus",
+  "name": "SIQ - Lens Focus",
   "description": "Innovative image gallery with cinematic lens focus effect. Images start slightly blurred or desaturated and sharpen on hover or scroll into view. Features a spotlight reveal with adjustable focus radius, grayscale-to-color transitions, smooth zoom on hover, optional lightbox, category filter tabs, and gradient overlays. Each image supports title, subtitle, badge, and link. Choose focus mode: hover, scroll, or always-on. Perfect for photography portfolios, product galleries, creative agencies, and visual storytelling. 85+ customization options.",
-  "category": ["Images"],
+  "category": [
+    "Images"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +23,31 @@
     "Grayscale",
     "Premium"
   ],
-  "author": "Section Hub",
-  "previewColor": "#f0ece6",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/image-lens-focus/default.webp",
-      "alt": "Lens Focus Gallery - Default",
+      "src": "/previews/image-lens-focus/default.webp", 
+      "alt": "SS - Lens Focus - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Refresh",
+      "Spotlight",
+      "Studio",
+      "Publisher",
+      "Trade",
+      "Taste",
+      "Colorblock",
+      "Ride",
+      "Origin",
+      "Crave"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +60,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

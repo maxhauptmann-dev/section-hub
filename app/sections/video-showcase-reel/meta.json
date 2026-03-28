@@ -1,12 +1,12 @@
 {
   "id": "video-showcase-reel",
-  "name": "SS - Video Reel",
+  "name": "SIQ - Video Reel",
   "description": "Cinematic fullscreen video showcase with thumbnail reel navigation at the bottom. Each video block features its own title, description, play button and progress bar. Supports MP4 URLs, Shopify hosted video, and fallback images. Includes autoplay, muted background mode, glassmorphism overlay cards, Ken Burns fallback, scroll-reveal animation, and ambient glow. 60+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +21,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/video-showcase-reel/default.webp",
-      "alt": "Video Showcase Reel - Default",
+      "alt": "SS - Video Reel - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +50,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

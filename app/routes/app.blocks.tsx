@@ -247,6 +247,13 @@ export default function ConversionBlocksPage() {
         }
 
         .sh-blk-icon-float{animation:sh-float 3s ease-in-out infinite;display:inline-block}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .sh-blk-hero{padding:20px 16px;border-radius:14px}
+          .sh-blk-glass{padding:14px 16px}
+          .sh-blk-upgrade{padding:20px 16px}
+        }
       `}</style>
 
       <div style={{ maxWidth: "100%", overflowX: "hidden" }}>
@@ -327,7 +334,7 @@ export default function ConversionBlocksPage() {
               {[
                 { step: "1", icon: "🎨", text: "Open Theme Editor" },
                 { step: "2", icon: "📄", text: "Go to Product Page" },
-                { step: "3", icon: "➕", text: "Add Block → Section Hub" },
+                { step: "3", icon: "➕", text: "Add Block → SectionIQ" },
                 { step: "4", icon: "✨", text: "Customize & Save" },
               ].map((s) => (
                 <div key={s.step} className="sh-blk-step">

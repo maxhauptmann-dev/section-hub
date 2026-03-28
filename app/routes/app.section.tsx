@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
-import { useLoaderData, useNavigate, useActionData, useSubmit, useNavigation } from "react-router";
+import { useLoaderData, useNavigate, useActionData, useSubmit, useNavigation, useFetcher } from "react-router";
 import { authenticate } from "../shopify.server";
 import { getSectionWithFiles, getAllSections } from "../lib/sections.server";
 import { hasPurchasedSection } from "../services/billing.server";
@@ -49,7 +49,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
-  const { admin } = await authenticate.admin(request);
+  const { admin, session } = await authenticate.admin(request);
   
   const formData = await request.formData();
   const sectionId = formData.get("sectionId") as string;
@@ -66,9 +66,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       
       // Embed CSS inline
       const liquidWithStyles = `{% comment %}
-  Section Hub - ${section.name}
+  SectionIQ - ${section.name}
   Version: ${section.version}
-  Installed via Section Hub App
+  Installed via SectionIQ App
 {% endcomment %}
 
 <style>
@@ -77,7 +77,7 @@ ${section.cssContent || ""}
 
 ${section.liquidContent || ""}`;
 
-      // Hole das aktive Theme via GraphQL
+      // 1. Fetch active theme via GraphQL (only needs read_themes)
       const themesResponse = await admin.graphql(`
         query {
           themes(first: 10) {
@@ -91,94 +91,43 @@ ${section.liquidContent || ""}`;
       `);
       
       const themesData = await themesResponse.json();
-      console.log("GraphQL Themes:", themesData);
-      
       const themes = themesData.data?.themes?.nodes || [];
       const mainTheme = themes.find((t: { role: string }) => t.role === "MAIN");
       
       if (!mainTheme) {
         return { success: false, error: "No active theme found." };
       }
-      
-      console.log("Selected theme:", mainTheme);
-      
-      // Use GraphQL themeFilesUpsert API
-      console.log("Uploading section with GraphQL:", { filename: `sections/${sectionFileName}`, themeId: mainTheme.id });
 
-      const fileInput = {
-        filename: `sections/${sectionFileName}`,
-        body: {
-          type: "TEXT",
-          value: liquidWithStyles,
-        },
-      };
-      
-      // GraphQL themeFilesUpsert requires the full GID
-      const themeFilesResponse = await admin.graphql(
-        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-          themeFilesUpsert(files: $files, themeId: $themeId) {
-            upsertedThemeFiles {
-              filename
-            }
-            userErrors {
-              field
-              message
-            }
-            job {
-              id
-            }
-          }
-        }`,
+      // Extract numeric theme ID from GID (gid://shopify/Theme/123456789 → 123456789)
+      const themeId = mainTheme.id.split("/").pop();
+      const shop = session.shop;
+      const accessToken = session.accessToken || "";
+
+      // 2. Upload via REST Asset API (no special exemption needed)
+      const assetResponse = await fetch(
+        `https://${shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
         {
-          variables: {
-            files: [fileInput],
-            themeId: mainTheme.id,
-          }
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": accessToken,
+          },
+          body: JSON.stringify({
+            asset: {
+              key: `sections/${sectionFileName}`,
+              value: liquidWithStyles,
+            },
+          }),
         }
       );
-      
-      interface ThemeFilesUpsertResponse {
-        data?: {
-          themeFilesUpsert?: {
-            upsertedThemeFiles?: { filename: string }[];
-            userErrors?: { field?: string[] | null; message: string }[];
-            job?: { id?: string } | null;
-          };
-        };
-        errors?: { message: string }[];
+
+      if (!assetResponse.ok) {
+        const errorData = await assetResponse.json().catch(() => ({}));
+        console.error("Asset upload error:", errorData);
+        return { success: false, error: "Error uploading section to theme. Please try again." };
       }
 
-      const themeFilesData = (await themeFilesResponse.json()) as ThemeFilesUpsertResponse;
-      console.log("GraphQL themeFilesUpsert Response:", JSON.stringify(themeFilesData, null, 2));
-      
-      if (themeFilesData.errors) {
-        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
-        console.error("GraphQL Error:", errorMsg);
-        return { 
-          success: false, 
-          error: `GraphQL Error: ${errorMsg}`
-        };
-      }
-      
-      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
-      if (userErrors.length > 0) {
-        const errorMsg = userErrors.map((e) => `${(e.field || []).join(".")}: ${e.message}`).join(", ");
-        console.error("User Errors:", errorMsg);
-        return { 
-          success: false, 
-          error: `Error creating section: ${errorMsg}`
-        };
-      }
-      
-      const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
-      if (upsertedFiles.length === 0) {
-        return { 
-          success: false, 
-          error: "Section could not be installed. Please try again later."
-        };
-      }
-      
-      console.log("Section successfully installed:", upsertedFiles[0]?.filename);
+      console.log("Section successfully installed via REST:", sectionFileName);
       
       return { 
         success: true, 
@@ -187,7 +136,19 @@ ${section.liquidContent || ""}`;
       };
     } catch (error) {
       console.error("Install error:", error);
-      return { success: false, error: `An error occurred: ${error instanceof Error ? error.message : "Unknown"}` };
+      let errorMessage = "Unknown";
+      if (error instanceof Error) {
+        errorMessage = error.message;
+      } else if (typeof error === "string") {
+        errorMessage = error;
+      } else {
+        try {
+          errorMessage = JSON.stringify(error);
+        } catch {
+          errorMessage = String(error);
+        }
+      }
+      return { success: false, error: `An error occurred: ${errorMessage}` };
     }
   }
   
@@ -266,18 +227,57 @@ function PreviewGallery({
         }}
         onClick={() => setLightboxOpen(true)}
       >
-        <img
-          src={previews[current].src}
-          alt={previews[current].alt || sectionName}
-          style={{
-            display: "block",
-            width: "100%",
-            maxHeight: 420,
-            objectFit: "contain",
-            padding: 12,
-            boxSizing: "border-box",
-          }}
-        />
+        {(previews[current] as any).type === "video" ? (
+          <div style={{ position: "relative" }}>
+            <img
+              src={(previews[current] as any).poster || previews[current].src}
+              alt={previews[current].alt || sectionName}
+              style={{
+                display: "block",
+                width: "100%",
+                maxHeight: 420,
+                objectFit: "contain",
+                padding: 12,
+                boxSizing: "border-box",
+                filter: "brightness(0.7)",
+              }}
+            />
+            {/* Play button overlay */}
+            <div style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: 72,
+              height: 72,
+              borderRadius: "50%",
+              background: "rgba(0,0,0,0.6)",
+              backdropFilter: "blur(8px)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              transition: "transform 0.2s ease, background 0.2s ease",
+              boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
+            }}>
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
+                <path d="M8 5v14l11-7z"/>
+              </svg>
+            </div>
+          </div>
+        ) : (
+          <img
+            src={previews[current].src}
+            alt={previews[current].alt || sectionName}
+            style={{
+              display: "block",
+              width: "100%",
+              maxHeight: 420,
+              objectFit: "contain",
+              padding: 12,
+              boxSizing: "border-box",
+            }}
+          />
+        )}
 
         {/* Label badge */}
         {previews[current].label && (
@@ -292,26 +292,28 @@ function PreviewGallery({
             fontSize: 12,
             fontWeight: 500,
           }}>
-            {previews[current].label}
+            {(previews[current] as any).type === "video" ? `▶ ${previews[current].label}` : previews[current].label}
           </div>
         )}
 
-        {/* Enlarge hint */}
-        <div style={{
-          position: "absolute",
-          top: 12,
-          right: 12,
-          background: "rgba(0,0,0,0.5)",
-          color: "#fff",
-          borderRadius: "50%",
-          width: 32,
-          height: 32,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <Icon source={MaximizeIcon} tone="base" />
-        </div>
+        {/* Enlarge hint — only for images */}
+        {(previews[current] as any).type !== "video" && (
+          <div style={{
+            position: "absolute",
+            top: 12,
+            right: 12,
+            background: "rgba(0,0,0,0.5)",
+            color: "#fff",
+            borderRadius: "50%",
+            width: 32,
+            height: 32,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}>
+            <Icon source={MaximizeIcon} tone="base" />
+          </div>
+        )}
 
         {/* Arrows */}
         {hasMultiple && (
@@ -418,19 +420,40 @@ function PreviewGallery({
             </div>
           )}
 
-          {/* Full image */}
-          <img
-            src={previews[current].src}
-            alt={previews[current].alt || sectionName}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              maxWidth: "90vw",
-              maxHeight: "85vh",
-              objectFit: "contain",
-              borderRadius: 12,
-              cursor: "default",
-            }}
-          />
+          {/* Full image or video */}
+          {(previews[current] as any).type === "video" ? (
+            <video
+              key={previews[current].src}
+              src={previews[current].src}
+              poster={(previews[current] as any).poster}
+              loop
+              muted
+              playsInline
+              controls
+              preload="none"
+              autoPlay
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "85vh",
+                borderRadius: 12,
+                cursor: "default",
+              }}
+            />
+          ) : (
+            <img
+              src={previews[current].src}
+              alt={previews[current].alt || sectionName}
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                maxWidth: "90vw",
+                maxHeight: "85vh",
+                objectFit: "contain",
+                borderRadius: 12,
+                cursor: "default",
+              }}
+            />
+          )}
 
           {/* Label in lightbox */}
           {previews[current].label && (
@@ -518,7 +541,9 @@ export default function SectionDetailPage() {
   const submit = useSubmit();
   const navigation = useNavigation();
   const actionData = useActionData<typeof action>();
+  const buyFetcher = useFetcher();
   const isSubmitting = navigation.state === "submitting";
+  const isBuying = buyFetcher.state !== "idle";
   const [result, setResult] = useState<{ success?: boolean; message?: string; error?: string } | null>(null);
   const [tryLoading, setTryLoading] = useState(false);
   const [tryResult, setTryResult] = useState<{
@@ -531,9 +556,34 @@ export default function SectionDetailPage() {
     trialDays?: number;
   } | null>(null);
   const [autoTriggered, setAutoTriggered] = useState(false);
+  const [purchaseStatus, setPurchaseStatus] = useState<string | null>(null);
 
   const isFreeSection = !section || section.price?.type === "free";
   const canInstall = isFreeSection || isPremium || isPurchased;
+
+  // Detect purchase callback params (?purchased=true, ?purchase=declined, etc.)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const purchased = params.get("purchased");
+    const purchase = params.get("purchase");
+    if (purchased === "true") {
+      setPurchaseStatus("success");
+    } else if (purchase === "declined") {
+      setPurchaseStatus("declined");
+    } else if (purchase === "error" || purchase === "not_found") {
+      setPurchaseStatus("error");
+    } else if (purchase === "pending") {
+      setPurchaseStatus("pending");
+    }
+  }, []);
+
+  // Show buy fetcher errors
+  useEffect(() => {
+    const data = buyFetcher.data as any;
+    if (data && !data.confirmationUrl && data.error) {
+      setResult({ success: false, error: data.error });
+    }
+  }, [buyFetcher.data]);
 
   // Show action result
   useEffect(() => {
@@ -605,6 +655,33 @@ export default function SectionDetailPage() {
       }
     }
   }, [section, autoTriggered, handleTrySection]);
+
+  // Redirect to Shopify payment when buy returns confirmationUrl
+  useEffect(() => {
+    const data = buyFetcher.data as any;
+    if (data?.confirmationUrl) {
+      try {
+        window.open(data.confirmationUrl, "_top");
+      } catch {
+        window.location.assign(data.confirmationUrl);
+      }
+    }
+  }, [buyFetcher.data]);
+
+  const handleBuySection = useCallback(() => {
+    if (!section) return;
+    buyFetcher.submit(
+      { sectionId: section.id },
+      { method: "POST", action: "/app/api/purchase-section", encType: "application/x-www-form-urlencoded" },
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [section]);
+
+  // Tier helpers
+  const sectionTier = section ? (section as any).tier || "basic" : "basic";
+  const tierLabel = isFreeSection ? "Free" : sectionTier === "premium" ? "Premium" : sectionTier === "advanced" ? "Advanced" : "Basic";
+  const tierPrice = isFreeSection ? 0 : sectionTier === "premium" ? 15 : sectionTier === "advanced" ? 10 : 5;
+  const tierColor = isFreeSection ? "#16a34a" : sectionTier === "premium" ? "#7c3aed" : sectionTier === "advanced" ? "#d97706" : "#2563eb";
 
   // If no section ID was provided, show list
   if (!section) {
@@ -683,22 +760,75 @@ export default function SectionDetailPage() {
               loading: isSubmitting,
             }
           : {
-              content: "Upgrade to Premium",
-              onAction: () => navigate("/app/premium"),
+              content: isBuying ? "Redirecting..." : `Buy Section – €${tierPrice}`,
+              onAction: handleBuySection,
+              loading: isBuying,
             }
       }
       secondaryActions={[
-        ...(!canInstall
-          ? [{
-              content: "Try Section",
-              onAction: handleTrySection,
-              loading: tryLoading,
-              icon: PlayIcon,
-            }]
+        ...(!canInstall && !isFreeSection
+          ? [
+              {
+                content: "Upgrade to Premium",
+                onAction: () => navigate("/app/premium"),
+              },
+            ]
           : []),
+        {
+          content: "Try Section",
+          onAction: handleTrySection,
+          loading: tryLoading,
+          icon: PlayIcon,
+        },
       ]}
     >
       <Layout>
+        {/* Purchase callback banners */}
+        {purchaseStatus === "success" && (
+          <Layout.Section>
+            <Banner
+              title="Purchase successful! 🎉"
+              tone="success"
+              onDismiss={() => setPurchaseStatus(null)}
+            >
+              <p>You now own <strong>{section.name}</strong>. Click &quot;Install to Theme&quot; to add it to your store.</p>
+            </Banner>
+          </Layout.Section>
+        )}
+        {purchaseStatus === "declined" && (
+          <Layout.Section>
+            <Banner
+              title="Purchase cancelled"
+              tone="warning"
+              onDismiss={() => setPurchaseStatus(null)}
+            >
+              <p>The payment was not completed. You can try again anytime.</p>
+            </Banner>
+          </Layout.Section>
+        )}
+        {purchaseStatus === "error" && (
+          <Layout.Section>
+            <Banner
+              title="Something went wrong"
+              tone="critical"
+              onDismiss={() => setPurchaseStatus(null)}
+            >
+              <p>We couldn&apos;t verify your purchase. Please try again or contact support.</p>
+            </Banner>
+          </Layout.Section>
+        )}
+        {purchaseStatus === "pending" && (
+          <Layout.Section>
+            <Banner
+              title="Purchase pending"
+              tone="info"
+              onDismiss={() => setPurchaseStatus(null)}
+            >
+              <p>Your payment is being processed. Refresh the page in a moment.</p>
+            </Banner>
+          </Layout.Section>
+        )}
+
         {/* Install Success/Error message */}
         {result && (
           <Layout.Section>
@@ -803,7 +933,7 @@ export default function SectionDetailPage() {
                       <Icon source={ViewIcon} tone="base" />
                     </div>
                     <BlockStack gap="100">
-                      <Text as="h2" variant="headingMd">Try before you subscribe</Text>
+                      <Text as="h2" variant="headingMd">Try before you buy</Text>
                       <Text as="p" variant="bodySm" tone="subdued">
                         Preview this section in a demo theme — no changes to your live store
                       </Text>
@@ -828,6 +958,73 @@ export default function SectionDetailPage() {
           </Layout.Section>
         )}
 
+        {/* Buy this Section - one-time purchase CTA */}
+        {!canInstall && !isFreeSection && (
+          <Layout.Section>
+            <Card padding="0">
+              <div style={{
+                background: `linear-gradient(135deg, ${tierColor}15 0%, ${tierColor}08 100%)`,
+                borderRadius: 12,
+                padding: 28,
+                border: `2px solid ${tierColor}25`,
+              }}>
+                <BlockStack gap="400">
+                  <InlineStack gap="300" blockAlign="center">
+                    <span style={{ fontSize: 32 }}>🛒</span>
+                    <BlockStack gap="100">
+                      <Text as="h2" variant="headingLg">
+                        Buy this section
+                      </Text>
+                      <Text as="p" variant="bodyMd" tone="subdued">
+                        One-time purchase — install it forever, no subscription needed
+                      </Text>
+                    </BlockStack>
+                  </InlineStack>
+
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 12, flexWrap: "wrap" }}>
+                    <span style={{ fontSize: 36, fontWeight: 900, color: tierColor, letterSpacing: "-0.02em" }}>
+                      €{tierPrice}
+                    </span>
+                    <span style={{
+                      display: "inline-flex", padding: "4px 10px", borderRadius: 8,
+                      background: `${tierColor}15`, color: tierColor,
+                      fontSize: 12, fontWeight: 700, letterSpacing: ".5px", textTransform: "uppercase" as const,
+                    }}>
+                      {tierLabel}
+                    </span>
+                    <span style={{ fontSize: 13, color: "#94a3b8" }}>one-time</span>
+                  </div>
+
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+                    {[
+                      "✓ Permanent access",
+                      "✓ All future updates",
+                      "✓ One-click install",
+                    ].map((f) => (
+                      <span key={f} style={{
+                        display: "inline-flex", padding: "5px 12px", borderRadius: 8,
+                        background: `${tierColor}10`, fontSize: 12, fontWeight: 600,
+                        color: tierColor,
+                      }}>{f}</span>
+                    ))}
+                  </div>
+
+                  <div>
+                    <Button
+                      variant="primary"
+                      size="large"
+                      onClick={handleBuySection}
+                      loading={isBuying}
+                    >
+                      {isBuying ? "Redirecting to checkout..." : `Buy ${section.name.replace(/^SIQ - /, "")} – €${tierPrice}`}
+                    </Button>
+                  </div>
+                </BlockStack>
+              </div>
+            </Card>
+          </Layout.Section>
+        )}
+
         {/* Upgrade to Premium CTA - for non-premium, non-free */}
         {!canInstall && (
           <Layout.Section>
@@ -846,7 +1043,7 @@ export default function SectionDetailPage() {
                       </Text>
                       <Text as="p" variant="bodyMd">
                         <span style={{ color: "rgba(255,255,255,0.85)" }}>
-                          Install {section.name} and all other sections for just €8/month
+                          Install {section.name} and all other sections for just €19/month
                         </span>
                       </Text>
                     </BlockStack>
@@ -863,7 +1060,7 @@ export default function SectionDetailPage() {
                   </div>
                   <div>
                     <Button variant="primary" size="large" onClick={() => navigate("/app/premium")}>
-                      Upgrade to Premium – €8/mo
+                      Upgrade to Premium – €19/mo
                     </Button>
                   </div>
                 </BlockStack>
@@ -892,15 +1089,15 @@ export default function SectionDetailPage() {
                 
                 <InlineStack align="space-between">
                   <Text as="p" variant="bodySm" tone="subdued">Access</Text>
-                  <Badge tone={isFreeSection ? "success" : "info"}>
-                    {isFreeSection ? "Free" : "Premium"}
+                  <Badge tone={isFreeSection ? "success" : sectionTier === "premium" ? "critical" : sectionTier === "advanced" ? "warning" : "info"}>
+                    {isFreeSection ? "Free" : `${tierLabel} – €${tierPrice}`}
                   </Badge>
                 </InlineStack>
 
                 <InlineStack align="space-between">
                   <Text as="p" variant="bodySm" tone="subdued">Status</Text>
                   <Badge tone={canInstall ? "success" : "attention"}>
-                    {canInstall ? "Unlocked" : "Premium Required"}
+                    {isPurchased ? "Purchased ✓" : isPremium ? "Premium ✓" : isFreeSection ? "Free" : "Not Purchased"}
                   </Badge>
                 </InlineStack>
                 
@@ -981,7 +1178,7 @@ export default function SectionDetailPage() {
               <Text as="h2" variant="headingMd">How to use this section</Text>
               <List type="number">
                 {!canInstall && (
-                  <List.Item>Subscribe to Premium or click &quot;Try Section&quot; to preview it first</List.Item>
+                  <List.Item>Buy this section, subscribe to Premium, or click &quot;Try Section&quot; to preview it first</List.Item>
                 )}
                 <List.Item>Click &quot;Install to Theme&quot; to add the section to your theme</List.Item>
                 <List.Item>Open the Shopify Theme Editor</List.Item>

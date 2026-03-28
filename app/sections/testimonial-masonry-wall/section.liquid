@@ -1,0 +1,522 @@
+{{ 'section-testimonial-masonry-wall.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign quote_color = section.settings.quote_color
+  assign name_color = section.settings.name_color
+  assign role_color = section.settings.role_color
+  assign star_color = section.settings.star_color
+  assign badge_bg = section.settings.badge_bg
+  assign badge_text = section.settings.badge_text
+  assign quote_mark_color = section.settings.quote_mark_color
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.quote_size
+  assign name_size = section.settings.name_size
+  assign radius = section.settings.border_radius
+  assign columns = section.settings.columns
+  assign gap = section.settings.gap
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign show_stars = section.settings.show_stars
+  assign show_quote_mark = section.settings.show_quote_mark
+  assign show_verified = section.settings.show_verified
+  assign card_shadow = section.settings.card_shadow
+  assign hover_lift = section.settings.hover_lift
+-%}
+
+<div
+  id="tm-wall-{{ sid }}"
+  class="tm-wall"
+  style="
+    --tm-bg:{{ bg }};
+    --tm-text:{{ text_color }};
+    --tm-accent:{{ accent }};
+    --tm-card-bg:{{ card_bg }};
+    --tm-card-border:{{ card_border }};
+    --tm-quote:{{ quote_color }};
+    --tm-name:{{ name_color }};
+    --tm-role:{{ role_color }};
+    --tm-star:{{ star_color }};
+    --tm-badge-bg:{{ badge_bg }};
+    --tm-badge-text:{{ badge_text }};
+    --tm-qmark:{{ quote_mark_color }};
+    --tm-max-w:{{ max_w }}px;
+    --tm-pad-y:{{ pad_y }}px;
+    --tm-mt:{{ mt }}px;
+    --tm-mb:{{ mb }}px;
+    --tm-q-size:{{ q_size }}px;
+    --tm-name-size:{{ name_size }}px;
+    --tm-radius:{{ radius }}px;
+    --tm-cols:{{ columns }};
+    --tm-gap:{{ gap }}px;
+  "
+>
+  <div class="tm-wall__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="tm-wall__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="tm-wall__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="tm-wall__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="tm-wall__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign quote = block.settings.quote
+          assign name = block.settings.name
+          assign role = block.settings.role
+          assign rating = block.settings.rating
+          assign verified = block.settings.verified
+          assign photo = block.settings.photo
+          assign highlight = block.settings.highlight
+        -%}
+        <div
+          class="tm-wall__card{% if card_shadow %} tm-wall__card--shadow{% endif %}{% if hover_lift %} tm-wall__card--lift{% endif %}{% if highlight %} tm-wall__card--highlight{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          {%- if show_quote_mark -%}
+            <span class="tm-wall__qmark" aria-hidden="true">"</span>
+          {%- endif -%}
+
+          {%- if show_stars -%}
+            <div class="tm-wall__stars">
+              {%- for i in (1..5) -%}
+                {%- if i <= rating -%}
+                  <svg class="tm-wall__star" viewBox="0 0 24 24" fill="var(--tm-star)" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {%- else -%}
+                  <svg class="tm-wall__star" viewBox="0 0 24 24" fill="none" stroke="var(--tm-star)" stroke-width="1.5" width="18" height="18"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87L18.18 21 12 17.27 5.82 21 7 14.14l-5-4.87 6.91-1.01L12 2z"/></svg>
+                {%- endif -%}
+              {%- endfor -%}
+            </div>
+          {%- endif -%}
+
+          <p class="tm-wall__quote">{{ quote }}</p>
+
+          <div class="tm-wall__author">
+            {%- if photo != blank -%}
+              <img
+                class="tm-wall__avatar"
+                src="{{ photo | image_url: width: 80 }}"
+                alt="{{ name | escape }}"
+                width="40"
+                height="40"
+                loading="lazy"
+              >
+            {%- else -%}
+              <span class="tm-wall__avatar-placeholder">{{ name | slice: 0, 1 }}</span>
+            {%- endif -%}
+            <div class="tm-wall__author-info">
+              <span class="tm-wall__name">{{ name }}</span>
+              {%- if role != blank -%}
+                <span class="tm-wall__role">{{ role }}</span>
+              {%- endif -%}
+            </div>
+            {%- if show_verified and verified -%}
+              <span class="tm-wall__badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                Verified
+              </span>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "SIQ - Masonry Reviews",
+  "tag": "section",
+  "class": "section-testimonial-masonry-wall",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "What Our Customers Say"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Real reviews from real customers who love our products."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card gap",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card options"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_stars",
+      "label": "Show star ratings",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_quote_mark",
+      "label": "Show quote mark",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_verified",
+      "label": "Show verified badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_lift",
+      "label": "Hover lift effect",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#fafafa"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Quote text",
+      "default": "#334155"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "role_color",
+      "label": "Role / subtitle",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "star_color",
+      "label": "Star color",
+      "default": "#f59e0b"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#ecfdf5"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#059669"
+    },
+    {
+      "type": "color",
+      "id": "quote_mark_color",
+      "label": "Quote mark color",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 800,
+      "max": 1400,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Quote text size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "name_size",
+      "label": "Name size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 14,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "review",
+      "name": "Review",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Review text",
+          "default": "Amazing product and great customer service!"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Customer name",
+          "default": "Sarah M."
+        },
+        {
+          "type": "text",
+          "id": "role",
+          "label": "Subtitle / role"
+        },
+        {
+          "type": "range",
+          "id": "rating",
+          "label": "Rating",
+          "min": 1,
+          "max": 5,
+          "step": 1,
+          "default": 5
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified purchase",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Customer photo"
+        },
+        {
+          "type": "checkbox",
+          "id": "highlight",
+          "label": "Highlight this card",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Masonry Reviews",
+      "blocks": [
+        {
+          "type": "review",
+          "settings": {
+            "quote": "I have been using this product for 3 months now and I can honestly say it has changed my routine completely. The quality is outstanding and the results speak for themselves. Highly recommended!",
+            "name": "Jessica T.",
+            "role": "Loyal Customer",
+            "rating": 5,
+            "verified": true,
+            "highlight": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Fast shipping and excellent packaging. The product itself exceeded my expectations. Will definitely order again!",
+            "name": "Michael R.",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Love the attention to detail. Every aspect of the experience — from browsing to unboxing — feels premium. This brand truly cares about its customers.",
+            "name": "Emma L.",
+            "role": "Premium Member",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Great value for money. I compared with several other brands and this one wins hands down on quality and price.",
+            "name": "David K.",
+            "rating": 4,
+            "verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "The customer support team was incredibly helpful when I had questions about sizing. They responded within minutes and helped me find the perfect fit. Outstanding service!",
+            "name": "Sophie W.",
+            "role": "Repeat Buyer",
+            "rating": 5,
+            "verified": true,
+            "highlight": false
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Exactly as described. No surprises, just a quality product that works perfectly.",
+            "name": "Chris A.",
+            "rating": 5,
+            "verified": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "This is my third order and they continue to impress. Consistent quality and the packaging always arrives in perfect condition. 10/10 would recommend to anyone.",
+            "name": "Lisa P.",
+            "role": "VIP Customer",
+            "rating": 5,
+            "verified": true,
+            "highlight": true
+          }
+        },
+        {
+          "type": "review",
+          "settings": {
+            "quote": "Love it! Already recommended it to all my friends. The results are visible within just a few days of use.",
+            "name": "Anna B.",
+            "rating": 5,
+            "verified": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,210 @@
+/* ===== SIQ Top Info Bar – styles.css ===== */
+/* prefix: tib */
+
+.tib {
+  display: block !important;
+  width: 100%;
+  background: var(--tib-bg, #18181b);
+  border-bottom: var(--tib-border, 1px solid rgba(255,255,255,0.08));
+  position: relative;
+  z-index: 1000;
+}
+
+.tib__inner {
+  max-width: var(--tib-max-w, 1440px);
+  margin: 0 auto;
+  padding: 0 var(--tib-px, 24px);
+  height: var(--tib-h, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+/* ---------- LEFT – social icons ---------- */
+.tib__left {
+  display: flex;
+  align-items: center;
+  gap: var(--tib-social-gap, 10px);
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.tib__social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tib-icon-color, #ffffff);
+  opacity: 0.72;
+  transition: opacity 0.18s ease, transform 0.18s ease;
+  text-decoration: none;
+}
+.tib__social-link:hover {
+  opacity: 1;
+  transform: translateY(-1px);
+}
+.tib__social-link svg {
+  width: var(--tib-icon-size, 16px);
+  height: var(--tib-icon-size, 16px);
+  fill: currentColor;
+  display: block;
+}
+
+/* ---------- CENTER – text ---------- */
+.tib__center {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tib__slide-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* single message (no animation needed) */
+.tib__single {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* multiple messages – stacked */
+.tib__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  white-space: nowrap;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: transform 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.35s ease;
+  pointer-events: none;
+}
+.tib__slide.is-active {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+.tib__slide.is-exit {
+  opacity: 0;
+  transform: translateY(-100%);
+  transition: transform 0.35s cubic-bezier(0.4,0,1,1), opacity 0.28s ease;
+}
+
+.tib__text {
+  font-size: var(--tib-font-size, 13px);
+  font-weight: var(--tib-font-weight, 500);
+  color: var(--tib-text-color, #ffffff);
+  letter-spacing: 0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tib__sep {
+  color: var(--tib-text-color, #ffffff);
+  opacity: 0.4;
+}
+
+.tib__link {
+  font-size: var(--tib-font-size, 13px);
+  font-weight: 700;
+  color: var(--tib-text-color, #ffffff);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-thickness: 1px;
+  white-space: nowrap;
+  transition: opacity 0.18s;
+}
+.tib__link:hover { opacity: 0.72; }
+
+/* ---------- RIGHT – locale ---------- */
+.tib__right {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+.tib__locale-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.tib__locale-wrap svg.tib__chevron {
+  position: absolute;
+  right: 6px;
+  pointer-events: none;
+  color: var(--tib-text-color, #ffffff);
+  opacity: 0.55;
+  width: 10px;
+  height: 10px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.tib__locale-select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.18);
+  border-radius: 4px;
+  color: var(--tib-text-color, #ffffff);
+  font-size: calc(var(--tib-font-size, 13px) - 1px);
+  font-weight: 500;
+  padding: 2px 22px 2px 8px;
+  cursor: pointer;
+  transition: border-color 0.18s;
+  height: 26px;
+  line-height: 1;
+}
+.tib__locale-select:hover { border-color: rgba(255,255,255,0.45); }
+.tib__locale-select:focus { outline: 2px solid rgba(255,255,255,0.3); outline-offset: 1px; }
+.tib__locale-select option { background: #18181b; color: #fff; }
+
+.tib__locale-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255,255,255,0.2);
+  flex-shrink: 0;
+}
+
+.tib__locale-static {
+  font-size: calc(var(--tib-font-size, 13px) - 1px);
+  font-weight: 500;
+  color: var(--tib-text-color, #ffffff);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ---------- mobile ---------- */
+@media (max-width: 767px) {
+  .tib__left { display: none; }
+  .tib__inner { padding: 0 12px; }
+  .tib--hide-locale-mobile .tib__right { display: none; }
+}

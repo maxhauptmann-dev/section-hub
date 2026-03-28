@@ -1,12 +1,12 @@
 {
   "id": "header-glass",
-  "name": "Header – Glass",
+  "name": "SIQ - Header – Glass",
   "description": "Modern header with frosted glass (liquid glass) effect, mega menu dropdowns, customizable logo/shop name, search/account/cart icons, CTA button, and sticky/scroll-up behavior. Desktop multi-column dropdown with mobile slide-in drawer. Full Shopify menu integration.",
   "category": "Header",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 12,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -18,7 +18,7 @@
     "Sticky",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -69,5 +69,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

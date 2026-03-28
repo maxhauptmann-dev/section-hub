@@ -1,0 +1,57 @@
+{
+  "id": "faq-spotlight",
+  "name": "SIQ - FAQ Spotlight",
+  "description": "Premium FAQ section with a glowing spotlight effect on the active question. Features elegant accent lines, smooth expand animations, gradient glow borders, and a luxurious dark-mode aesthetic. The active item gets a dramatic spotlight highlight that draws the eye.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Spotlight",
+    "Glow",
+    "Premium",
+    "Animated",
+    "Dark",
+    "Luxury"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-spotlight/default.webp",
+      "alt": "FAQ Spotlight - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

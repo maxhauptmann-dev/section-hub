@@ -22,7 +22,7 @@ export default function PrivacyPolicy() {
           1. Introduction
         </h2>
         <p>
-          Section Hub ("we", "us", "our") is a Shopify app that provides
+          SectionIQ ("we", "us", "our") is a Shopify app that provides
           premium theme sections for Shopify stores. This Privacy Policy
           explains how we collect, use, and protect your information when you
           use our app.
@@ -33,7 +33,7 @@ export default function PrivacyPolicy() {
         <h2 style={{ fontSize: 20, fontWeight: 600, marginBottom: 8 }}>
           2. Information We Collect
         </h2>
-        <p>When you install and use Section Hub, we collect:</p>
+        <p>When you install and use SectionIQ, we collect:</p>
         <ul style={{ paddingLeft: 24, marginTop: 8 }}>
           <li>
             <strong>Shop information:</strong> Your Shopify store URL (myshopify
@@ -108,7 +108,7 @@ export default function PrivacyPolicy() {
         </h2>
         <p>
           We retain your shop data and purchase records as long as the app is
-          installed. When you uninstall Section Hub, your session data is
+          installed. When you uninstall SectionIQ, your session data is
           automatically deleted. Purchase records may be retained for
           accounting purposes.
         </p>
@@ -173,7 +173,7 @@ export default function PrivacyPolicy() {
           fontSize: 14,
         }}
       >
-        © {new Date().getFullYear()} Section Hub. All rights reserved.
+        © {new Date().getFullYear()} SectionIQ. All rights reserved.
       </div>
     </div>
   );

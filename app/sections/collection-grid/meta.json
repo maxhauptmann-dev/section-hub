@@ -1,12 +1,12 @@
 {
   "id": "collection-grid",
-  "name": "Collection Grid",
+  "name": "SIQ - Collection Grid",
   "description": "Showcase 2–4 collections in a flexible grid layout. Large lifestyle images with category labels, optional subtitle, heading, and button overlay. Fully adjustable sizes, gaps, and padding. Inspired by premium fashion stores like Pegador.",
   "category": "collection",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 9,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -18,15 +18,11 @@
     "Responsive",
     "Customizable"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/collection-grid1/collection-grid1w.webp",
-      "label": "Collection Grid"
-    },
-    {
-      "src": "/previews/collection-grid1/collection-grid1.webp",
       "label": "Collection Grid"
     }
   ],
@@ -67,5 +63,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

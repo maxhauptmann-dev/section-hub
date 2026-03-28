@@ -14,6 +14,9 @@ type Pages = {
   "/": {
     params: {};
   };
+  "/webhooks/app/subscriptions_update": {
+    params: {};
+  };
   "/webhooks/customers/data_request": {
     params: {};
   };
@@ -73,6 +76,9 @@ type Pages = {
   "/app/api/try-section": {
     params: {};
   };
+  "/app/image-optimizer": {
+    params: {};
+  };
   "/app/api/subscribe": {
     params: {};
   };
@@ -120,7 +126,11 @@ type Pages = {
 type RouteFiles = {
   "root.tsx": {
     id: "root";
-    page: "/" | "/webhooks/customers/data_request" | "/webhooks/app/scopes_update" | "/webhooks/customers/redact" | "/webhooks/app/uninstalled" | "/webhooks/shop/redact" | "/auth/login" | "/privacy" | "/auth/*" | "/app" | "/app/billing/subscription-complete" | "/app/api/cancel-subscription" | "/app/api/cleanup-previews" | "/app/api/purchase-section" | "/app/api/blocks-settings" | "/app/api/install-section" | "/app/api/purchase-bundle" | "/app/api/install-block" | "/app/billing/complete" | "/app/api/try-section" | "/app/api/subscribe" | "/app/api/contact" | "/app/my-sections" | "/app/additional" | "/app/section-ai" | "/app/analyzer" | "/app/bundles" | "/app/explore" | "/app/premium" | "/app/section" | "/app/suggest" | "/app/updates" | "/app/blocks" | "/app/help";
+    page: "/" | "/webhooks/app/subscriptions_update" | "/webhooks/customers/data_request" | "/webhooks/app/scopes_update" | "/webhooks/customers/redact" | "/webhooks/app/uninstalled" | "/webhooks/shop/redact" | "/auth/login" | "/privacy" | "/auth/*" | "/app" | "/app/billing/subscription-complete" | "/app/api/cancel-subscription" | "/app/api/cleanup-previews" | "/app/api/purchase-section" | "/app/api/blocks-settings" | "/app/api/install-section" | "/app/api/purchase-bundle" | "/app/api/install-block" | "/app/billing/complete" | "/app/api/try-section" | "/app/image-optimizer" | "/app/api/subscribe" | "/app/api/contact" | "/app/my-sections" | "/app/additional" | "/app/section-ai" | "/app/analyzer" | "/app/bundles" | "/app/explore" | "/app/premium" | "/app/section" | "/app/suggest" | "/app/updates" | "/app/blocks" | "/app/help";
+  };
+  "routes/webhooks.app.subscriptions_update.tsx": {
+    id: "routes/webhooks.app.subscriptions_update";
+    page: "/webhooks/app/subscriptions_update";
   };
   "routes/webhooks.customers.data_request.tsx": {
     id: "routes/webhooks.customers.data_request";
@@ -160,7 +170,7 @@ type RouteFiles = {
   };
   "routes/app.tsx": {
     id: "routes/app";
-    page: "/app" | "/app/billing/subscription-complete" | "/app/api/cancel-subscription" | "/app/api/cleanup-previews" | "/app/api/purchase-section" | "/app/api/blocks-settings" | "/app/api/install-section" | "/app/api/purchase-bundle" | "/app/api/install-block" | "/app/billing/complete" | "/app/api/try-section" | "/app/api/subscribe" | "/app/api/contact" | "/app/my-sections" | "/app/additional" | "/app/section-ai" | "/app/analyzer" | "/app/bundles" | "/app/explore" | "/app/premium" | "/app/section" | "/app/suggest" | "/app/updates" | "/app/blocks" | "/app/help";
+    page: "/app" | "/app/billing/subscription-complete" | "/app/api/cancel-subscription" | "/app/api/cleanup-previews" | "/app/api/purchase-section" | "/app/api/blocks-settings" | "/app/api/install-section" | "/app/api/purchase-bundle" | "/app/api/install-block" | "/app/billing/complete" | "/app/api/try-section" | "/app/image-optimizer" | "/app/api/subscribe" | "/app/api/contact" | "/app/my-sections" | "/app/additional" | "/app/section-ai" | "/app/analyzer" | "/app/bundles" | "/app/explore" | "/app/premium" | "/app/section" | "/app/suggest" | "/app/updates" | "/app/blocks" | "/app/help";
   };
   "routes/app.billing.subscription-complete.tsx": {
     id: "routes/app.billing.subscription-complete";
@@ -201,6 +211,10 @@ type RouteFiles = {
   "routes/app.api.try-section.tsx": {
     id: "routes/app.api.try-section";
     page: "/app/api/try-section";
+  };
+  "routes/app.image-optimizer.tsx": {
+    id: "routes/app.image-optimizer";
+    page: "/app/image-optimizer";
   };
   "routes/app.api.subscribe.tsx": {
     id: "routes/app.api.subscribe";
@@ -266,6 +280,7 @@ type RouteFiles = {
 
 type RouteModules = {
   "root": typeof import("./app/root.tsx");
+  "routes/webhooks.app.subscriptions_update": typeof import("./app/routes/webhooks.app.subscriptions_update.tsx");
   "routes/webhooks.customers.data_request": typeof import("./app/routes/webhooks.customers.data_request.tsx");
   "routes/webhooks.app.scopes_update": typeof import("./app/routes/webhooks.app.scopes_update.tsx");
   "routes/webhooks.customers.redact": typeof import("./app/routes/webhooks.customers.redact.tsx");
@@ -286,6 +301,7 @@ type RouteModules = {
   "routes/app.api.install-block": typeof import("./app/routes/app.api.install-block.tsx");
   "routes/app.billing.complete": typeof import("./app/routes/app.billing.complete.tsx");
   "routes/app.api.try-section": typeof import("./app/routes/app.api.try-section.tsx");
+  "routes/app.image-optimizer": typeof import("./app/routes/app.image-optimizer.tsx");
   "routes/app.api.subscribe": typeof import("./app/routes/app.api.subscribe.tsx");
   "routes/app.api.contact": typeof import("./app/routes/app.api.contact.tsx");
   "routes/app.my-sections": typeof import("./app/routes/app.my-sections.tsx");

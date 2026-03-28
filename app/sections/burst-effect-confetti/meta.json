@@ -1,0 +1,61 @@
+{
+  "id": "burst-effect-confetti",
+  "name": "SIQ - Burst Effect Confetti",
+  "description": "Eye-catching confetti burst effect that shoots particles from the left and right sides of the page. Choose from multiple effect modes: Confetti Cannon, Confetti Rain, Fireworks, Sparkle Burst, or Party Popper. Set a custom scroll trigger point or fire on page load. Fully customizable colors, particle count, speed, and gravity.",
+  "category": [
+    "effects"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Effect",
+    "Confetti",
+    "Burst",
+    "Fireworks",
+    "Cannon",
+    "Celebration",
+    "Animation",
+    "Particles",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/burst-effect-confetti/default.webp",
+      "alt": "Burst Effect Confetti - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-27",
+  "updatedAt": "2026-03-27",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-27",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

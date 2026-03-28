@@ -1,12 +1,12 @@
 {
   "id": "hero-reveal",
-  "name": "SS - Hero Reveal",
+  "name": "SIQ - Hero Reveal",
   "description": "Scroll-triggered hero with an image that expands from a contained window to fullscreen as the user scrolls. Features sticky text overlay, split-color typography, counter stats, glowing cursor trail effect, and elegant micro-animations. 75+ customization options for a jaw-dropping first impression.",
   "category": "Hero",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +21,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#faf9f6",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/hero-reveal/default.webp",
-      "alt": "Hero Reveal - Default",
+      "alt": "SS - Hero Reveal - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +50,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

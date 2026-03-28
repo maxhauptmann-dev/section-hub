@@ -1,6 +1,6 @@
 {
   "id": "slider-cards",
-  "name": "SS - Slider #16",
+  "name": "SIQ - Slider #16",
   "description": "Premium card-based slider with fullscreen background image, floating preview cards on the right, text overlay, and arrow navigation. Inspired by modern editorial layouts with extensive customization options.",
   "category": [
     "Slideshow",
@@ -9,7 +9,7 @@
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 14,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -21,8 +21,8 @@
     "Editorial",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#f5f0eb",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/slider16/default.webp",
@@ -76,5 +76,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

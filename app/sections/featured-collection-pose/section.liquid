@@ -1,0 +1,667 @@
+{% comment %}
+  SectionHub – Featured Collection Pose  (fcp-)
+  Cinematic slow-crossfade hover to second product image
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign img_ratio    = section.settings.image_ratio
+  assign hover_speed  = section.settings.hover_speed
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign show_vendor  = section.settings.show_vendor
+  assign animate      = section.settings.animation_style
+  assign view_text    = section.settings.view_all_text
+  assign corner       = section.settings.corner_radius
+  assign layout_mode  = section.settings.layout_mode | default: 'grid'
+
+  case img_ratio
+    when 'square'
+      assign ratio_css = '1 / 1'
+    when 'portrait'
+      assign ratio_css = '3 / 4'
+    when 'portrait-tall'
+      assign ratio_css = '2 / 3'
+    when 'landscape'
+      assign ratio_css = '4 / 3'
+    when 'wide'
+      assign ratio_css = '16 / 9'
+    else
+      assign ratio_css = '3 / 4'
+  endcase
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #fcp-{{ section.id }} {
+    --fcp-bg: {{ section.settings.bg_color }};
+    --fcp-heading-c: {{ section.settings.heading_color }};
+    --fcp-text-c: {{ section.settings.text_color }};
+    --fcp-badge-bg: {{ section.settings.badge_color }};
+
+    --fcp-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fcp-heading-fw: {{ heading_font.weight }};
+    --fcp-heading-fst: {{ heading_font.style }};
+    --fcp-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fcp-body-fw: {{ body_font.weight }};
+
+    --fcp-cols: {{ section.settings.columns }};
+    --fcp-cols-m: {{ section.settings.columns_mobile }};
+    --fcp-gap: {{ section.settings.gap }}px;
+    --fcp-gap-m: {{ section.settings.gap_mobile }}px;
+    --fcp-radius: {{ corner }}px;
+    --fcp-ratio: {{ ratio_css }};
+    --fcp-hover-speed: {{ hover_speed }}s;
+    --fcp-max-w: {{ section.settings.max_width }}px;
+    --fcp-pt: {{ section.settings.padding_top }}px;
+    --fcp-pb: {{ section.settings.padding_bottom }}px;
+    --fcp-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --fcp-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+    --fcp-px: {{ section.settings.padding_sides }}px;
+    --fcp-carousel-peek: {{ section.settings.carousel_peek | default: 40 }}px;
+    --fcp-carousel-card-w: {{ section.settings.carousel_card_width | default: 320 }}px;
+  }
+</style>
+
+<section id="fcp-{{ section.id }}" class="fcp" data-fcp-root>
+
+  <div class="fcp__wrap">
+
+    {%- comment -%} ── Intro: Heading left, View more right ── {%- endcomment -%}
+    <div class="fcp__intro">
+      <div class="fcp__intro-left">
+        {%- if section.settings.heading != blank -%}
+          <{{ section.settings.heading_tag }} class="fcp__heading fcp__heading--{{ section.settings.heading_size }}">
+            {{ section.settings.heading }}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+        {%- if section.settings.description != blank -%}
+          <p class="fcp__desc">{{ section.settings.description }}</p>
+        {%- endif -%}
+      </div>
+      {%- if view_text != blank and col_obj != blank -%}
+        <div class="fcp__intro-right">
+          <a href="{{ col_obj.url }}" class="fcp__view-link">
+            {{ view_text }}
+            <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12L12 4M12 4H5M12 4V11"/></svg>
+          </a>
+        </div>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Product Grid / Carousel ── {%- endcomment -%}
+    {%- if layout_mode == 'carousel' -%}
+    <div class="fcp__carousel-outer" data-fcp-carousel>
+      <div class="fcp__carousel-track" data-fcp-track>
+    {%- else -%}
+    <div class="fcp__grid">
+    {%- endif -%}
+
+      {%- if col_obj != blank and col_obj.products.size > 0 -%}
+        {%- for product in col_obj.products limit: limit -%}
+          {%- assign p_img = product.featured_image -%}
+          {%- assign images = product.images -%}
+          {%- assign second_img = images[1] -%}
+          <a href="{{ product.url }}" class="fcp__card{% if layout_mode == 'carousel' %} fcp__card--slide{% endif %}"{% if animate == 'scroll' and layout_mode != 'carousel' %} data-fcp-reveal style="transition-delay: {{ forloop.index0 | times: 0.08 }}s"{% endif %}>
+
+            {%- comment -%} Sale badge {%- endcomment -%}
+            {%- if show_badge and product.compare_at_price > product.price -%}
+              <span class="fcp__card-badge">Sale</span>
+            {%- endif -%}
+
+            <div class="fcp__card-media">
+              {%- if p_img != blank -%}
+                <img src="{{ p_img | image_url: width: 800 }}"
+                     srcset="{{ p_img | image_url: width: 400 }} 400w, {{ p_img | image_url: width: 600 }} 600w, {{ p_img | image_url: width: 800 }} 800w"
+                     sizes="(max-width: 749px) 50vw, 20vw"
+                     alt="{{ p_img.alt | default: product.title | escape }}"
+                     loading="lazy"
+                     class="fcp__card-img">
+
+                {%- comment -%} Second image – the "next pose" {%- endcomment -%}
+                {%- if second_img != blank -%}
+                  <img src="{{ second_img | image_url: width: 800 }}"
+                       srcset="{{ second_img | image_url: width: 400 }} 400w, {{ second_img | image_url: width: 600 }} 600w, {{ second_img | image_url: width: 800 }} 800w"
+                       sizes="(max-width: 749px) 50vw, 20vw"
+                       alt="{{ second_img.alt | default: product.title | escape }} – alternate"
+                       loading="lazy"
+                       class="fcp__card-img fcp__card-img--second">
+                {%- endif -%}
+              {%- else -%}
+                <div class="fcp__card-placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+              {%- endif -%}
+            </div>
+
+            <div class="fcp__card-info">
+              {%- if show_vendor and product.vendor != blank -%}
+                <span class="fcp__card-vendor" style="font-size:0.72rem;opacity:0.55;display:block;margin-bottom:2px;">{{ product.vendor }}</span>
+              {%- endif -%}
+              <div class="fcp__card-title">{{ product.title }}</div>
+              {%- if show_price -%}
+                <div class="fcp__card-price">
+                  {%- if product.compare_at_price > product.price -%}
+                    <s>{{ product.compare_at_price | money }}</s>
+                  {%- endif -%}
+                  {{ product.price | money }}
+                </div>
+              {%- endif -%}
+            </div>
+
+          </a>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Placeholder cards {%- endcomment -%}
+        {%- for i in (1..6) -%}
+          <div class="fcp__card{% if layout_mode == 'carousel' %} fcp__card--slide{% endif %}"{% if animate == 'scroll' and layout_mode != 'carousel' %} data-fcp-reveal style="transition-delay: {{ forloop.index0 | times: 0.08 }}s"{% endif %}>
+            <div class="fcp__card-media">
+              <div class="fcp__card-placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+            </div>
+            <div class="fcp__card-info">
+              <div class="fcp__card-title">Product {{ forloop.index }}</div>
+              <div class="fcp__card-price">$0.00</div>
+            </div>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+
+    {%- if layout_mode == 'carousel' -%}
+      </div>{%- comment -%} .fcp__carousel-track {%- endcomment -%}
+
+      {%- comment -%} Prev/Next buttons {%- endcomment -%}
+      <button class="fcp__carousel-btn fcp__carousel-btn--prev" data-fcp-prev aria-label="Previous">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="fcp__carousel-btn fcp__carousel-btn--next" data-fcp-next aria-label="Next">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      {%- comment -%} Dots {%- endcomment -%}
+      <div class="fcp__carousel-dots" data-fcp-dots></div>
+    </div>{%- comment -%} .fcp__carousel-outer {%- endcomment -%}
+    {%- else -%}
+    </div>{%- comment -%} .fcp__grid {%- endcomment -%}
+    {%- endif -%}
+
+  </div>
+</section>
+
+{%- if animate == 'scroll' and layout_mode != 'carousel' -%}
+<script>
+(function(){
+  var root = document.querySelector('#fcp-{{ section.id }}[data-fcp-root]');
+  if (!root) return;
+  var cards = Array.from(root.querySelectorAll('[data-fcp-reveal]'));
+  if (!cards.length) return;
+
+  var BASE_DELAY  = {{ section.settings.reveal_delay | default: 80 }};  /* ms between each card */
+  var triggered   = false;
+
+  function revealAll() {
+    if (triggered) return;
+    triggered = true;
+    cards.forEach(function(card, i) {
+      setTimeout(function() {
+        card.classList.add('fcp__card--visible');
+      }, i * BASE_DELAY);
+    });
+  }
+
+  /* Observe the grid container – fire as soon as any part is in view */
+  var grid = root.querySelector('.fcp__grid');
+  if (!grid) { revealAll(); return; }
+
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting) {
+        revealAll();
+        io.disconnect();
+      }
+    });
+  }, { threshold: 0.05 });
+
+  io.observe(grid);
+})();
+</script>
+{%- endif -%}
+
+{%- if layout_mode == 'carousel' -%}
+<script>
+(function(){
+  var root  = document.querySelector('#fcp-{{ section.id }}[data-fcp-root]');
+  if (!root) return;
+
+  var outer  = root.querySelector('[data-fcp-carousel]');
+  var track  = root.querySelector('[data-fcp-track]');
+  var slides = Array.from(track.querySelectorAll('.fcp__card--slide'));
+  var dotsWrap = root.querySelector('[data-fcp-dots]');
+  var btnPrev  = root.querySelector('[data-fcp-prev]');
+  var btnNext  = root.querySelector('[data-fcp-next]');
+
+  if (!slides.length) return;
+
+  var current = 0;
+  var N = slides.length;
+  var startX = 0, isDragging = false, dragOffset = 0, trackLeft = 0;
+
+  /* ── Build dots ── */
+  var dots = [];
+  slides.forEach(function(_, i){
+    var d = document.createElement('button');
+    d.className = 'fcp__carousel-dot';
+    d.setAttribute('aria-label', 'Slide ' + (i + 1));
+    d.addEventListener('click', function(){ goTo(i); });
+    dotsWrap.appendChild(d);
+    dots.push(d);
+  });
+
+  /* ── Compute card width dynamically ── */
+  function cardWidth(){
+    return slides[0] ? slides[0].offsetWidth + parseInt(getComputedStyle(track).gap || '0') : 300;
+  }
+
+  /* ── Go to slide ── */
+  function goTo(idx){
+    current = Math.max(0, Math.min(N - 1, idx));
+    var offset = -current * cardWidth();
+    track.style.transform = 'translateX(' + offset + 'px)';
+    trackLeft = offset;
+    dots.forEach(function(d, i){ d.classList.toggle('fcp__carousel-dot--active', i === current); });
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current === N - 1;
+  }
+
+  btnPrev && btnPrev.addEventListener('click', function(){ goTo(current - 1); });
+  btnNext && btnNext.addEventListener('click', function(){ goTo(current + 1); });
+
+  /* ── Touch / Mouse drag ── */
+  function dragStart(x){ startX = x; isDragging = true; track.style.transition = 'none'; }
+  function dragMove(x){
+    if (!isDragging) return;
+    dragOffset = x - startX;
+    track.style.transform = 'translateX(' + (trackLeft + dragOffset) + 'px)';
+  }
+  function dragEnd(){
+    if (!isDragging) return;
+    isDragging = false;
+    track.style.transition = '';
+    var threshold = cardWidth() * 0.25;
+    if (dragOffset < -threshold) goTo(current + 1);
+    else if (dragOffset > threshold) goTo(current - 1);
+    else goTo(current);
+    dragOffset = 0;
+  }
+
+  track.addEventListener('mousedown',  function(e){ dragStart(e.clientX); });
+  window.addEventListener('mousemove', function(e){ dragMove(e.clientX); });
+  window.addEventListener('mouseup',   dragEnd);
+  track.addEventListener('touchstart', function(e){ dragStart(e.touches[0].clientX); }, { passive: true });
+  track.addEventListener('touchmove',  function(e){ dragMove(e.touches[0].clientX); }, { passive: true });
+  track.addEventListener('touchend',   dragEnd);
+
+  /* ── Keyboard ── */
+  outer.setAttribute('tabindex', '0');
+  outer.addEventListener('keydown', function(e){
+    if (e.key === 'ArrowLeft')  goTo(current - 1);
+    if (e.key === 'ArrowRight') goTo(current + 1);
+  });
+
+  /* ── Init ── */
+  goTo(0);
+  window.addEventListener('resize', function(){ goTo(current); });
+})();
+</script>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "SIQ - Collection Pose",
+  "tag": "section",
+  "class": "fcp-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Collection"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Products to show",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "ELEVATE YOUR WARDROBE TODAY"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p",  "label": "P" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Discover trendsetting styles crafted for every occasion. From casual essentials to statement pieces, upgrade your fashion game with our premium collection!"
+    },
+    {
+      "type": "text",
+      "id": "view_all_text",
+      "label": "View all link text",
+      "default": "View more"
+    },
+    {
+      "type": "header",
+      "content": "Product Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Hover Effect"
+    },
+    {
+      "type": "range",
+      "id": "hover_speed",
+      "label": "Hover crossfade speed",
+      "min": 0.4,
+      "max": 2.5,
+      "step": 0.1,
+      "default": 1.2,
+      "unit": "s",
+      "info": "Slower = more cinematic pose transition"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "layout_mode",
+      "label": "Layout mode",
+      "options": [
+        { "value": "grid",     "label": "Grid" },
+        { "value": "carousel", "label": "Carousel" }
+      ],
+      "default": "grid",
+      "info": "Carousel: horizontal scrollable slider with drag & arrow navigation"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 8,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Mobile columns",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "portrait",      "label": "Portrait (3:4)" },
+        { "value": "portrait-tall", "label": "Tall portrait (2:3)" },
+        { "value": "square",        "label": "Square (1:1)" },
+        { "value": "landscape",     "label": "Landscape (4:3)" },
+        { "value": "wide",          "label": "Wide (16:9)" }
+      ],
+      "default": "portrait"
+    },
+    {
+      "type": "range",
+      "id": "corner_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Desktop gap",
+      "min": 0,
+      "max": 48,
+      "step": 2,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile gap",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "carousel_card_width",
+      "label": "Carousel – card width",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "default": 320,
+      "unit": "px",
+      "info": "Only used in Carousel mode"
+    },
+    {
+      "type": "range",
+      "id": "carousel_peek",
+      "label": "Carousel – next card peek",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40,
+      "unit": "px",
+      "info": "How much of the next card is visible"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_style",
+      "label": "Scroll entrance",
+      "options": [
+        { "value": "scroll", "label": "Sequential build-in on scroll" },
+        { "value": "none",   "label": "None" }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "range",
+      "id": "reveal_delay",
+      "label": "Delay between cards",
+      "min": 20,
+      "max": 300,
+      "step": 10,
+      "default": 80,
+      "unit": "ms",
+      "info": "How long to wait before revealing the next card"
+    },
+    {
+      "type": "header",
+      "content": "Fonts"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#ededed"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#111111"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#555555"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge color",
+      "default": "#e53e3e"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 900,
+      "max": 1800,
+      "step": 50,
+      "default": 1600,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top space desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom space desktop",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top space mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom space mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Collection Pose"
+    }
+  ]
+}
+{% endschema %}

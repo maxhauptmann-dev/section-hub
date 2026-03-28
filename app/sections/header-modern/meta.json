@@ -1,12 +1,12 @@
 {
   "id": "header-modern",
-  "name": "Header – Modern",
+  "name": "SIQ - Header – Modern",
   "description": "A sleek, modern header section with clean design.",
   "category": "Header",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 12,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -14,7 +14,7 @@
     "Header",
     "Modern"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -54,5 +54,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

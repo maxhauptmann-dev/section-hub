@@ -1,12 +1,17 @@
 {
   "id": "before-after-timeline",
-  "name": "Before / After Timeline",
+  "name": "SIQ - Before / After Timeline",
   "description": "A vertical transformation journey timeline. Each step block has its own draggable before/after image slider, timeframe badge, description, and up to 3 stat chips. Features: zigzag or linear layout, animated progress line that fills as you scroll, step numbering, scroll-triggered entrance animations, and a CTA button. Complete color, typography, and spacing customization. Perfect for showing transformation progress over time.",
-  "category": ["Conversion", "Image", "before and after", "Social Proof"],
+  "category": [
+    "Conversion",
+    "Image",
+    "before and after",
+    "Social Proof"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 14,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,8 +26,8 @@
     "Scroll Animation",
     "Mobile First"
   ],
-  "author": "Section Hub",
-  "previewColor": "#fafafa",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/before-after-timeline/default.webp",
@@ -31,7 +36,10 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "All OS2.0 themes"],
+    "themes": [
+      "Dawn",
+      "All OS2.0 themes"
+    ],
     "os2": true
   },
   "files": {
@@ -39,5 +47,6 @@
     "css": ""
   },
   "createdAt": "2026-03-10",
-  "updatedAt": "2026-03-10"
+  "updatedAt": "2026-03-10",
+  "tier": "premium"
 }

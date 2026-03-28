@@ -1,12 +1,17 @@
 {
   "id": "scroll-storyteller",
-  "name": "SS - Scroll Storyteller",
+  "name": "SIQ - Scroll Storyteller",
   "description": "Immersive horizontal scroll-through story section with sticky panels that transition as the user scrolls. Each panel has its own image, heading, text, and accent color. Features progress dots, panel counter, cinematic transitions (fade/slide/zoom), and a persistent side label. 80+ customization options for visual brand storytelling.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered",
+    "Premium",
+    "animated"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,8 +26,8 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/scroll-storyteller/default.webp",
@@ -31,7 +36,13 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +55,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

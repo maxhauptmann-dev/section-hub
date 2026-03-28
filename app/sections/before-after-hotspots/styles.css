@@ -1,0 +1,402 @@
+/* ─────────────────────────────────────────────────────────────
+   SIQ — Before / After Hotspots  |  prefix: bah-
+   ───────────────────────────────────────────────────────────── */
+
+/* Reset */
+.bah-section, .bah-section *, .bah-section *::before, .bah-section *::after {
+  box-sizing: border-box;
+}
+
+/* Section */
+.bah-section {
+  background: var(--bah-bg, #f8f7f4);
+  color: var(--bah-text, #1a1a1a);
+  padding: var(--bah-pt-m, 48px) 0 var(--bah-pb-m, 48px);
+  font-family: var(--bah-font-body, inherit);
+  -webkit-font-smoothing: antialiased;
+}
+@media (min-width: 750px) {
+  .bah-section {
+    padding: var(--bah-pt, 80px) 0 var(--bah-pb, 80px);
+  }
+}
+
+/* Wrapper */
+.bah-wrap {
+  width: 92%;
+  max-width: var(--bah-mw, 1100px);
+  margin: 0 auto;
+}
+
+/* Header */
+.bah-header {
+  text-align: center;
+  margin-bottom: var(--bah-header-gap-m, 32px);
+}
+@media (min-width: 750px) {
+  .bah-header {
+    margin-bottom: var(--bah-header-gap, 48px);
+  }
+}
+
+.bah-eyebrow {
+  font-size: var(--bah-eyebrow-size, 12px);
+  font-family: var(--bah-font-body, inherit);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bah-accent, #8b7355);
+  margin: 0 0 10px;
+}
+
+.bah-heading {
+  font-size: var(--bah-heading-size-m, 28px);
+  font-family: var(--bah-font-heading, inherit);
+  font-weight: var(--bah-heading-weight, 800);
+  font-style: var(--bah-heading-style, normal);
+  letter-spacing: var(--bah-heading-ls, -0.03em);
+  line-height: 1.15;
+  color: var(--bah-text, #1a1a1a);
+  margin: 0 0 10px;
+}
+@media (min-width: 750px) {
+  .bah-heading {
+    font-size: var(--bah-heading-size, 40px);
+  }
+}
+
+.bah-subheading {
+  font-size: var(--bah-body-size, 16px);
+  font-family: var(--bah-font-body, inherit);
+  font-style: var(--bah-body-style, normal);
+  color: var(--bah-muted, #777);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Main image stage ── */
+.bah-stage {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  border-radius: var(--bah-img-radius, 16px);
+  overflow: hidden;
+  box-shadow: var(--bah-stage-shadow, 0 8px 40px rgba(0,0,0,0.12));
+}
+
+.bah-stage-img {
+  display: block;
+  width: 100%;
+  height: var(--bah-img-h-m, 300px);
+  object-fit: cover;
+  object-position: center;
+  border-radius: var(--bah-img-radius, 16px);
+}
+@media (min-width: 750px) {
+  .bah-stage-img {
+    height: var(--bah-img-h, 520px);
+  }
+}
+
+/* No image placeholder */
+.bah-stage-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: var(--bah-img-h-m, 300px);
+  background: linear-gradient(135deg, #e8e4de 0%, #d4cec6 100%);
+  border-radius: var(--bah-img-radius, 16px);
+}
+@media (min-width: 750px) {
+  .bah-stage-placeholder {
+    height: var(--bah-img-h, 520px);
+  }
+}
+.bah-stage-placeholder svg {
+  width: 80px;
+  height: 80px;
+  opacity: 0.3;
+}
+
+/* ── Hotspot pins ── */
+.bah-pin {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  cursor: pointer;
+  z-index: 10;
+}
+
+.bah-pin-dot {
+  width: var(--bah-pin-size, 36px);
+  height: var(--bah-pin-size, 36px);
+  border-radius: 50%;
+  background: var(--bah-pin-bg, #ffffff);
+  color: var(--bah-pin-color, #1a1a1a);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.22), 0 0 0 3px var(--bah-pin-ring, rgba(255,255,255,0.5));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+.bah-pin-dot::before {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: var(--bah-pin-bg, #ffffff);
+  opacity: 0.25;
+  animation: bah-pulse 2s ease-in-out infinite;
+}
+
+@keyframes bah-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.25; }
+  50%       { transform: scale(1.5); opacity: 0; }
+}
+
+.bah-pin:hover .bah-pin-dot,
+.bah-pin.active .bah-pin-dot {
+  transform: scale(1.15);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 0 0 4px var(--bah-accent, #8b7355);
+}
+.bah-pin.active .bah-pin-dot::before {
+  animation: none;
+}
+
+/* ── Popup ── */
+.bah-popup {
+  position: absolute;
+  z-index: 20;
+  background: var(--bah-popup-bg, #ffffff);
+  border-radius: var(--bah-popup-radius, 14px);
+  box-shadow: 0 12px 60px rgba(0,0,0,0.2), 0 2px 12px rgba(0,0,0,0.08);
+  padding: var(--bah-popup-p, 14px);
+  width: var(--bah-popup-w, 280px);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.88) translateY(8px);
+  transition: opacity 0.22s ease, transform 0.22s ease;
+  transform-origin: top left;
+}
+.bah-popup.bah-popup--open {
+  opacity: 1;
+  pointer-events: all;
+  transform: scale(1) translateY(0);
+}
+/* Position popup so it doesn't go offscreen – handled by JS adding modifier classes */
+.bah-popup.bah-popup--right  { left: calc(var(--bah-pin-size, 36px) * 0.6 + 10px); top: 50%; transform: scale(0.88) translateY(-50%); }
+.bah-popup.bah-popup--right.bah-popup--open  { transform: scale(1) translateY(-50%); }
+.bah-popup.bah-popup--left   { right: calc(var(--bah-pin-size, 36px) * 0.6 + 10px); top: 50%; transform: scale(0.88) translateY(-50%); transform-origin: top right; }
+.bah-popup.bah-popup--left.bah-popup--open   { transform: scale(1) translateY(-50%); }
+.bah-popup.bah-popup--top    { bottom: calc(var(--bah-pin-size, 36px) * 0.6 + 10px); left: 50%; transform: scale(0.88) translateX(-50%) translateY(8px); transform-origin: bottom center; }
+.bah-popup.bah-popup--top.bah-popup--open    { transform: scale(1) translateX(-50%) translateY(0); }
+.bah-popup.bah-popup--bottom { top: calc(var(--bah-pin-size, 36px) * 0.6 + 10px); left: 50%; transform: scale(0.88) translateX(-50%) translateY(-8px); transform-origin: top center; }
+.bah-popup.bah-popup--bottom.bah-popup--open { transform: scale(1) translateX(-50%) translateY(0); }
+
+@media (max-width: 749px) {
+  .bah-popup {
+    position: fixed !important;
+    bottom: 12px !important;
+    left: 12px !important;
+    right: 12px !important;
+    top: auto !important;
+    width: auto !important;
+    max-height: 80vh;
+    overflow-y: auto;
+    transform: scale(0.88) translateY(20px) !important;
+    transform-origin: bottom center !important;
+    z-index: 1000;
+  }
+  .bah-popup.bah-popup--open {
+    transform: scale(1) translateY(0) !important;
+  }
+  .bah-mini-slider {
+    height: 140px !important;
+  }
+}
+
+/* Popup header */
+.bah-popup-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  gap: 8px;
+}
+.bah-popup-title {
+  font-size: 14px;
+  font-weight: 700;
+  font-family: var(--bah-font-heading, inherit);
+  color: var(--bah-text, #1a1a1a);
+  line-height: 1.3;
+  flex: 1;
+}
+.bah-popup-close {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  border: none;
+  background: var(--bah-bg, #f8f7f4);
+  color: var(--bah-text, #1a1a1a);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+  padding: 0;
+}
+.bah-popup-close:hover {
+  background: #e0ddd9;
+}
+.bah-popup-close svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Mini slider inside popup */
+.bah-mini-slider {
+  position: relative;
+  border-radius: var(--bah-popup-img-radius, 8px);
+  overflow: hidden;
+  cursor: col-resize;
+  user-select: none;
+  touch-action: none;
+  height: var(--bah-popup-img-h, 180px);
+}
+.bah-mini-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bah-mini-img--before {
+  clip-path: inset(0 50% 0 0);
+  z-index: 2;
+}
+.bah-mini-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 2px;
+  background: #fff;
+  transform: translateX(-50%);
+  z-index: 3;
+  pointer-events: none;
+}
+.bah-mini-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+  pointer-events: none;
+}
+.bah-mini-knob svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Mini labels */
+.bah-mini-label {
+  position: absolute;
+  bottom: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 20px;
+  pointer-events: none;
+  z-index: 4;
+  backdrop-filter: blur(6px);
+}
+.bah-mini-label--before { left: 8px; }
+.bah-mini-label--after  { right: 8px; }
+
+/* Popup description */
+.bah-popup-desc {
+  font-size: 12px;
+  font-family: var(--bah-font-body, inherit);
+  color: var(--bah-muted, #777);
+  line-height: 1.55;
+  margin: 8px 0 0;
+}
+
+/* CTA button in popup */
+.bah-popup-btn {
+  display: block;
+  text-align: center;
+  margin-top: 10px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  border-radius: var(--bah-btn-radius, 8px);
+  background: var(--bah-accent, #8b7355);
+  color: #fff;
+  transition: opacity 0.18s, transform 0.15s;
+  font-family: var(--bah-font-body, inherit);
+}
+.bah-popup-btn:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
+}
+
+/* ── Overlay for mobile close ── */
+.bah-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.15);
+  z-index: 999;
+}
+.bah-overlay.active {
+  display: block;
+}
+
+/* ── Hint label on stage ── */
+.bah-hint {
+  position: absolute;
+  bottom: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 6px 16px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 5;
+  transition: opacity 0.3s;
+}
+.bah-section.pins-opened .bah-hint {
+  opacity: 0;
+}
+
+/* ── Pin number badge ── */
+.bah-pin-num {
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  font-family: var(--bah-font-heading, inherit);
+}

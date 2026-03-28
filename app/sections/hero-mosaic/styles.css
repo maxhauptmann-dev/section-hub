@@ -226,12 +226,8 @@
 
 /* Asymmetric layout */
 .shmo-grid--asymmetric {
-  grid-template-columns: 1.3fr 1fr;
-  grid-template-rows: 1fr 1fr;
-}
-
-.shmo-grid--asymmetric .shmo-tile--1 {
-  grid-row: 1 / 3;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: minmax(200px, auto);
 }
 
 /* Masonry layout */
@@ -240,44 +236,16 @@
   grid-auto-rows: minmax(180px, auto);
 }
 
-.shmo-grid--masonry .shmo-tile--1 {
-  grid-row: span 2;
-}
-
-.shmo-grid--masonry .shmo-tile--4 {
-  grid-column: span 2;
-}
-
 /* Overlap layout */
 .shmo-grid--overlap {
   grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-}
-
-.shmo-grid--overlap .shmo-tile--1 {
-  grid-column: 1 / 3;
-  grid-row: 1 / 3;
-  z-index: 1;
-}
-
-.shmo-grid--overlap .shmo-tile--2 {
-  grid-column: 2 / 4;
-  grid-row: 1 / 2;
-  z-index: 2;
-  margin-left: -20%;
-  margin-top: 10%;
-}
-
-.shmo-grid--overlap .shmo-tile--3 {
-  grid-column: 3 / 4;
-  grid-row: 1 / 3;
-  z-index: 3;
+  grid-auto-rows: minmax(200px, auto);
 }
 
 /* 2 Column Grid */
 .shmo-grid--grid-2 {
   grid-template-columns: 1fr 1fr;
-  grid-auto-rows: 1fr;
+  grid-auto-rows: minmax(250px, auto);
 }
 
 @media (max-width: 768px) {
@@ -288,21 +256,6 @@
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto;
   }
-
-  .shmo-grid--asymmetric .shmo-tile--1,
-  .shmo-grid--masonry .shmo-tile--1,
-  .shmo-grid--masonry .shmo-tile--4 {
-    grid-row: auto;
-    grid-column: auto;
-  }
-
-  .shmo-grid--overlap .shmo-tile--1,
-  .shmo-grid--overlap .shmo-tile--2,
-  .shmo-grid--overlap .shmo-tile--3 {
-    grid-column: auto;
-    grid-row: auto;
-    margin: 0;
-  }
 }
 
 /* ── Tile ── */
@@ -310,6 +263,19 @@
   position: relative;
   overflow: hidden;
   border-radius: var(--shmo-radius);
+}
+
+/* Per-tile size overrides */
+.shmo-tile--col-2  { grid-column: span 2; }
+.shmo-tile--col-full { grid-column: 1 / -1; }
+.shmo-tile--row-2  { grid-row: span 2; }
+.shmo-tile--row-3  { grid-row: span 3; }
+
+@media (max-width: 768px) {
+  .shmo-tile--col-2,
+  .shmo-tile--col-full { grid-column: span 1; }
+  .shmo-tile--row-2,
+  .shmo-tile--row-3 { grid-row: auto; }
 }
 
 .shmo-tile__link {

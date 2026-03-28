@@ -1,12 +1,12 @@
 {
   "id": "logo-cloud",
-  "name": "Logo Cloud",
+  "name": "SIQ - Logo Cloud",
   "description": "Trust bar with partner or media logos. Grayscale effect, hover animation, optional infinite scroll.",
   "category": "Social Proof",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 9,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -15,7 +15,7 @@
     "Minimal",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -62,5 +62,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

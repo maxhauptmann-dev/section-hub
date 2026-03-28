@@ -1,0 +1,17 @@
+/* ===== burst-effect-confetti ===== */
+
+/*
+  The section itself is an invisible trigger point in the page flow.
+  The canvas overlay is injected into <body> via JS and only shown while active.
+*/
+
+.bec-trigger {
+  display: block;
+  width: 100%;
+  height: 1px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  pointer-events: none;
+}

@@ -1,12 +1,14 @@
 {
   "id": "collection-orbit-ring",
-  "name": "SS - Collection Orbit",
+  "name": "SIQ - Collection Orbit",
   "description": "Futuristic orbital carousel where collection cards are arranged in a 3D circular ring with smooth auto-rotation. Each card floats on the ring with perspective scaling – front cards appear larger, back cards fade and shrink. Click or hover to pause rotation. Features glow accents, glass-morphism card overlays, configurable orbit radius, rotation speed, and tilt angle. Ideal for modern, tech, and luxury brands.",
-  "category": ["Collection"],
+  "category": [
+    "Collection"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 25,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -25,12 +27,38 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#0a0a12",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-13",
-  "updatedAt": "2026-03-13"
+  "updatedAt": "2026-03-13",
+  "previews": [
+    {
+      "type": "image",
+      "src": "/previews/collection-orbit-ring/default.webp",
+      "alt": "SS - Collection Orbit - Default",
+      "label": "Default"
+    },
+    {
+      "type": "video",
+      "src": "/previews/collection-orbit-ring/demo.mp4",
+      "poster": "/previews/collection-orbit-ring/default.svg",
+      "alt": "Collection Orbit Demo",
+      "label": "Demo"
+    }
+  ],
+  "tier": "premium"
 }

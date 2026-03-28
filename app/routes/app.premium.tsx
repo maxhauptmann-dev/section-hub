@@ -17,9 +17,41 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
   
   const { isPremium, isCancelling, currentPeriodEnd } = await checkIsPremium(session.shop);
-  const periodEnd = currentPeriodEnd?.toISOString() || null;
+  let periodEnd = currentPeriodEnd?.toISOString() || null;
   const totalSections = getAllSections().length;
   const paidSections = getAllSections().filter(s => s.price?.type !== "free").length;
+
+  // For active (non-cancelling) subscriptions, fetch current period end from Shopify
+  if (isPremium && !isCancelling && !periodEnd) {
+    try {
+      const sub = await prisma.subscription.findUnique({ where: { shop: session.shop } });
+      if (sub?.chargeId) {
+        const subResp = await admin.graphql(
+          `#graphql
+          query getSubscription($id: ID!) {
+            node(id: $id) {
+              ... on AppSubscription {
+                currentPeriodEnd
+              }
+            }
+          }`,
+          { variables: { id: sub.chargeId } },
+        );
+        const subJson = await subResp.json();
+        const shopifyPeriodEnd = subJson.data?.node?.currentPeriodEnd;
+        if (shopifyPeriodEnd) {
+          periodEnd = shopifyPeriodEnd;
+          // Also save it in the DB for future use
+          await prisma.subscription.update({
+            where: { shop: session.shop },
+            data: { currentPeriodEnd: new Date(shopifyPeriodEnd) },
+          });
+        }
+      }
+    } catch (e) {
+      console.error("Failed to fetch subscription period:", e);
+    }
+  }
 
   // Sync premium metafield for storefront blocks
   try {
@@ -117,6 +149,9 @@ export default function PremiumPage() {
   const periodEndDate = periodEnd ? new Date(periodEnd) : null;
   const periodEndFormatted = periodEndDate
     ? periodEndDate.toLocaleDateString("en-US", { month: "long", day: "numeric", year: "numeric" })
+    : null;
+  const daysRemaining = periodEndDate
+    ? Math.max(0, Math.ceil((periodEndDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : null;
 
   // When we receive a confirmationUrl, redirect to Shopify billing page
@@ -358,7 +393,7 @@ export default function PremiumPage() {
               <p className="pm-subtitle">All sections. One subscription. No limits.</p>
 
               <div className="pm-price-row">
-                <span className="pm-price">€8</span>
+                <span className="pm-price">€19</span>
                 <span className="pm-per">/month</span>
               </div>
 
@@ -377,7 +412,7 @@ export default function PremiumPage() {
                   </fetcher.Form>
                 )}
               </div>
-              <p className="pm-cancel-note">Cancel anytime · Test charges won't be billed</p>
+              <p className="pm-cancel-note">Cancel anytime · Billed through Shopify</p>
             </div>
           </div>
         </div>
@@ -492,7 +527,7 @@ export default function PremiumPage() {
                 </div>
                 <fetcher.Form method="post" action="/app/api/subscribe">
                   <button className="pm-cta-upgrade" type="submit" disabled={isLoading}>
-                    {isLoading ? "Redirecting..." : "Upgrade to Premium – €8/month"}
+                    {isLoading ? "Redirecting..." : "Upgrade to Premium – €19/month"}
                   </button>
                 </fetcher.Form>
               </div>
@@ -512,6 +547,11 @@ export default function PremiumPage() {
                 <div style={{ fontSize: 13, color: "#15803d", margin: "0 0 18px" }}>
                   All sections are unlocked. Install anything with one click.
                 </div>
+                {periodEndFormatted && (
+                  <div style={{ fontSize: 12, color: "#64748b", margin: "0 0 14px", background: "#f8fafc", borderRadius: 8, padding: "8px 14px", display: "inline-block" }}>
+                    Next billing date: <strong>{periodEndFormatted}</strong>
+                  </div>
+                )}
                 <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
                   <Button onClick={() => navigate("/app/explore")}>Browse Sections</Button>
                   <Button variant="plain" onClick={() => navigate("/app/analyzer")}>Run Analyzer</Button>
@@ -525,13 +565,28 @@ export default function PremiumPage() {
         {subscriptionCancelling && (
           <div className="pm-ending-section">
             <div style={{ position: "relative", zIndex: 1 }}>
-              <div className="pm-glass" style={{ padding: "24px 20px" }}>
+              <div className="pm-glass" style={{ padding: "28px 24px" }}>
                 <div style={{ fontSize: 32, marginBottom: 8, animation: "pm-float 3s ease-in-out infinite" }}>⏳</div>
-                <div style={{ fontSize: 18, fontWeight: 700, color: "#92400e", margin: "0 0 6px" }}>
-                  Your subscription ends {periodEndFormatted}
+                <div style={{ fontSize: 18, fontWeight: 700, color: "#92400e", margin: "0 0 10px" }}>
+                  Subscription Cancelled
                 </div>
-                <div style={{ fontSize: 13, color: "#b45309", margin: "0 0 18px", lineHeight: 1.5 }}>
-                  You still have full access to all premium features until then. After that, premium sections and blocks will be deactivated.
+                {daysRemaining !== null && (
+                  <div style={{
+                    display: "inline-flex", alignItems: "center", gap: 8,
+                    background: "#fef3c7", border: "1px solid #fde68a", borderRadius: 10,
+                    padding: "10px 18px", margin: "0 0 14px",
+                  }}>
+                    <span style={{ fontSize: 24, fontWeight: 800, color: "#92400e" }}>{daysRemaining}</span>
+                    <span style={{ fontSize: 13, color: "#92400e", fontWeight: 600 }}>
+                      {daysRemaining === 1 ? "day" : "days"} remaining
+                    </span>
+                  </div>
+                )}
+                <div style={{ fontSize: 13, color: "#b45309", margin: "0 0 6px", lineHeight: 1.5 }}>
+                  Premium is active until <strong>{periodEndFormatted}</strong>.
+                </div>
+                <div style={{ fontSize: 12, color: "#92400e", margin: "0 0 18px", lineHeight: 1.5, opacity: 0.8 }}>
+                  After that, premium sections and blocks will be deactivated. Installed sections stay in your theme.
                 </div>
                 <div style={{ display: "flex", gap: 8, justifyContent: "center", flexWrap: "wrap" }}>
                   <Button onClick={() => navigate("/app/explore")}>Browse Sections</Button>

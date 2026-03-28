@@ -1,0 +1,65 @@
+{
+  "id": "before-after-hotspots",
+  "name": "SIQ - BA Hotspots",
+  "description": "Interactive before/after image with clickable hotspot pins. Each pin opens a sleek comparison popup with a drag slider. Ideal for showing multiple transformation zones on a single product, room, or portrait. Fully configurable image sizes, pin colors, popup dimensions, all gaps and paddings. Mobile-first with smooth touch support.",
+  "category": [
+    "Conversion",
+    "Image",
+    "before and after"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Before After",
+    "Hotspots",
+    "Pins",
+    "Popup",
+    "Slider",
+    "Interactive",
+    "Transformation",
+    "Mobile First",
+    "Conversion"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/before-after-hotspots/default.webp",
+      "alt": "BA Hotspots — Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-05-10",
+  "updatedAt": "2026-05-10",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-05-10",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

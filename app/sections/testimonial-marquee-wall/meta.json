@@ -1,0 +1,55 @@
+{
+  "id": "testimonial-marquee-wall",
+  "name": "SIQ - Marquee Wall",
+  "description": "Mesmerizing infinite-scroll testimonial wall with multiple counter-rotating marquee lanes. Reviews flow in both directions at different speeds, creating a living wall of social proof. Each card features a glassmorphism design, 3D tilt on hover, animated star rating, avatar glow pulse, and a glowing quote accent. Supports 2–4 lanes with independent speed and direction control, pause-on-hover per lane, and smooth acceleration/deceleration. Fully responsive with configurable card sizes, colors, spacing, and over 60 settings. A show-stopping social proof section for premium brands.",
+  "category": [
+    "Testimonials"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Reviews",
+    "Marquee",
+    "Animated",
+    "Infinite",
+    "Social Proof",
+    "Premium",
+    "Wall"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-marquee-wall/default.webp",
+      "alt": "SIQ - Marquee Wall - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-17",
+  "updatedAt": "2026-03-17",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-17",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "premium"
+}

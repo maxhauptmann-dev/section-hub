@@ -1,0 +1,542 @@
+{% comment %}
+  Section Hub – Footer Mega v1.0
+  Premium multi-layer footer with CTA banner, brand area, multi-column navigation,
+  newsletter with glow effect, social icons, payment badges, and bottom bar.
+  Prefix: fm-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign bg2 = section.settings.bg_secondary
+  assign text_c = section.settings.text_color
+  assign heading_c = section.settings.heading_color
+  assign muted_c = section.settings.muted_color
+  assign accent = section.settings.accent_color
+  assign border_c = section.settings.border_color
+
+  assign brand_name = section.settings.brand_name
+  assign brand_desc = section.settings.brand_text
+  assign brand_logo = section.settings.brand_logo
+
+  assign cta_show = section.settings.show_cta
+  assign cta_heading = section.settings.cta_heading
+  assign cta_sub = section.settings.cta_subheading
+  assign cta_btn = section.settings.cta_button_text
+  assign cta_url = section.settings.cta_button_url
+
+  assign nl_heading = section.settings.nl_heading
+  assign nl_sub = section.settings.nl_sub
+  assign nl_placeholder = section.settings.nl_placeholder
+  assign nl_btn = section.settings.nl_button_text
+
+  assign show_payments = section.settings.show_payments
+  assign copyright = section.settings.copyright_text
+
+  assign social_fb = section.settings.social_facebook
+  assign social_ig = section.settings.social_instagram
+  assign social_yt = section.settings.social_youtube
+  assign social_tt = section.settings.social_tiktok
+  assign social_tw = section.settings.social_twitter
+  assign social_pt = section.settings.social_pinterest
+
+  assign sec_width = section.settings.section_width
+  assign pad_top = section.settings.padding_top
+  assign pad_sides = section.settings.padding_sides
+-%}
+
+<style>
+  #fm-{{ sid }}{
+    --fm-bg:{{ bg }};
+    --fm-bg2:{{ bg2 }};
+    --fm-text:{{ text_c }};
+    --fm-heading:{{ heading_c }};
+    --fm-muted:{{ muted_c }};
+    --fm-accent:{{ accent }};
+    --fm-border:{{ border_c }};
+    --fm-pt:{{ pad_top }}px;
+    --fm-ps:{{ pad_sides }}px;
+    --fm-max-w:{% if sec_width == 'full' %}100%{% elsif sec_width == 'wide' %}1400px{% else %}1200px{% endif %};
+  }
+</style>
+
+<footer id="fm-{{ sid }}" class="fm-wrap">
+
+  {%- comment -%} ── CTA Banner ── {%- endcomment -%}
+  {%- if cta_show -%}
+    <div class="fm-cta">
+      <div class="fm-cta__inner fm-inner">
+        <div class="fm-cta__content">
+          {%- if cta_heading != blank -%}
+            <h2 class="fm-cta__heading">{{ cta_heading }}</h2>
+          {%- endif -%}
+          {%- if cta_sub != blank -%}
+            <p class="fm-cta__sub">{{ cta_sub }}</p>
+          {%- endif -%}
+        </div>
+        {%- if cta_btn != blank -%}
+          <a href="{{ cta_url }}" class="fm-cta__btn">
+            {{ cta_btn }}
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        {%- endif -%}
+      </div>
+      <div class="fm-cta__glow"></div>
+    </div>
+  {%- endif -%}
+
+  {%- comment -%} ── Main Footer Body ── {%- endcomment -%}
+  <div class="fm-body">
+    <div class="fm-inner">
+      <div class="fm-grid">
+
+        {%- comment -%} Brand column {%- endcomment -%}
+        <div class="fm-brand">
+          {%- if brand_logo != blank -%}
+            <img src="{{ brand_logo | image_url: width: 400 }}" alt="{{ brand_name | escape }}" class="fm-brand__logo" loading="lazy">
+          {%- endif -%}
+          {%- if brand_name != blank -%}
+            <h3 class="fm-brand__name">{{ brand_name }}</h3>
+          {%- endif -%}
+          {%- if brand_desc != blank -%}
+            <p class="fm-brand__desc">{{ brand_desc }}</p>
+          {%- endif -%}
+
+          {%- comment -%} Social icons in brand column {%- endcomment -%}
+          {%- if social_fb != blank or social_ig != blank or social_yt != blank or social_tt != blank or social_tw != blank or social_pt != blank -%}
+            <div class="fm-social">
+              {%- if social_fb != blank -%}
+                <a href="{{ social_fb }}" class="fm-social__link" aria-label="Facebook" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.198 21.5h4v-8.01h3.604l.396-3.98h-4V7.5a1 1 0 0 1 1-1h3v-4h-3a5 5 0 0 0-5 5v2.01h-2l-.396 3.98h2.396v8.01Z"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if social_ig != blank -%}
+                <a href="{{ social_ig }}" class="fm-social__link" aria-label="Instagram" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="5"/><circle cx="17.5" cy="6.5" r="1.5" fill="currentColor" stroke="none"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if social_yt != blank -%}
+                <a href="{{ social_yt }}" class="fm-social__link" aria-label="YouTube" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.9 31.9 0 0 0 0 12a31.9 31.9 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1c.3-1.9.5-3.8.5-5.8s-.2-3.9-.5-5.8ZM9.5 15.6V8.4l6.3 3.6-6.3 3.6Z"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if social_tt != blank -%}
+                <a href="{{ social_tt }}" class="fm-social__link" aria-label="TikTok" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1 0-5.78 2.9 2.9 0 0 1 .88.14V9.01a6.35 6.35 0 0 0-1-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V9.65a8.35 8.35 0 0 0 4.88 1.56V7.76a4.82 4.82 0 0 1-1-1.07Z"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if social_tw != blank -%}
+                <a href="{{ social_tw }}" class="fm-social__link" aria-label="X / Twitter" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </a>
+              {%- endif -%}
+              {%- if social_pt != blank -%}
+                <a href="{{ social_pt }}" class="fm-social__link" aria-label="Pinterest" target="_blank" rel="noopener">
+                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-4.37 23.17c-.1-.94-.2-2.4.04-3.44l1.4-5.93s-.35-.72-.35-1.78c0-1.67.96-2.92 2.17-2.92 1.02 0 1.52.77 1.52 1.69 0 1.03-.66 2.57-.99 3.99-.28 1.19.59 2.15 1.76 2.15 2.12 0 3.75-2.23 3.75-5.47 0-2.86-2.05-4.86-4.99-4.86-3.39 0-5.39 2.55-5.39 5.18 0 1.03.39 2.13.89 2.73.1.12.11.22.08.34l-.33 1.36c-.05.22-.18.27-.41.16-1.55-.72-2.52-2.99-2.52-4.81 0-3.92 2.85-7.52 8.21-7.52 4.31 0 7.66 3.07 7.66 7.17 0 4.28-2.7 7.72-6.44 7.72-1.26 0-2.44-.65-2.85-1.43l-.77 2.96c-.28 1.08-1.04 2.43-1.55 3.26A12 12 0 1 0 12 0Z"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+        </div>
+
+        {%- comment -%} Dynamic blocks: nav columns {%- endcomment -%}
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'nav_column' -%}
+            <div class="fm-nav" {{ block.shopify_attributes }}>
+              {%- if block.settings.heading != blank -%}
+                <h4 class="fm-nav__heading">{{ block.settings.heading }}</h4>
+              {%- endif -%}
+              <ul class="fm-nav__list">
+                {%- if block.settings.link1_text != blank -%}
+                  <li><a href="{{ block.settings.link1_url }}" class="fm-nav__link"><span>{{ block.settings.link1_text }}</span></a></li>
+                {%- endif -%}
+                {%- if block.settings.link2_text != blank -%}
+                  <li><a href="{{ block.settings.link2_url }}" class="fm-nav__link"><span>{{ block.settings.link2_text }}</span></a></li>
+                {%- endif -%}
+                {%- if block.settings.link3_text != blank -%}
+                  <li><a href="{{ block.settings.link3_url }}" class="fm-nav__link"><span>{{ block.settings.link3_text }}</span></a></li>
+                {%- endif -%}
+                {%- if block.settings.link4_text != blank -%}
+                  <li><a href="{{ block.settings.link4_url }}" class="fm-nav__link"><span>{{ block.settings.link4_text }}</span></a></li>
+                {%- endif -%}
+                {%- if block.settings.link5_text != blank -%}
+                  <li><a href="{{ block.settings.link5_url }}" class="fm-nav__link"><span>{{ block.settings.link5_text }}</span></a></li>
+                {%- endif -%}
+                {%- if block.settings.link6_text != blank -%}
+                  <li><a href="{{ block.settings.link6_url }}" class="fm-nav__link"><span>{{ block.settings.link6_text }}</span></a></li>
+                {%- endif -%}
+              </ul>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+      </div>
+
+      {%- comment -%} ── Newsletter ── {%- endcomment -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'newsletter' -%}
+          <div class="fm-newsletter" {{ block.shopify_attributes }}>
+            <div class="fm-newsletter__content">
+              {%- if nl_heading != blank -%}
+                <h3 class="fm-newsletter__heading">{{ nl_heading }}</h3>
+              {%- endif -%}
+              {%- if nl_sub != blank -%}
+                <p class="fm-newsletter__sub">{{ nl_sub }}</p>
+              {%- endif -%}
+            </div>
+            {%- form 'customer', id: 'fm-nl-form' -%}
+              <input type="hidden" name="contact[tags]" value="newsletter">
+              <div class="fm-newsletter__form">
+                <input type="email" name="contact[email]" class="fm-newsletter__input" placeholder="{{ nl_placeholder }}" required autocomplete="email">
+                <button type="submit" class="fm-newsletter__btn">
+                  {{ nl_btn }}
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                </button>
+              </div>
+            {%- endform -%}
+            <div class="fm-newsletter__glow"></div>
+          </div>
+        {%- endif -%}
+      {%- endfor -%}
+
+    </div>
+  </div>
+
+  {%- comment -%} ── Bottom Bar ── {%- endcomment -%}
+  <div class="fm-bottom">
+    <div class="fm-inner fm-bottom__inner">
+      {%- if copyright != blank -%}
+        {%- assign yr = 'now' | date: '%Y' -%}
+        <p class="fm-bottom__copy">{{ copyright | replace: '[year]', yr }}</p>
+      {%- else -%}
+        <p class="fm-bottom__copy">&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}. All rights reserved.</p>
+      {%- endif -%}
+
+      {%- if show_payments -%}
+        <div class="fm-bottom__pay">
+          {%- for type in shop.enabled_payment_types -%}
+            {{ type | payment_type_svg_tag }}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+
+</footer>
+
+{% schema %}
+{
+  "name": "SIQ - Footer Mega",
+  "tag": "div",
+  "class": "fm-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "CTA Banner"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_cta",
+      "label": "Show CTA banner",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_heading",
+      "label": "CTA heading",
+      "default": "Ready to get started?"
+    },
+    {
+      "type": "text",
+      "id": "cta_subheading",
+      "label": "CTA subheading",
+      "default": "Join thousands of happy customers today."
+    },
+    {
+      "type": "text",
+      "id": "cta_button_text",
+      "label": "Button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "cta_button_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Brand"
+    },
+    {
+      "type": "image_picker",
+      "id": "brand_logo",
+      "label": "Logo"
+    },
+    {
+      "type": "text",
+      "id": "brand_name",
+      "label": "Brand name",
+      "default": "YourBrand"
+    },
+    {
+      "type": "textarea",
+      "id": "brand_text",
+      "label": "Brand description",
+      "default": "Crafting exceptional products with passion and purpose since 2020. Quality you can trust, designs you will love."
+    },
+    {
+      "type": "header",
+      "content": "Newsletter"
+    },
+    {
+      "type": "text",
+      "id": "nl_heading",
+      "label": "Heading",
+      "default": "Stay in the loop"
+    },
+    {
+      "type": "text",
+      "id": "nl_sub",
+      "label": "Subheading",
+      "default": "Get exclusive offers, new arrivals and insider tips delivered to your inbox."
+    },
+    {
+      "type": "text",
+      "id": "nl_placeholder",
+      "label": "Input placeholder",
+      "default": "Enter your email"
+    },
+    {
+      "type": "text",
+      "id": "nl_button_text",
+      "label": "Button text",
+      "default": "Subscribe"
+    },
+    {
+      "type": "header",
+      "content": "Social Media"
+    },
+    {
+      "type": "url",
+      "id": "social_facebook",
+      "label": "Facebook"
+    },
+    {
+      "type": "url",
+      "id": "social_instagram",
+      "label": "Instagram"
+    },
+    {
+      "type": "url",
+      "id": "social_youtube",
+      "label": "YouTube"
+    },
+    {
+      "type": "url",
+      "id": "social_tiktok",
+      "label": "TikTok"
+    },
+    {
+      "type": "url",
+      "id": "social_twitter",
+      "label": "X / Twitter"
+    },
+    {
+      "type": "url",
+      "id": "social_pinterest",
+      "label": "Pinterest"
+    },
+    {
+      "type": "header",
+      "content": "Bottom Bar"
+    },
+    {
+      "type": "text",
+      "id": "copyright_text",
+      "label": "Copyright text",
+      "info": "Use [year] for current year. Leave blank for automatic."
+    },
+    {
+      "type": "checkbox",
+      "id": "show_payments",
+      "label": "Show payment icons",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0b0b1a"
+    },
+    {
+      "type": "color",
+      "id": "bg_secondary",
+      "label": "CTA background",
+      "default": "#12122a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Headings",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Body text",
+      "default": "#b0b0c8"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted text",
+      "default": "#6b6b8a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borders",
+      "default": "#1e1e3a"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Content width",
+      "options": [
+        { "value": "page", "label": "Page (1200px)" },
+        { "value": "wide", "label": "Wide (1400px)" },
+        { "value": "full", "label": "Full width" }
+      ],
+      "default": "wide"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Padding sides",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "nav_column",
+      "name": "Nav Column",
+      "settings": [
+        {
+          "type": "text",
+          "id": "heading",
+          "label": "Heading",
+          "default": "Company"
+        },
+        {
+          "type": "text",
+          "id": "link1_text",
+          "label": "Link 1 text",
+          "default": "About Us"
+        },
+        {
+          "type": "url",
+          "id": "link1_url",
+          "label": "Link 1 URL"
+        },
+        {
+          "type": "text",
+          "id": "link2_text",
+          "label": "Link 2 text",
+          "default": "Careers"
+        },
+        {
+          "type": "url",
+          "id": "link2_url",
+          "label": "Link 2 URL"
+        },
+        {
+          "type": "text",
+          "id": "link3_text",
+          "label": "Link 3 text",
+          "default": "Press"
+        },
+        {
+          "type": "url",
+          "id": "link3_url",
+          "label": "Link 3 URL"
+        },
+        {
+          "type": "text",
+          "id": "link4_text",
+          "label": "Link 4 text"
+        },
+        {
+          "type": "url",
+          "id": "link4_url",
+          "label": "Link 4 URL"
+        },
+        {
+          "type": "text",
+          "id": "link5_text",
+          "label": "Link 5 text"
+        },
+        {
+          "type": "url",
+          "id": "link5_url",
+          "label": "Link 5 URL"
+        },
+        {
+          "type": "text",
+          "id": "link6_text",
+          "label": "Link 6 text"
+        },
+        {
+          "type": "url",
+          "id": "link6_url",
+          "label": "Link 6 URL"
+        }
+      ]
+    },
+    {
+      "type": "newsletter",
+      "name": "Newsletter",
+      "limit": 1,
+      "settings": []
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Footer Mega",
+      "blocks": [
+        { "type": "nav_column", "settings": { "heading": "Company", "link1_text": "About Us", "link2_text": "Our Story", "link3_text": "Careers", "link4_text": "Press" } },
+        { "type": "nav_column", "settings": { "heading": "Support", "link1_text": "Help Center", "link2_text": "Shipping Info", "link3_text": "Returns & Exchanges", "link4_text": "Contact Us" } },
+        { "type": "nav_column", "settings": { "heading": "Shop", "link1_text": "New Arrivals", "link2_text": "Best Sellers", "link3_text": "Sale", "link4_text": "Gift Cards" } },
+        { "type": "newsletter" }
+      ]
+    }
+  ]
+}
+{% endschema %}

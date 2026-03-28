@@ -21,9 +21,9 @@ export default function App() {
   return (
     <div className={styles.index}>
       <div className={styles.content}>
-        <h1 className={styles.heading}>A short heading about [your app]</h1>
+        <h1 className={styles.heading}>SectionIQ</h1>
         <p className={styles.text}>
-          A tagline about [your app] that describes your value proposition.
+          Premium Shopify sections — browse, install, and customize with one click.
         </p>
         {showForm && (
           <Form className={styles.form} method="post" action="/auth/login">
@@ -39,16 +39,13 @@ export default function App() {
         )}
         <ul className={styles.list}>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>100+ Premium Sections</strong>. Hand-crafted, responsive Shopify sections ready to install.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>One-Click Install</strong>. Add sections directly to your theme — no code required.
           </li>
           <li>
-            <strong>Product feature</strong>. Some detail about your feature and
-            its benefit to your customer.
+            <strong>Image Optimizer</strong>. Scan and auto-fix your theme images for faster loading.
           </li>
         </ul>
       </div>

@@ -1,12 +1,14 @@
 {
   "id": "counter-radial-gauge",
-  "name": "SS - Radial Gauge",
+  "name": "SIQ - Radial Gauge",
   "description": "Stunning animated radial gauge counters with SVG ring progress, smooth count-up, and optional inner icon. Each gauge fills its ring on scroll with configurable stroke width, colors, and animation. Features gradient rings, glow effects, and fully customizable layout.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0d1117",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/counter-radial-gauge/default.webp",
-      "alt": "Counter Radial Gauge - Default",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPk91ciBOdW1iZXJzPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5BbmltYXRlZCByYWRpYWwgZ2F1Z2VzPC90ZXh0Pgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSIyMDAiIHI9IjYwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxYTFhMmUiIHN0cm9rZS13aWR0aD0iOCIvPgo8Y2lyY2xlIGN4PSIxMjAiIGN5PSIyMDAiIHI9IjYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4MThjZjgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWRhc2hhcnJheT0iMjgwIDM3NyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAsMTIwLDIwMCkiLz4KPHRleHQgeD0iMTIwIiB5PSIyMDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPjg1JTwvdGV4dD4KPHRleHQgeD0iMTIwIiB5PSIyOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM4ODg4YWEiPlF1YWxpdHk8L3RleHQ+PGNpcmNsZSBjeD0iMzAwIiBjeT0iMjAwIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMWExYTJlIiBzdHJva2Utd2lkdGg9IjgiLz4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMjAwIiByPSI2MCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjODE4Y2Y4IiBzdHJva2Utd2lkdGg9IjgiIHN0cm9rZS1kYXNoYXJyYXk9IjI4MCAzNzciIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgdHJhbnNmb3JtPSJyb3RhdGUoLTkwLDMwMCwyMDApIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iMjA1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjIwIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj45MiU8L3RleHQ+Cjx0ZXh0IHg9IjMwMCIgeT0iMjkwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5IYXBweTwvdGV4dD48Y2lyY2xlIGN4PSI0ODAiIGN5PSIyMDAiIHI9IjYwIiBmaWxsPSJub25lIiBzdHJva2U9IiMxYTFhMmUiIHN0cm9rZS13aWR0aD0iOCIvPgo8Y2lyY2xlIGN4PSI0ODAiIGN5PSIyMDAiIHI9IjYwIiBmaWxsPSJub25lIiBzdHJva2U9IiM4MThjZjgiIHN0cm9rZS13aWR0aD0iOCIgc3Ryb2tlLWRhc2hhcnJheT0iMjgwIDM3NyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiB0cmFuc2Zvcm09InJvdGF0ZSgtOTAsNDgwLDIwMCkiLz4KPHRleHQgeD0iNDgwIiB5PSIyMDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPjc4JTwvdGV4dD4KPHRleHQgeD0iNDgwIiB5PSIyOTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM4ODg4YWEiPkdyb3d0aDwvdGV4dD4KPC9zdmc+",
+      "alt": "SS - Radial Gauge - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-social-stack",
+  "name": "SIQ - Testimonial Social Stack",
+  "description": "Social media inspired testimonial section with tweet/post-style cards. Features like counters, share badges, reaction emojis, date stamps, and a stacked card layout. Creates a familiar social proof experience that builds instant trust.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Social",
+    "Stack",
+    "Reactions",
+    "Premium",
+    "Social Proof",
+    "Reviews"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-social-stack/default.webp",
+      "alt": "Testimonial Social Stack - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

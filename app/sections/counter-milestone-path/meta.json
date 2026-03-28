@@ -1,12 +1,14 @@
 {
   "id": "counter-milestone-path",
-  "name": "SS - Milestone Path",
+  "name": "SIQ - Milestone Path",
   "description": "Vertical timeline path with animated milestone counters connected by a visual journey line. Numbers count up on scroll, each milestone reveals with staggered animation. Features alternating layout, glowing path nodes, progress line fill, and rich content per milestone.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 17,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#faf9f6",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/counter-milestone-path/default.webp",
-      "alt": "Counter Milestone Path - Default",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPk91ciBOdW1iZXJzPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5UaW1lbGluZSBtaWxlc3RvbmUgcGF0aDwvdGV4dD4KPGxpbmUgeDE9IjMwMCIgeTE9IjEwMCIgeDI9IjMwMCIgeTI9IjMyMCIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjIiLz48Y2lyY2xlIGN4PSIzMDAiIGN5PSIxMjAiIHI9IjYiIGZpbGw9IiM4MThjZjgiLz4KPHJlY3QgeD0iMTYwIiB5PSIxMDIiIHdpZHRoPSIxMDAiIGhlaWdodD0iMzYiIHJ4PSI4IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIyMTAiIHk9IjExOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+MjAxODwvdGV4dD4KPHRleHQgeD0iMjEwIiB5PSIxMzMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzg4ODhhYSI+Rm91bmRlZDwvdGV4dD48Y2lyY2xlIGN4PSIzMDAiIGN5PSIxODAiIHI9IjYiIGZpbGw9IiM4MThjZjgiLz4KPHJlY3QgeD0iMzQwIiB5PSIxNjIiIHdpZHRoPSIxMDAiIGhlaWdodD0iMzYiIHJ4PSI4IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIzOTAiIHk9IjE3OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+NTAwKzwvdGV4dD4KPHRleHQgeD0iMzkwIiB5PSIxOTMiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iOCIgZmlsbD0iIzg4ODhhYSI+Q2xpZW50czwvdGV4dD48Y2lyY2xlIGN4PSIzMDAiIGN5PSIyNDAiIHI9IjYiIGZpbGw9IiM4MThjZjgiLz4KPHJlY3QgeD0iMTYwIiB5PSIyMjIiIHdpZHRoPSIxMDAiIGhlaWdodD0iMzYiIHJ4PSI4IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIyMTAiIHk9IjIzOSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+MTBLPC90ZXh0Pgo8dGV4dCB4PSIyMTAiIHk9IjI1MyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSI4IiBmaWxsPSIjODg4OGFhIj5Qcm9qZWN0czwvdGV4dD48Y2lyY2xlIGN4PSIzMDAiIGN5PSIzMDAiIHI9IjYiIGZpbGw9IiM4MThjZjgiLz4KPHJlY3QgeD0iMzQwIiB5PSIyODIiIHdpZHRoPSIxMDAiIGhlaWdodD0iMzYiIHJ4PSI4IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIzOTAiIHk9IjI5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+OTklPC90ZXh0Pgo8dGV4dCB4PSIzOTAiIHk9IjMxMyIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSI4IiBmaWxsPSIjODg4OGFhIj5TYXRpc2ZhY3Rpb248L3RleHQ+Cjwvc3ZnPg==",
+      "alt": "SS - Milestone Path - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -45,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

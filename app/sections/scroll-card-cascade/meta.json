@@ -1,0 +1,64 @@
+{
+  "id": "scroll-card-cascade",
+  "name": "SIQ - Card Cascade",
+  "description": "Spectacular scroll-driven card cascade effect. Cards fly in from alternating sides as the user scrolls, stacking and overlapping with depth and rotation. Each card has parallax, subtle tilt, and a shadow that grows on approach. Creates a dynamic, playful 'dealing cards' experience perfect for features, products, or team members.",
+  "category": [
+    "Scroll Triggered",
+    "slider",
+    "Premium",
+    "Mobile"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tier": "premium",
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Cards",
+    "Cascade",
+    "Animation",
+    "Parallax",
+    "3D",
+    "Premium",
+    "WOW",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scroll-card-cascade/default.webp",
+      "alt": "SH - Card Cascade - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ]
+}

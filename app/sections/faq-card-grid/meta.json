@@ -1,0 +1,57 @@
+{
+  "id": "faq-card-grid",
+  "name": "SIQ - FAQ Card Grid",
+  "description": "Premium FAQ section with a responsive card grid layout. Each question appears as a stylish card with category badges, hover effects, and smooth expand-in-place animation. Supports search, custom colors per card, and glassmorphism styling. 35+ settings.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Cards",
+    "Grid",
+    "Masonry",
+    "Animated",
+    "Badges",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-card-grid/default.webp",
+      "alt": "FAQ Card Grid - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

@@ -1,11 +1,12 @@
 {
   "id": "cta-banner",
-  "name": "CTA Banner",
+  "name": "SIQ - CTA Banner",
   "description": "Eye-catching call-to-action banner with gradient background, decorative elements, and two button options.",
   "category": "Conversion",
   "version": "1.1.0",
   "price": {
-    "type": "free"
+    "type": "free",
+    "amount": 0
   },
   "tags": [
     "OS2.0",
@@ -13,11 +14,11 @@
     "Gradient",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/cta-banner/default.svg",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzAwIiB2aWV3Qm94PSIwIDAgNjAwIDMwMCI+CiAgPGRlZnM+CiAgICA8bGluZWFyR3JhZGllbnQgaWQ9ImN0YWJnIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj4KICAgICAgPHN0b3Agb2Zmc2V0PSIwJSIgc3R5bGU9InN0b3AtY29sb3I6IzYzNjZmMSIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM4YjVjZjYiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgogIAogIDwhLS0gQmFja2dyb3VuZCAtLT4KICA8cmVjdCB3aWR0aD0iNjAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0idXJsKCNjdGFiZykiLz4KICAKICA8IS0tIENvbnRlbnQgLS0+CiAgPHRleHQgeD0iMzAwIiB5PSIxMDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjgiIGZpbGw9IndoaXRlIiBmb250LXdlaWdodD0iNzAwIj5SZWFkeSB0byBHZXQgU3RhcnRlZD88L3RleHQ+CiAgPHRleHQgeD0iMzAwIiB5PSIxNDAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC44NSkiPkpvaW4gdGhvdXNhbmRzIG9mIGhhcHB5IGN1c3RvbWVycyB0b2RheTwvdGV4dD4KICAKICA8IS0tIEJ1dHRvbiAtLT4KICA8cmVjdCB4PSIyMjAiIHk9IjE3MCIgd2lkdGg9IjE2MCIgaGVpZ2h0PSI0NCIgcng9IjgiIGZpbGw9IndoaXRlIi8+CiAgPHRleHQgeD0iMzAwIiB5PSIxOTgiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IiM2MzY2ZjEiIGZvbnQtd2VpZ2h0PSI2MDAiPlNob3AgTm93PC90ZXh0Pgo8L3N2Zz4=",
       "alt": "CTA Banner - Gradient Style",
       "label": "Gradient"
     },
@@ -65,5 +66,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

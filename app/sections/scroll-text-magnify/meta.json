@@ -1,0 +1,64 @@
+{
+  "id": "scroll-text-magnify",
+  "name": "SIQ - Text Magnify",
+  "description": "Jaw-dropping scroll-driven text magnification hero. A tagline starts tiny and blurred, then scales up massively as the user scrolls, becoming crystal clear at full size. Background darkens, secondary text fades in below, and an optional CTA appears. Creates an 'approaching from far away' cinematic effect.",
+  "category": [
+    "hero",
+    "Scroll Triggered",
+    "Premium",
+    "Mobile"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Hero",
+    "Scroll Triggered",
+    "Typography",
+    "Magnify",
+    "Blur",
+    "Cinematic",
+    "Premium",
+    "WOW",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scroll-text-magnify/default.webp",
+      "alt": "SH - Text Magnify - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

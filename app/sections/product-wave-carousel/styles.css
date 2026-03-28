@@ -1,0 +1,183 @@
+/* ===== Product Wave Carousel ===== */
+.pwc{
+  background:var(--pwc-bg,#fafafa);
+  color:var(--pwc-text,#0f172a);
+  padding:var(--pwc-pad-y,60px) 0;
+  margin-top:var(--pwc-mt,0);
+  margin-bottom:var(--pwc-mb,0);
+  overflow:visible;
+  position:relative;
+}
+
+/* --- Header --- */
+.pwc__top{
+  max-width:1200px;
+  margin:0 auto;
+  padding:0 24px;
+}
+.pwc__header{
+  margin-bottom:36px;
+}
+.pwc__heading{
+  font-size:clamp(1.6rem,3vw,2.4rem);
+  font-weight:700;
+  margin:0 0 8px;
+  color:var(--pwc-text);
+}
+.pwc__sub{
+  font-size:clamp(.95rem,1.6vw,1.15rem);
+  opacity:.65;
+  margin:0;
+  max-width:600px;
+}
+.pwc__header[style*="center"] .pwc__sub{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* --- Track --- */
+.pwc__track{
+  width:100%;
+  overflow:hidden;
+  padding-top:calc(var(--pwc-wave-h, 12px) + 4px);
+  padding-bottom:4px;
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 4%,#000 96%,transparent);
+}
+
+/* --- Ribbon (infinite scroll) --- */
+.pwc__ribbon{
+  display:flex;
+  gap:var(--pwc-gap,16px);
+  width:max-content;
+  will-change:transform;
+}
+.pwc__ribbon--left{
+  animation:pwcScrollLeft var(--pwc-speed,35s) linear infinite;
+}
+.pwc__ribbon--right{
+  animation:pwcScrollRight var(--pwc-speed,35s) linear infinite;
+}
+
+@keyframes pwcScrollLeft{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-33.333%)}
+}
+@keyframes pwcScrollRight{
+  0%{transform:translateX(-33.333%)}
+  100%{transform:translateX(0)}
+}
+
+/* Pause on hover */
+.pwc--pause:hover .pwc__ribbon{
+  animation-play-state:paused;
+}
+
+/* --- Card --- */
+.pwc__card{
+  flex:0 0 var(--pwc-card-w,220px);
+  animation:pwcBob var(--pwc-wave-s,3s) ease-in-out infinite;
+  animation-delay:calc(var(--pwc-wave-d,0) * 0.12s);
+}
+
+@keyframes pwcBob{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(calc(var(--pwc-wave-h,12px) * -1))}
+}
+
+.pwc__card-link{
+  display:block;
+  text-decoration:none;
+  color:inherit;
+  background:var(--pwc-card-bg,#fff);
+  border:1px solid var(--pwc-card-border,#e2e8f0);
+  border-radius:var(--pwc-radius,14px);
+  overflow:hidden;
+  transition:box-shadow .3s ease,transform .3s ease,border-color .3s ease;
+}
+.pwc__card-link:hover{
+  box-shadow:0 8px 30px rgba(0,0,0,.1);
+  border-color:var(--pwc-accent,#6366f1);
+  transform:scale(1.03);
+}
+
+/* --- Card Media --- */
+.pwc__card-media{
+  position:relative;
+  width:100%;
+  aspect-ratio:1/1.15;
+  overflow:hidden;
+  background:var(--pwc-card-border);
+}
+.pwc__card-img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transition:transform .45s ease;
+}
+.pwc__card-link:hover .pwc__card-img{
+  transform:scale(1.06);
+}
+.pwc__card-ph{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--pwc-text);
+  opacity:.2;
+}
+
+/* --- Badge --- */
+.pwc__badge{
+  position:absolute;
+  top:10px;
+  left:10px;
+  background:var(--pwc-badge-bg,#ef4444);
+  color:var(--pwc-badge-text,#fff);
+  font-size:.72rem;
+  font-weight:700;
+  padding:3px 10px;
+  border-radius:999px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  line-height:1.4;
+}
+
+/* --- Card Info --- */
+.pwc__card-info{
+  padding:12px 14px 14px;
+}
+.pwc__card-title{
+  font-size:.88rem;
+  font-weight:600;
+  margin:0 0 4px;
+  color:var(--pwc-text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.pwc__card-price{
+  font-size:.92rem;
+  font-weight:700;
+  color:var(--pwc-price,#0f172a);
+}
+
+/* --- Responsive --- */
+@media(max-width:600px){
+  .pwc__card{
+    flex:0 0 calc(var(--pwc-card-w,220px) * .82);
+  }
+  .pwc__card-info{
+    padding:10px 12px 12px;
+  }
+}
+
+/* --- Reduced motion --- */
+@media(prefers-reduced-motion:reduce){
+  .pwc__ribbon,
+  .pwc__card{
+    animation:none !important;
+  }
+}

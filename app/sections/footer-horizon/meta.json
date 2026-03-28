@@ -1,0 +1,70 @@
+{
+  "id": "footer-horizon",
+  "name": "SIQ - Footer Horizon",
+  "description": "Sleek horizontal-split premium footer with scroll-to-top button, accordion navigation on mobile, gradient accent newsletter, feature strip with trust icons, social media, payment badges and copyright bar. Fully customizable.",
+  "category": "Footer",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Footer",
+    "Premium",
+    "Newsletter",
+    "Social",
+    "Navigation",
+    "Responsive",
+    "Accordion"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/footer-horizon/default.webp",
+      "alt": "Footer Horizon - Default",
+      "label": "Default"
+    },
+    {
+      "src": "/previews/footer-horizon/white.webp",
+      "alt": "Footer Horizon - White",
+      "label": "White"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Refresh",
+      "Spotlight",
+      "Trade",
+      "Studio"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "settings": {
+    "hasBlocks": true,
+    "maxBlocks": 16
+  },
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "updatedAt": "2026-03-14",
+  "createdAt": "2026-03-14",
+  "tier": "advanced"
+}

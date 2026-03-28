@@ -2,6 +2,7 @@ import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import db from "../db.server";
 import { setPremiumMetafield } from "../lib/premium-metafield.server";
+import { invalidatePremiumCache } from "../lib/is-premium.server";
 
 /**
  * Webhook: APP_SUBSCRIPTIONS_UPDATE
@@ -40,6 +41,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const status = appSub.status?.toUpperCase();
 
   console.log(`Subscription update: chargeId=${chargeId} status=${status} shop=${shop}`);
+
+  // Invalidate premium cache immediately
+  invalidatePremiumCache(shop);
 
   // Find the subscription in our DB
   const dbSubscription = await db.subscription.findUnique({ where: { shop } });

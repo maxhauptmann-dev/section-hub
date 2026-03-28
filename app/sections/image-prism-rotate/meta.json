@@ -1,0 +1,59 @@
+{
+  "id": "image-prism-rotate",
+  "name": "SIQ - Image Prism Rotate",
+  "description": "3D auto-rotating image prism that continuously cycles through images on a multi-sided geometric shape. Each face of the prism shows a different image, creating a captivating revolving display. Adjustable speed, axis, and number of faces.",
+  "category": [
+    "images"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Images",
+    "3D",
+    "Prism",
+    "Rotate",
+    "Auto-animate",
+    "Geometric",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/image-prism-rotate/default.webp",
+      "alt": "Image Prism Rotate - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

@@ -1,12 +1,15 @@
 {
   "id": "hero-cinematic",
-  "name": "SS - Hero Cinematic",
+  "name": "SIQ - Hero Cinematic",
   "description": "Cinematic fullscreen hero with parallax video/image background, letterbox film bars, animated text reveals with stagger, glassmorphism CTA cards, scroll-progress indicator, and Ken Burns zoom effect. 80+ customization options for a truly immersive above-the-fold experience.",
-  "category": "Hero",
+  "category": [
+    "Hero",
+    "animated"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -22,17 +25,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/hero-cinematic/default.webp",
-      "alt": "Hero Cinematic - Default",
+      "alt": "SS - Hero Cinematic - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -49,5 +58,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

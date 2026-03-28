@@ -1,0 +1,339 @@
+{% comment %} SIQ - Horizontal Scroll Text {% endcomment %}
+
+{%- liquid
+  assign hst_id = 'hst-' | append: section.id
+
+  assign hst_fw = 800
+  if section.settings.font_weight == 'bold'
+    assign hst_fw = 700
+  elsif section.settings.font_weight == 'black'
+    assign hst_fw = 900
+  elsif section.settings.font_weight == 'medium'
+    assign hst_fw = 500
+  elsif section.settings.font_weight == 'semibold'
+    assign hst_fw = 600
+  endif
+
+  assign hst_tt = 'uppercase'
+  if section.settings.text_transform == 'none'
+    assign hst_tt = 'none'
+  elsif section.settings.text_transform == 'capitalize'
+    assign hst_tt = 'capitalize'
+  endif
+
+  assign hst_dir = section.settings.direction
+  assign hst_speed = section.settings.speed
+  assign hst_sep = section.settings.separator
+-%}
+
+<style>
+  #{{ hst_id }} {
+    --hst-bg: {{ section.settings.bg_color }};
+    --hst-fill-color: {{ section.settings.fill_color }};
+    --hst-outline-color: {{ section.settings.outline_color }};
+    --hst-stroke: {{ section.settings.stroke_width }}px;
+    --hst-fs: {{ section.settings.font_size_desktop }}px;
+    --hst-fs-m: {{ section.settings.font_size_mobile }}px;
+    --hst-fw: {{ hst_fw }};
+    --hst-ls: calc({{ section.settings.letter_spacing }} / 100 * 1em);
+    --hst-tt: {{ hst_tt }};
+    --hst-gap: calc({{ section.settings.word_gap }} / 100 * 1em);
+    --hst-py: {{ section.settings.padding_y }}px;
+    --hst-py-m: {{ section.settings.padding_y_mobile }}px;
+  }
+</style>
+
+<section id="{{ hst_id }}" class="hst" data-hst-root>
+  <div class="hst__track" data-hst-track>
+    {%- for block in section.blocks %}
+      {%- if block.type == 'word' %}
+        {%- unless forloop.first %}
+          {%- if hst_sep != 'none' %}
+            <span class="hst__separator" aria-hidden="true">
+              {%- if hst_sep == 'dot' %}&#x2022;{%- endif -%}
+              {%- if hst_sep == 'dash' %}—{%- endif -%}
+              {%- if hst_sep == 'slash' %}&#x2F;{%- endif -%}
+              {%- if hst_sep == 'star' %}★{%- endif -%}
+              {%- if hst_sep == 'diamond' %}◆{%- endif -%}
+            </span>
+          {%- endif %}
+        {%- endunless %}
+        <span class="hst__word" data-hst-word {{ block.shopify_attributes }}>
+          <span class="hst__word-outline" aria-hidden="true">{{ block.settings.text }}</span>
+          <span class="hst__word-fill">{{ block.settings.text }}</span>
+        </span>
+      {%- endif %}
+    {%- endfor %}
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.getElementById('{{ hst_id }}');
+  if (!root) return;
+
+  var track = root.querySelector('[data-hst-track]');
+  var words = root.querySelectorAll('[data-hst-word]');
+  if (!track || words.length === 0) return;
+
+  var direction = '{{ hst_dir }}';  /* left or right */
+  var speed = {{ hst_speed }} / 10;      /* multiplier, e.g. 15 → 1.5 */
+
+  /* ── horizontal scroll via vertical scroll position ── */
+  /* When section is in view, translate the track left/right based on scroll progress */
+
+  function update() {
+    var rect = root.getBoundingClientRect();
+    var wh = window.innerHeight;
+
+    /* section visibility: 0 = just entering from bottom, 1 = fully past top */
+    var progress = (wh - rect.top) / (wh + rect.height);
+    if (progress < 0) progress = 0;
+    if (progress > 1) progress = 1;
+
+    /* ── 1. Horizontal translation ── */
+    var trackW = track.scrollWidth;
+    var viewW = root.offsetWidth;
+    var maxShift = (trackW - viewW) * 0.5;
+    /* center the track by default, then shift based on scroll */
+    var baseOffset = -(trackW - viewW) * 0.5;
+    var scrollAmount = (progress - 0.5) * maxShift * speed;
+
+    if (direction === 'left') {
+      track.style.transform = 'translateX(' + (baseOffset - scrollAmount) + 'px)';
+    } else {
+      track.style.transform = 'translateX(' + (baseOffset + scrollAmount) + 'px)';
+    }
+
+    /* ── 2. Outline → fill reveal per word ── */
+    var totalWords = words.length;
+    /* spread the fill reveal across the entire scroll progress */
+    for (var i = 0; i < totalWords; i++) {
+      /* each word gets its own slice of the progress range */
+      var wordStart = i / (totalWords + 1);
+      var wordEnd = (i + 2) / (totalWords + 1);
+      var wordProgress = (progress - wordStart) / (wordEnd - wordStart);
+      if (wordProgress < 0) wordProgress = 0;
+      if (wordProgress > 1) wordProgress = 1;
+
+      var fill = words[i].querySelector('.hst__word-fill');
+      if (fill) {
+        var clipRight = (1 - wordProgress) * 100;
+        fill.style.clipPath = 'inset(0 ' + clipRight + '% 0 0)';
+      }
+    }
+  }
+
+  var ticking = false;
+  window.addEventListener('scroll', function() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(function() {
+        update();
+        ticking = false;
+      });
+    }
+  }, { passive: true });
+
+  /* initial */
+  update();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "Horizontal Scroll Text",
+  "tag": "section",
+  "class": "hst-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "fill_color",
+      "label": "Filled text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "outline_color",
+      "label": "Outline text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Outline stroke width",
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size_desktop",
+      "min": 60,
+      "max": 250,
+      "step": 5,
+      "unit": "px",
+      "label": "Font size – desktop",
+      "default": 130
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "min": 32,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "label": "Font size – mobile",
+      "default": 48
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "medium", "label": "Medium (500)" },
+        { "value": "semibold", "label": "Semi-bold (600)" },
+        { "value": "bold", "label": "Bold (700)" },
+        { "value": "extrabold", "label": "Extra-bold (800)" },
+        { "value": "black", "label": "Black (900)" }
+      ],
+      "default": "extrabold"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "label": "Letter spacing (÷100 em)",
+      "default": -2,
+      "info": "-2 = -0.02em"
+    },
+    {
+      "type": "select",
+      "id": "text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "uppercase", "label": "UPPERCASE" },
+        { "value": "none", "label": "As typed" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "word_gap",
+      "min": 10,
+      "max": 100,
+      "step": 5,
+      "label": "Word gap (÷100 em)",
+      "default": 40,
+      "info": "40 = 0.4em gap between words"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "unit": "px",
+      "label": "Vertical padding – desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_y_mobile",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "label": "Vertical padding – mobile",
+      "default": 32
+    },
+    {
+      "type": "header",
+      "content": "Scroll behavior"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Scroll direction",
+      "options": [
+        { "value": "left", "label": "← Scroll left" },
+        { "value": "right", "label": "→ Scroll right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "min": 5,
+      "max": 30,
+      "step": 1,
+      "label": "Scroll speed (÷10)",
+      "default": 15,
+      "info": "15 = 1.5x multiplier. Higher = faster horizontal scroll."
+    },
+    {
+      "type": "select",
+      "id": "separator",
+      "label": "Word separator",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "dot", "label": "● Dot" },
+        { "value": "dash", "label": "— Dash" },
+        { "value": "slash", "label": "/ Slash" },
+        { "value": "star", "label": "★ Star" },
+        { "value": "diamond", "label": "◆ Diamond" }
+      ],
+      "default": "none"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "word",
+      "name": "Word",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "LEGENDARY"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Horizontal Scroll Text",
+      "blocks": [
+        { "type": "word", "settings": { "text": "THROUGH" } },
+        { "type": "word", "settings": { "text": "THE" } },
+        { "type": "word", "settings": { "text": "YEARS" } },
+        { "type": "word", "settings": { "text": "LEGENDARY" } },
+        { "type": "word", "settings": { "text": "STYLE" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

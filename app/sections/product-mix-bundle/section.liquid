@@ -1,0 +1,750 @@
+{% comment %}
+  SectionHub – Product Mix & Match Pack  (pmb-)
+  Bento product grid with bundle builder, parallax scroll, mesh gradient
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign heading      = section.settings.heading
+  assign description  = section.settings.description
+  assign bg_style     = section.settings.bg_style | default: 'solid'
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign img_ratio    = section.settings.image_ratio
+  assign overlay_o    = section.settings.overlay_opacity
+  assign animate      = section.settings.animation_style
+  assign corner_style = section.settings.corner_style
+  assign align        = section.settings.content_align
+  assign bar_title    = section.settings.bar_title | default: 'Add products to the bundle'
+  assign min_items    = section.settings.min_items
+  assign max_items    = section.settings.max_items
+
+  case corner_style
+    when 'none'
+      assign radius = 0
+    when 'sm'
+      assign radius = 8
+    when 'md'
+      assign radius = 14
+    when 'lg'
+      assign radius = 22
+  endcase
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #pmb-{{ section.id }} {
+    --pmb-bg: {{ section.settings.bg_color }};
+    --pmb-heading-c: {{ section.settings.heading_color }};
+    --pmb-text-c: {{ section.settings.text_color }};
+    --pmb-btn-bg: {{ section.settings.btn_bg }};
+    --pmb-btn-c: {{ section.settings.btn_color }};
+    --pmb-grad-1: {{ section.settings.grad_color_1 }};
+    --pmb-grad-2: {{ section.settings.grad_color_2 }};
+    --pmb-grad-3: {{ section.settings.grad_color_3 }};
+
+    --pmb-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --pmb-heading-fw: {{ heading_font.weight }};
+    --pmb-heading-fst: {{ heading_font.style }};
+    --pmb-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --pmb-body-fw: {{ body_font.weight }};
+
+    --pmb-cols: {{ section.settings.columns }};
+    --pmb-cols-m: {{ section.settings.columns_mobile }};
+    --pmb-gap: {{ section.settings.gap }}px;
+    --pmb-gap-m: {{ section.settings.gap_mobile }}px;
+    --pmb-radius: {{ radius }}px;
+    --pmb-overlay-o: {{ overlay_o }};
+    --pmb-max-w: {{ section.settings.max_width }}px;
+    --pmb-pt: {{ section.settings.padding_top }}px;
+    --pmb-pb: {{ section.settings.padding_bottom }}px;
+    --pmb-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --pmb-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+    --pmb-px: {{ section.settings.padding_sides }}px;
+    --pmb-content-w: {{ section.settings.content_width }}px;
+  }
+</style>
+
+<section id="pmb-{{ section.id }}" class="pmb{% if bg_style == 'gradient' %} pmb--gradient{% endif %}" data-pmb-root data-pmb-animate="{{ animate }}">
+
+  {%- if bg_style == 'gradient' -%}
+    <div class="pmb-mesh">
+      <div class="pmb-mesh__blob pmb-mesh__blob--1"></div>
+      <div class="pmb-mesh__blob pmb-mesh__blob--2"></div>
+      <div class="pmb-mesh__blob pmb-mesh__blob--3"></div>
+      <div class="pmb-mesh__noise"></div>
+    </div>
+  {%- endif -%}
+
+  <div class="pmb__wrap">
+
+    {%- comment -%} ── Intro ── {%- endcomment -%}
+    {%- if heading != blank or description != blank -%}
+      <div class="pmb__intro{% if align == 'left' %} pmb__intro--left{% elsif align == 'right' %} pmb__intro--right{% endif %}">
+        {%- if heading != blank -%}
+          <{{ section.settings.heading_tag }} class="pmb__heading pmb__heading--{{ section.settings.heading_size }}">
+            {{ heading }}
+          </{{ section.settings.heading_tag }}>
+        {%- endif -%}
+        {%- if description != blank -%}
+          <p class="pmb__desc pmb__desc--{{ section.settings.desc_size }}">{{ description }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── Product Grid ── {%- endcomment -%}
+    <div class="pmb__grid" data-pmb-grid>
+      {%- if col_obj != blank and col_obj.products.size > 0 -%}
+        {%- for product in col_obj.products limit: max_items -%}
+          {%- assign p_img = product.featured_image -%}
+          {%- assign first_variant = product.selected_or_first_available_variant -%}
+          <div class="pmb__card" data-pmb-card data-pmb-parallax="{{ forloop.index0 }}" data-pmb-product-id="{{ product.id }}" data-pmb-variant-id="{{ first_variant.id }}">
+            <a href="{{ product.url }}" class="pmb__card-link" aria-label="{{ product.title | escape }}">
+              <div class="pmb__card-media pmb__card-media--{{ img_ratio }}">
+                {%- if p_img != blank -%}
+                  <img src="{{ p_img | image_url: width: 800 }}"
+                       srcset="{{ p_img | image_url: width: 400 }} 400w, {{ p_img | image_url: width: 600 }} 600w, {{ p_img | image_url: width: 800 }} 800w"
+                       sizes="(max-width: 749px) 50vw, 25vw"
+                       alt="{{ p_img.alt | default: product.title | escape }}"
+                       loading="lazy"
+                       class="pmb__card-img">
+                {%- else -%}
+                  <div class="pmb__card-placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+                {%- endif -%}
+                <div class="pmb__card-overlay">
+                  <span class="pmb__card-title">{{ product.title }}</span>
+                  <span class="pmb__card-price">
+                    {%- if product.compare_at_price > product.price -%}
+                      <s>{{ product.compare_at_price | money }}</s>
+                    {%- endif -%}
+                    {{ product.price | money }}
+                  </span>
+                </div>
+              </div>
+            </a>
+            {%- if first_variant.available -%}
+              <button class="pmb__card-add" type="button" data-pmb-add aria-label="Add {{ product.title | escape }} to bundle">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+              </button>
+            {%- else -%}
+              <span class="pmb__card-add" style="opacity:0.3;pointer-events:none;" aria-label="Sold out">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="4" y1="4" x2="12" y2="12"/><line x1="12" y1="4" x2="4" y2="12"/></svg>
+              </span>
+            {%- endif -%}
+          </div>
+        {%- endfor -%}
+      {%- else -%}
+        {%- comment -%} Placeholder cards when no collection selected {%- endcomment -%}
+        {%- for i in (1..8) -%}
+          <div class="pmb__card" data-pmb-card data-pmb-parallax="{{ forloop.index0 }}">
+            <div class="pmb__card-link">
+              <div class="pmb__card-media pmb__card-media--{{ img_ratio }}">
+                <div class="pmb__card-placeholder">{{ 'product-1' | placeholder_svg_tag }}</div>
+                <div class="pmb__card-overlay">
+                  <span class="pmb__card-title">Product {{ forloop.index }}</span>
+                  <span class="pmb__card-price">$0.00</span>
+                </div>
+              </div>
+            </div>
+            <button class="pmb__card-add" type="button" data-pmb-add aria-label="Add to bundle">
+              <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>
+            </button>
+          </div>
+        {%- endfor -%}
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} ── Bundle Bar ── {%- endcomment -%}
+    <div class="pmb__bar" data-pmb-bar>
+      <div class="pmb__bar-left">
+        <svg class="pmb__bar-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <div>
+          <div class="pmb__bar-title">{{ bar_title }}</div>
+          <div class="pmb__bar-count" data-pmb-count>0 / {{ min_items }} min</div>
+        </div>
+      </div>
+      <button class="pmb__bar-btn" type="button" data-pmb-submit disabled>
+        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1h2.5l1.3 7.2a1.5 1.5 0 0 0 1.5 1.3h6.4a1.5 1.5 0 0 0 1.5-1.1L15.5 4H4.5"/><circle cx="6.5" cy="13.5" r="1"/><circle cx="12.5" cy="13.5" r="1"/></svg>
+        Add to cart
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('#pmb-{{ section.id }}[data-pmb-root]');
+  if (!root) return;
+
+  var grid     = root.querySelector('[data-pmb-grid]');
+  var cards    = root.querySelectorAll('[data-pmb-card]');
+  var addBtns  = root.querySelectorAll('[data-pmb-add]');
+  var barCount = root.querySelector('[data-pmb-count]');
+  var barBtn   = root.querySelector('[data-pmb-submit]');
+  var minItems = {{ min_items }};
+  var maxItems = {{ max_items }};
+  var animate  = root.getAttribute('data-pmb-animate');
+
+  /* ════════ BUNDLE STATE ════════ */
+  var bundle = [];
+
+  function updateBar() {
+    var count = bundle.length;
+    if (barCount) barCount.textContent = count + ' / ' + minItems + ' min';
+    if (barBtn) barBtn.disabled = count < minItems;
+  }
+
+  addBtns.forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      var card = btn.closest('[data-pmb-card]');
+      if (!card) return;
+      var vid = card.getAttribute('data-pmb-variant-id');
+      var idx = bundle.indexOf(vid);
+
+      if (idx > -1) {
+        /* Remove */
+        bundle.splice(idx, 1);
+        btn.classList.remove('pmb__card-add--active');
+        btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>';
+      } else {
+        if (bundle.length >= maxItems) return;
+        /* Add */
+        bundle.push(vid);
+        btn.classList.add('pmb__card-add--active');
+        btn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><polyline points="3 8 6.5 12 13 4"/></svg>';
+        /* Bounce feedback */
+        btn.style.transform = 'scale(1.3)';
+        setTimeout(function(){ btn.style.transform = ''; }, 200);
+      }
+      updateBar();
+    });
+  });
+
+  /* Add-to-cart handler */
+  if (barBtn) {
+    barBtn.addEventListener('click', function() {
+      if (bundle.length < minItems) return;
+      var items = bundle.map(function(vid) { return { id: parseInt(vid, 10), quantity: 1 }; });
+
+      fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items: items })
+      })
+      .then(function(r) { return r.json(); })
+      .then(function() {
+        /* Reset */
+        bundle = [];
+        addBtns.forEach(function(b) {
+          b.classList.remove('pmb__card-add--active');
+          b.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><line x1="8" y1="3" x2="8" y2="13"/><line x1="3" y1="8" x2="13" y2="8"/></svg>';
+        });
+        updateBar();
+        /* Open cart drawer or redirect */
+        if (typeof window.Shopify !== 'undefined' && typeof window.Shopify.onCartUpdate === 'function') {
+          window.Shopify.onCartUpdate();
+        }
+        /* Dispatch event for theme cart drawers */
+        document.dispatchEvent(new CustomEvent('cart:refresh'));
+        /* Visual feedback */
+        barBtn.textContent = 'Added!';
+        setTimeout(function() {
+          barBtn.innerHTML = '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 1h2.5l1.3 7.2a1.5 1.5 0 0 0 1.5 1.3h6.4a1.5 1.5 0 0 0 1.5-1.1L15.5 4H4.5"/><circle cx="6.5" cy="13.5" r="1"/><circle cx="12.5" cy="13.5" r="1"/></svg> Add to cart';
+        }, 1500);
+      })
+      .catch(function(err) { console.error('pmb cart error', err); });
+    });
+  }
+
+  updateBar();
+
+  /* ════════ DESKTOP: PARALLAX SCROLL ════════ */
+  if (animate !== 'scroll' || window.innerWidth < 750) return;
+
+  var ticking = false;
+  var cols = parseInt(getComputedStyle(root).getPropertyValue('--pmb-cols')) || 5;
+
+  /* Easing helpers */
+  function easeOutCubic(t) { return 1 - Math.pow(1 - t, 3); }
+  function easeInQuad(t) { return t * t; }
+
+  function onScroll() {
+    var gridRect = grid.getBoundingClientRect();
+    var viewH = window.innerHeight;
+
+    /* Only apply when grid is in or near viewport */
+    if (gridRect.bottom < -200 || gridRect.top > viewH + 200) return;
+
+    /* ── Phase 1: Normal parallax while grid is visible ──
+       offset: 0 = grid center is at viewport center
+       positive = grid is below center, negative = grid is above center */
+    var gridCenter = gridRect.top + gridRect.height * 0.5;
+    var viewCenter = viewH * 0.5;
+    var offset = (gridCenter - viewCenter) / viewH;
+
+    /* ── Phase 2: Exit acceleration when section scrolls up past viewport ──
+       exitProgress: 0 = grid bottom is at viewport bottom
+                     1 = grid bottom has left the viewport (top) */
+    var exitStart = viewH * 0.75;
+    var exitProgress = 0;
+    if (gridRect.bottom < exitStart) {
+      exitProgress = Math.min(1, (exitStart - gridRect.bottom) / (exitStart + 60));
+      exitProgress = easeInQuad(exitProgress);
+    }
+
+    /* ── Phase 0: Entrance – cards float up from below ──
+       enterProgress: 0 = grid top is below viewport, 1 = fully entered */
+    var enterProgress = 0;
+    if (gridRect.top < viewH) {
+      enterProgress = Math.min(1, (viewH - gridRect.top) / (viewH * 0.5));
+      enterProgress = easeOutCubic(enterProgress);
+    }
+
+    cards.forEach(function(card) {
+      var idx = parseInt(card.getAttribute('data-pmb-parallax'), 10);
+      var row = Math.floor(idx / cols);
+      var col = idx % cols;
+
+      /* ── Normal parallax: subtle staggered shift ── */
+      var intensity = 10 + row * 6;
+      var microX = (col % 2 === 0 ? 1 : -1) * 2.5 * offset;
+      var shiftY = offset * intensity;
+
+      /* ── Entrance: staggered float-up from below ── */
+      var enterDelay = (row * 0.15 + col * 0.05);
+      var cardEnter = Math.min(1, Math.max(0, (enterProgress - enterDelay) * 2.5));
+      cardEnter = easeOutCubic(cardEnter);
+      var enterY = (1 - cardEnter) * 40;
+      var enterOp = cardEnter;
+
+      /* ── Exit: accelerated upward shift, staggered by row ── */
+      var exitDelay = row * 0.12;
+      var cardExit = Math.min(1, Math.max(0, (exitProgress - exitDelay) * 2));
+      cardExit = easeInQuad(cardExit);
+      var exitY = -cardExit * (50 + row * 20);
+      /* Alternate cols exit with slight X spread */
+      var exitX = cardExit * (col % 2 === 0 ? -8 : 8);
+
+      /* ── Combine all transforms ── */
+      var totalX = microX + exitX;
+      var totalY = shiftY + enterY + exitY;
+      var scale = 1 - cardExit * 0.04;
+      var opacity = enterOp * (1 - cardExit * 0.3);
+
+      card.style.transform = 'translate3d(' + totalX.toFixed(1) + 'px, ' + totalY.toFixed(1) + 'px, 0) scale(' + scale.toFixed(3) + ')';
+      card.style.opacity = Math.max(0, opacity).toFixed(3);
+    });
+  }
+
+  function throttled() {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(function() { onScroll(); ticking = false; });
+    }
+  }
+
+  /* IntersectionObserver to start/stop scroll listener */
+  var active = false;
+  var io = new IntersectionObserver(function(entries) {
+    entries.forEach(function(e) {
+      if (e.isIntersecting && !active) {
+        active = true;
+        window.addEventListener('scroll', throttled, { passive: true });
+        onScroll();
+      } else if (!e.isIntersecting && active) {
+        active = false;
+        window.removeEventListener('scroll', throttled);
+        /* Reset transforms */
+        cards.forEach(function(c) { c.style.transform = ''; c.style.opacity = ''; });
+      }
+    });
+  }, { rootMargin: '200px 0px' });
+  io.observe(grid);
+  onScroll();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Mix & Match Pack",
+  "tag": "section",
+  "class": "pmb-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "select",
+      "id": "animation_style",
+      "label": "Animation style",
+      "options": [
+        { "value": "scroll", "label": "On scroll" },
+        { "value": "none",   "label": "None" }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "bg_style",
+      "label": "Background style",
+      "options": [
+        { "value": "solid", "label": "Solid" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_1",
+      "label": "Gradient color 1",
+      "default": "#1a0a2e"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_2",
+      "label": "Gradient color 2",
+      "default": "#0a1628"
+    },
+    {
+      "type": "color",
+      "id": "grad_color_3",
+      "label": "Gradient color 3",
+      "default": "#16213e"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Section width",
+      "options": [
+        { "value": "1200", "label": "Small" },
+        { "value": "1400", "label": "Medium" },
+        { "value": "1600", "label": "Large" }
+      ],
+      "default": "1400"
+    },
+    {
+      "type": "select",
+      "id": "corner_style",
+      "label": "Corner style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "sm",   "label": "Small" },
+        { "value": "md",   "label": "Medium" },
+        { "value": "lg",   "label": "Large" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Bundle Products"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Product list"
+    },
+    {
+      "type": "range",
+      "id": "min_items",
+      "label": "Minimum items required",
+      "min": 1,
+      "max": 12,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "max_items",
+      "label": "Maximum items",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Mobile columns",
+      "options": [
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" }
+      ],
+      "default": "2"
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Desktop column gap",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 30,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Mobile column gap",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "auto",      "label": "Auto" },
+        { "value": "square",    "label": "Square (1:1)" },
+        { "value": "portrait",  "label": "Portrait (3:4)" },
+        { "value": "landscape", "label": "Landscape (4:3)" },
+        { "value": "wide",      "label": "Wide (16:9)" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay opacity",
+      "min": 0,
+      "max": 1,
+      "step": 0.1,
+      "default": 0.7
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Bundle Up & Save More"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" },
+        { "value": "p",  "label": "P" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" },
+        { "value": "xl", "label": "Extra large" }
+      ],
+      "default": "lg"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font family",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font family",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "accent_font_family",
+      "label": "Accent font family",
+      "options": [
+        { "value": "heading", "label": "Heading" },
+        { "value": "body", "label": "Body" }
+      ],
+      "default": "heading",
+      "info": "Used for styled text"
+    },
+    {
+      "type": "textarea",
+      "id": "description",
+      "label": "Description",
+      "default": "Make shopping easier and faster by selecting the products you love and adding them to your cart in just a few clicks. Browse through our collection, choose your favorites, and get one step closer to checkout. Smart shopping starts here."
+    },
+    {
+      "type": "select",
+      "id": "desc_size",
+      "label": "Description size",
+      "options": [
+        { "value": "sm", "label": "Small" },
+        { "value": "md", "label": "Medium" },
+        { "value": "lg", "label": "Large" }
+      ],
+      "default": "sm"
+    },
+    {
+      "type": "select",
+      "id": "content_align",
+      "label": "Content alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "content_width",
+      "label": "Content width",
+      "min": 400,
+      "max": 900,
+      "step": 20,
+      "default": 720,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Bundle Bar"
+    },
+    {
+      "type": "text",
+      "id": "bar_title",
+      "label": "Title",
+      "default": "Add products to the bundle"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#cccccc"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_color",
+      "label": "Button text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 900,
+      "max": 1800,
+      "step": 50,
+      "default": 1400,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top space desktop",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "default": 70,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom space desktop",
+      "min": 0,
+      "max": 120,
+      "step": 5,
+      "default": 45,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top space mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom space mobile",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 40,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Mix & Match Pack"
+    }
+  ]
+}
+{% endschema %}

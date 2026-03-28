@@ -1,0 +1,568 @@
+{{ 'section-testimonial-social-stack.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign quote_color = section.settings.quote_color
+  assign name_color = section.settings.name_color
+  assign handle_color = section.settings.handle_color
+  assign meta_color = section.settings.meta_color
+  assign like_color = section.settings.like_color
+  assign verified_color = section.settings.verified_color
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.quote_size
+  assign radius = section.settings.border_radius
+  assign columns = section.settings.columns
+  assign gap = section.settings.gap
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign show_likes = section.settings.show_likes
+  assign show_reactions = section.settings.show_reactions
+  assign show_date = section.settings.show_date
+  assign show_verified = section.settings.show_verified
+  assign show_source = section.settings.show_source
+  assign card_shadow = section.settings.card_shadow
+  assign hover_lift = section.settings.hover_lift
+  assign layout = section.settings.layout
+-%}
+
+<div
+  id="ts-stack-{{ sid }}"
+  class="ts-stack"
+  style="
+    --ts-bg:{{ bg }};
+    --ts-text:{{ text_color }};
+    --ts-accent:{{ accent }};
+    --ts-card-bg:{{ card_bg }};
+    --ts-card-border:{{ card_border }};
+    --ts-quote:{{ quote_color }};
+    --ts-name:{{ name_color }};
+    --ts-handle:{{ handle_color }};
+    --ts-meta:{{ meta_color }};
+    --ts-like:{{ like_color }};
+    --ts-verified:{{ verified_color }};
+    --ts-max-w:{{ max_w }}px;
+    --ts-pad-y:{{ pad_y }}px;
+    --ts-mt:{{ mt }}px;
+    --ts-mb:{{ mb }}px;
+    --ts-q-size:{{ q_size }}px;
+    --ts-radius:{{ radius }}px;
+    --ts-cols:{{ columns }};
+    --ts-gap:{{ gap }}px;
+  "
+>
+  <div class="ts-stack__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="ts-stack__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="ts-stack__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="ts-stack__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="ts-stack__grid{% if layout == 'masonry' %} ts-stack__grid--masonry{% endif %}">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign quote = block.settings.quote
+          assign name = block.settings.name
+          assign handle = block.settings.handle
+          assign date = block.settings.date
+          assign likes = block.settings.likes
+          assign reaction = block.settings.reaction
+          assign source = block.settings.source
+          assign verified = block.settings.verified
+          assign photo = block.settings.photo
+        -%}
+        <div
+          class="ts-stack__card{% if card_shadow %} ts-stack__card--shadow{% endif %}{% if hover_lift %} ts-stack__card--lift{% endif %}"
+          {{ block.shopify_attributes }}
+        >
+          <!-- Post header -->
+          <div class="ts-stack__post-header">
+            {%- if photo != blank -%}
+              <img
+                class="ts-stack__avatar"
+                src="{{ photo | image_url: width: 80 }}"
+                alt="{{ name | escape }}"
+                width="40"
+                height="40"
+                loading="lazy"
+              >
+            {%- else -%}
+              <span class="ts-stack__avatar-ph">{{ name | slice: 0, 1 }}</span>
+            {%- endif -%}
+            <div class="ts-stack__user-info">
+              <div class="ts-stack__name-row">
+                <span class="ts-stack__name">{{ name }}</span>
+                {%- if show_verified and verified -%}
+                  <svg class="ts-stack__verified" width="16" height="16" viewBox="0 0 24 24" fill="var(--ts-verified)"><path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" fill="var(--ts-verified)"/><path d="M9 12l2 2 4-4" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+                {%- endif -%}
+              </div>
+              {%- if handle != blank -%}
+                <span class="ts-stack__handle">{{ handle }}</span>
+              {%- endif -%}
+            </div>
+            {%- if show_source and source != blank -%}
+              <span class="ts-stack__source">{{ source }}</span>
+            {%- endif -%}
+          </div>
+
+          <!-- Post body -->
+          <p class="ts-stack__quote">{{ quote }}</p>
+
+          <!-- Post footer -->
+          <div class="ts-stack__footer">
+            {%- if show_likes and likes != blank -%}
+              <span class="ts-stack__likes">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--ts-like)" stroke="none"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>
+                {{ likes }}
+              </span>
+            {%- endif -%}
+            {%- if show_reactions and reaction != blank -%}
+              <span class="ts-stack__reaction">{{ reaction }}</span>
+            {%- endif -%}
+            {%- if show_date and date != blank -%}
+              <span class="ts-stack__date">{{ date }}</span>
+            {%- endif -%}
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "SIQ - Social Reviews",
+  "tag": "section",
+  "class": "section-testimonial-social-stack",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "People Are Talking"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "See what our community is saying across social media."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card gap",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "label": "Grid layout",
+      "options": [
+        { "value": "grid", "label": "Equal height" },
+        { "value": "masonry", "label": "Masonry" }
+      ],
+      "default": "masonry"
+    },
+    {
+      "type": "header",
+      "content": "Post elements"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_likes",
+      "label": "Show like count",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_reactions",
+      "label": "Show reaction emoji",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show date",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_verified",
+      "label": "Show verified badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_source",
+      "label": "Show source platform",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_lift",
+      "label": "Hover lift",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "quote_color",
+      "label": "Post text",
+      "default": "#334155"
+    },
+    {
+      "type": "color",
+      "id": "name_color",
+      "label": "Name color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "handle_color",
+      "label": "Handle color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "meta_color",
+      "label": "Meta / date color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "like_color",
+      "label": "Like heart color",
+      "default": "#ef4444"
+    },
+    {
+      "type": "color",
+      "id": "verified_color",
+      "label": "Verified badge",
+      "default": "#3b82f6"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1000,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 72,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "quote_size",
+      "label": "Post text size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "post",
+      "name": "Social Post",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Post text",
+          "default": "Love this product!"
+        },
+        {
+          "type": "text",
+          "id": "name",
+          "label": "Display name",
+          "default": "Happy Customer"
+        },
+        {
+          "type": "text",
+          "id": "handle",
+          "label": "Handle / username",
+          "default": "@happycustomer"
+        },
+        {
+          "type": "text",
+          "id": "date",
+          "label": "Date",
+          "default": "2 days ago"
+        },
+        {
+          "type": "text",
+          "id": "likes",
+          "label": "Like count",
+          "default": "142"
+        },
+        {
+          "type": "text",
+          "id": "reaction",
+          "label": "Reaction emoji",
+          "default": "🔥"
+        },
+        {
+          "type": "text",
+          "id": "source",
+          "label": "Source platform",
+          "default": "Instagram"
+        },
+        {
+          "type": "checkbox",
+          "id": "verified",
+          "label": "Verified account",
+          "default": true
+        },
+        {
+          "type": "image_picker",
+          "id": "photo",
+          "label": "Profile photo"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Social Reviews",
+      "blocks": [
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Just received my order and WOW 😍 The quality is absolutely insane for this price. Already planning my next purchase! Highly recommend to everyone looking for premium quality without the premium price tag.",
+            "name": "Jessica Taylor",
+            "handle": "@jessicataylor",
+            "date": "2 hours ago",
+            "likes": "847",
+            "reaction": "❤️",
+            "source": "Instagram",
+            "verified": true
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Third order from this brand. Consistency is key and they deliver every single time. 10/10 🏆",
+            "name": "Mike Chen",
+            "handle": "@mikechen",
+            "date": "5 hours ago",
+            "likes": "234",
+            "reaction": "🔥",
+            "source": "Twitter",
+            "verified": true
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "The packaging alone is worth mentioning — beautiful, sustainable, and thoughtful. But the product inside? Even better. This brand truly understands what customers want. Thank you for caring about quality AND the planet! 🌿",
+            "name": "Emma Wilson",
+            "handle": "@emmawilson",
+            "date": "1 day ago",
+            "likes": "1.2k",
+            "reaction": "💚",
+            "source": "Instagram",
+            "verified": true
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Customer service responded in literally 3 minutes. THREE MINUTES. In 2026. That is unheard of. 👏",
+            "name": "David Park",
+            "handle": "@davidpark",
+            "date": "1 day ago",
+            "likes": "567",
+            "reaction": "⚡",
+            "source": "Twitter",
+            "verified": false
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "My friend recommended this brand and I was skeptical at first. After trying it myself — I get the hype. Completely converted! 🙌",
+            "name": "Sophie Martinez",
+            "handle": "@sophiem",
+            "date": "3 days ago",
+            "likes": "389",
+            "reaction": "✨",
+            "source": "Facebook",
+            "verified": true
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Obsessed with the results. Visible improvement in just one week. Will definitely be a loyal customer from now on! 💯",
+            "name": "Anna Lee",
+            "handle": "@annalee",
+            "date": "4 days ago",
+            "likes": "712",
+            "reaction": "😍",
+            "source": "Instagram",
+            "verified": true
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Best purchase I have made this year. No exaggeration. If you are on the fence — just go for it! 🚀",
+            "name": "Chris Anderson",
+            "handle": "@chrisanderson",
+            "date": "5 days ago",
+            "likes": "456",
+            "reaction": "🔥",
+            "source": "Twitter",
+            "verified": false
+          }
+        },
+        {
+          "type": "post",
+          "settings": {
+            "quote": "Free shipping AND it arrived 2 days early? This brand is something else. Already gifted one to my sister and she is equally obsessed! 🎁",
+            "name": "Lisa Thompson",
+            "handle": "@lisathompson",
+            "date": "1 week ago",
+            "likes": "923",
+            "reaction": "💜",
+            "source": "Instagram",
+            "verified": true
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

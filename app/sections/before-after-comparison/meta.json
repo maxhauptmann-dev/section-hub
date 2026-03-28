@@ -1,12 +1,16 @@
 {
   "id": "before-after-comparison",
-  "name": "Before / After Comparison",
+  "name": "SIQ - Before / After Comparison",
   "description": "Fully customizable before/after image comparison slider. Features: adjustable image focal point, 3 layout modes (text left/right/slider only), 7 aspect ratios, configurable slider start position, 3 label styles, CTA button per tab, handle size controls, shadow & border options, and full color customization. Mobile-first with smooth touch gestures and animated pill tabs.",
-  "category": ["Conversion", "Image", "before and after"],
+  "category": [
+    "Conversion",
+    "Image",
+    "before and after"
+  ],
   "version": "2.0.0",
   "price": {
     "type": "one_time",
-    "amount": 9,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -21,7 +25,7 @@
     "Responsive",
     "Conversion"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -31,7 +35,15 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
     "os2": true
   },
   "files": {
@@ -68,5 +80,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

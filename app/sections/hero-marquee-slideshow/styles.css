@@ -1,0 +1,522 @@
+/* ═══════════════════════════════════════════════════════
+   Hero Marquee Slideshow  |  Section Hub
+   Sticky hero with slideshow, marquee ticker,
+   scroll-darkening and text reveal
+   Prefix: hmsl-
+   ═══════════════════════════════════════════════════════ */
+
+/* ── Reset ── */
+.hmsl-wrap *,
+.hmsl-wrap *::before,
+.hmsl-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ── Scroll Container ── */
+.hmsl-wrap {
+  position: relative;
+  width: 100%;
+  /* Total scroll height = hero + reveal area */
+  height: var(--hmsl-scroll-h, 300vh);
+  background: #000;
+}
+
+/* ── Sticky Viewport ── */
+.hmsl-sticky {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+  z-index: 1;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Slides Layer
+   ═══════════════════════════════════════════════════════ */
+.hmsl-slides {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.hmsl-slide {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity var(--hmsl-transition, 1s) cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hmsl-slide--active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+/* ── Slide Images ── */
+.hmsl-slide__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hmsl-slide__img--mobile { display: none; }
+
+@media (max-width: 749px) {
+  .hmsl-slide__img--desk   { display: none; }
+  .hmsl-slide__img--mobile { display: block; }
+}
+
+/* ── Image Overlay ── */
+.hmsl-slide__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, var(--hmsl-overlay, 0.4));
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Slide Content (per-banner text + buttons)
+   ═══════════════════════════════════════════════════════ */
+.hmsl-content {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  justify-content: var(--hmsl-content-vy, flex-end);
+  align-items: var(--hmsl-content-vx, flex-start);
+  padding: var(--hmsl-content-pad, 48px);
+  padding-bottom: var(--hmsl-content-pad, 48px);
+  pointer-events: none;
+}
+
+.hmsl-content > * {
+  pointer-events: auto;
+}
+
+/* ── Subheading ── */
+.hmsl-content__sub {
+  font-size: var(--hmsl-sub-fs, 14px);
+  font-weight: var(--hmsl-sub-fw, 500);
+  color: var(--hmsl-sub-c, rgba(255,255,255,0.8));
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 12px;
+  opacity: 0;
+  transform: translateY(20px);
+  animation: hmslFadeUp 0.6s ease 0.1s forwards;
+}
+
+/* ── Heading ── */
+.hmsl-content__heading {
+  font-family: var(--hmsl-heading-ff, inherit);
+  font-weight: var(--hmsl-heading-fw, 700);
+  font-style: var(--hmsl-heading-fst, normal);
+  font-size: var(--hmsl-heading-fs, 52px);
+  line-height: var(--hmsl-heading-lh, 1.1);
+  letter-spacing: var(--hmsl-heading-ls, -0.02em);
+  text-transform: var(--hmsl-heading-tt, none);
+  color: var(--hmsl-heading-c, #ffffff);
+  max-width: 700px;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: hmslFadeUp 0.7s ease 0.3s forwards;
+}
+
+/* ── Description ── */
+.hmsl-content__desc {
+  font-size: var(--hmsl-desc-fs, 16px);
+  color: var(--hmsl-desc-c, rgba(255,255,255,0.75));
+  max-width: 500px;
+  margin-top: 16px;
+  line-height: 1.6;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hmslFadeUp 0.6s ease 0.5s forwards;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Button Row
+   ═══════════════════════════════════════════════════════ */
+.hmsl-btn-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 24px;
+  opacity: 0;
+  transform: translateY(16px);
+  animation: hmslFadeUp 0.6s ease 0.65s forwards;
+}
+
+/* ── Primary Button (Animated Arrow Expand) ── */
+.hmsl-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  text-decoration: none;
+  font-size: var(--hmsl-btn-fs, 14px);
+  font-weight: 600;
+  color: var(--hmsl-btn-tc, #000);
+  background: var(--hmsl-btn-bg, #fff);
+  border: none;
+  border-radius: var(--hmsl-btn-r, 50px);
+  padding: 0;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.25s ease;
+  height: var(--hmsl-btn-h, 48px);
+}
+
+.hmsl-btn-primary:hover {
+  transform: translateY(-1px);
+}
+
+/* Arrow circle (always visible on the left) */
+.hmsl-btn-primary__arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--hmsl-btn-h, 48px);
+  height: var(--hmsl-btn-h, 48px);
+  background: var(--hmsl-btn-arrow-bg, rgba(0,0,0,0.08));
+  border-radius: 50%;
+  flex-shrink: 0;
+  transition: background 0.3s ease;
+}
+
+.hmsl-btn-primary__arrow svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  transform: rotate(-45deg);
+  transition: transform 0.3s ease;
+}
+
+/* Text label */
+.hmsl-btn-primary__text {
+  display: inline-block;
+  max-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  opacity: 0;
+  padding: 0;
+  transition: max-width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+              opacity 0.3s ease 0.1s,
+              padding 0.4s ease;
+}
+
+.hmsl-btn-primary:hover .hmsl-btn-primary__text {
+  max-width: 200px;
+  opacity: 1;
+  padding: 0 20px 0 12px;
+}
+
+.hmsl-btn-primary:hover .hmsl-btn-primary__arrow svg {
+  transform: rotate(0deg);
+}
+
+/* ── Secondary Button ── */
+.hmsl-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  font-size: var(--hmsl-btn2-fs, 14px);
+  font-weight: 600;
+  color: var(--hmsl-btn2-tc, #fff);
+  background: transparent;
+  border: 2px solid var(--hmsl-btn2-border, rgba(255,255,255,0.3));
+  border-radius: var(--hmsl-btn-r, 50px);
+  padding: var(--hmsl-btn2-py, 12px) var(--hmsl-btn2-px, 24px);
+  cursor: pointer;
+  transition: background 0.3s, color 0.3s, border-color 0.3s;
+}
+
+.hmsl-btn-secondary:hover {
+  background: var(--hmsl-btn2-hover-bg, rgba(255,255,255,0.1));
+  border-color: var(--hmsl-btn2-hover-border, rgba(255,255,255,0.6));
+}
+
+/* ═══════════════════════════════════════════════════════
+   Marquee Ticker Bar
+   Sits OUTSIDE the sticky container as a normal flow element.
+   Uses position:sticky;bottom:0 so it initially appears
+   glued to the bottom of the viewport, then scrolls away
+   naturally as the user scrolls down (like an announcement bar).
+   ═══════════════════════════════════════════════════════ */
+.hmsl-marquee {
+  position: sticky;
+  bottom: 0;
+  z-index: 10;
+  height: var(--hmsl-marquee-h, 60px);
+  background: var(--hmsl-marquee-bg, transparent);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+/* When scrolled up and out (to the top) – fallback class */
+.hmsl-marquee--hidden {
+  display: none;
+}
+
+.hmsl-marquee__track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: hmslMarqueeScroll var(--hmsl-marquee-speed, 30s) linear infinite;
+  will-change: transform;
+}
+
+.hmsl-marquee__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0 var(--hmsl-marquee-gap, 2em);
+  font-family: var(--hmsl-marquee-ff, sans-serif);
+  font-style: var(--hmsl-marquee-fst, normal);
+  font-size: var(--hmsl-marquee-fs, 18px);
+  font-weight: var(--hmsl-marquee-fw, 800);
+  color: var(--hmsl-marquee-tc, #fff);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.hmsl-marquee__dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--hmsl-marquee-dot, #fff);
+  flex-shrink: 0;
+}
+
+@keyframes hmslMarqueeScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* ── Dot navigation ── */
+.hmsl-dots {
+  position: absolute;
+  z-index: 8;
+  bottom: 24px;
+  right: var(--hmsl-content-pad, 48px);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hmsl-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.5);
+  background: transparent;
+  cursor: pointer;
+  transition: background 0.3s, border-color 0.3s, transform 0.3s;
+  padding: 0;
+}
+
+.hmsl-dot--active {
+  background: #fff;
+  border-color: #fff;
+  transform: scale(1.2);
+}
+
+/* ═══════════════════════════════════════════════════════
+   Scroll-Darkening Overlay
+   ═══════════════════════════════════════════════════════ */
+.hmsl-darken {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  z-index: 15;
+  pointer-events: none;
+  transition: opacity 0.1s linear;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Text Reveal (after scroll-to-dark)
+   ═══════════════════════════════════════════════════════ */
+.hmsl-reveal {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px;
+  opacity: 0;
+  transform: translateY(80px);
+  pointer-events: none;
+  /* No CSS transition – scroll-driven by JS for smooth parallax feel */
+  will-change: transform, opacity;
+}
+
+.hmsl-reveal--visible {
+  pointer-events: auto;
+}
+
+.hmsl-reveal__text {
+  font-size: var(--hmsl-reveal-fs, 22px);
+  color: var(--hmsl-reveal-tc, #fff);
+  max-width: 800px;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-weight: 500;
+  margin-bottom: 48px;
+}
+
+/* ── Icon Text Blocks ── */
+.hmsl-reveal__icons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 24px;
+  max-width: 900px;
+}
+
+.hmsl-icon-block {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--hmsl-icon-bg, #fff);
+  color: var(--hmsl-icon-tc, #000);
+  border-radius: var(--hmsl-icon-r, 50px);
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: default;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease, box-shadow 0.3s ease;
+}
+
+.hmsl-icon-block:nth-child(1) { transition-delay: 0.1s; }
+.hmsl-icon-block:nth-child(2) { transition-delay: 0.2s; }
+.hmsl-icon-block:nth-child(3) { transition-delay: 0.3s; }
+.hmsl-icon-block:nth-child(4) { transition-delay: 0.4s; }
+.hmsl-icon-block:nth-child(5) { transition-delay: 0.5s; }
+.hmsl-icon-block:nth-child(6) { transition-delay: 0.6s; }
+
+.hmsl-reveal--visible .hmsl-icon-block {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.hmsl-icon-block:hover {
+  box-shadow: 0 4px 20px rgba(255,255,255,0.15);
+}
+
+.hmsl-icon-block__icon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.hmsl-icon-block__icon img,
+.hmsl-icon-block__icon svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Fade-Up Animation
+   ═══════════════════════════════════════════════════════ */
+@keyframes hmslFadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Re-trigger on active slide */
+.hmsl-slide--active .hmsl-content__sub,
+.hmsl-slide--active .hmsl-content__heading,
+.hmsl-slide--active .hmsl-content__desc,
+.hmsl-slide--active .hmsl-btn-row {
+  animation-play-state: running;
+}
+
+.hmsl-slide:not(.hmsl-slide--active) .hmsl-content__sub,
+.hmsl-slide:not(.hmsl-slide--active) .hmsl-content__heading,
+.hmsl-slide:not(.hmsl-slide--active) .hmsl-content__desc,
+.hmsl-slide:not(.hmsl-slide--active) .hmsl-btn-row {
+  animation: none;
+  opacity: 0;
+}
+
+/* ═══════════════════════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════════════════════ */
+@media (max-width: 749px) {
+  .hmsl-content {
+    padding: 24px;
+    padding-bottom: 24px;
+  }
+
+  .hmsl-content__heading {
+    font-size: var(--hmsl-heading-fsm, 32px);
+  }
+
+  .hmsl-content__sub {
+    font-size: var(--hmsl-sub-fsm, 12px);
+  }
+
+  .hmsl-content__desc {
+    font-size: var(--hmsl-desc-fsm, 14px);
+  }
+
+  .hmsl-dots {
+    right: 16px;
+    bottom: 16px;
+  }
+
+  .hmsl-marquee__item {
+    font-size: calc(var(--hmsl-marquee-fs, 18px) * 0.7);
+  }
+
+  .hmsl-reveal__text {
+    font-size: calc(var(--hmsl-reveal-fs, 22px) * 0.75);
+  }
+
+  .hmsl-reveal__icons {
+    gap: 12px;
+  }
+
+  .hmsl-icon-block {
+    padding: 10px 16px;
+    font-size: 12px;
+  }
+
+  .hmsl-btn-primary {
+    height: calc(var(--hmsl-btn-h, 48px) * 0.9);
+  }
+
+  .hmsl-btn-primary__arrow {
+    width: calc(var(--hmsl-btn-h, 48px) * 0.9);
+    height: calc(var(--hmsl-btn-h, 48px) * 0.9);
+  }
+}

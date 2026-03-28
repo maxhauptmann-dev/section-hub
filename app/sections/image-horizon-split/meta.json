@@ -1,12 +1,14 @@
 {
   "id": "image-horizon-split",
-  "name": "SS - Horizon Split",
+  "name": "SIQ - Horizon Split",
   "description": "Cinematic split-screen editorial gallery with alternating image-text layouts. Each entry features a full-bleed image on one side and rich editorial content on the other, with numbered entries, decorative accent lines, scroll-triggered slide-in animations, and optional parallax. Choose from 3 layout styles: alternating, all-left, or all-right. Full control over spacing, aspect ratios, typography, colors, and hover effects. Perfect for case studies, project portfolios, brand stories, and editorial presentations. 80+ customization options.",
-  "category": ["Images"],
+  "category": [
+    "Images"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 17,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +23,31 @@
     "Cinematic",
     "Premium"
   ],
-  "author": "Section Hub",
-  "previewColor": "#f7f5f2",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/image-horizon-split/default.webp",
-      "alt": "Horizon Split - Default",
+      "alt": "SS - Horizon Split - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Refresh",
+      "Spotlight",
+      "Studio",
+      "Publisher",
+      "Trade",
+      "Taste",
+      "Colorblock",
+      "Ride",
+      "Origin",
+      "Crave"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +60,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

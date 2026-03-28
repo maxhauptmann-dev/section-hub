@@ -24,6 +24,8 @@ const CATEGORIES = [
   { id: "newest", label: "Newest", icon: "🆕", color: "#10b981", textColor: "#fff" },
   { id: "free", label: "Free", icon: "🎁", color: "#8b5cf6", textColor: "#fff" },
   { id: "header", label: "Header", icon: "📞", color: "#3b82f6", textColor: "#fff" },
+  { id: "Scroll Triggered", label: "Scroll Triggered", icon: "⬇️", color: "#0d9488", textColor: "#fff" },
+  { id: "animated", label: "Animated", icon: "🎬", color: "#ec4899", textColor: "#fff" },
   { id: "before and after", label: "Before & After", icon: "🔄", color: "#f97316", textColor: "#fff" },
   { id: "hero", label: "Hero", icon: "🎯", color: "#f59e0b", textColor: "#fff" },
   { id: "scrolling", label: "Scrolling", icon: "📜", color: "#06b6d4", textColor: "#fff" },
@@ -33,17 +35,14 @@ const CATEGORIES = [
   { id: "slider", label: "Slider", icon: "🎞️", color: "#f43f5e", textColor: "#fff" },
   { id: "collection", label: "Collection", icon: "🛍️", color: "#a855f7", textColor: "#fff" },
   { id: "featured collection", label: "Featured Collection", icon: "🌟", color: "#eab308", textColor: "#000" },
-  { id: "upsell", label: "Upsell", icon: "💡", color: "#22c55e", textColor: "#fff" },
   { id: "FAQ", label: "FAQ", icon: "❓", color: "#0ea5e9", textColor: "#fff" },
   { id: "Testimonials", label: "Testimonials", icon: "💬", color: "#8b5cf6", textColor: "#fff" },
   { id: "Trust", label: "Trust", icon: "🛡️", color: "#059669", textColor: "#fff" },
-  { id: "CTA", label: "CTA", icon: "🚀", color: "#dc2626", textColor: "#fff" },
   { id: "Social Proof", label: "Social Proof", icon: "⭐", color: "#f59e0b", textColor: "#fff" },
   { id: "Product Discovery", label: "Shop the Look", icon: "👗", color: "#ec4899", textColor: "#fff" },
   { id: "Premium", label: "Premium", icon: "💎", color: "#7c3aed", textColor: "#fff" },
   { id: "Pop-up", label: "Pop-up", icon: "🎉", color: "#e11d48", textColor: "#fff" },
   { id: "Footer", label: "Footer", icon: "📞", color: "#64748b", textColor: "#fff" },
-  { id: "Scroll Triggered", label: "Scroll Triggered", icon: "⬇️", color: "#0d9488", textColor: "#fff" },
 ];
 
 // Custom Category Badge Component
@@ -74,6 +73,24 @@ function CategoryBadge({
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
   if (price.type === "free") return "Free";
   return `€${price.amount}`;
+}
+
+function tierBadgeClass(section: SectionMeta): string {
+  const tier = (section as any).tier;
+  if (section.price.type === "free") return "free";
+  if (tier === "premium") return "tier-premium";
+  if (tier === "advanced") return "tier-advanced";
+  if (tier === "basic") return "tier-basic";
+  return "tier-advanced";
+}
+
+function tierBadgeLabel(section: SectionMeta): string {
+  const tier = (section as any).tier;
+  if (section.price.type === "free") return "Free";
+  if (tier === "premium") return `Premium · €${section.price.amount}`;
+  if (tier === "advanced") return `Advanced · €${section.price.amount}`;
+  if (tier === "basic") return `Basic · €${section.price.amount}`;
+  return `€${section.price.amount}`;
 }
 
 // Preview Image Slider Component
@@ -274,6 +291,36 @@ export default function ExploreSectionsPage() {
 
     if (selectedCategory === "free") {
       list = list.filter((s) => s.price.type === "free");
+    } else if (selectedCategory === "newest") {
+      // Show sections added in the last 4 weeks
+      const fourWeeksAgo = new Date();
+      fourWeeksAgo.setDate(fourWeeksAgo.getDate() - 28);
+
+      const getCreationDate = (s: SectionMeta): string | null => {
+        // 1. Use createdAt if available
+        if (s.createdAt) return s.createdAt;
+        // 2. Fall back to earliest changelog entry date
+        const changelog = (s as any).changelog;
+        if (!Array.isArray(changelog) || changelog.length === 0) return null;
+        const earliest = changelog.reduce((oldest: any, entry: any) => {
+          if (!oldest || (entry.date && entry.date < oldest.date)) return entry;
+          return oldest;
+        }, null);
+        return earliest?.date || null;
+      };
+
+      list = list.filter((s) => {
+        const dateStr = getCreationDate(s);
+        if (!dateStr) return false;
+        return new Date(dateStr) >= fourWeeksAgo;
+      });
+
+      // Sort newest first
+      list.sort((a, b) => {
+        const aDate = getCreationDate(a) || "";
+        const bDate = getCreationDate(b) || "";
+        return bDate.localeCompare(aDate);
+      });
     } else if (selectedCategory !== "all") {
       list = list.filter((s) => {
         const cats = Array.isArray(s.category) ? s.category : [s.category];
@@ -400,13 +447,12 @@ export default function ExploreSectionsPage() {
         .ex-tag.cat{background:rgba(199,210,254,0.5);color:#4338ca}
 
         .ex-view-btn{
-          flex:1;background:linear-gradient(135deg,#6366f1,#818cf8);color:#fff;border:none;
+          flex:1;background:linear-gradient(135deg,#3d4451,#525d6e);color:#fff;border:none;
           padding:9px 16px;border-radius:10px;font-size:13px;font-weight:600;
           cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
-          box-shadow:0 2px 8px rgba(99,102,241,.2);
+          box-shadow:0 2px 8px rgba(0,0,0,.15);
         }
-        .ex-view-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(99,102,241,.3)}
-
+        .ex-view-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,0,0,.2)}
         .ex-try-btn{
           display:inline-flex;align-items:center;gap:4px;
           padding:8px 14px;border-radius:10px;
@@ -426,7 +472,9 @@ export default function ExploreSectionsPage() {
           letter-spacing:.3px;text-transform:uppercase;
         }
         .ex-price-badge.free{background:rgba(220,252,231,0.85);color:#166534;border:1px solid rgba(187,247,208,0.5)}
-        .ex-price-badge.premium{background:rgba(237,233,254,0.85);color:#5b21b6;border:1px solid rgba(221,214,254,0.5)}
+        .ex-price-badge.tier-basic{background:rgba(219,234,254,0.85);color:#1e40af;border:1px solid rgba(191,219,254,0.5)}
+        .ex-price-badge.tier-advanced{background:rgba(254,243,199,0.85);color:#92400e;border:1px solid rgba(253,230,138,0.5)}
+        .ex-price-badge.tier-premium{background:rgba(237,233,254,0.85);color:#5b21b6;border:1px solid rgba(221,214,254,0.5)}
 
         .ex-empty{
           text-align:center;padding:40px 20px;
@@ -453,6 +501,15 @@ export default function ExploreSectionsPage() {
           transition:all .2s;
         }
         .ex-hero-pill:hover{background:rgba(255,255,255,0.75);transform:translateY(-1px)}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .ex-hero{padding:20px 16px;border-radius:14px}
+          .ex-hero .ex-glass{padding:14px 16px}
+          .ex-search-wrap{padding:16px}
+          .ex-card-content{padding:14px 16px;min-height:160px}
+          .ex-hero-pill{font-size:11px;padding:6px 10px}
+        }
       `}</style>
 
       <BlockStack gap="500">
@@ -464,14 +521,14 @@ export default function ExploreSectionsPage() {
                 <div style={{ fontSize: 42, animation: "ex-float 3s ease-in-out infinite" }}>✨</div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 22, fontWeight: 800, color: "#1e1b4b", margin: 0, lineHeight: 1.3 }}>Premium Sections for Shopify</div>
-                  <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>One-Click Install · All Sections Included · OS 2.0 Ready</div>
+                  <div style={{ fontSize: 13, color: "#64748b", marginTop: 4 }}>One-Click Install · 130+ Sections · OS 2.0 Ready</div>
                 </div>
               </div>
               <div style={{ display: "flex", gap: 8, marginTop: 16, flexWrap: "wrap" }}>
                 {[
-                  { icon: "🎯", text: "Try before you subscribe – free 24h demo" },
-                  { icon: "💎", text: "All sections with Premium – €8/mo" },
-                  { icon: "⚡", text: "Cancel anytime" },
+                  { icon: "🎯", text: "Try before you buy – free 24h demo" },
+                  { icon: "💎", text: "Pro Subscription – €19/mo for all sections" },
+                  { icon: "📦", text: "Save 80% with Bundles" },
                 ].map((item) => (
                   <span key={item.text} className="ex-hero-pill">{item.icon} {item.text}</span>
                 ))}
@@ -609,9 +666,9 @@ export default function ExploreSectionsPage() {
 
                   {/* Price Badge overlay */}
                   <div style={{ position: "relative" }}>
-                    <span className={`ex-price-badge ${section.price.type === "free" ? "free" : "premium"}`}
+                    <span className={`ex-price-badge ${tierBadgeClass(section)}`}
                       style={{ position: "absolute", top: -168, right: 12 }}>
-                      {section.price.type === "free" ? "Free" : "Premium"}
+                      {tierBadgeLabel(section)}
                     </span>
                   </div>
 

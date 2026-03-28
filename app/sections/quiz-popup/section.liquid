@@ -1,0 +1,621 @@
+{% comment %}
+  Section Hub – Quiz Popup v1.0
+  Interactive multi-step quiz with emoji option cards, progress bar,
+  personalized results, and email capture.
+  Prefix: qzp-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign s = section.settings
+-%}
+
+<style>
+  #qzp-{{ sid }}{
+    --qzp-overlay:{{ s.overlay_bg }};
+    --qzp-bg:{{ s.modal_bg }};
+    --qzp-heading:{{ s.heading_color }};
+    --qzp-text:{{ s.text_color }};
+    --qzp-accent:{{ s.accent_color }};
+    --qzp-accent2:{{ s.accent2_color }};
+    --qzp-border:{{ s.border_color }};
+    --qzp-option-bg:{{ s.option_bg }};
+    --qzp-btn-bg:{{ s.btn_bg }};
+    --qzp-btn-text:{{ s.btn_text_color }};
+    --qzp-radius:{{ s.modal_radius }}px;
+    --qzp-max-w:{{ s.modal_width }}px;
+  }
+</style>
+
+{%- comment -%} Collect questions as JSON-safe data {%- endcomment -%}
+{%- assign q_data = '' -%}
+{%- for block in section.blocks -%}
+  {%- if block.type == 'question' -%}
+    {%- unless forloop.first -%}{%- assign q_data = q_data | append: '|||' -%}{%- endunless -%}
+    {%- assign q_data = q_data | append: block.settings.question | append: '::' | append: block.settings.opt1_emoji | append: '::' | append: block.settings.opt1_text | append: '::' | append: block.settings.opt2_emoji | append: '::' | append: block.settings.opt2_text | append: '::' | append: block.settings.opt3_emoji | append: '::' | append: block.settings.opt3_text | append: '::' | append: block.settings.opt4_emoji | append: '::' | append: block.settings.opt4_text -%}
+  {%- endif -%}
+{%- endfor -%}
+
+<div class="qzp-overlay" id="qzp-{{ sid }}"
+  data-qzp-trigger="{{ s.trigger_type }}"
+  data-qzp-delay="{{ s.trigger_delay }}"
+  data-qzp-scroll="{{ s.trigger_scroll }}"
+  data-qzp-cookie="{{ s.cookie_days }}"
+>
+
+  <div class="qzp-modal">
+    <button class="qzp-close" data-qzp-close aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    {%- comment -%} Progress {%- endcomment -%}
+    <div class="qzp-progress">
+      <div class="qzp-progress__bar" data-qzp-bar></div>
+    </div>
+
+    {%- comment -%} Intro Screen {%- endcomment -%}
+    <div class="qzp-screen qzp-screen--active" data-qzp-screen="intro">
+      {%- if s.intro_emoji != blank -%}
+        <div class="qzp-intro-emoji">{{ s.intro_emoji }}</div>
+      {%- endif -%}
+      {%- if s.intro_heading != blank -%}
+        <h2 class="qzp-heading">{{ s.intro_heading }}</h2>
+      {%- endif -%}
+      {%- if s.intro_sub != blank -%}
+        <p class="qzp-sub">{{ s.intro_sub }}</p>
+      {%- endif -%}
+      <button class="qzp-start-btn" data-qzp-start>
+        {{ s.start_btn_text }}
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </div>
+
+    {%- comment -%} Question Screens (rendered by JS) {%- endcomment -%}
+    <div class="qzp-screen" data-qzp-screen="question" style="display:none;">
+      <span class="qzp-step" data-qzp-step></span>
+      <h2 class="qzp-heading" data-qzp-question></h2>
+      <div class="qzp-options" data-qzp-options></div>
+    </div>
+
+    {%- comment -%} Result Screen {%- endcomment -%}
+    <div class="qzp-screen" data-qzp-screen="result" style="display:none;">
+      <div class="qzp-result-icon" data-qzp-result-icon>🎁</div>
+      <h2 class="qzp-heading" data-qzp-result-title>{{ s.result_heading }}</h2>
+      <p class="qzp-sub" data-qzp-result-desc>{{ s.result_description }}</p>
+
+      {%- if s.discount_code != blank -%}
+        <div class="qzp-code-wrap">
+          <span class="qzp-code-label">{{ s.code_label }}</span>
+          <div class="qzp-code" data-qzp-code>{{ s.discount_code }}</div>
+        </div>
+      {%- endif -%}
+
+      {%- if s.result_btn_text != blank -%}
+        <a href="{{ s.result_btn_url }}" class="qzp-result-btn">
+          {{ s.result_btn_text }}
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      {%- endif -%}
+    </div>
+
+    {%- comment -%} Email Screen (between quiz and result) {%- endcomment -%}
+    {%- if s.show_email_capture -%}
+      <div class="qzp-screen" data-qzp-screen="email" style="display:none;">
+        <div class="qzp-email-icon">📬</div>
+        <h2 class="qzp-heading">{{ s.email_heading }}</h2>
+        <p class="qzp-sub">{{ s.email_sub }}</p>
+        {%- form 'customer', id: 'qzp-email-form' -%}
+          <input type="hidden" name="contact[tags]" value="quiz">
+          <div class="qzp-email-form">
+            <input type="email" name="contact[email]" class="qzp-email-input" data-qzp-email placeholder="{{ s.email_placeholder }}" required autocomplete="email">
+            <button type="submit" class="qzp-email-btn" data-qzp-email-submit>{{ s.email_btn_text }}</button>
+          </div>
+        {%- endform -%}
+        <button class="qzp-skip" data-qzp-skip>{{ s.skip_text }}</button>
+      </div>
+    {%- endif -%}
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var el = document.getElementById('qzp-{{ sid }}');
+  if(!el) return;
+
+  var cookieKey = 'qzp_{{ sid }}';
+  var cookieDays = parseInt(el.dataset.qzpCookie) || 7;
+
+  function getCk(n){ var v=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return v?v.pop():''; }
+  function setCk(n,v,d){ var dt=new Date(); dt.setTime(dt.getTime()+d*864e5); document.cookie=n+'='+v+';expires='+dt.toUTCString()+';path=/;SameSite=Lax'; }
+
+  if(getCk(cookieKey)==='1') return;
+
+  /* Parse questions */
+  var rawQ = {{ q_data | json }};
+  var questions = rawQ.split('|||').map(function(q){
+    var p = q.split('::');
+    var opts = [];
+    for(var i=1; i<p.length; i+=2){
+      if(p[i] && p[i+1]) opts.push({ emoji: p[i], text: p[i+1] });
+    }
+    return { question: p[0] || '', options: opts };
+  }).filter(function(q){ return q.question && q.options.length > 0; });
+
+  if(!questions.length) return;
+
+  var totalSteps = questions.length + 1;
+  var currentQ = 0;
+  var answers = [];
+
+  /* Elements */
+  var bar = el.querySelector('[data-qzp-bar]');
+  var introScreen = el.querySelector('[data-qzp-screen="intro"]');
+  var qScreen = el.querySelector('[data-qzp-screen="question"]');
+  var resultScreen = el.querySelector('[data-qzp-screen="result"]');
+  var emailScreen = el.querySelector('[data-qzp-screen="email"]');
+  var stepEl = el.querySelector('[data-qzp-step]');
+  var questionEl = el.querySelector('[data-qzp-question]');
+  var optionsEl = el.querySelector('[data-qzp-options]');
+  var showEmail = {{ s.show_email_capture | json }};
+
+  function showScreen(name){
+    el.querySelectorAll('[data-qzp-screen]').forEach(function(s){
+      s.style.display = 'none';
+      s.classList.remove('qzp-screen--active');
+    });
+    var target = el.querySelector('[data-qzp-screen="'+name+'"]');
+    if(target){
+      target.style.display = '';
+      /* Trigger animation */
+      requestAnimationFrame(function(){
+        target.classList.add('qzp-screen--active');
+      });
+    }
+  }
+
+  function updateProgress(step){
+    var pct = ((step+1) / totalSteps) * 100;
+    bar.style.width = pct + '%';
+  }
+
+  function renderQuestion(idx){
+    var q = questions[idx];
+    stepEl.textContent = 'Question ' + (idx+1) + ' of ' + questions.length;
+    questionEl.textContent = q.question;
+    optionsEl.innerHTML = '';
+    q.options.forEach(function(opt, i){
+      var btn = document.createElement('button');
+      btn.className = 'qzp-option';
+      btn.innerHTML = '<span class="qzp-option__emoji">' + opt.emoji + '</span><span class="qzp-option__text">' + opt.text + '</span>';
+      btn.addEventListener('click', function(){
+        /* Select animation */
+        btn.classList.add('qzp-option--selected');
+        answers.push(i);
+        setTimeout(function(){
+          currentQ++;
+          if(currentQ < questions.length){
+            renderQuestion(currentQ);
+            updateProgress(currentQ);
+            showScreen('question');
+          } else {
+            updateProgress(totalSteps - 1);
+            if(showEmail && emailScreen){
+              showScreen('email');
+            } else {
+              showScreen('result');
+            }
+          }
+        }, 400);
+      });
+      optionsEl.appendChild(btn);
+    });
+  }
+
+  /* Show / Close */
+  function show(){ el.classList.add('qzp-overlay--visible'); }
+  function close(){ el.classList.remove('qzp-overlay--visible'); setCk(cookieKey,'1',cookieDays); }
+
+  el.querySelectorAll('[data-qzp-close]').forEach(function(b){ b.addEventListener('click',close); });
+  el.addEventListener('click',function(e){ if(e.target===el) close(); });
+
+  /* Start quiz */
+  var startBtn = el.querySelector('[data-qzp-start]');
+  if(startBtn){
+    startBtn.addEventListener('click',function(){
+      currentQ = 0;
+      answers = [];
+      renderQuestion(0);
+      updateProgress(0);
+      showScreen('question');
+    });
+  }
+
+  /* Email form */
+  if(emailScreen){
+    var emailForm = emailScreen.querySelector('form');
+    var emailSubmit = el.querySelector('[data-qzp-email-submit]');
+    if(emailForm){
+      emailForm.addEventListener('submit',function(e){
+        e.preventDefault();
+        var input = el.querySelector('[data-qzp-email]');
+        if(!input.value || !input.validity.valid){ input.focus(); return; }
+        showScreen('result');
+      });
+    }
+    var skipBtn = el.querySelector('[data-qzp-skip]');
+    if(skipBtn){
+      skipBtn.addEventListener('click',function(){
+        showScreen('result');
+      });
+    }
+  }
+
+  /* Copy code */
+  var codeEl = el.querySelector('[data-qzp-code]');
+  if(codeEl){
+    codeEl.addEventListener('click',function(){
+      var code = codeEl.textContent.trim();
+      if(navigator.clipboard) navigator.clipboard.writeText(code);
+      codeEl.classList.add('qzp-code--copied');
+      codeEl.textContent = {{ s.copied_text | json }};
+      setTimeout(function(){
+        codeEl.classList.remove('qzp-code--copied');
+        codeEl.textContent = code;
+      }, 2000);
+    });
+  }
+
+  /* Trigger */
+  var tType = el.dataset.qzpTrigger;
+  var tDelay = parseInt(el.dataset.qzpDelay) || 3;
+  var tScroll = parseInt(el.dataset.qzpScroll) || 50;
+
+  if(tType==='delay'){
+    setTimeout(show, tDelay*1000);
+  } else if(tType==='scroll'){
+    var fired=false;
+    window.addEventListener('scroll',function(){
+      if(fired) return;
+      var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+      if(pct>=tScroll){ fired=true; show(); }
+    },{passive:true});
+  } else if(tType==='exit'){
+    var fired2=false;
+    document.addEventListener('mouseleave',function(e){
+      if(fired2) return;
+      if(e.clientY<0){ fired2=true; show(); }
+    });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Quiz Popup",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Intro Screen"
+    },
+    {
+      "type": "text",
+      "id": "intro_emoji",
+      "label": "Intro emoji",
+      "default": "🎯"
+    },
+    {
+      "type": "text",
+      "id": "intro_heading",
+      "label": "Intro heading",
+      "default": "Find Your Perfect Match"
+    },
+    {
+      "type": "textarea",
+      "id": "intro_sub",
+      "label": "Intro description",
+      "default": "Answer 3 quick questions and we'll recommend the perfect product for you."
+    },
+    {
+      "type": "text",
+      "id": "start_btn_text",
+      "label": "Start button text",
+      "default": "Let's Go"
+    },
+    {
+      "type": "header",
+      "content": "Email Capture"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email_capture",
+      "label": "Show email screen",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "email_heading",
+      "label": "Email heading",
+      "default": "Almost there!"
+    },
+    {
+      "type": "text",
+      "id": "email_sub",
+      "label": "Email description",
+      "default": "Enter your email to see your result and get an exclusive offer."
+    },
+    {
+      "type": "text",
+      "id": "email_placeholder",
+      "label": "Email placeholder",
+      "default": "Your email address"
+    },
+    {
+      "type": "text",
+      "id": "email_btn_text",
+      "label": "Email button text",
+      "default": "Show My Result"
+    },
+    {
+      "type": "text",
+      "id": "skip_text",
+      "label": "Skip text",
+      "default": "Skip, show my result"
+    },
+    {
+      "type": "header",
+      "content": "Result Screen"
+    },
+    {
+      "type": "text",
+      "id": "result_heading",
+      "label": "Result heading",
+      "default": "We found it!"
+    },
+    {
+      "type": "textarea",
+      "id": "result_description",
+      "label": "Result description",
+      "default": "Based on your answers, we think you'll love our bestseller collection. Here's a special discount just for you!"
+    },
+    {
+      "type": "text",
+      "id": "result_btn_text",
+      "label": "Result button text",
+      "default": "Shop Now"
+    },
+    {
+      "type": "url",
+      "id": "result_btn_url",
+      "label": "Result button link"
+    },
+    {
+      "type": "header",
+      "content": "Discount Code"
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "default": "QUIZ15",
+      "info": "Leave blank to hide."
+    },
+    {
+      "type": "text",
+      "id": "code_label",
+      "label": "Code label",
+      "default": "Your reward:"
+    },
+    {
+      "type": "text",
+      "id": "copied_text",
+      "label": "Copied text",
+      "default": "Copied!"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger_type",
+      "label": "When to show",
+      "options": [
+        { "value": "delay", "label": "After delay" },
+        { "value": "scroll", "label": "After scroll %" },
+        { "value": "exit", "label": "Exit intent" }
+      ],
+      "default": "delay"
+    },
+    {
+      "type": "range",
+      "id": "trigger_delay",
+      "label": "Delay",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 5,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "trigger_scroll",
+      "label": "Scroll threshold",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Hide for X days",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "modal_width",
+      "label": "Modal width",
+      "min": 400,
+      "max": 700,
+      "step": 20,
+      "default": 520,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "modal_radius",
+      "label": "Roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg",
+      "label": "Overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg",
+      "label": "Modal background",
+      "default": "#0d0d1a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#9090b0"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#818cf8"
+    },
+    {
+      "type": "color",
+      "id": "accent2_color",
+      "label": "Accent 2 (gradient)",
+      "default": "#c084fc"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borders",
+      "default": "#1e1e38"
+    },
+    {
+      "type": "color",
+      "id": "option_bg",
+      "label": "Option card bg",
+      "default": "#151530"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#818cf8"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "question",
+      "name": "Question",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "What are you looking for?"
+        },
+        {
+          "type": "text",
+          "id": "opt1_emoji",
+          "label": "Option 1 emoji",
+          "default": "✨"
+        },
+        {
+          "type": "text",
+          "id": "opt1_text",
+          "label": "Option 1 text",
+          "default": "Something new"
+        },
+        {
+          "type": "text",
+          "id": "opt2_emoji",
+          "label": "Option 2 emoji",
+          "default": "🎁"
+        },
+        {
+          "type": "text",
+          "id": "opt2_text",
+          "label": "Option 2 text",
+          "default": "A gift"
+        },
+        {
+          "type": "text",
+          "id": "opt3_emoji",
+          "label": "Option 3 emoji",
+          "default": "💎"
+        },
+        {
+          "type": "text",
+          "id": "opt3_text",
+          "label": "Option 3 text",
+          "default": "Premium quality"
+        },
+        {
+          "type": "text",
+          "id": "opt4_emoji",
+          "label": "Option 4 emoji",
+          "default": "🏷️"
+        },
+        {
+          "type": "text",
+          "id": "opt4_text",
+          "label": "Option 4 text",
+          "default": "Best deal"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Quiz Popup",
+      "blocks": [
+        { "type": "question", "settings": { "question": "What are you shopping for?", "opt1_emoji": "👕", "opt1_text": "Everyday Essentials", "opt2_emoji": "🎉", "opt2_text": "Special Occasion", "opt3_emoji": "🎁", "opt3_text": "A Gift", "opt4_emoji": "💎", "opt4_text": "Treating Myself" } },
+        { "type": "question", "settings": { "question": "What's your style?", "opt1_emoji": "🖤", "opt1_text": "Classic & Minimal", "opt2_emoji": "🌈", "opt2_text": "Bold & Colorful", "opt3_emoji": "🌿", "opt3_text": "Natural & Earthy", "opt4_emoji": "⚡", "opt4_text": "Modern & Edgy" } },
+        { "type": "question", "settings": { "question": "What matters most to you?", "opt1_emoji": "💰", "opt1_text": "Great Value", "opt2_emoji": "🌱", "opt2_text": "Sustainability", "opt3_emoji": "🏆", "opt3_text": "Top Quality", "opt4_emoji": "🚀", "opt4_text": "Fast Delivery" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

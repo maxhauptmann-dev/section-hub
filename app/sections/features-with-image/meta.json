@@ -1,6 +1,6 @@
 {
   "id": "features-with-image",
-  "name": "Features with Image",
+  "name": "SIQ - Features with Image",
   "description": "Showcase your product benefits with a bold heading, descriptive text, icon-based feature list, and a large side image. Includes a CTA button. Perfect for brand storytelling and product highlights.",
   "category": "Free",
   "version": "1.1.0",
@@ -18,7 +18,7 @@
     "Free",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -62,5 +62,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

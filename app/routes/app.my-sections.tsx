@@ -21,6 +21,8 @@ import {
   Icon,
 } from "@shopify/polaris";
 import { ChevronLeftIcon, ChevronRightIcon } from "@shopify/polaris-icons";
+import { checkIsPremium } from "../lib/is-premium.server";
+import { hasPurchasedSection } from "../services/billing.server";
 
 function priceLabel(price: { type: string; amount?: number; currency?: string }): string {
   if (price.type === "free") return "Free";
@@ -61,20 +63,38 @@ function PreviewSlider({
         background: section.previewColor || "#6366f1",
       }}
     >
-      {/* Image or Fallback */}
+      {/* Image or Video or Fallback */}
       {hasPreviews ? (
-        <img
-          src={previews[currentIndex].src}
-          alt={previews[currentIndex].alt}
-          loading="lazy"
-          decoding="async"
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "contain",
-            transition: "opacity 0.3s ease",
-          }}
-        />
+        (previews[currentIndex] as any).type === "video" ? (
+          <video
+            key={previews[currentIndex].src}
+            src={previews[currentIndex].src}
+            poster={(previews[currentIndex] as any).poster}
+            loop
+            muted
+            playsInline
+            preload="none"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              transition: "opacity 0.3s ease",
+            }}
+          />
+        ) : (
+          <img
+            src={previews[currentIndex].src}
+            alt={previews[currentIndex].alt}
+            loading="lazy"
+            decoding="async"
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "contain",
+              transition: "opacity 0.3s ease",
+            }}
+          />
+        )
       ) : (
         <div 
           style={{
@@ -100,7 +120,7 @@ function PreviewSlider({
         </div>
       )}
 
-      {/* Variant Label */}
+      {/* Variant Label or Video Indicator */}
       {hasPreviews && previews[currentIndex].label && (
         <div style={{ 
           position: "absolute", 
@@ -112,7 +132,7 @@ function PreviewSlider({
           borderRadius: 4,
           fontSize: 12,
         }}>
-          {previews[currentIndex].label}
+          {(previews[currentIndex] as any).type === "video" ? `▶ ${previews[currentIndex].label}` : previews[currentIndex].label}
         </div>
       )}
 
@@ -196,10 +216,26 @@ function PreviewSlider({
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const { admin, session } = await authenticate.admin(request);
   const allSections = getAllSections();
+  const shop = session.shop;
+
+  // Check premium status
+  const { isPremium } = await checkIsPremium(shop);
+
+  // Load purchased sections for this shop
+  const purchases = await prisma.sectionPurchase.findMany({
+    where: { shop, status: "COMPLETED" },
+  });
+  const purchasedSectionIds = new Set<string>();
+  for (const p of purchases) {
+    // sectionHandle can be comma-separated for bundles
+    for (const id of p.sectionHandle.split(",")) {
+      purchasedSectionIds.add(id.trim());
+    }
+  }
 
   // Load AI-generated purchased sections for this shop
   const aiSections = await prisma.aiSection.findMany({
-    where: { shop: session.shop, installed: true },
+    where: { shop, installed: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -239,30 +275,79 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
       const allFilenames = [...expectedFilenames, ...aiFilenames];
 
       // Query theme files matching our section filenames
-      const filesResponse = await admin.graphql(
-        `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
-          theme(id: $themeId) {
-            files(first: 250, filenames: $filenames) {
-              nodes {
-                filename
+      // Shopify limits filenames to 50 per request, so we batch
+      const BATCH_SIZE = 50;
+      let themeFiles: { filename: string }[] = [];
+
+      for (let i = 0; i < allFilenames.length; i += BATCH_SIZE) {
+        const batch = allFilenames.slice(i, i + BATCH_SIZE);
+        const filesResponse = await admin.graphql(
+          `query ThemeFiles($themeId: ID!, $filenames: [String!]!) {
+            theme(id: $themeId) {
+              files(first: 250, filenames: $filenames) {
+                nodes {
+                  filename
+                }
               }
             }
-          }
-        }`,
-        { variables: { themeId: mainTheme.id, filenames: allFilenames } }
-      );
-      
-      if (!filesResponse.ok) {
-        throw new Error(`Files GraphQL request failed`);
+          }`,
+          { variables: { themeId: mainTheme.id, filenames: batch } }
+        );
+        
+        if (!filesResponse.ok) {
+          throw new Error(`Files GraphQL request failed`);
+        }
+        
+        const filesData = await filesResponse.json() as any;
+        const batchFiles = filesData.data?.theme?.files?.nodes || [];
+        themeFiles = [...themeFiles, ...batchFiles];
       }
-      
-      const filesData = await filesResponse.json() as any;
-      const themeFiles = filesData.data?.theme?.files?.nodes || [];
+
+      console.log(`[my-sections] Theme: ${mainTheme.name} (${mainTheme.id})`);
+      console.log(`[my-sections] Queried ${allFilenames.length} filenames (${Math.ceil(allFilenames.length / BATCH_SIZE)} batches), found ${themeFiles.length} files`);
+      if (themeFiles.length > 0) {
+        console.log(`[my-sections] Found files:`, themeFiles.map((f: any) => f.filename));
+      }
+      if (themeFiles.length === 0 && allFilenames.length > 0) {
+        console.log(`[my-sections] Sample queried filenames:`, allFilenames.slice(0, 5));
+      }
+
+      // Also do a broad query to find ALL section files matching our patterns
+      // This catches files installed with older naming schemes
+      try {
+        const allSectionsResponse = await admin.graphql(
+          `query AllThemeSections($themeId: ID!) {
+            theme(id: $themeId) {
+              files(first: 250, filenames: ["sections/*.liquid"]) {
+                nodes {
+                  filename
+                }
+              }
+            }
+          }`,
+          { variables: { themeId: mainTheme.id } }
+        );
+        if (allSectionsResponse.ok) {
+          const allSectionsData = await allSectionsResponse.json() as any;
+          const allThemeFiles = allSectionsData.data?.theme?.files?.nodes || [];
+          // Filter to only our sections (contain "section-" or "sh-" or known patterns)
+          const ourFiles = allThemeFiles.filter((f: any) => 
+            f.filename.includes("section-") || f.filename.includes("sh-") || f.filename.includes("siq-")
+          );
+          console.log(`[my-sections] ALL theme section files (${allThemeFiles.length} total):`, allThemeFiles.map((f: any) => f.filename));
+          if (ourFiles.length > 0) {
+            console.log(`[my-sections] Our section files found with broad query:`, ourFiles.map((f: any) => f.filename));
+          }
+        }
+      } catch (broadErr) {
+        console.error("[my-sections] Broad query failed (non-fatal):", broadErr);
+      }
 
       // Extract section IDs from filenames like "sections/section-hero-minimal.liquid"
+      // Exclude AI sections (section-ai-*) which are handled separately below
       installedSectionIds = themeFiles
         .map((f: { filename: string }) => {
-          const match = f.filename.match(/^sections\/section-(.+)\.liquid$/);
+          const match = f.filename.match(/^sections\/section-(?!ai-)(.+)\.liquid$/);
           return match ? match[1] : null;
         })
         .filter(Boolean) as string[];
@@ -283,20 +368,40 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   const installedSections = allSections.filter(s => installedSectionIds.includes(s.id));
 
-  // Load installation records for version tracking
+  // Load installation records for version tracking AND as fallback source of truth
+  // This catches sections that were just installed but Shopify hasn't finished
+  // processing the theme file yet (themeFilesUpsert is async with a background job)
   let sectionVersions: Record<string, string> = {};
   try {
     const installations = await (prisma as any).sectionInstallation.findMany({
-      where: { shop: session.shop },
+      where: { shop },
     });
     for (const inst of installations) {
-      sectionVersions[(inst as any).sectionHandle] = (inst as any).installedVersion;
+      const handle = (inst as any).sectionHandle as string;
+      sectionVersions[handle] = (inst as any).installedVersion;
+      // DB says installed, but theme query didn't find the file yet → add it
+      if (!installedSectionIds.includes(handle)) {
+        installedSectionIds.push(handle);
+        const section = allSections.find(s => s.id === handle);
+        if (section && !installedSections.some(s => s.id === section.id)) {
+          installedSections.push(section);
+        }
+      }
     }
   } catch (err) {
     console.error("Error loading installation records (non-fatal):", err);
   }
 
-  return { allSections, installedSections, installedSectionIds, aiSections, installedAiSlugs, sectionVersions };
+  return {
+    allSections,
+    installedSections,
+    installedSectionIds,
+    aiSections,
+    installedAiSlugs,
+    sectionVersions,
+    isPremium,
+    purchasedSectionIds: Array.from(purchasedSectionIds),
+  };
 };
 
 export const action = async ({ request }: ActionFunctionArgs) => {
@@ -371,6 +476,15 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         return { success: false, error: `Error: ${errorMsg}` };
       }
 
+      // Remove installation record from DB
+      try {
+        await (prisma as any).sectionInstallation.deleteMany({
+          where: { shop: session.shop, sectionHandle: sectionId },
+        });
+      } catch (dbErr) {
+        console.error("Error removing installation record (non-fatal):", dbErr);
+      }
+
       return {
         success: true,
         message: `Section "${sectionId}" was successfully removed from "${mainTheme.name}".`,
@@ -390,14 +504,30 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       return { success: false, error: "Section not found" };
     }
 
+    // Access check: free sections always allowed, premium users get all, otherwise must have purchased
+    const isFreeSection = section.price?.type === "free";
+    if (!isFreeSection) {
+      const { isPremium } = await checkIsPremium(session.shop);
+      if (!isPremium) {
+        const purchased = await hasPurchasedSection(session.shop, sectionId);
+        if (!purchased) {
+          return {
+            success: false,
+            error: "Please subscribe to Premium or purchase this section first.",
+            premiumRequired: true,
+          };
+        }
+      }
+    }
+
     try {
       const sectionFileName = `section-${sectionId}.liquid`;
 
       // Embed CSS inline
       const liquidWithStyles = `{% comment %}
-  Section Hub - ${section.name}
+  SectionIQ - ${section.name}
   Version: ${section.version}
-  Installed via Section Hub App
+  Installed via SectionIQ App
 {% endcomment %}
 
 <style>
@@ -426,56 +556,29 @@ ${section.liquidContent || ""}`;
         return { success: false, error: "No active theme found." };
       }
 
-      const fileInput = {
-        filename: `sections/${sectionFileName}`,
-        body: {
-          type: "TEXT",
-          value: liquidWithStyles,
-        },
-      };
+      const themeId = mainTheme.id.split("/").pop();
 
-      const themeFilesResponse = await admin.graphql(
-        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-          themeFilesUpsert(files: $files, themeId: $themeId) {
-            upsertedThemeFiles {
-              filename
-            }
-            userErrors {
-              field
-              message
-            }
-            job {
-              id
-            }
-          }
-        }`,
+      const assetResponse = await fetch(
+        `https://${session.shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
         {
-          variables: {
-            files: [fileInput],
-            themeId: mainTheme.id,
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": session.accessToken || "",
           },
+          body: JSON.stringify({
+            asset: {
+              key: `sections/${sectionFileName}`,
+              value: liquidWithStyles,
+            },
+          }),
         }
       );
 
-      const themeFilesData = (await themeFilesResponse.json()) as any;
-      console.log("GraphQL themeFilesUpsert Response:", JSON.stringify(themeFilesData, null, 2));
-
-      if (themeFilesData.errors) {
-        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
-        return { success: false, error: `GraphQL Error: ${errorMsg}` };
-      }
-
-      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
-      if (userErrors.length > 0) {
-        const errorMsg = userErrors
-          .map((e: { field?: string[]; message: string }) => `${(e.field || []).join(".")}: ${e.message}`)
-          .join(", ");
-        return { success: false, error: `Error creating section: ${errorMsg}` };
-      }
-
-      const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
-      if (upsertedFiles.length === 0) {
-        return { success: false, error: "Section could not be installed. Please try again later." };
+      if (!assetResponse.ok) {
+        const errorData = await assetResponse.json().catch(() => ({}));
+        console.error("My-sections install error:", errorData);
+        return { success: false, error: "Error uploading section to theme." };
       }
 
       // Track installed version
@@ -501,6 +604,7 @@ ${section.liquidContent || ""}`;
       return {
         success: true,
         message: `${section.name} was successfully installed in "${mainTheme.name}"!`,
+        installedSectionId: sectionId,
       };
     } catch (error) {
       console.error("Install error:", error);
@@ -538,40 +642,26 @@ ${section.liquidContent || ""}`;
       }
 
       const filename = `sections/section-ai-${aiSection.slug}.liquid`;
-      const fileInput = {
-        filename,
-        body: { type: "TEXT", value: sanitizedCode },
-      };
+      const themeId = mainTheme.id.split("/").pop();
 
-      const themeFilesResponse = await admin.graphql(
-        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-          themeFilesUpsert(files: $files, themeId: $themeId) {
-            upsertedThemeFiles { filename }
-            userErrors { field message }
-            job { id }
-          }
-        }`,
-        { variables: { files: [fileInput], themeId: mainTheme.id } }
+      const assetResponse = await fetch(
+        `https://${session.shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Shopify-Access-Token": session.accessToken || "",
+          },
+          body: JSON.stringify({
+            asset: { key: filename, value: sanitizedCode },
+          }),
+        }
       );
 
-      const themeFilesData = (await themeFilesResponse.json()) as any;
-
-      if (themeFilesData.errors) {
-        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
-        return { success: false, error: `GraphQL Error: ${errorMsg}` };
-      }
-
-      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
-      if (userErrors.length > 0) {
-        const errorMsg = userErrors
-          .map((e: { field?: string[]; message: string }) => `${(e.field || []).join(".")}: ${e.message}`)
-          .join(", ");
-        return { success: false, error: `Fehler beim Installieren: ${errorMsg}` };
-      }
-
-      const upsertedFiles = themeFilesData.data?.themeFilesUpsert?.upsertedThemeFiles || [];
-      if (upsertedFiles.length === 0) {
-        return { success: false, error: "Section konnte nicht installiert werden. Bitte versuche es später erneut." };
+      if (!assetResponse.ok) {
+        const errorData = await assetResponse.json().catch(() => ({}));
+        console.error("My-sections AI install error:", errorData);
+        return { success: false, error: "Fehler beim Installieren der Section." };
       }
 
       return {
@@ -695,7 +785,7 @@ ${section.liquidContent || ""}`;
 };
 
 export default function MySectionsPage() {
-  const { allSections, installedSections, aiSections, installedAiSlugs, sectionVersions } = useLoaderData<typeof loader>();
+  const { allSections, installedSections, aiSections, installedAiSlugs, sectionVersions, isPremium, purchasedSectionIds } = useLoaderData<typeof loader>();
   const [showUninstallModal, setShowUninstallModal] = useState<string | null>(null);
   const submit = useSubmit();
   const navigation = useNavigation();
@@ -729,9 +819,20 @@ export default function MySectionsPage() {
     }
   }, [actionData]);
 
-  const availableSections = allSections.filter(
-    (s) => !installedSections.some((installed) => installed.id === s.id)
-  );
+  // Available sections: only show sections the user can actually install
+  // Premium → all sections, otherwise → purchased + free sections
+  const availableSections = allSections.filter((s) => {
+    // Exclude already-installed sections
+    if (installedSections.some((installed) => installed.id === s.id)) return false;
+    // Premium users see all sections
+    if (isPremium) return true;
+    // Free sections are always available
+    if (s.price?.type === "free") return true;
+    // Non-premium: show purchased sections
+    if (purchasedSectionIds.includes(s.id)) return true;
+    // Otherwise hide
+    return false;
+  });
 
   const sectionToRemove = installedSections.find(s => s.id === showUninstallModal);
 
@@ -874,138 +975,6 @@ export default function MySectionsPage() {
           </Card>
         </Layout.Section>
 
-        {/* Available Sections */}
-        <Layout.Section>
-          <Card>
-            <BlockStack gap="400">
-              <div>
-                <Text as="h2" variant="headingLg">
-                  🤖 AI-Generated Sections ({(aiSections as any[]).length})
-                </Text>
-                <Text as="p" variant="bodySm" tone="subdued">
-                  Sections die du mit Section AI erstellt und gekauft hast.
-                </Text>
-              </div>
-
-              {(aiSections as any[]).length === 0 ? (
-                <Text as="p" variant="bodySm" tone="subdued">
-                  Noch keine AI-Sections gekauft. Erstelle deine erste mit Section AI!
-                </Text>
-              ) : (
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))",
-                    gap: 16,
-                  }}
-                >
-                  {(aiSections as any[]).map((ai: any) => (
-                    <Card key={ai.id} padding="0">
-                      <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
-                        <div
-                          style={{
-                            height: 140,
-                            borderTopLeftRadius: 12,
-                            borderTopRightRadius: 12,
-                            overflow: "hidden",
-                            background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            position: "relative",
-                          }}
-                        >
-                          <span style={{ fontSize: 48 }}>🤖</span>
-                          <div style={{ position: "absolute", top: 12, right: 12 }}>
-                            <Badge tone={(installedAiSlugs as string[]).includes(ai.slug) ? "success" : "info"}>
-                              {(installedAiSlugs as string[]).includes(ai.slug) ? "✓ Im Theme" : "Gespeichert"}
-                            </Badge>
-                          </div>
-                        </div>
-                        <Box padding="400">
-                          <div style={{ display: "flex", flexDirection: "column", height: "100%", minHeight: 160 }}>
-                            <Text as="h3" variant="headingSm">
-                              {ai.name}
-                            </Text>
-                            <div style={{ marginTop: 8, marginBottom: 8, minHeight: 40, overflow: "hidden", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical" as const }}>
-                              <Text as="p" variant="bodySm" tone="subdued">
-                                {ai.prompt}
-                              </Text>
-                            </div>
-                            <div style={{ marginTop: "auto" }}>
-                              <InlineStack gap="100" wrap>
-                                <Badge tone="info">{ai.sectionType}</Badge>
-                                <Badge>{ai.style}</Badge>
-                                <Badge>{ai.model}</Badge>
-                              </InlineStack>
-                              <div style={{ marginTop: 8 }}>
-                                <Text as="p" variant="bodySm" tone="subdued">
-                                  {`Erstellt: ${new Date(ai.createdAt).toLocaleDateString("de-DE")}`}
-                                </Text>
-                              </div>
-                              <div style={{ marginTop: 12, display: "flex", gap: 8 }}>
-                                <div style={{ flex: 1 }}>
-                                  {(installedAiSlugs as string[]).includes(ai.slug) ? (
-                                    <Button
-                                      variant="primary"
-                                      tone="critical"
-                                      size="slim"
-                                      fullWidth
-                                      loading={isSubmitting}
-                                      onClick={() => {
-                                        const formData = new FormData();
-                                        formData.set("action", "removeAiSection");
-                                        formData.set("sectionId", ai.id);
-                                        submit(formData, { method: "post" });
-                                      }}
-                                    >
-                                      Aus Theme entfernen
-                                    </Button>
-                                  ) : (
-                                    <Button
-                                      variant="primary"
-                                      size="slim"
-                                      fullWidth
-                                      loading={isSubmitting}
-                                      onClick={() => {
-                                        const formData = new FormData();
-                                        formData.set("action", "installAiSection");
-                                        formData.set("sectionId", ai.id);
-                                        submit(formData, { method: "post" });
-                                      }}
-                                    >
-                                      In Theme installieren
-                                    </Button>
-                                  )}
-                                </div>
-                                <Button
-                                  variant="plain"
-                                  tone="critical"
-                                  size="slim"
-                                  onClick={() => {
-                                    if (confirm(`"${ai.name}" wirklich löschen? Die Section wird aus deinem Theme und aus My Sections entfernt.`)) {
-                                      const formData = new FormData();
-                                      formData.set("action", "deleteAiSection");
-                                      formData.set("sectionId", ai.id);
-                                      submit(formData, { method: "post" });
-                                    }
-                                  }}
-                                >
-                                  🗑️ Löschen
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </Box>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              )}
-            </BlockStack>
-          </Card>
-        </Layout.Section>
-
         {/* Available Store Sections */}
         <Layout.Section>
           <Card>
@@ -1015,13 +984,17 @@ export default function MySectionsPage() {
                   ⭐ Available Sections ({availableSections.length})
                 </Text>
                 <Text as="p" variant="bodySm" tone="subdued">
-                  More sections you can install.
+                  {isPremium
+                    ? "All sections are included in your Premium plan."
+                    : "Free sections and sections you've purchased. Subscribe to Premium to unlock all."}
                 </Text>
               </div>
 
               {availableSections.length === 0 ? (
                 <Text as="p" variant="bodySm" tone="subdued">
-                  All available sections are already installed!
+                  {isPremium
+                    ? "All available sections are already installed!"
+                    : "No purchased sections available. Browse the Store to purchase individual sections or subscribe to Premium to unlock all 138+ sections."}
                 </Text>
               ) : (
                 <div

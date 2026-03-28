@@ -1,0 +1,46 @@
+{
+  "id": "collection-tabs-scroll",
+  "name": "SIQ - Collection Tabs Scroll",
+  "description": "Multi-phase scroll-driven section with glassmorphism collection tabs. Starts with centered heading, description and glass-effect tab bar showing collection icons. On scroll: text slides up, tabs move to top, hero image grows and shifts right, collection info text appears left, a CTA button fades onto the image, and finally the single image splits into a product grid. Each tab switches the active collection. Premium scroll storytelling for editorial collections.",
+  "category": [
+    "Collection",
+    "Scroll Triggered"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Tabs",
+    "Scroll",
+    "Glass",
+    "Glassmorphism",
+    "Editorial",
+    "Premium",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#1a1a1a",
+  "previews": [
+    {
+      "src": "/previews/collection-tabs-scroll/default.webp",
+      "alt": "SIQ - Collection Tabs Scroll - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Taste", "Refresh", "Ride", "Studio", "Publisher", "Crave", "Origin", "Colorblock", "Spotlight"],
+    "os2": true
+  },
+  "createdAt": "2026-03-26",
+  "updatedAt": "2026-03-26"
+}

@@ -1,0 +1,753 @@
+{% comment %}
+  Section Hub – Product Spotlight Stack v1.0
+  3D stacked card deck with flip animation, autoplay,
+  and animated detail panel. Prefix: pss-
+{% endcomment %}
+
+{{ 'section-product-spotlight-stack.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid         = section.id
+  assign autoplay    = section.settings.autoplay
+  assign speed       = section.settings.autoplay_speed
+  assign accent      = section.settings.accent_color
+  assign accent_hover = section.settings.accent_hover_color
+  assign bg          = section.settings.bg_color
+  assign heading_color = section.settings.heading_color
+  assign text_muted  = section.settings.text_muted_color
+  assign card_w      = section.settings.card_width
+  assign card_h      = section.settings.card_height
+  assign card_w_mob  = section.settings.card_width_mobile
+  assign card_h_mob  = section.settings.card_height_mobile
+  assign radius      = section.settings.border_radius
+  assign py          = section.settings.padding_y
+  assign px          = section.settings.padding_x
+  assign layout_gap  = section.settings.layout_gap
+  assign max_w       = section.settings.max_width
+  assign header_mb   = section.settings.header_mb
+  assign eyebrow     = section.settings.eyebrow
+  assign heading     = section.settings.heading
+  assign subheading  = section.settings.subheading
+  assign show_counter = section.settings.show_counter
+  assign cta_label   = section.settings.cta_label
+  assign total       = section.blocks.size
+  assign show_max    = 4
+-%}
+
+<style>
+  .pss-section--{{ sid }} {
+    --pss-bg: {{ bg }};
+    --pss-accent: {{ accent }};
+    --pss-accent-hover: {{ accent_hover }};
+    --pss-heading-color: {{ heading_color }};
+    --pss-text-muted: {{ text_muted }};
+    --pss-card-w: {{ card_w }}px;
+    --pss-card-h: {{ card_h }}px;
+    --pss-card-w-mob: {{ card_w_mob }}px;
+    --pss-card-h-mob: {{ card_h_mob }}px;
+    --pss-radius: {{ radius }}px;
+    --pss-py: {{ py }}px;
+    --pss-px: {{ px }}px;
+    --pss-layout-gap: {{ layout_gap }}px;
+    --pss-max-w: {{ max_w }}px;
+    --pss-header-mb: {{ header_mb }}px;
+  }
+</style>
+
+<div class="pss-section pss-section--{{ sid }}" data-pss="{{ sid }}">
+
+  {%- if eyebrow != blank or heading != blank or subheading != blank -%}
+    <div class="pss-header">
+      {%- if eyebrow != blank -%}
+        <span class="pss-header__eyebrow">{{ eyebrow }}</span>
+      {%- endif -%}
+      {%- if heading != blank -%}
+        <h2 class="pss-header__heading">{{ heading }}</h2>
+      {%- endif -%}
+      {%- if subheading != blank -%}
+        <p class="pss-header__sub">{{ subheading }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="pss-layout">
+
+    {%- comment -%} ── LEFT: Card Stack ── {%- endcomment -%}
+    <div class="pss-stack-wrap">
+      <div>
+        <div class="pss-stack" data-pss-stack>
+          {%- for block in section.blocks -%}
+            {%- liquid
+              assign depth = forloop.index0
+              if depth >= show_max
+                assign depth = show_max
+              endif
+              assign product_ref = block.settings.product
+              assign product_obj = all_products[product_ref]
+              assign title = block.settings.title
+              assign img   = block.settings.image
+              assign badge = block.settings.badge
+
+              if title == blank and product_obj != blank
+                assign title = product_obj.title
+              endif
+              if img == blank and product_obj != blank and product_obj.featured_image != blank
+                assign img = product_obj.featured_image
+              endif
+            -%}
+            <div
+              class="pss-card"
+              data-pss-card="{{ forloop.index0 }}"
+              data-pss-depth="{{ depth }}"
+              {{ block.shopify_attributes }}
+            >
+              {%- if img != blank -%}
+                <img
+                  src="{{ img | image_url: width: 800 }}"
+                  srcset="{{ img | image_url: width: 400 }} 400w, {{ img | image_url: width: 700 }} 700w, {{ img | image_url: width: 800 }} 800w"
+                  sizes="{{ card_w }}px"
+                  alt="{{ title | escape }}"
+                  class="pss-card__img"
+                  {% if forloop.index == 1 %}loading="eager"{% else %}loading="lazy"{% endif %}
+                  width="{{ img.width }}"
+                  height="{{ img.height }}"
+                >
+              {%- else -%}
+                <div class="pss-card__placeholder">🛍</div>
+              {%- endif -%}
+              <div class="pss-card__overlay"></div>
+              {%- if badge != blank -%}
+                <span class="pss-card__badge">{{ badge }}</span>
+              {%- endif -%}
+              <div class="pss-card__bottom">
+                {%- if title != blank -%}
+                  <span class="pss-card__name">{{ title }}</span>
+                {%- endif -%}
+                {%- liquid
+                  assign price_display = block.settings.price
+                  if price_display == blank and product_obj != blank
+                    assign price_display = product_obj.price | money
+                  endif
+                -%}
+                {%- if price_display != blank -%}
+                  <span class="pss-card__price">{{ price_display }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+
+        {%- comment -%} Dots + progress {%- endcomment -%}
+        {%- if total > 1 -%}
+          <div class="pss-nav" role="tablist" data-pss-nav>
+            {%- for block in section.blocks -%}
+              <button
+                class="pss-nav-dot{% if forloop.index0 == 0 %} pss-nav-dot--active{% endif %}"
+                data-pss-ndot="{{ forloop.index0 }}"
+                role="tab"
+                aria-label="Product {{ forloop.index }}"
+                aria-selected="{% if forloop.index0 == 0 %}true{% else %}false{% endif %}"
+              ></button>
+            {%- endfor -%}
+          </div>
+          <div class="pss-progress">
+            <div class="pss-progress__bar" data-pss-bar></div>
+          </div>
+          {%- if show_counter -%}
+            <div class="pss-counter" data-pss-counter>1 / {{ total }}</div>
+          {%- endif -%}
+        {%- endif -%}
+      </div>
+    </div>
+
+    {%- comment -%} ── RIGHT: Info Panel ── {%- endcomment -%}
+    <div>
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign product_ref = block.settings.product
+          assign product_obj = all_products[product_ref]
+          assign title = block.settings.title
+          assign price = block.settings.price
+          assign price_compare = block.settings.price_compare
+          assign desc  = block.settings.description
+          assign link  = block.settings.link
+          assign f1 = block.settings.feature_1
+          assign f2 = block.settings.feature_2
+          assign f3 = block.settings.feature_3
+          assign f4 = block.settings.feature_4
+
+          if title == blank and product_obj != blank
+            assign title = product_obj.title
+          endif
+          if price == blank and product_obj != blank
+            assign price = product_obj.price | money
+          endif
+          if link == blank and product_obj != blank
+            assign link = product_obj.url
+          endif
+        -%}
+        <div
+          class="pss-panel{% if forloop.index0 == 0 %} pss-panel--active{% endif %}"
+          data-pss-panel="{{ forloop.index0 }}"
+          style="{% if forloop.index0 != 0 %}display:none;{% endif %}"
+        >
+          <span class="pss-panel__number">{{ forloop.index | prepend: '0' | slice: -2, 2 }} / {{ total | prepend: '0' | slice: -2, 2 }}</span>
+          {%- if title != blank -%}
+            <h3 class="pss-panel__title">{{ title }}</h3>
+          {%- endif -%}
+          {%- if price != blank -%}
+            <div class="pss-panel__price-wrap">
+              <span class="pss-panel__price">{{ price }}</span>
+              {%- if price_compare != blank -%}
+                <span class="pss-panel__price-compare">{{ price_compare }}</span>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+          {%- if desc != blank -%}
+            <p class="pss-panel__desc">{{ desc }}</p>
+          {%- endif -%}
+          {%- assign features = f1 | append: '|||' | append: f2 | append: '|||' | append: f3 | append: '|||' | append: f4 -%}
+          {%- assign feature_arr = features | split: '|||' -%}
+          {%- assign has_features = false -%}
+          {%- for f in feature_arr -%}{%- if f != blank -%}{%- assign has_features = true -%}{%- endif -%}{%- endfor -%}
+          {%- if has_features -%}
+            <ul class="pss-panel__features">
+              {%- for f in feature_arr -%}
+                {%- if f != blank -%}
+                  <li class="pss-panel__feature">
+                    <span class="pss-panel__feature-dot">✓</span>
+                    {{ f }}
+                  </li>
+                {%- endif -%}
+              {%- endfor -%}
+            </ul>
+          {%- endif -%}
+          {%- if link != blank -%}
+            <a href="{{ link }}" class="pss-panel__cta">
+              {{ cta_label | default: 'Shop Now' }}
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </a>
+          {%- endif -%}
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var sid     = '{{ sid }}';
+  var wrap    = document.querySelector('[data-pss="{{ sid }}"]');
+  if (!wrap) return;
+
+  var cards   = Array.from(wrap.querySelectorAll('[data-pss-card]'));
+  var panels  = Array.from(wrap.querySelectorAll('[data-pss-panel]'));
+  var dots    = Array.from(wrap.querySelectorAll('[data-pss-ndot]'));
+  var bar     = wrap.querySelector('[data-pss-bar]');
+  var counter = wrap.querySelector('[data-pss-counter]');
+  var total   = cards.length;
+  var current = 0;
+  var autoplay  = {{ autoplay | json }};
+  var speed     = {{ speed }} * 1000;
+  var timer     = null;
+  var animating = false;
+  var paused    = false;
+
+  if (total < 2) autoplay = false;
+
+  /* Assign depths */
+  function assignDepths() {
+    cards.forEach(function(card, i) {
+      var relIdx = (i - current + total) % total;
+      var depth = relIdx < 4 ? relIdx : 4;
+      card.setAttribute('data-pss-depth', depth);
+    });
+  }
+
+  function showPanel(idx) {
+    panels.forEach(function(p, i) {
+      if (i === idx) {
+        p.style.display = '';
+        requestAnimationFrame(function() {
+          requestAnimationFrame(function() {
+            p.classList.add('pss-panel--active');
+          });
+        });
+      } else {
+        p.classList.remove('pss-panel--active');
+        p.style.display = 'none';
+      }
+    });
+  }
+
+  function updateDots(idx) {
+    dots.forEach(function(d, i) {
+      d.classList.toggle('pss-nav-dot--active', i === idx);
+      d.setAttribute('aria-selected', i === idx ? 'true' : 'false');
+    });
+    if (counter) counter.textContent = (idx + 1) + ' / ' + total;
+  }
+
+  function goTo(idx) {
+    if (animating || idx === current) return;
+    animating = true;
+
+    var outCard = cards[current];
+    current = (idx + total) % total;
+
+    /* Animate top card out */
+    outCard.classList.add('pss-anim-out');
+    outCard.addEventListener('animationend', function onOut() {
+      outCard.removeEventListener('animationend', onOut);
+      outCard.classList.remove('pss-anim-out');
+      assignDepths();
+
+      /* Animate new front card rising */
+      var newFront = cards[current];
+      newFront.classList.add('pss-anim-rise');
+      newFront.addEventListener('animationend', function onRise() {
+        newFront.removeEventListener('animationend', onRise);
+        newFront.classList.remove('pss-anim-rise');
+        animating = false;
+      }, { once: true });
+
+    }, { once: true });
+
+    updateDots(current);
+    showPanel(current);
+  }
+
+  function next() { goTo((current + 1) % total); }
+
+  /* Progress bar */
+  function startBar() {
+    if (!bar) return;
+    bar.style.transition = 'none';
+    bar.style.width = '0%';
+    requestAnimationFrame(function() {
+      requestAnimationFrame(function() {
+        bar.style.transition = 'width ' + (speed / 1000) + 's linear';
+        bar.style.width = '100%';
+      });
+    });
+  }
+
+  function startAuto() {
+    if (!autoplay || paused) return;
+    clearInterval(timer);
+    timer = setInterval(function() {
+      if (!paused) { next(); startBar(); }
+    }, speed);
+    startBar();
+  }
+
+  function stopAuto() {
+    clearInterval(timer);
+    if (bar) bar.style.transition = 'none';
+  }
+
+  /* Pause on hover */
+  wrap.addEventListener('mouseenter', function() {
+    paused = true; stopAuto();
+  });
+  wrap.addEventListener('mouseleave', function() {
+    paused = false; startAuto();
+  });
+
+  /* Dots */
+  dots.forEach(function(dot, i) {
+    dot.addEventListener('click', function() {
+      goTo(i); stopAuto(); startAuto();
+    });
+  });
+
+  /* Click top card to advance */
+  cards.forEach(function(card) {
+    card.addEventListener('click', function() {
+      if (parseInt(card.getAttribute('data-pss-depth')) === 0) {
+        next(); stopAuto(); startAuto();
+      }
+    });
+  });
+
+  /* Touch swipe — on stack area + whole section, horizontal only */
+  var touchX = 0;
+  var touchY = 0;
+  var swipeTargets = [wrap];
+  var stackEl = wrap.querySelector('[data-pss-stack]');
+  if (stackEl) swipeTargets.push(stackEl);
+
+  swipeTargets.forEach(function(el) {
+    el.addEventListener('touchstart', function(e) {
+      touchX = e.touches[0].clientX;
+      touchY = e.touches[0].clientY;
+    }, { passive: true });
+
+    el.addEventListener('touchend', function(e) {
+      var dx = e.changedTouches[0].clientX - touchX;
+      var dy = e.changedTouches[0].clientY - touchY;
+      /* Only trigger if horizontal swipe is dominant (not a scroll) */
+      if (Math.abs(dx) > 36 && Math.abs(dx) > Math.abs(dy) * 1.5) {
+        if (dx < 0) next(); else goTo((current - 1 + total) % total);
+        stopAuto(); startAuto();
+      }
+    }, { passive: true });
+  });
+
+  /* Keyboard */
+  wrap.setAttribute('tabindex', '0');
+  wrap.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { next(); stopAuto(); startAuto(); }
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { goTo((current - 1 + total) % total); stopAuto(); startAuto(); }
+  });
+
+  /* Init */
+  assignDepths();
+  showPanel(0);
+  startAuto();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Spotlight Stack",
+  "tag": "section",
+  "class": "section-product-spotlight-stack",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section Header"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Featured Products"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Curated For You"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Handpicked products that redefine the standard."
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8f8f6"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "accent_hover_color",
+      "label": "Accent hover color",
+      "default": "#4f46e5"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#0f172a"
+    },
+    {
+      "type": "color",
+      "id": "text_muted_color",
+      "label": "Text muted color",
+      "default": "#64748b"
+    },
+    {
+      "type": "header",
+      "content": "Card"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width (desktop)",
+      "min": 260,
+      "max": 480,
+      "step": 10,
+      "default": 340,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card height (desktop)",
+      "min": 320,
+      "max": 620,
+      "step": 10,
+      "default": 440,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_width_mobile",
+      "label": "Card width (mobile)",
+      "min": 220,
+      "max": 380,
+      "step": 10,
+      "default": 290,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "label": "Card height (mobile)",
+      "min": 280,
+      "max": 520,
+      "step": 10,
+      "default": 380,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card border radius",
+      "min": 0,
+      "max": 32,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Autoplay"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Enable autoplay",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Slide duration",
+      "min": 2,
+      "max": 10,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "header",
+      "content": "Controls"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show slide counter",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA button label",
+      "default": "Shop Now"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 700,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "layout_gap",
+      "label": "Gap (stack ↔ panel)",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 60,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 160,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_x",
+      "label": "Horizontal padding",
+      "min": 8,
+      "max": 60,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_mb",
+      "label": "Header bottom margin",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 56,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "product",
+      "name": "Product",
+      "settings": [
+        {
+          "type": "product",
+          "id": "product",
+          "label": "Product (auto-fills fields)"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Card image (overrides product)"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Product name",
+          "default": "Signature Collection"
+        },
+        {
+          "type": "text",
+          "id": "price",
+          "label": "Price",
+          "default": "$149.00"
+        },
+        {
+          "type": "text",
+          "id": "price_compare",
+          "label": "Compare price (optional)",
+          "default": "$199.00"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge label",
+          "default": "New"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Short description",
+          "default": "Crafted for those who demand perfection. Premium materials, timeless design."
+        },
+        {
+          "type": "text",
+          "id": "feature_1",
+          "label": "Feature 1",
+          "default": "Premium quality materials"
+        },
+        {
+          "type": "text",
+          "id": "feature_2",
+          "label": "Feature 2",
+          "default": "Free shipping worldwide"
+        },
+        {
+          "type": "text",
+          "id": "feature_3",
+          "label": "Feature 3",
+          "default": "30-day free returns"
+        },
+        {
+          "type": "text",
+          "id": "feature_4",
+          "label": "Feature 4"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Product link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Spotlight Stack",
+      "blocks": [
+        {
+          "type": "product",
+          "settings": {
+            "title": "Signature Collection",
+            "price": "$149.00",
+            "price_compare": "$199.00",
+            "badge": "New",
+            "description": "Crafted for those who demand perfection. Premium materials, timeless design.",
+            "feature_1": "Premium quality materials",
+            "feature_2": "Free shipping worldwide",
+            "feature_3": "30-day free returns"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "title": "Essential Bundle",
+            "price": "$89.00",
+            "badge": "Bestseller",
+            "description": "Everything you need, nothing you don't. The perfect starter kit for the modern lifestyle.",
+            "feature_1": "Curated starter set",
+            "feature_2": "Exclusive bundle pricing",
+            "feature_3": "Gift-ready packaging"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "title": "Limited Edition",
+            "price": "$219.00",
+            "price_compare": "$289.00",
+            "badge": "Limited",
+            "description": "Only 50 pieces worldwide. Own a piece of history with our most exclusive release.",
+            "feature_1": "Numbered certificate included",
+            "feature_2": "Handcrafted in Europe",
+            "feature_3": "Lifetime warranty"
+          }
+        },
+        {
+          "type": "product",
+          "settings": {
+            "title": "Classic Series",
+            "price": "$69.00",
+            "badge": "Sale",
+            "description": "The icon that started it all. Timeless style meets modern performance.",
+            "feature_1": "Iconic original design",
+            "feature_2": "Available in 8 colors",
+            "feature_3": "Ships within 24h"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

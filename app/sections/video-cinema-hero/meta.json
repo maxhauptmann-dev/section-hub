@@ -1,12 +1,12 @@
 {
   "id": "video-cinema-hero",
-  "name": "SS - Video Cinema Hero",
+  "name": "SIQ - Video Cinema Hero",
   "description": "Full-bleed cinematic video hero section with floating glassmorphism content card, cinematic letterbox bars, and dramatic scroll-reveal animation. Supports Shopify hosted video, YouTube/Vimeo embeds, and MP4 URLs. Features autoplay with IntersectionObserver, muted background mode, custom poster, overlay tint control, content positioning (9 positions), object-fit toggle, section height control, mobile-specific settings, and ambient glow. 60+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +21,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#000000",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/video-cinema-hero/default.webp",
-      "alt": "Video Cinema Hero - Default",
+      "alt": "SS - Video Cinema Hero - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +50,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

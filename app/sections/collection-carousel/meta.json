@@ -1,0 +1,57 @@
+{
+  "id": "collection-carousel",
+  "name": "SIQ - Collection Carousel",
+  "description": "Horizontal scroll-driven collection carousel with a sticky text header on the left. Large rounded collection cards slide through as the user scrolls, while a heading, description, and CTA button remain pinned. Each collection block supports a custom image, overlay, highlighted text chip, title override, and individual button. Supports sticky or scroll content mode, progress bar, card radius, and landscape/square aspect ratio. Perfect for showcasing multiple collections in an editorial, magazine-style layout.",
+  "category": [
+    "Collection",
+    "Scroll Triggered"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Collection",
+    "Carousel",
+    "Scroll",
+    "Horizontal",
+    "Cards",
+    "Sticky",
+    "Editorial",
+    "Premium",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
+    "os2": true
+  },
+  "createdAt": "2026-03-25",
+  "updatedAt": "2026-03-25",
+  "previews": [
+    {
+      "src": "/previews/collection-carousel/default.webp",
+      "alt": "SIQ - Collection Carousel - Default",
+      "label": "Default"
+    }
+  ]
+}

@@ -1,12 +1,14 @@
 {
   "id": "counter-flip-board",
-  "name": "SS - Flip Board",
+  "name": "SIQ - Flip Board",
   "description": "Retro split-flap display inspired counter section. Numbers flip through digits like an airport departure board with realistic 3D card-flip animation. Features individual digit flipping, customizable panel colors, staggered reveal, and nostalgic mechanical feel.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 19,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +23,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#1a1a2e",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/counter-flip-board/default.webp",
-      "alt": "Counter Flip Board - Default",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iNTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPk91ciBOdW1iZXJzPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjcyIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5TcGxpdC1mbGFwIHJldHJvIGRpc3BsYXk8L3RleHQ+CjxyZWN0IHg9IjYwIiB5PSIxMTAiIHdpZHRoPSIzMiIgaGVpZ2h0PSI1MiIgcng9IjQiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzJhMmE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjYwIiB5MT0iMTM2IiB4Mj0iOTIiIHkyPSIxMzYiIHN0cm9rZT0iIzBmMGYxYSIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iNzYiIHk9IjE0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+MTwvdGV4dD48cmVjdCB4PSI5OCIgeT0iMTEwIiB3aWR0aD0iMzIiIGhlaWdodD0iNTIiIHJ4PSI0IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSI5OCIgeTE9IjEzNiIgeDI9IjEzMCIgeTI9IjEzNiIgc3Ryb2tlPSIjMGYwZjFhIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSIxMTQiIHk9IjE0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+MjwvdGV4dD48cmVjdCB4PSIxMzYiIHk9IjExMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjUyIiByeD0iNCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMTM2IiB5MT0iMTM2IiB4Mj0iMTY4IiB5Mj0iMTM2IiBzdHJva2U9IiMwZjBmMWEiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjE1MiIgeT0iMTQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjIyIiBmaWxsPSIjODE4Y2Y4IiBmb250LXdlaWdodD0iNzAwIj4zPC90ZXh0PjxyZWN0IHg9IjE3NCIgeT0iMTEwIiB3aWR0aD0iMzIiIGhlaWdodD0iNTIiIHJ4PSI0IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSIxNzQiIHkxPSIxMzYiIHgyPSIyMDYiIHkyPSIxMzYiIHN0cm9rZT0iIzBmMGYxYSIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iMTkwIiB5PSIxNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM4MThjZjgiIGZvbnQtd2VpZ2h0PSI3MDAiPjQ8L3RleHQ+PHRleHQgeD0iMTIwIiB5PSIxODUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTEiIGZpbGw9IiM4ODg4YWEiPkN1c3RvbWVyczwvdGV4dD48cmVjdCB4PSIyNjAiIHk9IjExMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjUyIiByeD0iNCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iMjYwIiB5MT0iMTM2IiB4Mj0iMjkyIiB5Mj0iMTM2IiBzdHJva2U9IiMwZjBmMWEiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjI3NiIgeT0iMTQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjIyIiBmaWxsPSIjODE4Y2Y4IiBmb250LXdlaWdodD0iNzAwIj45PC90ZXh0PjxyZWN0IHg9IjI5OCIgeT0iMTEwIiB3aWR0aD0iMzIiIGhlaWdodD0iNTIiIHJ4PSI0IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSIyOTgiIHkxPSIxMzYiIHgyPSIzMzAiIHkyPSIxMzYiIHN0cm9rZT0iIzBmMGYxYSIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iMzE0IiB5PSIxNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM4MThjZjgiIGZvbnQtd2VpZ2h0PSI3MDAiPjg8L3RleHQ+PHJlY3QgeD0iMzM2IiB5PSIxMTAiIHdpZHRoPSIzMiIgaGVpZ2h0PSI1MiIgcng9IjQiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzJhMmE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjMzNiIgeTE9IjEzNiIgeDI9IjM2OCIgeTI9IjEzNiIgc3Ryb2tlPSIjMGYwZjFhIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSIzNTIiIHk9IjE0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+JTwvdGV4dD48dGV4dCB4PSIzMjAiIHk9IjE4NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMSIgZmlsbD0iIzg4ODhhYSI+U2F0aXNmYWN0aW9uPC90ZXh0PjxyZWN0IHg9IjQ2MCIgeT0iMTEwIiB3aWR0aD0iMzIiIGhlaWdodD0iNTIiIHJ4PSI0IiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPjxsaW5lIHgxPSI0NjAiIHkxPSIxMzYiIHgyPSI0OTIiIHkyPSIxMzYiIHN0cm9rZT0iIzBmMGYxYSIgc3Ryb2tlLXdpZHRoPSIxIi8+PHRleHQgeD0iNDc2IiB5PSIxNDUiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjIiIGZpbGw9IiM4MThjZjgiIGZvbnQtd2VpZ2h0PSI3MDAiPjU8L3RleHQ+PHJlY3QgeD0iNDk4IiB5PSIxMTAiIHdpZHRoPSIzMiIgaGVpZ2h0PSI1MiIgcng9IjQiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzJhMmE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+PGxpbmUgeDE9IjQ5OCIgeTE9IjEzNiIgeDI9IjUzMCIgeTI9IjEzNiIgc3Ryb2tlPSIjMGYwZjFhIiBzdHJva2Utd2lkdGg9IjEiLz48dGV4dCB4PSI1MTQiIHk9IjE0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIyMiIgZmlsbD0iIzgxOGNmOCIgZm9udC13ZWlnaHQ9IjcwMCI+MDwvdGV4dD48cmVjdCB4PSI1MzYiIHk9IjExMCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjUyIiByeD0iNCIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz48bGluZSB4MT0iNTM2IiB5MT0iMTM2IiB4Mj0iNTY4IiB5Mj0iMTM2IiBzdHJva2U9IiMwZjBmMWEiIHN0cm9rZS13aWR0aD0iMSIvPjx0ZXh0IHg9IjU1MiIgeT0iMTQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjIyIiBmaWxsPSIjODE4Y2Y4IiBmb250LXdlaWdodD0iNzAwIj4rPC90ZXh0Pjx0ZXh0IHg9IjUyMCIgeT0iMTg1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjExIiBmaWxsPSIjODg4OGFhIj5Bd2FyZHM8L3RleHQ+Cjwvc3ZnPg==",
+      "alt": "SS - Flip Board - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +52,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

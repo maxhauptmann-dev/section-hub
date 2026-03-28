@@ -1,12 +1,12 @@
 {
   "id": "shop-the-look-hotspot",
-  "name": "Shop the Look – Hotspot",
+  "name": "SIQ - Shop the Look – Hotspot",
   "description": "Interactive hotspot-based section with clickable dots on a lifestyle image that reveal product popup cards. Supports customizable dot sizes, colors, pulse animation, popup card styling, button text, and fully responsive mobile bottom-sheet. Perfect for fashion lookbooks and room showcases.",
   "category": "Product Discovery",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 14,
+    "amount": 10,
     "currency": "EUR"
   },
   "tags": [
@@ -17,7 +17,7 @@
     "Visual Commerce",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -68,5 +68,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "advanced"
 }

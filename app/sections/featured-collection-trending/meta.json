@@ -1,0 +1,56 @@
+{
+  "id": "featured-collection-trending",
+  "name": "SIQ - Trending Products",
+  "description": "Scroll-animated trending products section with a curtain-split heading effect. Two heading words start centered and slide apart like a curtain as the user scrolls, revealing a product grid that grows from behind. Light background, fully scroll-bound and reversible. Configurable heading, font family, animation style (scroll or none), product collection, image ratio, spacing, and colors. Perfect for hero-style featured collections.",
+  "category": [
+    "Featured Collection",
+    "Scroll Triggered"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Trending",
+    "Scroll",
+    "Curtain",
+    "Reveal",
+    "Products",
+    "Premium",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#ededed",
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
+    "os2": true
+  },
+  "createdAt": "2026-03-24",
+  "updatedAt": "2026-03-24",
+  "previews": [
+    {
+      "src": "/previews/featured-collection-trending/default.webp",
+      "alt": "SIQ - Trending Products - Default",
+      "label": "Default"
+    }
+  ]
+}

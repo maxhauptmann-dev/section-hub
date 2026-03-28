@@ -1,0 +1,404 @@
+/* ============================================
+   SIQ – Scroll Fade Layers
+   Prefix: sfl-
+   Sticky-scroll full-screen layer reveal.
+   Each block = one visual layer with image,
+   headline and text that fades in/out.
+   ============================================ */
+
+.sfl-wrap *,
+.sfl-wrap *::before,
+.sfl-wrap *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.sfl-wrap {
+  position: relative;
+  width: 100%;
+}
+
+/* Scroll driver */
+.sfl-scroll {
+  position: relative;
+}
+
+/* Sticky stage */
+.sfl-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sfl-bg, #0c0c0c);
+}
+
+/* ---- Layer (one per block) ---- */
+.sfl-layer {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: none; /* JS handles transitions */
+  z-index: 1;
+}
+
+.sfl-layer--active {
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 2;
+}
+
+.sfl-layer--prev {
+  z-index: 1;
+  opacity: 0;
+}
+
+/* ---- Background image ---- */
+.sfl-layer__bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.sfl-layer__bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  will-change: transform;
+  transform: scale(var(--sfl-bg-scale, 1.06));
+  transition: transform 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sfl-layer--active .sfl-layer__bg img {
+  transform: scale(1);
+}
+
+.sfl-layer__bg-color {
+  position: absolute;
+  inset: 0;
+  background: var(--sfl-layer-color, var(--sfl-bg, #1a1a2e));
+  z-index: 0;
+}
+
+.sfl-layer__overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,0.75) 0%,
+    rgba(0,0,0,0.3) 50%,
+    rgba(0,0,0,0.1) 100%
+  );
+  opacity: var(--sfl-overlay-op, 0.7);
+}
+
+/* ---- Content ---- */
+.sfl-layer__content {
+  position: relative;
+  z-index: 5;
+  width: 100%;
+  max-width: var(--sfl-max-w, 900px);
+  padding: var(--sfl-content-px, 48px);
+  text-align: var(--sfl-align, center);
+}
+
+.sfl-layer__eyebrow {
+  font-family: var(--sfl-body-ff);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--sfl-accent, #60a5fa);
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s 0.1s ease, transform 0.6s 0.1s ease;
+}
+
+.sfl-layer--active .sfl-layer__eyebrow {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sfl-layer__heading {
+  font-family: var(--sfl-heading-ff);
+  font-weight: var(--sfl-heading-fw);
+  font-style: var(--sfl-heading-fs);
+  font-size: clamp(28px, var(--sfl-heading-size, 5vw), 80px);
+  line-height: 1.05;
+  color: var(--sfl-heading-color, #ffffff);
+  margin-bottom: 20px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.7s 0.2s ease, transform 0.7s 0.2s ease;
+}
+
+.sfl-layer--active .sfl-layer__heading {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sfl-layer__text {
+  font-family: var(--sfl-body-ff);
+  font-size: clamp(14px, 1.2vw, 18px);
+  line-height: 1.65;
+  color: var(--sfl-text-color, rgba(255,255,255,0.8));
+  max-width: 620px;
+  margin: 0 auto 32px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s 0.35s ease, transform 0.6s 0.35s ease;
+}
+
+.sfl-layer__text:last-child {
+  margin-bottom: 0;
+}
+
+.sfl-layer--active .sfl-layer__text {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sfl-layer__btns {
+  display: flex;
+  align-items: center;
+  justify-content: var(--sfl-btn-justify, center);
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 0.6s 0.5s ease, transform 0.6s 0.5s ease;
+}
+
+.sfl-layer--active .sfl-layer__btns {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.sfl-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 32px;
+  font-family: var(--sfl-body-ff);
+  font-weight: 600;
+  font-size: 14px;
+  text-decoration: none;
+  border-radius: var(--sfl-btn-radius, 8px);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.sfl-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.sfl-btn:hover svg {
+  transform: translateX(4px);
+}
+
+.sfl-btn--solid {
+  background: var(--sfl-accent, #60a5fa);
+  color: #ffffff;
+}
+.sfl-btn--solid:hover {
+  background: var(--sfl-accent-2, #3b82f6);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  transform: translateY(-2px);
+}
+
+.sfl-btn--outline {
+  background: transparent;
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.4);
+}
+.sfl-btn--outline:hover {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.8);
+  transform: translateY(-2px);
+}
+
+.sfl-btn--glass {
+  background: rgba(255,255,255,0.1);
+  color: #ffffff;
+  border-color: rgba(255,255,255,0.15);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+.sfl-btn--glass:hover {
+  background: rgba(255,255,255,0.18);
+  transform: translateY(-2px);
+}
+
+/* ---- Badge / counter ---- */
+.sfl-counter {
+  position: absolute;
+  bottom: 32px;
+  right: 36px;
+  z-index: 20;
+  font-family: var(--sfl-body-ff);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.5);
+  pointer-events: none;
+}
+
+.sfl-counter__current {
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* ---- Progress dots ---- */
+.sfl-dots {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sfl-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.3);
+  transition: background 0.3s ease, width 0.3s ease, border-radius 0.3s ease;
+}
+
+.sfl-dot--active {
+  background: #ffffff;
+  width: 24px;
+  border-radius: 3px;
+}
+
+/* ---- Progress bar ---- */
+.sfl-progress-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: var(--sfl-progress-h, 3px);
+  background: rgba(255,255,255,0.1);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.sfl-progress-bar__fill {
+  height: 100%;
+  background: var(--sfl-accent, #60a5fa);
+  width: 0%;
+  transition: width 0.05s linear;
+}
+
+/* ---- Section label ---- */
+.sfl-label {
+  position: absolute;
+  top: 50%;
+  right: 28px;
+  transform: translateY(-50%) rotate(90deg);
+  transform-origin: center center;
+  z-index: 20;
+  font-family: var(--sfl-body-ff);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ============================================
+   Responsive
+   ============================================ */
+@media screen and (max-width: 749px) {
+  .sfl-sticky {
+    height: 100vh;
+  }
+
+  .sfl-layer__content {
+    padding: var(--sfl-content-px-mobile, 28px);
+    text-align: left;
+  }
+
+  .sfl-layer__text {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .sfl-layer__btns {
+    justify-content: flex-start;
+  }
+
+  .sfl-layer__heading {
+    font-size: clamp(26px, 8vw, 48px);
+  }
+
+  .sfl-counter {
+    bottom: 20px;
+    right: 20px;
+  }
+
+  .sfl-dots {
+    bottom: 20px;
+  }
+
+  .sfl-label {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .sfl-layer__content {
+    padding: 20px;
+  }
+
+  .sfl-layer__heading {
+    font-size: clamp(22px, 7vw, 36px);
+    margin-bottom: 14px;
+  }
+
+  .sfl-layer__text {
+    font-size: 13px;
+    margin-bottom: 24px;
+  }
+
+  .sfl-btn {
+    padding: 12px 24px;
+    font-size: 13px;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sfl-layer__eyebrow,
+  .sfl-layer__heading,
+  .sfl-layer__text,
+  .sfl-layer__btns {
+    transition: opacity 0.3s ease;
+    transform: none !important;
+  }
+  .sfl-layer__bg img {
+    transition: none;
+  }
+}

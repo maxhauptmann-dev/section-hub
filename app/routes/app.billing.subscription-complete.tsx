@@ -2,6 +2,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import prisma from "../db.server";
 import { setPremiumMetafield } from "../lib/premium-metafield.server";
+import { invalidatePremiumCache } from "../lib/is-premium.server";
 
 const API_VERSION = "2025-10";
 
@@ -79,6 +80,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         where: { shop },
         data: { plan: "premium", status: "active" },
       });
+      invalidatePremiumCache(shop);
       // Set shop metafield so premium blocks render in the storefront
       await setPremiumMetafield(shop, session.accessToken, true);
       console.log(`✅ Premium activated for ${shop}`);

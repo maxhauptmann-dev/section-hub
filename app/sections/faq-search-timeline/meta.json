@@ -1,0 +1,57 @@
+{
+  "id": "faq-search-timeline",
+  "name": "SIQ - FAQ Search Timeline",
+  "description": "Modern FAQ section with live search filtering and a vertical timeline design. Users can instantly filter questions by typing. Features numbered items, animated reveal, gradient accents, and a sleek connecting line. 35+ customization settings.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Search",
+    "Timeline",
+    "Filter",
+    "Animated",
+    "Support",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-search-timeline/default.webp",
+      "alt": "FAQ Search Timeline - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

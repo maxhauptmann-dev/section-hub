@@ -1,12 +1,14 @@
 {
   "id": "slider-parallax-cards",
-  "name": "SS - Parallax Cards",
+  "name": "SIQ - Parallax Cards",
   "description": "Floating card slider with multi-layer parallax depth effect. Cards hover above a soft gradient backdrop with subtle shadow layering and smooth magnetic cursor interactions. Clean white and mint palette with organic rounded shapes. Features snap scrolling, autoplay with progress indicator, touch swipe, and responsive stacking. Perfect for product showcases and feature highlights.",
-  "category": ["Slider"],
+  "category": [
+    "Slider"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 21,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -26,12 +28,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#f0f7f4",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-12",
-  "updatedAt": "2026-03-12"
+  "updatedAt": "2026-03-12",
+  "previews": [
+    {
+      "src": "/previews/slider-parallax-cards/default.webp",
+      "alt": "SS - Parallax Cards - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

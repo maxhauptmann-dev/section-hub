@@ -1,0 +1,302 @@
+/* =============================================
+   SIQ – Trending Products (fct-)
+   Curtain-split heading with product reveal
+   ============================================= */
+
+/* ── Reset ── */
+.fct, .fct *, .fct *::before, .fct *::after {
+  margin: 0; padding: 0; box-sizing: border-box;
+}
+
+/* ── Root section ── */
+.fct {
+  position: relative;
+  width: 100%;
+  background: var(--fct-bg, #ededed);
+}
+
+/* ═══════════════════════════════════════
+   Scroll animation mode
+   ═══════════════════════════════════════ */
+
+/* No extra height – just a normal section.
+   The JS animates based on viewport position (like Scroll Text Reveal). */
+.fct-stage {
+  position: relative;
+  max-width: var(--fct-max-w, 1200px);
+  margin: 0 auto;
+  padding: var(--fct-pt, 35px) var(--fct-px, 24px) var(--fct-pb, 55px);
+}
+
+/* Wrapper around products + curtain text */
+.fct-sticky {
+  position: relative;
+  width: 100%;
+  overflow: visible;
+}
+
+/* ── Curtain heading layer ── */
+.fct-curtain {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+  gap: 0;
+  overflow: hidden;
+}
+
+.fct-curtain__left,
+.fct-curtain__right {
+  font-family: var(--fct-heading-ff, sans-serif);
+  font-weight: var(--fct-heading-fw, 700);
+  font-style: var(--fct-heading-fst, normal);
+  font-size: var(--fct-heading-fs, 96px);
+  color: var(--fct-heading-c, #1a1a1a);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+  margin: 0;
+  will-change: transform, opacity;
+  padding: 0 0.15em;
+}
+
+/* ── Products layer (behind heading) ── */
+.fct-products {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  will-change: transform, opacity;
+}
+
+.fct-products__inner {
+  max-width: 100%;
+  width: 100%;
+}
+
+/* ═══════════════════════════════════════
+   No-animation / static mode
+   ═══════════════════════════════════════ */
+.fct-content {
+  background: var(--fct-bg, #ededed);
+}
+
+.fct-content__inner {
+  max-width: var(--fct-max-w, 1200px);
+  margin: 0 auto;
+  padding: var(--fct-pt, 35px) var(--fct-px, 24px) var(--fct-pb, 55px);
+}
+
+.fct-header {
+  margin-bottom: 32px;
+}
+
+.fct-header__heading {
+  font-family: var(--fct-heading-ff, sans-serif);
+  font-weight: var(--fct-heading-fw, 700);
+  font-style: var(--fct-heading-fst, normal);
+  font-size: var(--fct-heading-fs, 96px);
+  color: var(--fct-heading-c, #1a1a1a);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  margin: 0;
+}
+
+/* ═══════════════════════════════════════
+   Product Grid
+   ═══════════════════════════════════════ */
+.fct-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--fct-columns, 5), 1fr);
+  gap: var(--fct-gap, 16px);
+}
+
+/* Swipe on mobile */
+@media (max-width: 749px) {
+  .fct-grid--swipe {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: var(--fct-px, 24px);
+    padding-bottom: 8px;
+  }
+  .fct-grid--swipe .fct-card {
+    flex: 0 0 calc(100% / var(--fct-columns-m, 2) - var(--fct-gap, 16px) / 2);
+    scroll-snap-align: start;
+  }
+  .fct-grid--swipe::-webkit-scrollbar { display: none; }
+}
+
+/* ═══════════════════════════════════════
+   Product Card
+   ═══════════════════════════════════════ */
+.fct-card {
+  display: block;
+  text-decoration: none;
+  color: var(--fct-text-c, #1a1a1a);
+  border-radius: var(--fct-radius, 8px);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.fct-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+
+/* Card entrance (none mode) */
+[data-fct-animate="none"] .fct-card {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+[data-fct-animate="none"] .fct-card--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── Card Media ── */
+.fct-card__media {
+  position: relative;
+  background: var(--fct-card-bg, #d5d5d5);
+  border-radius: var(--fct-radius, 8px);
+  overflow: hidden;
+}
+
+.fct-card__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+.fct-card__img--cover { object-fit: cover; }
+
+.fct-card__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  min-height: 160px;
+  background: var(--fct-card-bg, #d5d5d5);
+}
+
+.fct-card__svg {
+  width: 60%;
+  height: auto;
+  opacity: 0.4;
+}
+
+/* ── Sale Badge ── */
+.fct-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--fct-badge-bg, #ef4444);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 3px 8px;
+  border-radius: 4px;
+  line-height: 1.3;
+}
+
+/* ── Card Info ── */
+.fct-card__info {
+  padding: 10px 2px 4px;
+  font-family: var(--fct-body-ff, sans-serif);
+}
+
+.fct-card__vendor {
+  display: block;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  opacity: 0.5;
+  margin-bottom: 2px;
+}
+
+.fct-card__title {
+  font-size: 14px;
+  font-weight: var(--fct-body-fw, 400);
+  line-height: 1.35;
+  margin: 0 0 4px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fct-card__price {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.fct-card__price-old {
+  text-decoration: line-through;
+  opacity: 0.45;
+  font-weight: 400;
+}
+
+.fct-card__price-now {
+  color: var(--fct-text-c, #1a1a1a);
+}
+
+/* ── Footer link ── */
+.fct-footer {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.fct-footer__link {
+  font-family: var(--fct-body-ff, sans-serif);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--fct-text-c, #1a1a1a);
+  transition: opacity 0.2s;
+}
+.fct-footer__link:hover { opacity: 0.65; }
+
+/* ═══════════════════════════════════════
+   Responsive
+   ═══════════════════════════════════════ */
+@media (max-width: 749px) {
+  .fct-curtain__left,
+  .fct-curtain__right {
+    font-size: var(--fct-heading-fs-m, 42px);
+  }
+
+  .fct-stage {
+    padding: var(--fct-pt-m, 40px) var(--fct-px, 24px) var(--fct-pb-m, 40px);
+  }
+
+  .fct-header__heading {
+    font-size: var(--fct-heading-fs-m, 42px);
+  }
+
+  .fct-grid:not(.fct-grid--swipe) {
+    grid-template-columns: repeat(var(--fct-columns-m, 2), 1fr);
+  }
+
+  .fct-content__inner {
+    padding: var(--fct-pt-m, 40px) var(--fct-px, 24px) var(--fct-pb-m, 40px);
+  }
+
+  .fct-card__title { font-size: 13px; }
+  .fct-card__price { font-size: 13px; }
+}

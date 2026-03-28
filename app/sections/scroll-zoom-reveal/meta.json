@@ -1,0 +1,72 @@
+{
+  "id": "scroll-zoom-reveal",
+  "name": "SIQ - Zoom Reveal",
+  "description": "Mind-blowing scroll-driven zoom reveal. A small image in the center explodes to fullscreen as the user scrolls, revealing text content that fades in at different scroll depths. Creates a cinematic 'diving into the image' experience with smooth scale transforms, opacity transitions, and optional text parallax.",
+  "category": [
+    "Scroll Triggered",
+    "hero",
+    "Premium",
+    "Mobile"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Zoom",
+    "Reveal",
+    "Cinematic",
+    "Premium",
+    "Parallax",
+    "WOW",
+    "Immersive",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "type": "image",
+      "src": "/previews/scroll-zoom-reveal/default.webp",
+      "alt": "Default preview",
+      "label": "Default"
+    },
+    {
+      "type": "video", 
+      "src": "/previews/scroll-zoom-reveal/demo.mp4",
+      "poster": "/previews/scroll-zoom-reveal/default.webp",
+      "alt": "Video demo",
+      "label": "Demo"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

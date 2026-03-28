@@ -1,0 +1,48 @@
+{
+  "id": "trending-countdown-reveal",
+  "name": "SIQ - Trending Countdown Reveal",
+  "description": "Fullscreen scroll-driven product reveal with countdown timer. Starts with a cinematic hero featuring animated mesh gradient, heading, description, CTA button and a live countdown. As the user scrolls, colourful product title cards appear tilted in the top-right corner, fan out, rotate to horizontal, then separate into a vertical list. Finally the colour cards shrink to reveal full product cards with image, title, price and an arrow link. Up to 5 products, fully pinned during the entire scroll sequence.",
+  "category": [
+    "Featured Collection",
+    "Countdown",
+    "Product Reveal"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 18,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Countdown",
+    "Timer",
+    "Scroll Animation",
+    "Product Reveal",
+    "Pinned Scroll",
+    "Mesh Gradient",
+    "Card Stack",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/trending-countdown-reveal/default.webp",
+      "alt": "SIQ - Trending Countdown Reveal - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Taste", "Refresh", "Ride", "Studio", "Publisher", "Crave", "Origin", "Colorblock", "Spotlight"],
+    "os2": true
+  },
+  "createdAt": "2026-03-27",
+  "updatedAt": "2026-03-27"
+}

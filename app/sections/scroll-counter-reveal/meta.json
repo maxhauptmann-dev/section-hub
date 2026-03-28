@@ -1,12 +1,15 @@
 {
   "id": "scroll-counter-reveal",
-  "name": "SS - Counter Reveal",
+  "name": "SIQ - Counter Reveal",
   "description": "Dramatic scroll-triggered stats section where numbers count up as they enter the viewport. Each stat block reveals with staggered animation. Features customizable number formatting (suffix/prefix), reveal directions, gradient backgrounds, accent lines, decorative shapes, and optional background image with parallax. 60+ settings for maximum flexibility.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +24,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0f172a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/scroll-counter-reveal/default.webp",
-      "alt": "Scroll Counter Reveal - Default",
+      "alt": "SS - Counter Reveal - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

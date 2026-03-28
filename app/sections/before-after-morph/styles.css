@@ -1,0 +1,405 @@
+/* ─────────────────────────────────────────────────────────────
+   SIQ — Before / After Morph Cards  |  prefix: bam-
+   ───────────────────────────────────────────────────────────── */
+
+/* Reset */
+.bam-section, .bam-section *, .bam-section *::before, .bam-section *::after {
+  box-sizing: border-box;
+}
+
+/* Section */
+.bam-section {
+  background: var(--bam-bg, #f2f0ed);
+  color: var(--bam-text, #1a1a1a);
+  padding: var(--bam-pt-m, 52px) 0 var(--bam-pb-m, 52px);
+  font-family: var(--bam-font-body, inherit);
+  -webkit-font-smoothing: antialiased;
+}
+@media (min-width: 750px) {
+  .bam-section {
+    padding: var(--bam-pt, 88px) 0 var(--bam-pb, 88px);
+  }
+}
+
+/* Wrapper */
+.bam-wrap {
+  width: 92%;
+  max-width: var(--bam-mw, 1200px);
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.bam-header {
+  text-align: var(--bam-header-align, center);
+  margin-bottom: var(--bam-header-gap-m, 36px);
+}
+@media (min-width: 750px) {
+  .bam-header {
+    margin-bottom: var(--bam-header-gap, 56px);
+  }
+}
+
+.bam-eyebrow {
+  font-size: var(--bam-eyebrow-size, 12px);
+  font-family: var(--bam-font-body, inherit);
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--bam-accent, #5c6bc0);
+  margin: 0 0 10px;
+}
+
+.bam-heading {
+  font-size: var(--bam-heading-size-m, 28px);
+  font-family: var(--bam-font-heading, inherit);
+  font-weight: var(--bam-heading-weight, 800);
+  font-style: var(--bam-heading-style, normal);
+  letter-spacing: var(--bam-heading-ls, -0.03em);
+  line-height: 1.15;
+  color: var(--bam-text, #1a1a1a);
+  margin: 0 0 12px;
+}
+@media (min-width: 750px) {
+  .bam-heading {
+    font-size: var(--bam-heading-size, 44px);
+  }
+}
+
+.bam-subheading {
+  font-size: var(--bam-body-size, 16px);
+  font-family: var(--bam-font-body, inherit);
+  font-style: var(--bam-body-style, normal);
+  color: var(--bam-muted, #777);
+  margin: 0;
+  line-height: 1.6;
+  max-width: 560px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ── Grid ── */
+.bam-grid {
+  display: grid;
+  grid-template-columns: repeat(var(--bam-cols-m, 1), 1fr);
+  gap: var(--bam-gap-m, 20px);
+}
+@media (min-width: 560px) {
+  .bam-grid {
+    grid-template-columns: repeat(var(--bam-cols-s, 2), 1fr);
+  }
+}
+@media (min-width: 900px) {
+  .bam-grid {
+    grid-template-columns: repeat(var(--bam-cols, 3), 1fr);
+    gap: var(--bam-gap, 28px);
+  }
+}
+
+/* ── Card ── */
+.bam-card {
+  border-radius: var(--bam-card-radius, 16px);
+  overflow: hidden;
+  background: var(--bam-card-bg, #ffffff);
+  box-shadow: var(--bam-card-shadow, 0 2px 16px rgba(0,0,0,0.08));
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+  cursor: pointer;
+}
+.bam-card:hover {
+  box-shadow: var(--bam-card-shadow-hover, 0 6px 32px rgba(0,0,0,0.15));
+  transform: translateY(-2px);
+}
+
+/* ── Image container ── */
+.bam-card-img-wrap {
+  position: relative;
+  width: 100%;
+  height: var(--bam-card-h-m, 280px);
+  overflow: hidden;
+  flex-shrink: 0;
+}
+@media (min-width: 750px) {
+  .bam-card-img-wrap {
+    height: var(--bam-card-h, 340px);
+  }
+}
+
+/* Base (before) image */
+.bam-img-before,
+.bam-img-after {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.bam-img-after {
+  z-index: 1;
+}
+.bam-img-before {
+  z-index: 2;
+}
+
+/* ── Reveal modes ── */
+
+/* Ripple (clip-path circle) */
+.bam-card[data-mode="ripple"] .bam-img-before {
+  clip-path: circle(200% at 50% 50%);
+  transition: clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bam-card[data-mode="ripple"].bam-revealed .bam-img-before {
+  clip-path: circle(0% at var(--bam-rx, 50%) var(--bam-ry, 50%));
+}
+
+/* Slide */
+.bam-card[data-mode="slide"] .bam-img-before {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bam-card[data-mode="slide"].bam-revealed .bam-img-before {
+  clip-path: inset(0 100% 0 0);
+}
+
+/* Fade */
+.bam-card[data-mode="fade"] .bam-img-before {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.bam-card[data-mode="fade"].bam-revealed .bam-img-before {
+  opacity: 0;
+}
+
+/* ── Placeholders ── */
+.bam-placeholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bam-placeholder--before {
+  background: linear-gradient(135deg, #e8e4de 0%, #d4cec6 100%);
+  z-index: 2;
+}
+.bam-placeholder--after {
+  background: linear-gradient(135deg, #c8e6c9 0%, #a5d6a7 100%);
+  z-index: 1;
+}
+/* Placeholder animates away on reveal — same as bam-img-before */
+.bam-card[data-mode="ripple"] .bam-placeholder--before {
+  clip-path: circle(200% at 50% 50%);
+  transition: clip-path 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bam-card[data-mode="ripple"].bam-revealed .bam-placeholder--before {
+  clip-path: circle(0% at var(--bam-rx, 50%) var(--bam-ry, 50%));
+}
+.bam-card[data-mode="slide"] .bam-placeholder--before {
+  clip-path: inset(0 0 0 0);
+  transition: clip-path 0.55s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.bam-card[data-mode="slide"].bam-revealed .bam-placeholder--before {
+  clip-path: inset(0 100% 0 0);
+}
+.bam-card[data-mode="fade"] .bam-placeholder--before {
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+.bam-card[data-mode="fade"].bam-revealed .bam-placeholder--before {
+  opacity: 0;
+}
+.bam-placeholder svg {
+  width: 48px;
+  height: 48px;
+  opacity: 0.25;
+}
+
+/* ── State labels (Before / After) ── */
+.bam-state-label {
+  position: absolute;
+  z-index: 5;
+  top: 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.bam-state-label--before {
+  left: 12px;
+  background: rgba(0,0,0,0.5);
+  color: #fff;
+}
+.bam-state-label--after {
+  right: 12px;
+  background: rgba(255,255,255,0.85);
+  color: #1a1a1a;
+  opacity: 0;
+}
+.bam-card.bam-revealed .bam-state-label--before { opacity: 0; }
+.bam-card.bam-revealed .bam-state-label--after  { opacity: 1; }
+
+/* ── Badge ── */
+.bam-badge {
+  position: absolute;
+  z-index: 6;
+  bottom: 12px;
+  left: 12px;
+  background: var(--bam-accent, #5c6bc0);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 20px;
+  line-height: 1;
+  font-family: var(--bam-font-body, inherit);
+}
+
+/* ── Tap hint ── */
+.bam-tap-hint {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.bam-card:not(.bam-revealed):not(.bam-touched) .bam-tap-hint {
+  animation: bam-hint-peek 3s ease-in-out 1.5s infinite;
+}
+@keyframes bam-hint-peek {
+  0%, 60%, 100% { opacity: 0; }
+  30%            { opacity: 1; }
+}
+.bam-tap-hint-inner {
+  background: rgba(0,0,0,0.42);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 8px 20px;
+  border-radius: 30px;
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.bam-tap-hint-inner svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}
+
+/* ── Toggle button ── */
+.bam-toggle-wrap {
+  position: absolute;
+  z-index: 7;
+  bottom: 12px;
+  right: 12px;
+}
+.bam-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(8px);
+  border: none;
+  border-radius: 20px;
+  padding: 5px 12px 5px 6px;
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #1a1a1a;
+  transition: background 0.18s;
+  font-family: var(--bam-font-body, inherit);
+  line-height: 1;
+}
+.bam-toggle:hover {
+  background: rgba(255,255,255,1);
+}
+.bam-toggle-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.bam-toggle-dot svg {
+  width: 10px;
+  height: 10px;
+  color: #fff;
+}
+.bam-card.bam-revealed .bam-toggle-dot {
+  background: var(--bam-accent, #5c6bc0);
+}
+
+/* ── Card body ── */
+.bam-card-body {
+  padding: var(--bam-card-p-m, 16px) var(--bam-card-p-m, 16px) var(--bam-card-p-m, 16px);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+@media (min-width: 750px) {
+  .bam-card-body {
+    padding: var(--bam-card-p, 20px);
+  }
+}
+
+.bam-card-title {
+  font-size: var(--bam-card-title-size-m, 15px);
+  font-family: var(--bam-font-heading, inherit);
+  font-weight: var(--bam-heading-weight, 800);
+  font-style: var(--bam-heading-style, normal);
+  color: var(--bam-text, #1a1a1a);
+  line-height: 1.3;
+  margin: 0;
+}
+@media (min-width: 750px) {
+  .bam-card-title {
+    font-size: var(--bam-card-title-size, 17px);
+  }
+}
+
+.bam-card-desc {
+  font-size: var(--bam-card-desc-size, 13px);
+  font-family: var(--bam-font-body, inherit);
+  font-style: var(--bam-body-style, normal);
+  color: var(--bam-muted, #777);
+  line-height: 1.55;
+  margin: 2px 0 0;
+}
+
+/* CTA link in card body */
+.bam-card-link {
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  color: var(--bam-accent, #5c6bc0);
+  transition: gap 0.18s;
+}
+.bam-card-link:hover { gap: 7px; }
+.bam-card-link svg {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+}

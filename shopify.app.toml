@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "fdaa930bde855ab7d9821c6c51375169"
-name = "Section Hub"
+name = "SectionIQ"
 application_url = "https://section-hub-app.fly.dev"
 embedded = true
 
@@ -23,9 +23,14 @@ api_version = "2026-04"
   topics = [ "app_subscriptions/update" ]
   uri = "/webhooks/app/subscriptions_update"
 
+  [webhooks.privacy_compliance]
+  customer_data_request_url = "https://section-hub-app.fly.dev/webhooks/customers/data_request"
+  customer_deletion_url = "https://section-hub-app.fly.dev/webhooks/customers/redact"
+  shop_deletion_url = "https://section-hub-app.fly.dev/webhooks/shop/redact"
+
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_themes,write_themes"
+scopes = "read_themes,write_themes,read_products,read_content"
 
 [auth]
 redirect_urls = [

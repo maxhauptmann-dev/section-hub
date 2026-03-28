@@ -1,0 +1,214 @@
+.sh-faqtab {
+  background: var(--sh-ft-bg);
+  color: var(--sh-ft-text);
+  padding: var(--sh-ft-pad-y) 1.5rem;
+}
+
+.sh-faqtab__inner {
+  max-width: var(--sh-ft-max-w);
+  margin: 0 auto;
+}
+
+/* ── Header ── */
+.sh-faqtab__header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.sh-faqtab__eyebrow {
+  display: inline-block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--sh-ft-accent);
+  margin-bottom: 0.75rem;
+}
+
+.sh-faqtab__heading {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.75rem;
+  line-height: 1.15;
+}
+
+.sh-faqtab__sub {
+  font-size: 1.05rem;
+  opacity: 0.65;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* ── Tabs ── */
+.sh-faqtab__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.sh-faqtab__tab {
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  background: var(--sh-ft-tab-bg);
+  color: var(--sh-ft-tab-text);
+  font-family: inherit;
+}
+
+/* Tab styles */
+.sh-faqtab__tabs--pills .sh-faqtab__tab {
+  border-radius: 999px;
+}
+
+.sh-faqtab__tabs--underline {
+  gap: 0;
+  border-bottom: 2px solid var(--sh-ft-border);
+}
+
+.sh-faqtab__tabs--underline .sh-faqtab__tab {
+  background: transparent;
+  border-radius: 0;
+  padding: 0.75rem 1.5rem;
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+}
+
+.sh-faqtab__tabs--underline .sh-faqtab__tab--active {
+  border-bottom-color: var(--sh-ft-accent);
+  color: var(--sh-ft-accent);
+  background: transparent;
+}
+
+.sh-faqtab__tabs--boxed .sh-faqtab__tab {
+  border-radius: var(--sh-ft-radius);
+  border: 1px solid var(--sh-ft-border);
+}
+
+/* Active tab (pills & boxed) */
+.sh-faqtab__tabs--pills .sh-faqtab__tab--active,
+.sh-faqtab__tabs--boxed .sh-faqtab__tab--active {
+  background: var(--sh-ft-tab-active-bg);
+  color: var(--sh-ft-tab-active-text);
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.25);
+}
+
+.sh-faqtab__tab:hover:not(.sh-faqtab__tab--active) {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}
+
+/* ── Panels ── */
+.sh-faqtab__panel {
+  display: none;
+}
+
+.sh-faqtab__panel--active {
+  display: block;
+  animation: sh-faqtab-fadein 0.3s ease;
+}
+
+@keyframes sh-faqtab-fadein {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── FAQ Items ── */
+.sh-faqtab__item {
+  background: var(--sh-ft-card-bg);
+  border: 1px solid var(--sh-ft-border);
+  border-radius: var(--sh-ft-radius);
+  margin-bottom: 0.75rem;
+  overflow: hidden;
+  transition: border-color 0.25s, box-shadow 0.25s;
+}
+
+.sh-faqtab__item:hover {
+  border-color: var(--sh-ft-accent);
+}
+
+.sh-faqtab__item[open] {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.sh-faqtab__question {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.25rem 1.5rem;
+  cursor: pointer;
+  font-size: var(--sh-ft-q-size);
+  font-weight: 600;
+  list-style: none;
+  color: var(--sh-ft-text);
+  transition: background 0.2s;
+}
+
+.sh-faqtab__question::-webkit-details-marker {
+  display: none;
+}
+
+.sh-faqtab__question:hover {
+  background: rgba(99, 102, 241, 0.03);
+}
+
+.sh-faqtab__q-text {
+  flex: 1;
+}
+
+.sh-faqtab__q-icon {
+  font-size: 1.2em;
+  flex-shrink: 0;
+}
+
+.sh-faqtab__chevron {
+  flex-shrink: 0;
+  color: var(--sh-ft-accent);
+  transition: transform 0.3s ease;
+}
+
+.sh-faqtab__item[open] .sh-faqtab__chevron {
+  transform: rotate(180deg);
+}
+
+.sh-faqtab__answer-inner {
+  padding: 0 1.5rem 1.5rem;
+  font-size: var(--sh-ft-a-size);
+  line-height: 1.7;
+  color: var(--sh-ft-answer-text);
+}
+
+.sh-faqtab__answer-inner p {
+  margin: 0 0 0.75rem;
+}
+
+.sh-faqtab__answer-inner p:last-child {
+  margin-bottom: 0;
+}
+
+/* ── Mobile ── */
+@media (max-width: 600px) {
+  .sh-faqtab__tabs {
+    gap: 0.35rem;
+  }
+
+  .sh-faqtab__tab {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .sh-faqtab__question {
+    padding: 1rem 1.25rem;
+    font-size: calc(var(--sh-ft-q-size) - 1px);
+  }
+
+  .sh-faqtab__answer-inner {
+    padding: 0 1.25rem 1.25rem;
+    font-size: calc(var(--sh-ft-a-size) - 1px);
+  }
+}

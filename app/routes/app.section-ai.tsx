@@ -40,7 +40,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     select: { id: true, name: true, slug: true, installed: true },
   });
 
-  // Load demo theme info for test-install (same "Section Hub Demo" used by normal sections)
+  // Load demo theme info for test-install (same "SectionIQ Demo" used by normal sections)
   let demoThemeId = "";
   let demoThemeName = "";
   try {
@@ -49,7 +49,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     `);
     const themesData = await themesResponse.json() as any;
     const themes = themesData.data?.themes?.nodes || [];
-    const demoTheme = themes.find((t: any) => t.name === "Section Hub Demo" && t.role === "UNPUBLISHED");
+    const demoTheme = themes.find((t: any) => t.name === "SectionIQ Demo" && t.role === "UNPUBLISHED");
     if (demoTheme) {
       demoThemeId = demoTheme.id;
       demoThemeName = demoTheme.name;
@@ -444,7 +444,7 @@ Make it production-ready, visually stunning, fully responsive, and accessible. A
     }
 
     try {
-      const DEMO_THEME_NAME = "Section Hub Demo";
+      const DEMO_THEME_NAME = "SectionIQ Demo";
 
       // 1. Fetch all themes — look for an existing demo theme
       const themesResponse = await admin.graphql(`
@@ -514,31 +514,29 @@ Make it production-ready, visually stunning, fully responsive, and accessible. A
       );
 
       const files = [
-        { filename: sectionFilename, body: { type: "TEXT" as const, value: sanitizedCode } },
-        { filename: "templates/index.json", body: { type: "TEXT" as const, value: demoIndexTemplate } },
+        { key: sectionFilename, value: sanitizedCode },
+        { key: "templates/index.json", value: demoIndexTemplate },
       ];
 
-      const themeFilesResponse = await admin.graphql(
-        `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-          themeFilesUpsert(files: $files, themeId: $themeId) {
-            upsertedThemeFiles { filename }
-            userErrors { field message }
+      const numericDemoThemeId = demoTheme.id.split("/").pop();
+
+      for (const file of files) {
+        const assetResponse = await fetch(
+          `https://${session.shop}/admin/api/2024-10/themes/${numericDemoThemeId}/assets.json`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Shopify-Access-Token": session.accessToken || "",
+            },
+            body: JSON.stringify({ asset: { key: file.key, value: file.value } }),
           }
-        }`,
-        { variables: { files, themeId: demoTheme.id } },
-      );
-
-      const themeFilesData = (await themeFilesResponse.json()) as any;
-
-      if (themeFilesData.errors) {
-        const errorMsg = themeFilesData.errors[0]?.message || JSON.stringify(themeFilesData.errors);
-        return { error: `GraphQL Error: ${errorMsg}`, generatedSection: null };
-      }
-
-      const userErrors = themeFilesData.data?.themeFilesUpsert?.userErrors || [];
-      if (userErrors.length > 0) {
-        const errorMsg = userErrors.map((e: any) => `${(e.field || []).join(".")}: ${e.message}`).join(", ");
-        return { error: `Fehler: ${errorMsg}`, generatedSection: null };
+        );
+        if (!assetResponse.ok) {
+          const errData = await assetResponse.json().catch(() => ({}));
+          console.error("Section-AI try REST error:", errData);
+          return { error: "Fehler beim Hochladen der Section ins Demo-Theme.", generatedSection: null };
+        }
       }
 
       // 5. Build Theme Editor deep-link
@@ -549,7 +547,7 @@ Make it production-ready, visually stunning, fully responsive, and accessible. A
         error: null,
         generatedSection: null,
         triedSection: true,
-        tryMessage: `"${aiSection.name}" wurde im Demo-Theme "Section Hub Demo" installiert! Dein Live-Theme bleibt unberührt. Öffne den Theme Editor um die Section zu testen.`,
+        tryMessage: `"${aiSection.name}" wurde im Demo-Theme "SectionIQ Demo" installiert! Dein Live-Theme bleibt unberührt. Öffne den Theme Editor um die Section zu testen.`,
         tryThemeId: demoTheme.id,
         tryEditorUrl: editorUrl,
       };
@@ -576,7 +574,7 @@ Make it production-ready, visually stunning, fully responsive, and accessible. A
     }
 
     try {
-      const DEMO_THEME_NAME = "Section Hub Demo";
+      const DEMO_THEME_NAME = "SectionIQ Demo";
       const themesResponse = await admin.graphql(`
         query { themes(first: 50) { nodes { id name role } } }
       `);
@@ -645,21 +643,24 @@ Make it production-ready, visually stunning, fully responsive, and accessible. A
       if (mainTheme) {
         const sanitizedCode = sanitizeShopifySchema(aiSection.liquidCode);
         const filename = `sections/section-ai-${aiSection.slug}.liquid`;
+        const themeId = mainTheme.id.split("/").pop();
 
-        await admin.graphql(
-          `mutation ThemeFilesUpsert($files: [OnlineStoreThemeFilesUpsertFileInput!]!, $themeId: ID!) {
-            themeFilesUpsert(files: $files, themeId: $themeId) {
-              upsertedThemeFiles { filename }
-              userErrors { field message }
-            }
-          }`,
+        const assetResponse = await fetch(
+          `https://${session.shop}/admin/api/2024-10/themes/${themeId}/assets.json`,
           {
-            variables: {
-              files: [{ filename, body: { type: "TEXT", value: sanitizedCode } }],
-              themeId: mainTheme.id,
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              "X-Shopify-Access-Token": session.accessToken || "",
             },
+            body: JSON.stringify({
+              asset: { key: filename, value: sanitizedCode },
+            }),
           }
         );
+        if (!assetResponse.ok) {
+          console.error("Section-AI buy REST error for:", filename);
+        }
       }
     } catch (err) {
       console.error("Theme install on buy (non-fatal):", err);
@@ -1437,7 +1438,7 @@ export default function SectionAIPage() {
                               </Text>
                               <Text as="p" variant="bodySm" tone="subdued">
                                 {isTesting 
-                                  ? `Section ist in "Section Hub Demo" installiert — öffne den Theme Editor um sie anzupassen`
+                                  ? `Section ist in "SectionIQ Demo" installiert — öffne den Theme Editor um sie anzupassen`
                                   : "Installiert die Section in ein Demo-Theme, damit du sie im Theme Editor ansehen und ausprobieren kannst — dein Live-Theme bleibt unberührt"
                                 }
                               </Text>

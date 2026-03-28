@@ -1,0 +1,52 @@
+{
+  "id": "scroll-text-reveal",
+  "name": "SIQ - Scroll Text Reveal",
+  "description": "Cinematic character-by-character scroll-reveal text section. As the user scrolls, text progressively reveals from muted to bright, letter by letter. Dunkler Hintergrund mit großer editorialer Typografie. Auf Mobile wird der Text einfach normal angezeigt. Konfigurierbar: Textfarbe aktiv/inaktiv, Schriftgröße Desktop/Mobile, Hintergrundfarbe, Textausrichtung, Container-Breite und Padding.",
+  "category": "Scroll Triggered",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Text",
+    "Reveal",
+    "Typography",
+    "Editorial",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#1a1a2e",
+  "previews": [
+    {
+      "src": "/previews/scroll-text-reveal/default.webp",
+      "alt": "SIQ - Scroll Text Reveal",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-19",
+  "updatedAt": "2026-03-19",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-19",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "advanced"
+}

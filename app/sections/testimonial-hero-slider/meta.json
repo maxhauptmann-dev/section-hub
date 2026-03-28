@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-hero-slider",
+  "name": "SIQ - Testimonial Hero Slider",
+  "description": "Premium full-width hero testimonial slider. Each review gets a dramatic spotlight presentation with large quote, customer photo, star rating, and smooth slide transitions. Features autoplay, keyboard navigation, and elegant typography.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Hero",
+    "Slider",
+    "Spotlight",
+    "Premium",
+    "Animated",
+    "Reviews"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-hero-slider/default.webp",
+      "alt": "Testimonial Hero Slider - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

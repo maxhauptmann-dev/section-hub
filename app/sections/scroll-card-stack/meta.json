@@ -1,12 +1,18 @@
 {
   "id": "scroll-card-stack",
-  "name": "SS - Card Stack",
+  "name": "SIQ - Card Stack",
   "description": "3D card stacking scroll section. Cards stack on top of each other as you scroll, like a deck being dealt. Each card has its own image, content, tag, and button. Features perspective-based stacking with depth, ambient glow effects, grid background, progress pips, counter, and side label. Fully customizable card dimensions and 3D perspective.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered",
+    "Premium",
+    "Animated",
+    "Mobile"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -19,17 +25,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0f0f0f",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/scroll-card-stack/default.webp",
-      "alt": "Scroll Card Stack - Default",
+      "alt": "SS - Card Stack - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -42,7 +54,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

@@ -1,0 +1,49 @@
+{
+  "id": "product-mix-bundle",
+  "name": "SIQ - Mix & Match Pack",
+  "description": "Bento-style product grid with mix-and-match bundle builder. Customers browse a masonry product grid and add items to a floating bundle bar. Features smooth parallax scroll effects on desktop (cards shift subtly as you scroll), animated mesh gradient or solid background, configurable columns/gaps/image-ratio/overlay-opacity, and a clean static 2-column grid on mobile. Perfect for bundles, gift sets, or curated product packs.",
+  "category": [
+    "Featured Collection",
+    "Product Grid"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Featured Collection",
+    "Bundle",
+    "Mix Match",
+    "Product Grid",
+    "Bento",
+    "Masonry",
+    "Parallax",
+    "Scroll",
+    "Mesh Gradient",
+    "Glass",
+    "Responsive"
+  ],
+  "tier": "premium",
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "author": "SectionIQ",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/product-mix-bundle/default.webp",
+      "alt": "SIQ - Mix & Match Pack - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": ["Dawn", "Sense", "Craft", "Taste", "Refresh", "Ride", "Studio", "Publisher", "Crave", "Origin", "Colorblock", "Spotlight"],
+    "os2": true
+  },
+  "createdAt": "2026-03-27",
+  "updatedAt": "2026-03-27"
+}

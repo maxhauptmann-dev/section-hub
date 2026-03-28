@@ -1,12 +1,17 @@
 {
   "id": "scroll-split-reveal",
-  "name": "SS - Split Reveal",
+  "name": "SIQ - Split Reveal",
   "description": "Cinematic split-screen scroll experience. Two panels reveal alternating images with parallax as you scroll. Content slides in from left, right, or center. Features glowing divider, progress dots, panel counter, scroll hint animation, and side label. Each slide has its own images, heading, description, and button.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered",
+    "animated",
+    "Premium"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -19,8 +24,8 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/scroll-split-reveal/default.webp",
@@ -29,7 +34,13 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -42,7 +53,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

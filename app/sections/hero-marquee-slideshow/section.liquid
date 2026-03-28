@@ -1,0 +1,1283 @@
+{% comment %}
+  Section Hub – Hero Marquee Slideshow v1.0
+  "Diashow mit Festzelt"
+  Sticky hero with background slideshow, animated marquee ticker bar,
+  scroll-triggered darkening, and text reveal with icon blocks.
+  Features: staggered heading animations, expandable arrow button,
+  dot navigation, autoplay, touch swipe support.
+  Prefix: hmsl-
+{% endcomment %}
+
+{%- liquid
+  assign heading_font   = section.settings.heading_font
+  assign body_font      = section.settings.body_font
+  assign marquee_font   = section.settings.marquee_font
+
+  assign autoplay       = section.settings.autoplay
+  assign speed          = section.settings.autoplay_speed
+  assign transition     = section.settings.transition_duration
+  assign overlay_op     = section.settings.overlay_opacity
+
+  assign content_vx     = section.settings.content_align_x
+  assign content_vy     = section.settings.content_align_y
+  assign content_pad    = section.settings.content_padding
+  assign content_align  = section.settings.text_align
+
+  assign heading_size   = section.settings.heading_size
+  assign heading_size_m = section.settings.heading_size_mobile
+  assign heading_weight = section.settings.heading_weight
+  assign heading_ls     = section.settings.heading_letter_spacing
+  assign heading_lh     = section.settings.heading_line_height
+  assign heading_tt     = section.settings.heading_text_transform
+  assign heading_color  = section.settings.heading_color
+
+  assign sub_size       = section.settings.sub_size
+  assign sub_size_m     = section.settings.sub_size_mobile
+  assign sub_weight     = section.settings.sub_weight
+  assign sub_color      = section.settings.sub_color
+
+  assign desc_size      = section.settings.desc_size
+  assign desc_size_m    = section.settings.desc_size_mobile
+  assign desc_color     = section.settings.desc_color
+
+  assign btn_height     = section.settings.btn_height
+  assign btn_radius     = section.settings.btn_radius
+  assign btn_font_size  = section.settings.btn_font_size
+  assign btn_text_color = section.settings.btn_text_color
+  assign btn_bg_color   = section.settings.btn_bg_color
+  assign btn_arrow_bg   = section.settings.btn_arrow_bg
+
+  assign btn2_font_size = section.settings.btn2_font_size
+  assign btn2_text_color = section.settings.btn2_text_color
+  assign btn2_border    = section.settings.btn2_border_color
+  assign btn2_hover_bg  = section.settings.btn2_hover_bg
+  assign btn2_hover_border = section.settings.btn2_hover_border
+  assign btn2_py        = section.settings.btn2_padding_y
+  assign btn2_px        = section.settings.btn2_padding_x
+
+  assign marquee_show   = section.settings.show_marquee
+  assign marquee_height = section.settings.marquee_height
+  assign marquee_bg     = section.settings.marquee_bg
+  assign marquee_text_c = section.settings.marquee_text_color
+  assign marquee_dot_c  = section.settings.marquee_dot_color
+  assign marquee_font_s = section.settings.marquee_font_size
+  assign marquee_fw     = section.settings.marquee_font_weight
+  assign marquee_speed  = section.settings.marquee_speed
+  assign marquee_gap    = section.settings.marquee_gap
+
+  assign scroll_height  = section.settings.scroll_height
+  assign darken_start   = section.settings.darken_start
+  assign darken_max     = section.settings.darken_max_opacity
+
+  assign reveal_text    = section.settings.reveal_text
+  assign reveal_fs      = section.settings.reveal_font_size
+  assign reveal_color   = section.settings.reveal_text_color
+  assign icon_bg        = section.settings.icon_block_bg
+  assign icon_tc        = section.settings.icon_block_text_color
+  assign icon_radius    = section.settings.icon_block_radius
+
+  assign custom_css     = section.settings.custom_css
+  assign total_slides   = section.blocks | where: "type", "banner" | size
+  assign icon_blocks    = section.blocks | where: "type", "icon_text"
+
+  assign marquee_text_1 = section.settings.marquee_text_1
+  assign marquee_text_2 = section.settings.marquee_text_2
+  assign marquee_text_3 = section.settings.marquee_text_3
+  assign marquee_text_4 = section.settings.marquee_text_4
+  assign marquee_text_5 = section.settings.marquee_text_5
+  assign marquee_text_6 = section.settings.marquee_text_6
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+  {{ marquee_font | font_face: font_display: 'swap' }}
+
+  #hmsl-{{ section.id }} {
+    --hmsl-scroll-h: {{ scroll_height }}vh;
+    --hmsl-transition: {{ transition }}s;
+    --hmsl-overlay: {{ overlay_op | divided_by: 100.0 }};
+
+    --hmsl-content-vx: {{ content_vx }};
+    --hmsl-content-vy: {{ content_vy }};
+    --hmsl-content-pad: {{ content_pad }}px;
+
+    --hmsl-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --hmsl-heading-fw: {{ heading_weight }};
+    --hmsl-heading-fst: {{ heading_font.style }};
+    --hmsl-heading-fs: {{ heading_size }}px;
+    --hmsl-heading-fsm: {{ heading_size_m }}px;
+    --hmsl-heading-lh: {{ heading_lh | divided_by: 100.0 }};
+    --hmsl-heading-ls: {{ heading_ls | divided_by: 100.0 }}em;
+    --hmsl-heading-tt: {{ heading_tt }};
+    --hmsl-heading-c: {{ heading_color }};
+
+    --hmsl-sub-fs: {{ sub_size }}px;
+    --hmsl-sub-fsm: {{ sub_size_m }}px;
+    --hmsl-sub-fw: {{ sub_weight }};
+    --hmsl-sub-c: {{ sub_color }};
+
+    --hmsl-desc-fs: {{ desc_size }}px;
+    --hmsl-desc-fsm: {{ desc_size_m }}px;
+    --hmsl-desc-c: {{ desc_color }};
+
+    --hmsl-btn-h: {{ btn_height }}px;
+    --hmsl-btn-r: {{ btn_radius }}px;
+    --hmsl-btn-fs: {{ btn_font_size }}px;
+    --hmsl-btn-tc: {{ btn_text_color }};
+    --hmsl-btn-bg: {{ btn_bg_color }};
+    --hmsl-btn-arrow-bg: {{ btn_arrow_bg }};
+
+    --hmsl-btn2-fs: {{ btn2_font_size }}px;
+    --hmsl-btn2-tc: {{ btn2_text_color }};
+    --hmsl-btn2-border: {{ btn2_border }};
+    --hmsl-btn2-hover-bg: {{ btn2_hover_bg }};
+    --hmsl-btn2-hover-border: {{ btn2_hover_border }};
+    --hmsl-btn2-py: {{ btn2_py }}px;
+    --hmsl-btn2-px: {{ btn2_px }}px;
+
+    --hmsl-marquee-h: {{ marquee_height }}px;
+    --hmsl-marquee-bg: {{ marquee_bg }};
+    --hmsl-marquee-tc: {{ marquee_text_c }};
+    --hmsl-marquee-dot: {{ marquee_dot_c }};
+    --hmsl-marquee-ff: {{ marquee_font.family }}, {{ marquee_font.fallback_families }};
+    --hmsl-marquee-fst: {{ marquee_font.style }};
+    --hmsl-marquee-fs: {{ marquee_font_s }}px;
+    --hmsl-marquee-fw: {{ marquee_fw }};
+    --hmsl-marquee-speed: {{ marquee_speed }}s;
+    --hmsl-marquee-gap: {{ marquee_gap }}em;
+
+    --hmsl-reveal-fs: {{ reveal_fs }}px;
+    --hmsl-reveal-tc: {{ reveal_color }};
+    --hmsl-icon-bg: {{ icon_bg }};
+    --hmsl-icon-tc: {{ icon_tc }};
+    --hmsl-icon-r: {{ icon_radius }}px;
+  }
+  {% if custom_css != blank %}{{ custom_css }}{% endif %}
+</style>
+
+<div id="hmsl-{{ section.id }}"
+     class="hmsl-wrap"
+     data-hmsl-autoplay="{{ autoplay }}"
+     data-hmsl-speed="{{ speed }}"
+     data-hmsl-total="{{ total_slides }}"
+     data-hmsl-darken-start="{{ darken_start }}"
+     data-hmsl-darken-max="{{ darken_max }}">
+
+  {%- comment -%} ═══ Sticky Viewport ═══ {%- endcomment -%}
+  <div class="hmsl-sticky">
+
+    {%- comment -%} ── Slides ── {%- endcomment -%}
+    <div class="hmsl-slides">
+      {%- assign slide_index = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'banner' -%}
+          {%- assign img   = block.settings.image -%}
+          {%- assign img_m = block.settings.image_mobile -%}
+
+          <div class="hmsl-slide{% if slide_index == 0 %} hmsl-slide--active{% endif %}"
+               data-hmsl-index="{{ slide_index }}"
+               {{ block.shopify_attributes }}>
+
+            {%- comment -%} Background – desktop {%- endcomment -%}
+            {%- if img != blank -%}
+              <img
+                src="{{ img | image_url: width: 1920 }}"
+                alt="{{ img.alt | default: block.settings.heading | default: 'Slide' }}"
+                class="hmsl-slide__img hmsl-slide__img--desk"
+                loading="{% if slide_index == 0 %}eager{% else %}lazy{% endif %}"
+                fetchpriority="{% if slide_index == 0 %}high{% else %}low{% endif %}"
+              >
+            {%- endif -%}
+
+            {%- comment -%} Background – mobile {%- endcomment -%}
+            {%- if img_m != blank -%}
+              <img
+                src="{{ img_m | image_url: width: 800 }}"
+                alt="{{ img_m.alt | default: 'Slide' }}"
+                class="hmsl-slide__img hmsl-slide__img--mobile"
+                loading="{% if slide_index == 0 %}eager{% else %}lazy{% endif %}"
+              >
+            {%- elsif img != blank -%}
+              <img
+                src="{{ img | image_url: width: 800 }}"
+                alt="{{ img.alt | default: 'Slide' }}"
+                class="hmsl-slide__img hmsl-slide__img--mobile"
+                loading="{% if slide_index == 0 %}eager{% else %}lazy{% endif %}"
+              >
+            {%- endif -%}
+
+            {%- comment -%} Overlay {%- endcomment -%}
+            <div class="hmsl-slide__overlay"></div>
+
+            {%- comment -%} Video background (optional) {%- endcomment -%}
+            {%- if block.settings.video != blank -%}
+              <video class="hmsl-slide__img hmsl-slide__img--desk" autoplay muted loop playsinline
+                     style="object-fit:cover;"
+                     loading="{% if slide_index == 0 %}eager{% else %}lazy{% endif %}">
+                <source src="{{ block.settings.video }}" type="video/mp4">
+              </video>
+            {%- endif -%}
+
+            {%- comment -%} Content {%- endcomment -%}
+            {%- if block.settings.heading != blank or block.settings.subheading != blank or block.settings.description != blank or block.settings.btn1_text != blank -%}
+              <div class="hmsl-content" style="text-align: {{ content_align }};">
+
+                {%- if block.settings.subheading != blank -%}
+                  <p class="hmsl-content__sub">{{ block.settings.subheading }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.heading != blank -%}
+                  <{{ section.settings.heading_tag | default: 'h2' }} class="hmsl-content__heading">
+                    {{- block.settings.heading -}}
+                  </{{ section.settings.heading_tag | default: 'h2' }}>
+                {%- endif -%}
+
+                {%- if block.settings.description != blank -%}
+                  <p class="hmsl-content__desc">{{ block.settings.description }}</p>
+                {%- endif -%}
+
+                {%- if block.settings.btn1_text != blank or block.settings.btn2_text != blank -%}
+                  <div class="hmsl-btn-row">
+                    {%- if block.settings.btn1_text != blank -%}
+                      <a href="{{ block.settings.btn1_link | default: '#' }}" class="hmsl-btn-primary"
+                         {% if block.settings.btn1_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                        <span class="hmsl-btn-primary__arrow">
+                          <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="7" y1="17" x2="17" y2="7"></line>
+                            <polyline points="7 7 17 7 17 17"></polyline>
+                          </svg>
+                        </span>
+                        <span class="hmsl-btn-primary__text">{{ block.settings.btn1_text }}</span>
+                      </a>
+                    {%- endif -%}
+
+                    {%- if block.settings.btn2_text != blank -%}
+                      <a href="{{ block.settings.btn2_link | default: '#' }}" class="hmsl-btn-secondary"
+                         {% if block.settings.btn2_new_tab %}target="_blank" rel="noopener"{% endif %}>
+                        {{ block.settings.btn2_text }}
+                      </a>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+              </div>
+            {%- endif -%}
+
+          </div>
+          {%- assign slide_index = slide_index | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+    </div>
+
+    {%- comment -%} ── Dot Navigation ── {%- endcomment -%}
+    {%- if total_slides > 1 -%}
+      <div class="hmsl-dots">
+        {%- for i in (0..total_slides) -%}
+          {%- if i < total_slides -%}
+            <button class="hmsl-dot{% if i == 0 %} hmsl-dot--active{% endif %}"
+                    data-hmsl-dot="{{ i }}"
+                    aria-label="Slide {{ i | plus: 1 }}"></button>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} ── Scroll Darkening Overlay ── {%- endcomment -%}
+    <div class="hmsl-darken" data-hmsl-darken></div>
+
+    {%- comment -%} ── Text Reveal Area ── {%- endcomment -%}
+    <div class="hmsl-reveal" data-hmsl-reveal>
+      {%- if reveal_text != blank -%}
+        <p class="hmsl-reveal__text">{{ reveal_text }}</p>
+      {%- endif -%}
+
+      {%- assign icon_count = 0 -%}
+      {%- for block in section.blocks -%}
+        {%- if block.type == 'icon_text' -%}
+          {%- assign icon_count = icon_count | plus: 1 -%}
+        {%- endif -%}
+      {%- endfor -%}
+
+      {%- if icon_count > 0 -%}
+        <div class="hmsl-reveal__icons">
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'icon_text' -%}
+              <div class="hmsl-icon-block" {{ block.shopify_attributes }}>
+                {%- if block.settings.icon_image != blank -%}
+                  <span class="hmsl-icon-block__icon">
+                    <img src="{{ block.settings.icon_image | image_url: width: 40 }}" alt="" loading="lazy">
+                  </span>
+                {%- endif -%}
+                {{ block.settings.label }}
+              </div>
+            {%- endif -%}
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+
+  </div>{%- comment -%} / .hmsl-sticky {%- endcomment -%}
+
+  {%- comment -%} ══ Marquee Bar – OUTSIDE sticky so it scrolls away naturally ══ {%- endcomment -%}
+  {%- if marquee_show -%}
+    <div class="hmsl-marquee" data-hmsl-marquee>
+      <div class="hmsl-marquee__track">
+        {%- for repeat in (1..4) -%}
+          {%- if marquee_text_1 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_1 }}</span>
+          {%- endif -%}
+          {%- if marquee_text_2 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_2 }}</span>
+          {%- endif -%}
+          {%- if marquee_text_3 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_3 }}</span>
+          {%- endif -%}
+          {%- if marquee_text_4 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_4 }}</span>
+          {%- endif -%}
+          {%- if marquee_text_5 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_5 }}</span>
+          {%- endif -%}
+          {%- if marquee_text_6 != blank -%}
+            <span class="hmsl-marquee__item"><span class="hmsl-marquee__dot"></span>{{ marquee_text_6 }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  {%- endif -%}
+
+</div>{%- comment -%} / .hmsl-wrap {%- endcomment -%}
+
+{%- comment -%} ═══════════════════════════════════════════════════════
+   JavaScript – Slideshow, Marquee scroll-out, Darkening, Reveal
+   ═══════════════════════════════════════════════════════ {%- endcomment -%}
+<script>
+(function(){
+  var root = document.getElementById('hmsl-{{ section.id }}');
+  if (!root) return;
+
+  /* ── Slideshow ── */
+  var slides   = root.querySelectorAll('.hmsl-slide');
+  var dots     = root.querySelectorAll('.hmsl-dot');
+  var total    = slides.length;
+  var current  = 0;
+  var autoplay = root.getAttribute('data-hmsl-autoplay') === 'true';
+  var speed    = (parseInt(root.getAttribute('data-hmsl-speed')) || 5) * 1000;
+  var timer    = null;
+
+  function retriggerContent(slide) {
+    var els = slide.querySelectorAll('.hmsl-content__sub, .hmsl-content__heading, .hmsl-content__desc, .hmsl-btn-row');
+    els.forEach(function(el) {
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+  }
+
+  function goTo(index) {
+    index = ((index % total) + total) % total;
+    slides[current].classList.remove('hmsl-slide--active');
+    if (dots[current]) dots[current].classList.remove('hmsl-dot--active');
+    current = index;
+    slides[current].classList.add('hmsl-slide--active');
+    if (dots[current]) dots[current].classList.add('hmsl-dot--active');
+    retriggerContent(slides[current]);
+  }
+
+  dots.forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      stopAuto();
+      goTo(parseInt(btn.getAttribute('data-hmsl-dot')));
+      startAuto();
+    });
+  });
+
+  function startAuto() {
+    if (!autoplay || total < 2) return;
+    stopAuto();
+    timer = setInterval(function() { goTo(current + 1); }, speed);
+  }
+
+  function stopAuto() {
+    if (timer) clearInterval(timer);
+    timer = null;
+  }
+
+  /* Touch */
+  var touchX = 0;
+  root.addEventListener('touchstart', function(e) { touchX = e.touches[0].clientX; }, { passive: true });
+  root.addEventListener('touchend', function(e) {
+    var diff = e.changedTouches[0].clientX - touchX;
+    if (Math.abs(diff) > 50) {
+      stopAuto();
+      goTo(diff < 0 ? current + 1 : current - 1);
+      startAuto();
+    }
+  }, { passive: true });
+
+  /* Pause on hover */
+  root.addEventListener('mouseenter', function() { stopAuto(); });
+  root.addEventListener('mouseleave', function() { startAuto(); });
+
+  startAuto();
+
+  /* ── Scroll-based effects (lerp-smoothed) ── */
+  var darkenEl  = root.querySelector('[data-hmsl-darken]');
+  var revealEl  = root.querySelector('[data-hmsl-reveal]');
+
+  var darkenStart = parseFloat(root.getAttribute('data-hmsl-darken-start')) || 40;
+  var darkenMax   = parseFloat(root.getAttribute('data-hmsl-darken-max')) || 95;
+
+  /* Smooth interpolation state */
+  var currentDarken  = 0;
+  var targetDarken   = 0;
+  var currentRevealY = 80;
+  var targetRevealY  = 80;
+  var currentRevealO = 0;
+  var targetRevealO  = 0;
+  var lerpFactor     = 0.08; /* lower = smoother (0.05–0.15) */
+  var isAnimating    = false;
+
+  function lerp(a, b, t) {
+    return a + (b - a) * t;
+  }
+
+  function updateTargets() {
+    var rect       = root.getBoundingClientRect();
+    var wrapH      = root.offsetHeight;
+    var viewH      = window.innerHeight;
+    var scrolled   = -rect.top;
+    var scrollable = wrapH - viewH;
+
+    if (scrollable <= 0) return;
+
+    var progress = Math.max(0, Math.min(1, scrolled / scrollable));
+
+    /* Darkening target */
+    var dStart = darkenStart / 100;
+    var dMax   = darkenMax / 100;
+    if (progress < dStart) {
+      targetDarken = 0;
+    } else {
+      var darkProg = (progress - dStart) / (1 - dStart);
+      targetDarken = Math.min(dMax, darkProg * dMax);
+    }
+
+    /* Reveal target – scroll-driven from bottom */
+    var revealStart = 0.55;
+    var revealEnd   = 0.85;
+    if (progress < revealStart) {
+      targetRevealO = 0;
+      targetRevealY = 80;
+    } else if (progress >= revealEnd) {
+      targetRevealO = 1;
+      targetRevealY = 0;
+    } else {
+      var revProg = (progress - revealStart) / (revealEnd - revealStart);
+      var eased = revProg * revProg * (3 - 2 * revProg); /* smoothstep */
+      targetRevealO = eased;
+      targetRevealY = 80 * (1 - eased);
+    }
+  }
+
+  function animateLoop() {
+    /* Lerp darken */
+    currentDarken = lerp(currentDarken, targetDarken, lerpFactor);
+    darkenEl.style.opacity = currentDarken;
+
+    /* Lerp reveal */
+    currentRevealO = lerp(currentRevealO, targetRevealO, lerpFactor);
+    currentRevealY = lerp(currentRevealY, targetRevealY, lerpFactor);
+    revealEl.style.opacity = currentRevealO;
+    revealEl.style.transform = 'translateY(' + currentRevealY + 'px)';
+
+    if (currentRevealO > 0.15) {
+      revealEl.classList.add('hmsl-reveal--visible');
+    } else {
+      revealEl.classList.remove('hmsl-reveal--visible');
+    }
+
+    /* Keep running while values haven't settled */
+    var settled = Math.abs(currentDarken - targetDarken) < 0.001
+               && Math.abs(currentRevealO - targetRevealO) < 0.001
+               && Math.abs(currentRevealY - targetRevealY) < 0.05;
+
+    if (!settled && isAnimating) {
+      requestAnimationFrame(animateLoop);
+    } else {
+      isAnimating = false;
+    }
+  }
+
+  function startSmooth() {
+    if (!isAnimating) {
+      isAnimating = true;
+      animateLoop();
+    }
+  }
+
+  function onScroll() {
+    updateTargets();
+    startSmooth();
+  }
+
+  /* IntersectionObserver to only listen when visible */
+  var observer = new IntersectionObserver(function(entries) {
+    if (entries[0].isIntersecting) {
+      window.addEventListener('scroll', onScroll, { passive: true });
+      onScroll();
+    } else {
+      window.removeEventListener('scroll', onScroll);
+    }
+  }, { threshold: 0 });
+
+  observer.observe(root);
+  onScroll();
+
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Marquee Slideshow",
+  "tag": "section",
+  "class": "hmsl-root",
+  "settings": [
+    {
+      "type": "header",
+      "content": "──── Slideshow ────"
+    },
+    {
+      "type": "checkbox",
+      "id": "autoplay",
+      "label": "Auto-play",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "autoplay_speed",
+      "label": "Auto-play speed",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "unit": "s",
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "transition_duration",
+      "label": "Transition duration",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "s",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Image overlay opacity",
+      "min": 0,
+      "max": 80,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "──── Scroll behavior ────"
+    },
+    {
+      "type": "range",
+      "id": "scroll_height",
+      "label": "Total scroll height",
+      "info": "How much scroll distance before the section leaves view",
+      "min": 200,
+      "max": 500,
+      "step": 25,
+      "unit": "vh",
+      "default": 300
+    },
+    {
+      "type": "range",
+      "id": "darken_start",
+      "label": "Darkening start",
+      "info": "Scroll % when darkening begins",
+      "min": 20,
+      "max": 70,
+      "step": 5,
+      "unit": "%",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "darken_max_opacity",
+      "label": "Max darkening",
+      "min": 50,
+      "max": 100,
+      "step": 5,
+      "unit": "%",
+      "default": 95
+    },
+    {
+      "type": "header",
+      "content": "──── Content position ────"
+    },
+    {
+      "type": "select",
+      "id": "content_align_x",
+      "label": "Horizontal align",
+      "options": [
+        { "value": "flex-start", "label": "Left" },
+        { "value": "center",     "label": "Center" },
+        { "value": "flex-end",   "label": "Right" }
+      ],
+      "default": "flex-start"
+    },
+    {
+      "type": "select",
+      "id": "content_align_y",
+      "label": "Vertical align",
+      "options": [
+        { "value": "flex-start", "label": "Top" },
+        { "value": "center",     "label": "Center" },
+        { "value": "flex-end",   "label": "Bottom" }
+      ],
+      "default": "flex-end"
+    },
+    {
+      "type": "select",
+      "id": "text_align",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "content_padding",
+      "label": "Content padding",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "header",
+      "content": "──── Heading typography ────"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading HTML tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size",
+      "min": 28,
+      "max": 96,
+      "step": 1,
+      "unit": "px",
+      "default": 52
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size – mobile",
+      "min": 22,
+      "max": 56,
+      "step": 1,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "700"
+    },
+    {
+      "type": "range",
+      "id": "heading_letter_spacing",
+      "label": "Letter spacing",
+      "min": -5,
+      "max": 10,
+      "step": 1,
+      "default": -1
+    },
+    {
+      "type": "range",
+      "id": "heading_line_height",
+      "label": "Line height",
+      "min": 80,
+      "max": 160,
+      "step": 5,
+      "unit": "%",
+      "default": 110
+    },
+    {
+      "type": "select",
+      "id": "heading_text_transform",
+      "label": "Text transform",
+      "options": [
+        { "value": "none",      "label": "None" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "lowercase", "label": "Lowercase" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "──── Subheading ────"
+    },
+    {
+      "type": "range",
+      "id": "sub_size",
+      "label": "Subheading size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "range",
+      "id": "sub_size_mobile",
+      "label": "Subheading size – mobile",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "select",
+      "id": "sub_weight",
+      "label": "Subheading weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "500", "label": "Medium" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "default": "500"
+    },
+    {
+      "type": "color",
+      "id": "sub_color",
+      "label": "Subheading color",
+      "default": "rgba(255,255,255,0.8)"
+    },
+    {
+      "type": "header",
+      "content": "──── Description ────"
+    },
+    {
+      "type": "range",
+      "id": "desc_size",
+      "label": "Description size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "desc_size_mobile",
+      "label": "Description size – mobile",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "desc_color",
+      "label": "Description color",
+      "default": "rgba(255,255,255,0.75)"
+    },
+    {
+      "type": "header",
+      "content": "──── Primary button (arrow) ────"
+    },
+    {
+      "type": "range",
+      "id": "btn_height",
+      "label": "Button height",
+      "min": 36,
+      "max": 64,
+      "step": 2,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "btn_radius",
+      "label": "Button roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "range",
+      "id": "btn_font_size",
+      "label": "Button font size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg_color",
+      "label": "Button background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_arrow_bg",
+      "label": "Arrow circle background",
+      "default": "rgba(0,0,0,0.08)"
+    },
+    {
+      "type": "header",
+      "content": "──── Secondary button ────"
+    },
+    {
+      "type": "range",
+      "id": "btn2_font_size",
+      "label": "Font size",
+      "min": 11,
+      "max": 18,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "btn2_text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn2_border_color",
+      "label": "Border color",
+      "default": "rgba(255,255,255,0.3)"
+    },
+    {
+      "type": "color",
+      "id": "btn2_hover_bg",
+      "label": "Hover background",
+      "default": "rgba(255,255,255,0.1)"
+    },
+    {
+      "type": "color",
+      "id": "btn2_hover_border",
+      "label": "Hover border",
+      "default": "rgba(255,255,255,0.6)"
+    },
+    {
+      "type": "range",
+      "id": "btn2_padding_y",
+      "label": "Padding vertical",
+      "min": 6,
+      "max": 24,
+      "step": 2,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "btn2_padding_x",
+      "label": "Padding horizontal",
+      "min": 12,
+      "max": 48,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+    {
+      "type": "header",
+      "content": "──── Marquee ticker ────"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_marquee",
+      "label": "Show marquee bar",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "marquee_height",
+      "label": "Bar height",
+      "min": 36,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "color",
+      "id": "marquee_bg",
+      "label": "Bar background",
+      "default": "transparent"
+    },
+    {
+      "type": "color",
+      "id": "marquee_text_color",
+      "label": "Bar text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "marquee_dot_color",
+      "label": "Dot separator color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "font_picker",
+      "id": "marquee_font",
+      "label": "Bar font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "range",
+      "id": "marquee_font_size",
+      "label": "Font size",
+      "min": 12,
+      "max": 48,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "marquee_font_weight",
+      "label": "Font weight",
+      "options": [
+        { "value": "400", "label": "Normal" },
+        { "value": "600", "label": "Semi-bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra-bold" },
+        { "value": "900", "label": "Black" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "range",
+      "id": "marquee_speed",
+      "label": "Animation speed",
+      "min": 10,
+      "max": 60,
+      "step": 5,
+      "unit": "s",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "marquee_gap",
+      "label": "Item gap",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "em",
+      "default": 2
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_1",
+      "label": "Word 1",
+      "default": "STYLE"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_2",
+      "label": "Word 2",
+      "default": "LUXURY"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_3",
+      "label": "Word 3",
+      "default": "FOREVER"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_4",
+      "label": "Word 4",
+      "default": "ELEGANCE"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_5",
+      "label": "Word 5",
+      "default": "FASHION"
+    },
+    {
+      "type": "text",
+      "id": "marquee_text_6",
+      "label": "Word 6 (optional)"
+    },
+    {
+      "type": "header",
+      "content": "──── Reveal text ────"
+    },
+    {
+      "type": "textarea",
+      "id": "reveal_text",
+      "label": "Reveal text",
+      "info": "Text shown after scroll-to-dark. Use emojis for extra flair ✨",
+      "default": "OUR STORY ☀ STARTED WITH A VISION TO BLEND STYLE ✦ AND ELEGANCE. FROM PASSION TO PERFECTION 😊, WE CRAFT FASHION THAT EMPOWERS ☘ AND INSPIRES. DISCOVER TIMELESS TRENDS TODAY!"
+    },
+    {
+      "type": "range",
+      "id": "reveal_font_size",
+      "label": "Reveal text size",
+      "min": 14,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "color",
+      "id": "reveal_text_color",
+      "label": "Reveal text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "──── Icon blocks ────"
+    },
+    {
+      "type": "color",
+      "id": "icon_block_bg",
+      "label": "Block background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "icon_block_text_color",
+      "label": "Block text color",
+      "default": "#000000"
+    },
+    {
+      "type": "range",
+      "id": "icon_block_radius",
+      "label": "Block roundness",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "──── Advanced ────"
+    },
+    {
+      "type": "textarea",
+      "id": "custom_css",
+      "label": "Custom CSS"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "banner",
+      "name": "Banner",
+      "settings": [
+        {
+          "type": "header",
+          "content": "──── Image ────"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Mobile image (optional)"
+        },
+        {
+          "type": "video_url",
+          "id": "video",
+          "label": "Shopify hosted video (optional)",
+          "accept": ["youtube", "vimeo"]
+        },
+        {
+          "type": "header",
+          "content": "──── Content ────"
+        },
+        {
+          "type": "text",
+          "id": "subheading",
+          "label": "Subheading",
+          "info": "Wrap text with [ ] to highlight it"
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading",
+          "info": "Use [] for line break, () for gradient, ++ for pause(<br>) and Bold to change font family. Use Italic for gradient BG.",
+          "default": "TIMELESS FASHION ++ ESSENCE"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Discover fashion that transcends trends. Elevate style with classic, elegant, and enduring designs."
+        },
+        {
+          "type": "header",
+          "content": "──── Primary button ────"
+        },
+        {
+          "type": "text",
+          "id": "btn1_text",
+          "label": "Label",
+          "info": "Leave empty to hide the button",
+          "default": "EXPLORE NOW"
+        },
+        {
+          "type": "url",
+          "id": "btn1_link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "btn1_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        },
+        {
+          "type": "header",
+          "content": "──── Secondary button ────"
+        },
+        {
+          "type": "text",
+          "id": "btn2_text",
+          "label": "Label",
+          "info": "Leave empty to hide",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "btn2_link",
+          "label": "Link"
+        },
+        {
+          "type": "checkbox",
+          "id": "btn2_new_tab",
+          "label": "Open in new tab",
+          "default": false
+        }
+      ]
+    },
+    {
+      "type": "icon_text",
+      "name": "Icon with text",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "icon_image",
+          "label": "Icon image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Icon with text"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Marquee Slideshow",
+      "category": "Hero",
+      "blocks": [
+        {
+          "type": "banner",
+          "settings": {
+            "heading": "TIMELESS FASHION ++ ESSENCE",
+            "description": "Discover fashion that transcends trends. Elevate style with classic, elegant, and enduring designs.",
+            "btn1_text": "EXPLORE NOW",
+            "btn2_text": "Shop Now"
+          }
+        },
+        {
+          "type": "banner",
+          "settings": {
+            "heading": "Add slide heading here",
+            "btn1_text": "",
+            "btn2_text": ""
+          }
+        },
+        {
+          "type": "icon_text",
+          "settings": { "label": "Icon with text" }
+        },
+        {
+          "type": "icon_text",
+          "settings": { "label": "Icon with text" }
+        },
+        {
+          "type": "icon_text",
+          "settings": { "label": "Icon with text" }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

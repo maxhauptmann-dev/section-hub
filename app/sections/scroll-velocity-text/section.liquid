@@ -1,0 +1,508 @@
+{% comment %}
+  Section Hub – Scroll Velocity Text v1.0
+  Cinematic scroll-velocity-driven text marquee with parallax layers.
+  Text speed responds to scroll velocity. Multiple rows create depth.
+  Prefix: svt-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign row1_color = section.settings.row1_color
+  assign row2_color = section.settings.row2_color
+  assign row3_color = section.settings.row3_color
+  assign stroke_color = section.settings.stroke_color
+  assign stroke_w = section.settings.stroke_width
+  assign font_size = section.settings.font_size
+  assign spacing = section.settings.letter_spacing
+  assign height = section.settings.section_height
+  assign row_gap = section.settings.row_gap
+  assign base_speed = section.settings.base_speed
+  assign velocity_mult = section.settings.velocity_multiplier
+  assign blend = section.settings.blend_mode
+  assign show_glow = section.settings.show_glow
+  assign glow_color = section.settings.glow_color
+  assign glow_size = section.settings.glow_size
+  assign overlay_gradient = section.settings.overlay_gradient
+  assign skew = section.settings.skew_angle
+  assign row1_text = section.settings.row1_text
+  assign row2_text = section.settings.row2_text
+  assign row3_text = section.settings.row3_text
+  assign row1_style = section.settings.row1_style
+  assign row2_style = section.settings.row2_style
+  assign row3_style = section.settings.row3_style
+  assign row1_dir = section.settings.row1_direction
+  assign row2_dir = section.settings.row2_direction
+  assign row3_dir = section.settings.row3_direction
+  assign row1_speed_mult = section.settings.row1_speed
+  assign row2_speed_mult = section.settings.row2_speed
+  assign row3_speed_mult = section.settings.row3_speed
+  assign separator = section.settings.separator
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+-%}
+
+<style>
+  .svt-wrap--{{ sid }}{
+    --svt-bg:{{ bg }};
+    --svt-r1-color:{{ row1_color }};
+    --svt-r2-color:{{ row2_color }};
+    --svt-r3-color:{{ row3_color }};
+    --svt-stroke:{{ stroke_color }};
+    --svt-stroke-w:{{ stroke_w }}px;
+    --svt-fs:clamp(3rem,{{ font_size }}vw,{{ font_size | times: 2 }}rem);
+    --svt-ls:{{ spacing }}em;
+    --svt-height:{{ height }}vh;
+    --svt-row-gap:{{ row_gap }}px;
+    --svt-base-speed:{{ base_speed }};
+    --svt-skew:{{ skew }}deg;
+    --svt-mt:{{ mt }}px;
+    --svt-mb:{{ mb }}px;
+    --svt-glow-color:{{ glow_color }};
+    --svt-glow-size:{{ glow_size }}px;
+  }
+</style>
+
+<section class="svt-wrap svt-wrap--{{ sid }}" data-svt-section data-svt-velocity="{{ velocity_mult }}">
+
+  {%- if overlay_gradient -%}
+    <div class="svt-overlay-top"></div>
+    <div class="svt-overlay-bottom"></div>
+  {%- endif -%}
+
+  <div class="svt-container" style="transform:skewY(var(--svt-skew));">
+
+    {%- comment -%} Row 1 {%- endcomment -%}
+    {%- if row1_text != blank -%}
+      <div class="svt-row svt-row--1" data-svt-row data-svt-dir="{{ row1_dir }}" data-svt-speed="{{ row1_speed_mult }}" style="mix-blend-mode:{{ blend }};">
+        <div class="svt-ribbon" data-svt-ribbon>
+          {%- for i in (1..4) -%}
+            <span class="svt-text svt-text--{{ row1_style }}" {% if row1_style == 'stroke' %}style="-webkit-text-stroke:var(--svt-stroke-w) var(--svt-stroke);color:transparent;"{% endif %} {% if show_glow and row1_style != 'stroke' %}style="text-shadow:0 0 var(--svt-glow-size) var(--svt-glow-color);"{% endif %}>
+              {{ row1_text }} <span class="svt-sep">{{ separator }}</span>
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Row 2 {%- endcomment -%}
+    {%- if row2_text != blank -%}
+      <div class="svt-row svt-row--2" data-svt-row data-svt-dir="{{ row2_dir }}" data-svt-speed="{{ row2_speed_mult }}" style="mix-blend-mode:{{ blend }};">
+        <div class="svt-ribbon" data-svt-ribbon>
+          {%- for i in (1..4) -%}
+            <span class="svt-text svt-text--{{ row2_style }}" {% if row2_style == 'stroke' %}style="-webkit-text-stroke:var(--svt-stroke-w) var(--svt-stroke);color:transparent;"{% endif %} {% if show_glow and row2_style != 'stroke' %}style="text-shadow:0 0 var(--svt-glow-size) var(--svt-glow-color);"{% endif %}>
+              {{ row2_text }} <span class="svt-sep">{{ separator }}</span>
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Row 3 {%- endcomment -%}
+    {%- if row3_text != blank -%}
+      <div class="svt-row svt-row--3" data-svt-row data-svt-dir="{{ row3_dir }}" data-svt-speed="{{ row3_speed_mult }}" style="mix-blend-mode:{{ blend }};">
+        <div class="svt-ribbon" data-svt-ribbon>
+          {%- for i in (1..4) -%}
+            <span class="svt-text svt-text--{{ row3_style }}" {% if row3_style == 'stroke' %}style="-webkit-text-stroke:var(--svt-stroke-w) var(--svt-stroke);color:transparent;"{% endif %} {% if show_glow and row3_style != 'stroke' %}style="text-shadow:0 0 var(--svt-glow-size) var(--svt-glow-color);"{% endif %}>
+              {{ row3_text }} <span class="svt-sep">{{ separator }}</span>
+            </span>
+          {%- endfor -%}
+        </div>
+      </div>
+    {%- endif -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var wrap = document.querySelector('.svt-wrap--{{ sid }}');
+  if(!wrap) return;
+
+  var rows = wrap.querySelectorAll('[data-svt-row]');
+  var velMult = parseFloat(wrap.dataset.svtVelocity) || 3;
+  var positions = [];
+  var lastScroll = window.scrollY;
+  var velocity = 0;
+  var ticking = false;
+  var isMobile = window.innerWidth < 600;
+
+  /* Reduce velocity multiplier on mobile for smoother performance */
+  if(isMobile){ velMult = Math.max(velMult * 0.5, 1); }
+
+  rows.forEach(function(row, i){
+    positions.push({
+      el: row.querySelector('[data-svt-ribbon]'),
+      dir: row.dataset.svtDir === 'right' ? 1 : -1,
+      speed: parseFloat(row.dataset.svtSpeed) || 1,
+      x: 0
+    });
+  });
+
+  function lerp(a,b,t){ return a + (b - a) * t; }
+
+  function update(){
+    var scrollY = window.scrollY;
+    var delta = scrollY - lastScroll;
+    lastScroll = scrollY;
+
+    velocity = lerp(velocity, delta, 0.1);
+
+    positions.forEach(function(p){
+      var move = (p.dir * p.speed * 0.5) + (velocity * velMult * p.speed * 0.15);
+      p.x -= move;
+
+      var ribbonW = p.el.scrollWidth / 2;
+      if(ribbonW > 0){
+        if(p.x < -ribbonW) p.x += ribbonW;
+        if(p.x > 0) p.x -= ribbonW;
+      }
+
+      p.el.style.transform = 'translateX(' + p.x + 'px)';
+    });
+
+    ticking = false;
+    requestAnimationFrame(tick);
+  }
+
+  function tick(){
+    if(!ticking){
+      ticking = true;
+      update();
+    }
+  }
+
+  /* also run on idle so it drifts when not scrolling */
+  requestAnimationFrame(tick);
+
+  /* Reduce motion */
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    positions.forEach(function(p){ p.speed = 0; });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Velocity Text",
+  "tag": "section",
+  "class": "section-scroll-velocity-text",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Row 1"
+    },
+    {
+      "type": "text",
+      "id": "row1_text",
+      "label": "Text",
+      "default": "PREMIUM QUALITY"
+    },
+    {
+      "type": "select",
+      "id": "row1_style",
+      "label": "Style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "stroke", "label": "Outline" }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "select",
+      "id": "row1_direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "row1_speed",
+      "label": "Speed multiplier",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "color",
+      "id": "row1_color",
+      "label": "Row 1 color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Row 2"
+    },
+    {
+      "type": "text",
+      "id": "row2_text",
+      "label": "Text",
+      "default": "CRAFTED WITH CARE"
+    },
+    {
+      "type": "select",
+      "id": "row2_style",
+      "label": "Style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "stroke", "label": "Outline" }
+      ],
+      "default": "stroke"
+    },
+    {
+      "type": "select",
+      "id": "row2_direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "right"
+    },
+    {
+      "type": "range",
+      "id": "row2_speed",
+      "label": "Speed multiplier",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "color",
+      "id": "row2_color",
+      "label": "Row 2 color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Row 3"
+    },
+    {
+      "type": "text",
+      "id": "row3_text",
+      "label": "Text",
+      "default": "DESIGNED FOR YOU"
+    },
+    {
+      "type": "select",
+      "id": "row3_style",
+      "label": "Style",
+      "options": [
+        { "value": "filled", "label": "Filled" },
+        { "value": "stroke", "label": "Outline" }
+      ],
+      "default": "filled"
+    },
+    {
+      "type": "select",
+      "id": "row3_direction",
+      "label": "Direction",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "range",
+      "id": "row3_speed",
+      "label": "Speed multiplier",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "row3_color",
+      "label": "Row 3 color",
+      "default": "#f43f5e"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size (vw)",
+      "min": 4,
+      "max": 20,
+      "step": 1,
+      "default": 10,
+      "unit": "vw"
+    },
+    {
+      "type": "range",
+      "id": "letter_spacing",
+      "label": "Letter spacing",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "text",
+      "id": "separator",
+      "label": "Separator between repeats",
+      "default": "✦"
+    },
+    {
+      "type": "header",
+      "content": "Outline Style"
+    },
+    {
+      "type": "color",
+      "id": "stroke_color",
+      "label": "Stroke color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Stroke width",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "base_speed",
+      "label": "Base drift speed",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "velocity_multiplier",
+      "label": "Scroll velocity boost",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "skew_angle",
+      "label": "Skew angle",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "default": -3,
+      "unit": "deg"
+    },
+    {
+      "type": "header",
+      "content": "Effects"
+    },
+    {
+      "type": "select",
+      "id": "blend_mode",
+      "label": "Blend mode",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "screen", "label": "Screen" },
+        { "value": "overlay", "label": "Overlay" },
+        { "value": "difference", "label": "Difference" }
+      ],
+      "default": "normal"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Text glow",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "glow_color",
+      "label": "Glow color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "range",
+      "id": "glow_size",
+      "label": "Glow size",
+      "min": 10,
+      "max": 80,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "overlay_gradient",
+      "label": "Edge fade gradients",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "section_height",
+      "label": "Section height",
+      "min": 40,
+      "max": 100,
+      "step": 5,
+      "default": 70,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Row gap",
+      "min": 0,
+      "max": 60,
+      "step": 4,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#050505"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Velocity Text"
+    }
+  ]
+}
+{% endschema %}

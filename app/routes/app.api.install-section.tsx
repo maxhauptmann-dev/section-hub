@@ -79,9 +79,9 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     // Embed CSS inline into liquid file
     const liquidWithStyles = `{% comment %}
-  Section Hub - ${section.name}
+  SectionIQ - ${section.name}
   Version: ${section.version}
-  Installed via Section Hub App
+  Installed via SectionIQ App
 {% endcomment %}
 
 <style>
@@ -114,6 +114,27 @@ ${section.liquidContent}`;
         success: false,
         error: "Error uploading section to theme",
       }, { status: 500 });
+    }
+
+    // Track installation in DB
+    try {
+      await prisma.sectionInstallation.upsert({
+        where: {
+          shop_sectionHandle: { shop, sectionHandle: sectionId },
+        },
+        update: {
+          installedVersion: section.version,
+          themeId: mainTheme.id,
+        },
+        create: {
+          shop,
+          sectionHandle: sectionId,
+          installedVersion: section.version,
+          themeId: mainTheme.id,
+        },
+      });
+    } catch (dbErr) {
+      console.error("Error tracking installation (non-fatal):", dbErr);
     }
 
     return Response.json({

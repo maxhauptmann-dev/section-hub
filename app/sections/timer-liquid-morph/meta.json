@@ -1,12 +1,14 @@
 {
   "id": "timer-liquid-morph",
-  "name": "SS - Liquid Morph Timer",
+  "name": "SIQ - Liquid Morph Timer",
   "description": "Organic liquid-morphing countdown timer with SVG turbulence filter effects. Numbers float inside gently undulating blob shapes that morph and breathe. Features gradient fills, organic animations, and a premium art-gallery aesthetic unlike any other countdown timer.",
-  "category": ["Counter"],
+  "category": [
+    "Counter"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 23,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -23,17 +25,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0c0a20",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/timer-liquid-morph/default.webp",
-      "alt": "Timer Liquid Morph - Default",
+      "alt": "SS - Liquid Morph Timer - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -46,7 +54,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

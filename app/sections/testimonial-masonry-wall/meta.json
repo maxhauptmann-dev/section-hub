@@ -1,0 +1,57 @@
+{
+  "id": "testimonial-masonry-wall",
+  "name": "SIQ - Testimonial Masonry Wall",
+  "description": "Pinterest-style masonry grid testimonial wall. Cards have varying heights with star ratings, verified badges, quote marks, and optional customer photos. Features staggered fade-in animation and hover effects. 35+ settings for full customization.",
+  "category": "Testimonials",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Testimonials",
+    "Masonry",
+    "Grid",
+    "Wall",
+    "Reviews",
+    "Social Proof",
+    "Premium"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/testimonial-masonry-wall/default.webp",
+      "alt": "Testimonial Masonry Wall - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

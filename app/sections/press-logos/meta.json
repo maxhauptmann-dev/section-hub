@@ -1,12 +1,12 @@
 {
   "id": "press-logos",
-  "name": "Press Logos",
+  "name": "SIQ - Press Logos",
   "description": "Minimal 'As seen in' logo bar with optional heading. Logos displayed in grayscale with hover color reveal. Clean trust-building section.",
   "category": "Social Proof",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 8,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -17,7 +17,7 @@
     "Minimal",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -67,5 +67,6 @@
     }
   ],
   "updatedAt": "2026-03-04",
-  "createdAt": "2026-02-15"
+  "createdAt": "2026-02-15",
+  "tier": "basic"
 }

@@ -68,22 +68,6 @@
   assign pt_m          = section.settings.padding_top_mobile
   assign pb_m          = section.settings.padding_bottom_mobile
   assign custom_css    = section.settings.custom_css
-
-  assign image_1 = section.settings.image_1
-  assign image_2 = section.settings.image_2
-  assign image_3 = section.settings.image_3
-  assign image_4 = section.settings.image_4
-  assign image_5 = section.settings.image_5
-  assign link_1  = section.settings.link_1
-  assign link_2  = section.settings.link_2
-  assign link_3  = section.settings.link_3
-  assign link_4  = section.settings.link_4
-  assign link_5  = section.settings.link_5
-  assign label_1 = section.settings.label_1
-  assign label_2 = section.settings.label_2
-  assign label_3 = section.settings.label_3
-  assign label_4 = section.settings.label_4
-  assign label_5 = section.settings.label_5
 -%}
 
 <style>
@@ -191,47 +175,51 @@
 
     {%- comment -%} Mosaic Grid {%- endcomment -%}
     <div class="shmo-grid shmo-grid--{{ layout }}">
-      {%- assign images = '' | split: ',' -%}
-      {%- assign links  = '' | split: ',' -%}
-      {%- assign labels = '' | split: ',' -%}
 
-      {%- if image_1 != blank -%}{%- assign images = images | push: image_1 -%}{%- assign links = links | push: link_1 -%}{%- assign labels = labels | push: label_1 -%}{%- endif -%}
-      {%- if image_2 != blank -%}{%- assign images = images | push: image_2 -%}{%- assign links = links | push: link_2 -%}{%- assign labels = labels | push: label_2 -%}{%- endif -%}
-      {%- if image_3 != blank -%}{%- assign images = images | push: image_3 -%}{%- assign links = links | push: link_3 -%}{%- assign labels = labels | push: label_3 -%}{%- endif -%}
-      {%- if image_4 != blank -%}{%- assign images = images | push: image_4 -%}{%- assign links = links | push: link_4 -%}{%- assign labels = labels | push: label_4 -%}{%- endif -%}
-      {%- if image_5 != blank -%}{%- assign images = images | push: image_5 -%}{%- assign links = links | push: link_5 -%}{%- assign labels = labels | push: label_5 -%}{%- endif -%}
+      {%- if section.blocks.size > 0 -%}
+        {%- for block in section.blocks -%}
+          {%- assign tile_img   = block.settings.image -%}
+          {%- assign tile_link  = block.settings.link -%}
+          {%- assign tile_label = block.settings.label -%}
+          {%- assign tile_col   = block.settings.column_span | default: '1' -%}
+          {%- assign tile_row   = block.settings.row_span | default: '1' -%}
 
-      {%- for img in images -%}
-        {%- assign lbl = labels[forloop.index0] -%}
-        {%- assign lnk = links[forloop.index0] -%}
-        <div class="shmo-tile shmo-tile--{{ forloop.index }} shmo-tile--{{ hover_effect }}" data-shmo-reveal>
-          {%- if lnk != blank -%}<a href="{{ lnk }}" class="shmo-tile__link">{%- endif -%}
-            <div class="shmo-tile__img-wrap">
-              <img
-                src="{{ img | image_url: width: 1200 }}"
-                alt="{{ img.alt | default: lbl | default: 'Mosaic image' }}"
-                class="shmo-tile__img"
-                loading="{% if forloop.index <= 2 %}eager{% else %}lazy{% endif %}"
-                width="1200"
-                height="{{ 1200 | divided_by: img.aspect_ratio }}"
-              >
-              {%- if overlay_on_hover -%}
-                <div class="shmo-tile__overlay"></div>
-              {%- endif -%}
-            </div>
-            {%- if lbl != blank -%}
-              <span class="shmo-tile__label">{{ lbl }}</span>
-            {%- endif -%}
-          {%- if lnk != blank -%}</a>{%- endif -%}
-        </div>
-      {%- endfor -%}
+          <div
+            class="shmo-tile shmo-tile--{{ forloop.index }} shmo-tile--{{ hover_effect }}{% unless tile_col == '1' %} shmo-tile--col-{{ tile_col }}{% endunless %}{% unless tile_row == '1' %} shmo-tile--row-{{ tile_row }}{% endunless %}"
+            data-shmo-reveal
+            {{ block.shopify_attributes }}
+          >
+            {%- if tile_link != blank -%}<a href="{{ tile_link }}" class="shmo-tile__link">{%- endif -%}
+              <div class="shmo-tile__img-wrap">
+                {%- if tile_img != blank -%}
+                  <img
+                    src="{{ tile_img | image_url: width: 1200 }}"
+                    srcset="{{ tile_img | image_url: width: 600 }} 600w, {{ tile_img | image_url: width: 900 }} 900w, {{ tile_img | image_url: width: 1200 }} 1200w"
+                    sizes="(max-width: 768px) 50vw, 33vw"
+                    alt="{{ tile_img.alt | default: tile_label | default: 'Mosaic image' }}"
+                    class="shmo-tile__img"
+                    loading="{% if forloop.index <= 2 %}eager{% else %}lazy{% endif %}"
+                    width="1200"
+                    height="{{ 1200 | divided_by: tile_img.aspect_ratio }}"
+                  >
+                {%- else -%}
+                  {%- assign pi = forloop.index | modulo: 6 | plus: 1 -%}
+                  {{ 'collection-' | append: pi | placeholder_svg_tag: 'shmo-tile__placeholder' }}
+                {%- endif -%}
+                {%- if overlay_on_hover -%}<div class="shmo-tile__overlay"></div>{%- endif -%}
+              </div>
+              {%- if tile_label != blank -%}<span class="shmo-tile__label">{{ tile_label }}</span>{%- endif -%}
+            {%- if tile_link != blank -%}</a>{%- endif -%}
+          </div>
+        {%- endfor -%}
 
-      {%- comment -%} Placeholder tiles if no images set {%- endcomment -%}
-      {%- if images.size == 0 -%}
+      {%- else -%}
+        {%- comment -%} Placeholder tiles if no blocks {%- endcomment -%}
         {%- for i in (1..4) -%}
           <div class="shmo-tile shmo-tile--{{ i }} shmo-tile--{{ hover_effect }}" data-shmo-reveal>
             <div class="shmo-tile__img-wrap">
-              {{ 'collection-' | append: i | placeholder_svg_tag: 'shmo-tile__placeholder' }}
+              {%- assign pi = i | modulo: 6 | plus: 1 -%}
+              {{ 'collection-' | append: pi | placeholder_svg_tag: 'shmo-tile__placeholder' }}
             </div>
           </div>
         {%- endfor -%}
@@ -280,7 +268,7 @@
 
 {% schema %}
 {
-  "name": "SS - Hero Mosaic",
+  "name": "SIQ - Hero Mosaic",
   "class": "shmo-root",
   "settings": [
     {
@@ -613,89 +601,6 @@
     },
     {
       "type": "header",
-      "content": "Images"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_1",
-      "label": "Image 1 (large)"
-    },
-    {
-      "type": "url",
-      "id": "link_1",
-      "label": "Link 1"
-    },
-    {
-      "type": "text",
-      "id": "label_1",
-      "label": "Label 1",
-      "default": "Spring"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_2",
-      "label": "Image 2"
-    },
-    {
-      "type": "url",
-      "id": "link_2",
-      "label": "Link 2"
-    },
-    {
-      "type": "text",
-      "id": "label_2",
-      "label": "Label 2",
-      "default": "Summer"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_3",
-      "label": "Image 3"
-    },
-    {
-      "type": "url",
-      "id": "link_3",
-      "label": "Link 3"
-    },
-    {
-      "type": "text",
-      "id": "label_3",
-      "label": "Label 3",
-      "default": "Autumn"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_4",
-      "label": "Image 4"
-    },
-    {
-      "type": "url",
-      "id": "link_4",
-      "label": "Link 4"
-    },
-    {
-      "type": "text",
-      "id": "label_4",
-      "label": "Label 4",
-      "default": "Winter"
-    },
-    {
-      "type": "image_picker",
-      "id": "image_5",
-      "label": "Image 5"
-    },
-    {
-      "type": "url",
-      "id": "link_5",
-      "label": "Link 5"
-    },
-    {
-      "type": "text",
-      "id": "label_5",
-      "label": "Label 5"
-    },
-    {
-      "type": "header",
       "content": "Image hover effects"
     },
     {
@@ -848,9 +753,60 @@
       "label": "Custom CSS"
     }
   ],
+  "blocks": [
+    {
+      "type": "mosaic_tile",
+      "name": "Mosaic Tile",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label"
+        },
+        {
+          "type": "select",
+          "id": "column_span",
+          "label": "Width",
+          "options": [
+            { "value": "1", "label": "Normal (1 column)" },
+            { "value": "2", "label": "Wide (2 columns)" },
+            { "value": "full", "label": "Full row" }
+          ],
+          "default": "1"
+        },
+        {
+          "type": "select",
+          "id": "row_span",
+          "label": "Height",
+          "options": [
+            { "value": "1", "label": "Normal" },
+            { "value": "2", "label": "Tall (2 rows)" },
+            { "value": "3", "label": "Extra tall (3 rows)" }
+          ],
+          "default": "1"
+        }
+      ]
+    }
+  ],
   "presets": [
     {
-      "name": "SS - Hero Mosaic"
+      "name": "SIQ - Hero Mosaic",
+      "blocks": [
+        { "type": "mosaic_tile", "settings": { "label": "Spring", "row_span": "2" } },
+        { "type": "mosaic_tile", "settings": { "label": "Summer" } },
+        { "type": "mosaic_tile", "settings": { "label": "Autumn" } },
+        { "type": "mosaic_tile", "settings": { "label": "Winter", "column_span": "2" } }
+      ]
     }
   ]
 }

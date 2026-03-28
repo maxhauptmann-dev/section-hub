@@ -1,6 +1,6 @@
 {
   "id": "testimonial-scrolling",
-  "name": "Testimonial Scrolling Cards",
+  "name": "SIQ - Testimonial Scrolling Cards",
   "description": "Infinitely scrolling testimonial cards with images, videos (Shopify/YouTube/Vimeo), star ratings, review comments and author names. Customizable card size, speed, multi-row support. Auto marquee with hover pause.",
   "category": [
     "Testimonials",
@@ -10,7 +10,7 @@
   "version": "2.1.0",
   "price": {
     "type": "one_time",
-    "amount": 9,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -24,7 +24,7 @@
     "Responsive",
     "Social Proof"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -73,5 +73,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

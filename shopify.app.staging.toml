@@ -1,0 +1,40 @@
+# Shopify App Config für STAGING
+# NIEMALS für Production-Deploys verwenden!
+# Verwende: npx shopify app deploy --config staging
+
+client_id = "0e962d88992d1b6c757278cbf546a4e9"
+name = "SectionIQ-staging"
+application_url = "https://section-hub-staging.fly.dev"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = false
+
+[webhooks]
+api_version = "2026-04"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/scopes_update" ]
+  uri = "/webhooks/app/scopes_update"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app/uninstalled" ]
+  uri = "/webhooks/app/uninstalled"
+
+  [[webhooks.subscriptions]]
+  topics = [ "app_subscriptions/update" ]
+  uri = "/webhooks/app/subscriptions_update"
+
+  [webhooks.privacy_compliance]
+  customer_data_request_url = "https://section-hub-staging.fly.dev/webhooks/customers/data_request"
+  customer_deletion_url = "https://section-hub-staging.fly.dev/webhooks/customers/redact"
+  shop_deletion_url = "https://section-hub-staging.fly.dev/webhooks/shop/redact"
+
+[access_scopes]
+scopes = "read_themes,write_themes,read_products,read_content"
+
+[auth]
+redirect_urls = [
+  "https://section-hub-staging.fly.dev/auth/callback",
+  "https://section-hub-staging.fly.dev/auth/shopify/callback"
+]

@@ -1,6 +1,6 @@
 {
   "id": "image-with-text",
-  "name": "Image with Text",
+  "name": "SIQ - Image with Text",
   "description": "Side-by-side image and text section with reversible layout, customizable image ratio, overlay, buttons, and responsive stacking. Ideal for features, about sections, or promotions.",
   "category": "Free",
   "version": "1.1.0",
@@ -16,7 +16,7 @@
     "Responsive",
     "Flexible"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -60,5 +60,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

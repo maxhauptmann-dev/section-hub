@@ -98,7 +98,8 @@
                 height="{{ block.settings.image.height }}"
               >
             {%- else -%}
-              {{ 'lifestyle-' | append: forloop.index | placeholder_svg_tag }}
+              {%- assign placeholder_idx = forloop.index | modulo: 2 | plus: 1 -%}
+              {{ 'lifestyle-' | append: placeholder_idx | placeholder_svg_tag }}
             {%- endif -%}
           </div>
 
@@ -159,35 +160,44 @@
     headers.forEach(function(h) { revealObserver.observe(h); });
 
     /* Parallax on scroll – each card moves at its own speed */
-    if (parallaxDepth > 0) {
+    /* Disable parallax on mobile for better performance */
+    var isMobile = window.innerWidth < 750;
+    if (parallaxDepth > 0 && !isMobile) {
       var ticking = false;
+      function updateParallax() {
+        cards.forEach(function(card) {
+          var rect = card.getBoundingClientRect();
+          var center = rect.top + rect.height / 2;
+          var offset = (center - window.innerHeight / 2) / window.innerHeight;
+          var depth = parseFloat(card.dataset.shpgDepth) || 1;
+          var moveY = offset * parallaxDepth * depth * -1;
+
+          /* Move the entire card for visible parallax */
+          card.style.transform = 'translateY(' + (moveY * 0.6) + 'px) scale(1)';
+
+          /* Move the inner image faster for depth illusion */
+          var imgWrap = card.querySelector('[data-shpg-parallax]');
+          if (imgWrap) {
+            imgWrap.style.transform = 'translateY(' + (moveY * 1.4) + 'px) scale(1.1)';
+          }
+        });
+        ticking = false;
+      }
       window.addEventListener('scroll', function() {
         if (!ticking) {
-          requestAnimationFrame(function() {
-            cards.forEach(function(card) {
-              var rect = card.getBoundingClientRect();
-              var center = rect.top + rect.height / 2;
-              var offset = (center - window.innerHeight / 2) / window.innerHeight;
-              var depth = parseFloat(card.dataset.shpgDepth) || 1;
-              var moveY = offset * parallaxDepth * depth;
-
-              var imgWrap = card.querySelector('[data-shpg-parallax]');
-              if (imgWrap) {
-                imgWrap.style.transform = 'translateY(' + moveY + 'px)';
-              }
-            });
-            ticking = false;
-          });
+          requestAnimationFrame(updateParallax);
           ticking = true;
         }
       }, { passive: true });
+      /* Initial call so cards are positioned on load */
+      updateParallax();
     }
   })();
 </script>
 
 {% schema %}
 {
-  "name": "SS - Parallax Grid",
+  "name": "SIQ - Parallax Grid",
   "tag": "section",
   "class": "shpg-section",
   "settings": [
@@ -439,13 +449,43 @@
           "step": 1,
           "default": 1,
           "info": "0 = static, 1 = normal, 2 = fast, 3 = dramatic."
+        },
+        {
+          "type": "header",
+          "content": "Card size"
+        },
+        {
+          "type": "select",
+          "id": "card_height",
+          "label": "Card height",
+          "options": [
+            { "value": "auto", "label": "Auto (layout default)" },
+            { "value": "small", "label": "Small" },
+            { "value": "medium", "label": "Medium" },
+            { "value": "large", "label": "Large" },
+            { "value": "xl", "label": "Extra Large" }
+          ],
+          "default": "auto",
+          "info": "Overrides the height for this card individually."
+        },
+        {
+          "type": "select",
+          "id": "card_width",
+          "label": "Card width (columns)",
+          "options": [
+            { "value": "auto", "label": "Auto (1 column)" },
+            { "value": "wide", "label": "Wide (2 columns)" },
+            { "value": "full", "label": "Full row" }
+          ],
+          "default": "auto",
+          "info": "Span multiple columns. Only applies in Masonry & Equal layouts."
         }
       ]
     }
   ],
   "presets": [
     {
-      "name": "SS - Parallax Grid",
+      "name": "SIQ - Parallax Grid",
       "blocks": [
         {
           "type": "card",

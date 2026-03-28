@@ -123,58 +123,86 @@
   grid-template-columns: repeat(3, 1fr);
   grid-auto-rows: 180px;
 }
-.shpg-grid--masonry .shpg-card:nth-child(6n+1) { grid-row: span 3; }
-.shpg-grid--masonry .shpg-card:nth-child(6n+2) { grid-row: span 2; }
-.shpg-grid--masonry .shpg-card:nth-child(6n+3) { grid-row: span 3; }
-.shpg-grid--masonry .shpg-card:nth-child(6n+4) { grid-row: span 2; }
-.shpg-grid--masonry .shpg-card:nth-child(6n+5) { grid-row: span 3; }
-.shpg-grid--masonry .shpg-card:nth-child(6n+6) { grid-row: span 2; }
+/* Default masonry heights (only applies when no override class is set) */
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+1) { grid-row: span 3; }
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+2) { grid-row: span 2; }
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+3) { grid-row: span 3; }
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+4) { grid-row: span 2; }
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+5) { grid-row: span 3; }
+.shpg-grid--masonry .shpg-card:not([class*="shpg-card--h-"]):nth-child(6n+6) { grid-row: span 2; }
 
 /* Equal columns */
 .shpg-grid--equal {
   grid-template-columns: repeat(3, 1fr);
+}
+.shpg-grid--equal .shpg-card:not([class*="shpg-card--h-"]) {
+  aspect-ratio: var(--shpg-aspect, 4/5);
 }
 
 /* Alternating 2-col layout */
 .shpg-grid--alternate {
   grid-template-columns: repeat(4, 1fr);
 }
-.shpg-grid--alternate .shpg-card:nth-child(3n+1) { grid-column: span 2; }
-.shpg-grid--alternate .shpg-card:nth-child(3n+2) { grid-column: span 2; }
-.shpg-grid--alternate .shpg-card:nth-child(3n+3) { grid-column: span 4; }
+.shpg-grid--alternate .shpg-card:not([class*="shpg-card--w-"]):nth-child(3n+1) { grid-column: span 2; }
+.shpg-grid--alternate .shpg-card:not([class*="shpg-card--w-"]):nth-child(3n+2) { grid-column: span 2; }
+.shpg-grid--alternate .shpg-card:not([class*="shpg-card--w-"]):nth-child(3n+3) { grid-column: span 4; }
+
+/* ---- Per-card height overrides ---- */
+/* Works in all layout modes */
+.shpg-grid--masonry .shpg-card--h-small  { grid-row: span 1; aspect-ratio: unset; }
+.shpg-grid--masonry .shpg-card--h-medium { grid-row: span 2; aspect-ratio: unset; }
+.shpg-grid--masonry .shpg-card--h-large  { grid-row: span 3; aspect-ratio: unset; }
+.shpg-grid--masonry .shpg-card--h-xl     { grid-row: span 4; aspect-ratio: unset; }
+
+.shpg-grid--equal .shpg-card--h-small  { aspect-ratio: 16/9;  min-height: unset; }
+.shpg-grid--equal .shpg-card--h-medium { aspect-ratio: 4/5;   min-height: unset; }
+.shpg-grid--equal .shpg-card--h-large  { aspect-ratio: 3/5;   min-height: unset; }
+.shpg-grid--equal .shpg-card--h-xl     { aspect-ratio: 9/16;  min-height: unset; }
+
+.shpg-grid--alternate .shpg-card--h-small  { min-height: 200px; }
+.shpg-grid--alternate .shpg-card--h-medium { min-height: 340px; }
+.shpg-grid--alternate .shpg-card--h-large  { min-height: 480px; }
+.shpg-grid--alternate .shpg-card--h-xl     { min-height: 600px; }
+
+/* ---- Per-card width overrides ---- */
+.shpg-grid--masonry .shpg-card--w-wide,
+.shpg-grid--equal   .shpg-card--w-wide    { grid-column: span 2; }
+.shpg-grid--masonry .shpg-card--w-full,
+.shpg-grid--equal   .shpg-card--w-full    { grid-column: 1 / -1; }
+.shpg-grid--alternate .shpg-card--w-wide  { grid-column: span 2; }
+.shpg-grid--alternate .shpg-card--w-full  { grid-column: 1 / -1; }
 
 /* ---- Card ---- */
 .shpg-card {
   position: relative;
   overflow: hidden;
   border-radius: var(--shpg-radius, 12px);
+  background: #ffffff;
   cursor: pointer;
-  will-change: transform;
+  will-change: transform, opacity;
   /* Reveal */
   opacity: 0;
   transform: translateY(60px) scale(0.95);
-  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
-              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .shpg-card.shpg-visible {
   opacity: 1;
-  transform: translateY(0) scale(1);
-}
-
-.shpg-grid--equal .shpg-card {
-  aspect-ratio: var(--shpg-aspect, 4/5);
+  /* transform is controlled by JS parallax – don't override here */
 }
 
 /* Image */
 .shpg-card__img-wrap {
   position: absolute;
-  inset: -20px;
+  inset: -30px;
   overflow: hidden;
   will-change: transform;
-  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  transform: scale(1.1);
+  transition: none;
+  background: #ffffff;
 }
 
-.shpg-card__img-wrap img {
+.shpg-card__img-wrap img,
+.shpg-card__img-wrap svg {
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -182,7 +210,14 @@
   transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.shpg-card:hover .shpg-card__img-wrap img {
+/* Override Shopify placeholder SVG background */
+.shpg-card__img-wrap svg rect,
+.shpg-card__img-wrap svg [fill]:not([fill="none"]) {
+  fill: #e8e8e8;
+}
+
+.shpg-card:hover .shpg-card__img-wrap img,
+.shpg-card:hover .shpg-card__img-wrap svg {
   transform: scale(1.08);
 }
 
@@ -370,8 +405,14 @@
   .shpg-grid--masonry .shpg-card { grid-row: span 2 !important; }
   .shpg-grid--alternate .shpg-card { grid-column: span 1 !important; }
 
-  .shpg-container { padding: 60px 16px; }
-  .shpg-header { margin-bottom: 40px; }
+  .shpg-container { padding: 48px 16px; }
+  .shpg-header { margin-bottom: 32px; }
+  .shpg-header__heading {
+    font-size: clamp(24px, 7vw, 40px);
+  }
+  .shpg-header__subtitle {
+    font-size: 14px;
+  }
   .shpg-orb { display: none; }
 
   .shpg-card__content {
@@ -379,4 +420,33 @@
     opacity: 1;
   }
   .shpg-card__icon { display: none; }
+
+  .shpg-card__label {
+    font-size: 15px;
+  }
+  .shpg-card__desc {
+    font-size: 12px;
+  }
+  .shpg-card__category {
+    font-size: 9px;
+    padding: 3px 8px;
+  }
+  .shpg-cta {
+    margin-top: 40px;
+  }
+  .shpg-cta__btn {
+    padding: 12px 28px;
+    font-size: 13px;
+  }
+
+  /* Disable parallax on mobile for performance */
+  .shpg-card__img-wrap {
+    inset: 0;
+    transform: none;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .shpg-container { padding: 40px 12px; }
+  .shpg-grid { gap: 12px; }
 }

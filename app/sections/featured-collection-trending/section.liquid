@@ -1,0 +1,709 @@
+{% comment %}
+  SectionHub – Trending Products  (fct-)
+  Curtain split heading with scroll-reveal product grid
+{% endcomment %}
+
+{%- liquid
+  assign heading_font = section.settings.heading_font
+  assign body_font    = section.settings.body_font
+  assign col          = section.settings.collection
+  assign col_obj      = collections[col]
+  assign limit        = section.settings.products_limit
+  assign show_vendor  = section.settings.show_vendor
+  assign show_price   = section.settings.show_price
+  assign show_badge   = section.settings.show_sale_badge
+  assign img_ratio    = section.settings.image_ratio
+  assign img_fit      = section.settings.image_fit
+  assign animate      = section.settings.animation_style
+  assign heading_tag  = section.settings.heading_tag
+  assign swipe_mobile = section.settings.swipe_mobile
+
+  assign heading_raw = section.settings.heading
+  assign heading_words = heading_raw | split: ' '
+  assign word_count = heading_words.size
+  assign half = word_count | divided_by: 2
+  assign word_left = ''
+  assign word_right = ''
+  for word in heading_words
+    if forloop.index <= half
+      if word_left != ''
+        assign word_left = word_left | append: ' '
+      endif
+      assign word_left = word_left | append: word
+    else
+      if word_right != ''
+        assign word_right = word_right | append: ' '
+      endif
+      assign word_right = word_right | append: word
+    endif
+  endfor
+-%}
+
+<style>
+  {{ heading_font | font_face: font_display: 'swap' }}
+  {{ body_font | font_face: font_display: 'swap' }}
+
+  #fct-{{ section.id }} {
+    --fct-bg: {{ section.settings.section_bg }};
+    --fct-heading-c: {{ section.settings.heading_color }};
+    --fct-text-c: {{ section.settings.text_color }};
+    --fct-card-bg: {{ section.settings.card_bg }};
+    --fct-badge-bg: {{ section.settings.badge_color }};
+    --fct-heading-ff: {{ heading_font.family }}, {{ heading_font.fallback_families }};
+    --fct-heading-fw: {{ heading_font.weight }};
+    --fct-heading-fst: {{ heading_font.style }};
+    --fct-body-ff: {{ body_font.family }}, {{ body_font.fallback_families }};
+    --fct-body-fw: {{ body_font.weight }};
+    --fct-heading-fs: {{ section.settings.heading_size }}px;
+    --fct-heading-fs-m: {{ section.settings.heading_size_mobile }}px;
+    --fct-radius: {{ section.settings.card_radius }}px;
+    --fct-gap: {{ section.settings.card_gap }}px;
+    --fct-max-w: {{ section.settings.max_width }}px;
+    --fct-pt: {{ section.settings.padding_top }}px;
+    --fct-pb: {{ section.settings.padding_bottom }}px;
+    --fct-pt-m: {{ section.settings.padding_top_mobile }}px;
+    --fct-pb-m: {{ section.settings.padding_bottom_mobile }}px;
+    --fct-px: {{ section.settings.padding_sides }}px;
+    --fct-columns: {{ section.settings.columns }};
+    --fct-columns-m: {{ section.settings.columns_mobile }};
+  }
+</style>
+
+<section id="fct-{{ section.id }}" class="fct" data-fct-root data-fct-animate="{{ animate }}">
+
+  {%- if animate == 'scroll' -%}
+
+    {%- comment -%} ── Scroll stage: tall container for scroll distance ── {%- endcomment -%}
+    <div class="fct-stage" data-fct-stage>
+
+      {%- comment -%} Sticky viewport ── {%- endcomment -%}
+      <div class="fct-sticky">
+
+        {%- comment -%} Curtain heading: two halves that slide apart ── {%- endcomment -%}
+        <div class="fct-curtain" data-fct-curtain>
+          <{{ heading_tag }} class="fct-curtain__left" data-fct-left>{{ word_left }}</{{ heading_tag }}>
+          <{{ heading_tag }} class="fct-curtain__right" data-fct-right>{{ word_right }}</{{ heading_tag }}>
+        </div>
+
+        {%- comment -%} Product grid (grows from behind the heading) ── {%- endcomment -%}
+        <div class="fct-products" data-fct-products>
+          <div class="fct-products__inner">
+            {%- if col_obj != blank and col_obj.products_count > 0 -%}
+              <div class="fct-grid">
+                {%- for product in col_obj.products limit: limit -%}
+                  <a href="{{ product.url }}" class="fct-card" aria-label="{{ product.title }}">
+                    <div class="fct-card__media" style="aspect-ratio: {{ img_ratio }};">
+                      {%- if product.featured_image -%}
+                        <img
+                          src="{{ product.featured_image | image_url: width: 600 }}"
+                          srcset="{{ product.featured_image | image_url: width: 300 }} 300w,
+                                  {{ product.featured_image | image_url: width: 450 }} 450w,
+                                  {{ product.featured_image | image_url: width: 600 }} 600w"
+                          sizes="(max-width: 749px) 45vw, 20vw"
+                          alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                          loading="lazy"
+                          class="fct-card__img{% if img_fit == 'cover' %} fct-card__img--cover{% endif %}"
+                        >
+                      {%- else -%}
+                        <div class="fct-card__placeholder">
+                          {{ 'product-1' | placeholder_svg_tag: 'fct-card__svg' }}
+                        </div>
+                      {%- endif -%}
+                      {%- if show_badge and product.compare_at_price > product.price -%}
+                        <span class="fct-badge">Sale</span>
+                      {%- endif -%}
+                    </div>
+                    <div class="fct-card__info">
+                      {%- if show_vendor and product.vendor != blank -%}
+                        <span class="fct-card__vendor">{{ product.vendor }}</span>
+                      {%- endif -%}
+                      <h4 class="fct-card__title">{{ product.title }}</h4>
+                      {%- if show_price -%}
+                        <div class="fct-card__price">
+                          {%- if product.compare_at_price > product.price -%}
+                            <span class="fct-card__price-old">{{ product.compare_at_price | money }}</span>
+                          {%- endif -%}
+                          <span class="fct-card__price-now">{{ product.price | money }}</span>
+                        </div>
+                      {%- endif -%}
+                    </div>
+                  </a>
+                {%- endfor -%}
+              </div>
+            {%- else -%}
+              <div class="fct-grid">
+                {%- for i in (1..5) -%}
+                  <div class="fct-card fct-card--placeholder">
+                    <div class="fct-card__media" style="aspect-ratio: {{ img_ratio }};">
+                      <div class="fct-card__placeholder">
+                        {{ 'product-1' | placeholder_svg_tag: 'fct-card__svg' }}
+                      </div>
+                    </div>
+                    <div class="fct-card__info">
+                      <h4 class="fct-card__title">Example product title</h4>
+                      <div class="fct-card__price">
+                        <span class="fct-card__price-now">$19.99 USD</span>
+                      </div>
+                    </div>
+                  </div>
+                {%- endfor -%}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+
+      </div>{%- comment -%} /fct-sticky {%- endcomment -%}
+    </div>{%- comment -%} /fct-stage {%- endcomment -%}
+
+  {%- else -%}
+
+    {%- comment -%} ── No animation mode ── {%- endcomment -%}
+    <div class="fct-content">
+      <div class="fct-content__inner">
+        {%- if section.settings.heading != blank -%}
+          <div class="fct-header">
+            <{{ heading_tag }} class="fct-header__heading">{{ section.settings.heading }}</{{ heading_tag }}>
+          </div>
+        {%- endif -%}
+
+        {%- if col_obj != blank and col_obj.products_count > 0 -%}
+          <div class="fct-grid{% if swipe_mobile %} fct-grid--swipe{% endif %}">
+            {%- for product in col_obj.products limit: limit -%}
+              <a href="{{ product.url }}" class="fct-card" data-fct-card aria-label="{{ product.title }}">
+                <div class="fct-card__media" style="aspect-ratio: {{ img_ratio }};">
+                  {%- if product.featured_image -%}
+                    <img
+                      src="{{ product.featured_image | image_url: width: 600 }}"
+                      srcset="{{ product.featured_image | image_url: width: 300 }} 300w,
+                              {{ product.featured_image | image_url: width: 450 }} 450w,
+                              {{ product.featured_image | image_url: width: 600 }} 600w"
+                      sizes="(max-width: 749px) 45vw, 20vw"
+                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      loading="lazy"
+                      class="fct-card__img{% if img_fit == 'cover' %} fct-card__img--cover{% endif %}"
+                    >
+                  {%- else -%}
+                    <div class="fct-card__placeholder">
+                      {{ 'product-1' | placeholder_svg_tag: 'fct-card__svg' }}
+                    </div>
+                  {%- endif -%}
+                  {%- if show_badge and product.compare_at_price > product.price -%}
+                    <span class="fct-badge">Sale</span>
+                  {%- endif -%}
+                </div>
+                <div class="fct-card__info">
+                  {%- if show_vendor and product.vendor != blank -%}
+                    <span class="fct-card__vendor">{{ product.vendor }}</span>
+                  {%- endif -%}
+                  <h4 class="fct-card__title">{{ product.title }}</h4>
+                  {%- if show_price -%}
+                    <div class="fct-card__price">
+                      {%- if product.compare_at_price > product.price -%}
+                        <span class="fct-card__price-old">{{ product.compare_at_price | money }}</span>
+                      {%- endif -%}
+                      <span class="fct-card__price-now">{{ product.price | money }}</span>
+                    </div>
+                  {%- endif -%}
+                </div>
+              </a>
+            {%- endfor -%}
+          </div>
+        {%- else -%}
+          <div class="fct-grid">
+            {%- for i in (1..5) -%}
+              <div class="fct-card fct-card--placeholder">
+                <div class="fct-card__media" style="aspect-ratio: {{ img_ratio }};">
+                  <div class="fct-card__placeholder">
+                    {{ 'product-1' | placeholder_svg_tag: 'fct-card__svg' }}
+                  </div>
+                </div>
+                <div class="fct-card__info">
+                  <h4 class="fct-card__title">Example product title</h4>
+                  <div class="fct-card__price">
+                    <span class="fct-card__price-now">$19.99 USD</span>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        {%- if section.settings.shop_all_text != blank and col_obj != blank and col_obj.url != blank -%}
+          <div class="fct-footer">
+            <a href="{{ col_obj.url }}" class="fct-footer__link">{{ section.settings.shop_all_text }} →</a>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+
+  {%- endif -%}
+
+</section>
+
+<script>
+(function(){
+  var root = document.querySelector('#fct-{{ section.id }}[data-fct-root]');
+  if (!root) return;
+  var animate = root.getAttribute('data-fct-animate');
+
+  /* ═══════════════════════════════════════════
+     Scroll-driven curtain split animation
+     ═══════════════════════════════════════════ */
+  if (animate === 'scroll') {
+    var stage    = root.querySelector('[data-fct-stage]');
+    var leftEl   = root.querySelector('[data-fct-left]');
+    var rightEl  = root.querySelector('[data-fct-right]');
+    var prodEl   = root.querySelector('[data-fct-products]');
+    if (!stage || !leftEl || !rightEl || !prodEl) return;
+
+    function lerp(a, b, t) { return a + (b - a) * t; }
+    function smoothstep(x) { return x * x * (3 - 2 * x); }
+
+    /* Smoothed current values */
+    var curLeftX  = 0;    /* translateX % for left word  */
+    var curRightX = 0;    /* translateX % for right word */
+    var curScale  = 0.3;  /* product grid scale (starts small) */
+    var curOpacity = 0;   /* product grid opacity */
+    var curTextOp = 1;    /* heading text opacity */
+
+    var tarLeftX  = 0;
+    var tarRightX = 0;
+    var tarScale  = 0.3;
+    var tarOpacity = 0;
+    var tarTextOp = 1;
+
+    var factor  = 0.07;
+    var settled = true;
+
+    function onScroll() {
+      /* Use the curtain element's position in the viewport
+         to drive the animation – exactly like Scroll Text Reveal.
+         No sticky / no extra height needed. */
+      var curtainEl = root.querySelector('[data-fct-curtain]');
+      var rect   = curtainEl.getBoundingClientRect();
+      var viewH  = window.innerHeight;
+      var midY   = rect.top + rect.height * 0.5;
+
+      /* triggerStart: element center at 85% of viewport (near bottom) → progress 0
+         triggerEnd:   element center at 25% of viewport (upper quarter) → progress 1 */
+      var triggerStart = viewH * 0.85;
+      var triggerEnd   = viewH * 0.25;
+      var triggerRange = triggerStart - triggerEnd;
+
+      var raw = (triggerStart - midY) / Math.max(triggerRange, 1);
+      var progress = Math.max(0, Math.min(1, raw));
+      var ease     = smoothstep(progress);
+
+      /* Words slide apart: 0% → -120% left, 0% → +120% right */
+      tarLeftX  = -ease * 120;
+      tarRightX = ease * 120;
+
+      /* Text fades out in the second half */
+      tarTextOp = 1 - smoothstep(Math.min(1, progress / 0.6));
+
+      /* Products scale up and fade in */
+      tarScale   = 0.3 + ease * 0.7;   /* 0.3 → 1.0 */
+      tarOpacity = smoothstep(Math.min(1, progress / 0.7));
+
+      if (settled) {
+        settled = false;
+        requestAnimationFrame(tick);
+      }
+    }
+
+    function tick() {
+      curLeftX   = lerp(curLeftX,   tarLeftX,   factor);
+      curRightX  = lerp(curRightX,  tarRightX,  factor);
+      curScale   = lerp(curScale,   tarScale,   factor);
+      curOpacity = lerp(curOpacity, tarOpacity, factor);
+      curTextOp  = lerp(curTextOp,  tarTextOp,  factor);
+
+      leftEl.style.transform  = 'translateX(' + curLeftX.toFixed(2) + '%)';
+      rightEl.style.transform = 'translateX(' + curRightX.toFixed(2) + '%)';
+      leftEl.style.opacity    = Math.max(0, curTextOp).toFixed(4);
+      rightEl.style.opacity   = Math.max(0, curTextOp).toFixed(4);
+
+      prodEl.style.transform = 'scale(' + curScale.toFixed(4) + ')';
+      prodEl.style.opacity   = Math.max(0, Math.min(1, curOpacity)).toFixed(4);
+
+      var d = Math.abs(curLeftX - tarLeftX) + Math.abs(curRightX - tarRightX)
+            + Math.abs(curScale - tarScale) + Math.abs(curOpacity - tarOpacity)
+            + Math.abs(curTextOp - tarTextOp);
+
+      if (d > 0.005) {
+        requestAnimationFrame(tick);
+      } else {
+        curLeftX = tarLeftX; curRightX = tarRightX;
+        curScale = tarScale; curOpacity = tarOpacity;
+        curTextOp = tarTextOp;
+        settled = true;
+      }
+    }
+
+    /* Only observe when near viewport */
+    var active = false;
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting && !active) {
+          active = true;
+          window.addEventListener('scroll', onScroll, { passive: true });
+          onScroll();
+        } else if (!e.isIntersecting && active) {
+          active = false;
+          window.removeEventListener('scroll', onScroll);
+        }
+      });
+    }, { rootMargin: '200px 0px' });
+    io.observe(root);
+    onScroll();
+  }
+
+  /* ── Card entrance animation (none mode) ── */
+  if (animate === 'none') {
+    var cards = root.querySelectorAll('[data-fct-card]');
+    var obs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(e) {
+        if (e.isIntersecting) {
+          e.target.classList.add('fct-card--visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    cards.forEach(function(c) { obs.observe(c); });
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Trending Products",
+  "tag": "section",
+  "class": "fct-section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "──── Collection ────"
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Collection"
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "label": "Max products",
+      "min": 2,
+      "max": 20,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "header",
+      "content": "──── Content ────"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "TRENDING PRODUCTS"
+    },
+    {
+      "type": "select",
+      "id": "heading_size_preset",
+      "label": "Heading size",
+      "options": [
+        { "value": "small",    "label": "Small" },
+        { "value": "medium",   "label": "Medium" },
+        { "value": "large",    "label": "Large" },
+        { "value": "x-large",  "label": "X-Large" },
+        { "value": "xx-large", "label": "XX-Large" },
+        { "value": "xxx-large","label": "XXX-Large" }
+      ],
+      "default": "xxx-large"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size (custom px)",
+      "min": 24,
+      "max": 160,
+      "step": 2,
+      "unit": "px",
+      "default": 96
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size mobile",
+      "min": 20,
+      "max": 80,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "select",
+      "id": "heading_tag",
+      "label": "Heading tag",
+      "options": [
+        { "value": "h1", "label": "H1" },
+        { "value": "h2", "label": "H2" },
+        { "value": "h3", "label": "H3" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "header",
+      "content": "──── Animation ────"
+    },
+    {
+      "type": "select",
+      "id": "animation_style",
+      "label": "Animation style",
+      "options": [
+        { "value": "scroll", "label": "On scroll" },
+        { "value": "none",   "label": "None" }
+      ],
+      "default": "scroll"
+    },
+    {
+      "type": "header",
+      "content": "──── Product cards ────"
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image ratio",
+      "options": [
+        { "value": "auto",   "label": "Auto" },
+        { "value": "1 / 1",  "label": "Square 1:1" },
+        { "value": "4 / 5",  "label": "Portrait 4:5" },
+        { "value": "3 / 4",  "label": "Portrait 3:4" },
+        { "value": "2 / 3",  "label": "Portrait 2:3" }
+      ],
+      "default": "auto"
+    },
+    {
+      "type": "select",
+      "id": "image_fit",
+      "label": "Image fit",
+      "options": [
+        { "value": "natural", "label": "Natural" },
+        { "value": "cover",   "label": "Cropped" }
+      ],
+      "default": "natural"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns (desktop)",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 5
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns (mobile)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "card_gap",
+      "label": "Card gap",
+      "min": 4,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sale_badge",
+      "label": "Show sale badge",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "swipe_mobile",
+      "label": "Enable swipe on mobile",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "shop_all_text",
+      "label": "Shop all link text"
+    },
+    {
+      "type": "header",
+      "content": "──── Typography ────"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "assistant_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "assistant_n4"
+    },
+    {
+      "type": "header",
+      "content": "──── Colors ────"
+    },
+    {
+      "type": "color",
+      "id": "section_bg",
+      "label": "Section background",
+      "default": "#ededed"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#d5d5d5"
+    },
+    {
+      "type": "color",
+      "id": "badge_color",
+      "label": "Sale badge",
+      "default": "#ef4444"
+    },
+    {
+      "type": "header",
+      "content": "──── Section spacing ────"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Section max width",
+      "min": 900,
+      "max": 1600,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top space (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 35,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom space (desktop)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 55,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top space (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Bottom space (mobile)",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_sides",
+      "label": "Side padding",
+      "min": 0,
+      "max": 80,
+      "step": 4,
+      "default": 24,
+      "unit": "px"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Trending Products",
+      "settings": {
+        "heading": "TRENDING PRODUCTS",
+        "heading_size": 96,
+        "heading_size_mobile": 42,
+        "heading_tag": "h2",
+        "animation_style": "scroll",
+        "products_limit": 5,
+        "columns": 5,
+        "columns_mobile": 2,
+        "image_ratio": "auto",
+        "show_price": true,
+        "show_sale_badge": true,
+        "show_vendor": false,
+        "card_gap": 16,
+        "card_radius": 8,
+        "section_bg": "#ededed",
+        "heading_color": "#1a1a1a",
+        "text_color": "#1a1a1a",
+        "padding_top": 35,
+        "padding_bottom": 55,
+        "padding_top_mobile": 40,
+        "padding_bottom_mobile": 40,
+        "padding_sides": 24
+      }
+    }
+  ]
+}
+{% endschema %}

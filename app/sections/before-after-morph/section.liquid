@@ -1,0 +1,795 @@
+{%- comment -%}
+  Section Hub — Before / After Morph Cards v1
+  Grid of cards with circular ripple / slide / fade reveal animations.
+{%- endcomment -%}
+
+{%- assign sid           = section.id -%}
+{%- assign reveal_mode   = section.settings.reveal_mode -%}
+{%- assign show_toggle   = section.settings.show_toggle -%}
+{%- assign show_tap_hint = section.settings.show_tap_hint -%}
+{%- assign heading_font  = section.settings.heading_font -%}
+{%- assign body_font     = section.settings.body_font -%}
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ body_font    | font_face: font_display: 'swap' }}
+
+<style>
+#bam-{{ sid }}.bam-section {
+  --bam-bg:                 {{ section.settings.bg_color }};
+  --bam-text:               {{ section.settings.text_color }};
+  --bam-muted:              {{ section.settings.muted_color }};
+  --bam-accent:             {{ section.settings.accent_color }};
+  --bam-card-bg:            {{ section.settings.card_bg_color }};
+  --bam-mw:                 {{ section.settings.max_width }}px;
+  --bam-pt:                 {{ section.settings.padding_top }}px;
+  --bam-pb:                 {{ section.settings.padding_bottom }}px;
+  --bam-pt-m:               {{ section.settings.padding_top_mobile }}px;
+  --bam-pb-m:               {{ section.settings.padding_bottom_mobile }}px;
+  --bam-header-gap:         {{ section.settings.header_gap }}px;
+  --bam-header-gap-m:       {{ section.settings.header_gap_mobile }}px;
+  --bam-header-align:       {{ section.settings.header_align }};
+  --bam-cols:               {{ section.settings.columns_desktop }};
+  --bam-cols-s:             {{ section.settings.columns_tablet }};
+  --bam-cols-m:             {{ section.settings.columns_mobile }};
+  --bam-gap:                {{ section.settings.grid_gap }}px;
+  --bam-gap-m:              {{ section.settings.grid_gap_mobile }}px;
+  --bam-card-radius:        {{ section.settings.card_radius }}px;
+  --bam-card-h:             {{ section.settings.card_height }}px;
+  --bam-card-h-m:           {{ section.settings.card_height_mobile }}px;
+  --bam-card-p:             {{ section.settings.card_padding }}px;
+  --bam-card-p-m:           {{ section.settings.card_padding_mobile }}px;
+  --bam-card-shadow:        {% if section.settings.card_shadow %}0 2px 16px rgba(0,0,0,0.08){% else %}none{% endif %};
+  --bam-card-shadow-hover:  {% if section.settings.card_shadow %}0 6px 32px rgba(0,0,0,0.15){% else %}none{% endif %};
+  --bam-heading-size:       {{ section.settings.heading_size }}px;
+  --bam-heading-size-m:     {{ section.settings.heading_size_mobile }}px;
+  --bam-heading-weight:     {{ section.settings.heading_weight }};
+  --bam-heading-ls:         {{ section.settings.heading_letter_spacing }}em;
+  --bam-heading-style:      {{ heading_font.style }};
+  --bam-body-size:          {{ section.settings.body_size }}px;
+  --bam-body-style:         {{ body_font.style }};
+  --bam-eyebrow-size:       {{ section.settings.eyebrow_size }}px;
+  --bam-card-title-size:    {{ section.settings.card_title_size }}px;
+  --bam-card-title-size-m:  {{ section.settings.card_title_size_mobile }}px;
+  --bam-card-desc-size:     {{ section.settings.card_desc_size }}px;
+  --bam-font-heading:       {{ heading_font.family }}, {{ heading_font.fallback_families }};
+  --bam-font-body:          {{ body_font.family }},    {{ body_font.fallback_families }};
+}
+</style>
+
+<section id="bam-{{ sid }}" class="bam-section" aria-label="{{ section.settings.heading | default: 'Before & After' }}">
+  <div class="bam-wrap">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="bam-header">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="bam-eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="bam-heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="bam-subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="bam-grid" id="bam-grid-{{ sid }}">
+      {%- for block in section.blocks -%}
+        <div
+          class="bam-card"
+          data-mode="{{ reveal_mode }}"
+          data-idx="{{ forloop.index0 }}"
+          tabindex="0"
+          role="button"
+          aria-label="{{ block.settings.title | default: 'Before After Card' }} — Click to reveal after"
+          {{ block.shopify_attributes }}
+        >
+          <div class="bam-card-img-wrap">
+
+            {%- comment -%} After image (bottom) {%- endcomment -%}
+            {%- if block.settings.image_after != blank -%}
+              {{ block.settings.image_after | image_url: width: 900 | image_tag:
+                class: 'bam-img-after',
+                loading: 'lazy',
+                widths: '400,600,900',
+                sizes: '(max-width:559px) 92vw, (max-width:899px) 46vw, 30vw'
+              }}
+            {%- else -%}
+              <div class="bam-placeholder bam-placeholder--after">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Before image (top, will be clipped away) {%- endcomment -%}
+            {%- if block.settings.image_before != blank -%}
+              {{ block.settings.image_before | image_url: width: 900 | image_tag:
+                class: 'bam-img-before',
+                loading: 'lazy',
+                widths: '400,600,900',
+                sizes: '(max-width:559px) 92vw, (max-width:899px) 46vw, 30vw'
+              }}
+            {%- else -%}
+              <div class="bam-placeholder bam-placeholder--before">
+                {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} State labels {%- endcomment -%}
+            {%- if section.settings.show_state_labels -%}
+              <span class="bam-state-label bam-state-label--before">{{ block.settings.label_before | default: 'Before' }}</span>
+              <span class="bam-state-label bam-state-label--after">{{ block.settings.label_after | default: 'After' }}</span>
+            {%- endif -%}
+
+            {%- comment -%} Badge {%- endcomment -%}
+            {%- if block.settings.badge != blank -%}
+              <span class="bam-badge">{{ block.settings.badge }}</span>
+            {%- endif -%}
+
+            {%- comment -%} Tap hint {%- endcomment -%}
+            {%- if show_tap_hint -%}
+              <div class="bam-tap-hint">
+                <div class="bam-tap-hint-inner">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                    <path d="M12 5v14M5 12h14"/>
+                  </svg>
+                  Tap to reveal
+                </div>
+              </div>
+            {%- endif -%}
+
+            {%- comment -%} Toggle button {%- endcomment -%}
+            {%- if show_toggle -%}
+              <div class="bam-toggle-wrap">
+                <button class="bam-toggle" data-toggle aria-label="Toggle before/after">
+                  <span class="bam-toggle-dot">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                      <path d="M9 6l-4 6 4 6"/><path d="M15 6l4 6-4 6"/>
+                    </svg>
+                  </span>
+                  <span class="bam-toggle-label">After</span>
+                </button>
+              </div>
+            {%- endif -%}
+
+          </div>
+
+          {%- if block.settings.title != blank or block.settings.description != blank or block.settings.button_label != blank -%}
+            <div class="bam-card-body">
+              {%- if block.settings.title != blank -%}
+                <p class="bam-card-title">{{ block.settings.title }}</p>
+              {%- endif -%}
+              {%- if block.settings.description != blank -%}
+                <p class="bam-card-desc">{{ block.settings.description }}</p>
+              {%- endif -%}
+              {%- if block.settings.button_label != blank -%}
+                <a class="bam-card-link" href="{{ block.settings.button_link | default: '#' }}">
+                  {{ block.settings.button_label }}
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+                </a>
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+        </div>
+      {%- endfor -%}
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var ROOT = document.getElementById('bam-{{ sid }}');
+  if (!ROOT) return;
+
+  function getRelPos(e, el) {
+    var r   = el.getBoundingClientRect();
+    var src = e.touches ? e.changedTouches[0] : e;
+    return {
+      x: ((src.clientX - r.left) / r.width  * 100).toFixed(1),
+      y: ((src.clientY - r.top)  / r.height * 100).toFixed(1)
+    };
+  }
+
+  function revealCard(card, e) {
+    var mode = card.dataset.mode;
+    if (mode === 'ripple' && e) {
+      var imgWrap = card.querySelector('.bam-card-img-wrap');
+      if (imgWrap) {
+        var pos = getRelPos(e, imgWrap);
+        card.style.setProperty('--bam-rx', pos.x + '%');
+        card.style.setProperty('--bam-ry', pos.y + '%');
+      }
+    }
+    card.classList.add('bam-revealed', 'bam-touched');
+    var tl = card.querySelector('.bam-toggle-label');
+    if (tl) tl.textContent = 'Before';
+  }
+
+  function unrevealCard(card) {
+    card.classList.remove('bam-revealed');
+    var tl = card.querySelector('.bam-toggle-label');
+    if (tl) tl.textContent = 'After';
+  }
+
+  ROOT.querySelectorAll('.bam-card').forEach(function(card) {
+    /* Click / tap on card image area */
+    var imgWrap = card.querySelector('.bam-card-img-wrap');
+    if (imgWrap) {
+      imgWrap.addEventListener('click', function(e) {
+        if (e.target.closest('[data-toggle]')) return;
+        if (card.classList.contains('bam-revealed')) {
+          unrevealCard(card);
+        } else {
+          revealCard(card, e);
+        }
+      });
+      imgWrap.addEventListener('touchend', function(e) {
+        if (e.target.closest('[data-toggle]')) return;
+        e.preventDefault();
+        if (card.classList.contains('bam-revealed')) {
+          unrevealCard(card);
+        } else {
+          revealCard(card, e);
+        }
+      }, { passive: false });
+    }
+
+    /* Toggle button */
+    var toggleBtn = card.querySelector('[data-toggle]');
+    if (toggleBtn) {
+      toggleBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        if (card.classList.contains('bam-revealed')) {
+          unrevealCard(card);
+        } else {
+          revealCard(card, null);
+        }
+      });
+    }
+
+    /* Keyboard */
+    card.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        if (card.classList.contains('bam-revealed')) {
+          unrevealCard(card);
+        } else {
+          revealCard(card, null);
+        }
+      }
+    });
+  });
+
+  /* IntersectionObserver: stagger entrance */
+  if (typeof IntersectionObserver !== 'undefined') {
+    var io = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting) {
+          var idx = +entry.target.dataset.idx;
+          entry.target.style.animationDelay = (idx * 0.07) + 's';
+          entry.target.style.animation = 'bam-card-in 0.5s ease both';
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    ROOT.querySelectorAll('.bam-card').forEach(function(c){ io.observe(c); });
+  }
+})();
+</script>
+
+<style>
+@keyframes bam-card-in {
+  from { opacity: 0; transform: translateY(22px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+</style>
+
+{% schema %}
+{
+  "name": "SIQ - BA Morph Cards",
+  "tag": "section",
+  "class": "section-hub--ba-morph",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Transformations"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Real Results, Real People"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Tap any card to reveal the after result"
+    },
+    {
+      "type": "select",
+      "id": "header_align",
+      "label": "Header alignment",
+      "options": [
+        { "value": "left",   "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right",  "label": "Right" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Reveal Mode"
+    },
+    {
+      "type": "select",
+      "id": "reveal_mode",
+      "label": "Reveal animation",
+      "options": [
+        { "value": "ripple", "label": "Ripple (expands from tap point)" },
+        { "value": "slide",  "label": "Slide (swipe left)" },
+        { "value": "fade",   "label": "Fade" }
+      ],
+      "default": "ripple"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_toggle",
+      "label": "Show toggle button on cards",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tap_hint",
+      "label": "Show tap hint on cards",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_state_labels",
+      "label": "Show Before / After labels",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Grid Layout"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns — desktop (≥900px)",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "columns_tablet",
+      "label": "Columns — tablet (560–899px)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "columns_mobile",
+      "label": "Columns — mobile (<560px)",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "grid_gap",
+      "label": "Grid gap — desktop",
+      "min": 8,
+      "max": 60,
+      "step": 4,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Grid gap — mobile",
+      "min": 8,
+      "max": 40,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card Sizes"
+    },
+    {
+      "type": "range",
+      "id": "card_height",
+      "label": "Card image height — desktop",
+      "min": 180,
+      "max": 600,
+      "step": 10,
+      "default": 340,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_height_mobile",
+      "label": "Card image height — mobile",
+      "min": 160,
+      "max": 500,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card body padding — desktop",
+      "min": 8,
+      "max": 40,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding_mobile",
+      "label": "Card body padding — mobile",
+      "min": 8,
+      "max": 32,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 600,
+      "max": 1600,
+      "step": 20,
+      "default": 1200,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_gap",
+      "label": "Header gap — desktop",
+      "min": 16,
+      "max": 100,
+      "step": 4,
+      "default": 56,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_gap_mobile",
+      "label": "Header gap — mobile",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "default": 36,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top — desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 88,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom — desktop",
+      "min": 0,
+      "max": 160,
+      "step": 4,
+      "default": 88,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top — mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 52,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom — mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 52,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f2f0ed"
+    },
+    {
+      "type": "color",
+      "id": "card_bg_color",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted / subtext color",
+      "default": "#777777"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#5c6bc0"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "options": [
+        { "value": "-0.04", "label": "Tighter" },
+        { "value": "-0.03", "label": "Tight" },
+        { "value": "-0.02", "label": "Slightly tight" },
+        { "value": "0",     "label": "Normal" },
+        { "value": "0.02",  "label": "Wide" }
+      ],
+      "default": "-0.03"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size — desktop",
+      "min": 22,
+      "max": 72,
+      "step": 1,
+      "default": 44,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size — mobile",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Body text size",
+      "min": 12,
+      "max": 22,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Eyebrow text size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "label": "Card title size — desktop",
+      "min": 12,
+      "max": 28,
+      "step": 1,
+      "default": 17,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "label": "Card title size — mobile",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_desc_size",
+      "label": "Card description size",
+      "min": 10,
+      "max": 18,
+      "step": 1,
+      "default": 13,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Before / After Card",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_before",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_after",
+          "label": "After image"
+        },
+        {
+          "type": "text",
+          "id": "label_before",
+          "label": "Before label",
+          "default": "Before"
+        },
+        {
+          "type": "text",
+          "id": "label_after",
+          "label": "After label",
+          "default": "After"
+        },
+        {
+          "type": "header",
+          "content": "Card Content"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Card title"
+        },
+        {
+          "type": "text",
+          "id": "description",
+          "label": "Description"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge text"
+        },
+        {
+          "type": "header",
+          "content": "CTA"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - BA Morph Cards",
+      "blocks": [
+        {
+          "type": "card",
+          "settings": {
+            "title": "Skin Transformation",
+            "description": "4-week treatment results. Improved texture and radiance.",
+            "label_before": "Before",
+            "label_after": "After",
+            "badge": "4 Weeks"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Hydration Boost",
+            "description": "Moisture barrier restored. Visible plumping effect.",
+            "label_before": "Before",
+            "label_after": "After",
+            "badge": "Day 28"
+          }
+        },
+        {
+          "type": "card",
+          "settings": {
+            "title": "Tone & Clarity",
+            "description": "Redness reduced. Even skin tone achieved.",
+            "label_before": "Before",
+            "label_after": "After",
+            "badge": "8 Weeks"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

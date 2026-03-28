@@ -1,6 +1,7 @@
 import type { ActionFunctionArgs } from "react-router";
 import { authenticate } from "../shopify.server";
 import prisma from "../db.server";
+import { invalidatePremiumCache } from "../lib/is-premium.server";
 
 /**
  * API Route: Kündigt das Premium-Abo
@@ -56,6 +57,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         plan: "free",
       },
     });
+    invalidatePremiumCache(shop);
 
     return Response.json({ success: true });
   } catch (error) {

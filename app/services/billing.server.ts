@@ -16,7 +16,7 @@ export async function createOneTimePurchase(
   currency: string = "EUR",
   returnUrl: string
 ) {
-  const useTestMode = process.env.SHOPIFY_BILLING_TEST_MODE !== "false";
+  const useTestMode = false;
 
   const mutation = `
     mutation appPurchaseOneTimeCreate($name: String!, $price: MoneyInput!, $returnUrl: URL!, $test: Boolean!) {

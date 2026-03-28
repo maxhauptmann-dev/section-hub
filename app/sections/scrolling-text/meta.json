@@ -1,12 +1,12 @@
 {
   "id": "scrolling-text",
-  "name": "Scrolling Text",
+  "name": "SIQ - Scrolling Text",
   "description": "Bold auto-scrolling marquee text bar. Infinite loop with large editorial typography. Perfect for branding, collabs, or announcements.",
   "category": "Scrolling",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 10,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -18,7 +18,7 @@
     "Animated",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -68,5 +68,6 @@
     }
   ],
   "updatedAt": "2026-03-04",
-  "createdAt": "2026-02-20"
+  "createdAt": "2026-02-20",
+  "tier": "basic"
 }

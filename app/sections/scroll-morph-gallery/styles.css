@@ -1,0 +1,231 @@
+/* ===== Scroll Morph Gallery ===== */
+.smg-wrap{
+  position:relative;
+  background:var(--smg-bg,#0a0a0a);
+  color:var(--smg-text,#fff);
+  margin-top:var(--smg-mt,0);
+  margin-bottom:var(--smg-mb,0);
+}
+
+/* Header */
+.smg-header{
+  position:relative;
+  z-index:10;
+  max-width:900px;
+  margin:0 auto;
+  padding:80px 24px 40px;
+}
+.smg-heading{
+  font-size:clamp(1.8rem,3.5vw,3rem);
+  font-weight:800;
+  margin:0 0 12px;
+}
+.smg-sub{
+  font-size:clamp(.95rem,1.5vw,1.15rem);
+  opacity:.55;
+  margin:0;
+  line-height:1.6;
+  max-width:600px;
+}
+.smg-header[style*="center"] .smg-sub{
+  margin-left:auto;
+  margin-right:auto;
+}
+
+/* Scroll */
+.smg-scroll{
+  position:relative;
+}
+
+/* Sticky */
+.smg-sticky{
+  position:sticky;
+  top:0;
+  height:100vh;
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+/* Panel */
+.smg-panel{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+.smg-panel--active{
+  pointer-events:auto;
+  z-index:2;
+}
+
+/* Image wrapper (the morphing element) */
+.smg-panel__img-wrap{
+  width:var(--smg-start-w,35%);
+  height:70%;
+  border-radius:var(--smg-start-r,28px);
+  overflow:hidden;
+  position:relative;
+  will-change:width,border-radius,transform,opacity;
+  transition:none;
+  opacity:0;
+}
+.smg-panel--active .smg-panel__img-wrap{
+  opacity:1;
+}
+.smg-panel__img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.smg-panel__ph{
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:#1a1a2e;
+  color:var(--smg-text);
+  opacity:.15;
+}
+.smg-panel__overlay{
+  position:absolute;
+  inset:0;
+  background:var(--smg-overlay,rgba(0,0,0,.3));
+}
+
+/* Caption */
+.smg-panel__caption{
+  position:absolute;
+  bottom:12%;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  text-align:center;
+  z-index:5;
+  opacity:0;
+  will-change:opacity,transform;
+  max-width:600px;
+  padding:0 20px;
+}
+.smg-panel__eyebrow{
+  display:inline-block;
+  font-size:.75rem;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.15em;
+  color:var(--smg-accent,#a78bfa);
+  margin-bottom:10px;
+}
+.smg-panel__title{
+  font-size:clamp(1.4rem,3vw,2.2rem);
+  font-weight:700;
+  margin:0 0 8px;
+}
+.smg-panel__desc{
+  font-size:clamp(.9rem,1.4vw,1.05rem);
+  opacity:.7;
+  margin:0;
+  line-height:1.55;
+}
+
+/* Counter */
+.smg-counter{
+  position:absolute;
+  top:32px;
+  right:32px;
+  z-index:10;
+  font-size:1rem;
+  font-weight:700;
+  font-variant-numeric:tabular-nums;
+  color:var(--smg-text);
+  opacity:.5;
+}
+.smg-counter__num{
+  color:var(--smg-accent,#a78bfa);
+  opacity:1;
+}
+.smg-counter__sep{
+  opacity:.3;
+  margin:0 4px;
+}
+
+/* Progress bar */
+.smg-progress-bar{
+  position:absolute;
+  bottom:0;
+  left:0;right:0;
+  height:3px;
+  background:rgba(255,255,255,.08);
+  z-index:10;
+}
+.smg-progress-fill{
+  height:100%;
+  width:0;
+  background:var(--smg-accent,#a78bfa);
+  will-change:width;
+  transition:none;
+}
+
+/* Responsive */
+@media(max-width:600px){
+  .smg-header{
+    padding:48px 16px 24px;
+  }
+  .smg-heading{
+    font-size:clamp(1.4rem,6vw,2rem);
+  }
+  .smg-sub{
+    font-size:clamp(.85rem,3vw,1rem);
+  }
+  .smg-panel__img-wrap{
+    width:75% !important;
+    height:55%;
+  }
+  .smg-panel__caption{
+    bottom:6%;
+    padding:0 16px;
+  }
+  .smg-panel__title{
+    font-size:clamp(1.1rem,4.5vw,1.6rem);
+  }
+  .smg-panel__desc{
+    font-size:clamp(.8rem,3vw,.95rem);
+  }
+  .smg-panel__eyebrow{
+    font-size:.65rem;
+  }
+  .smg-counter{
+    top:16px;
+    right:16px;
+    font-size:.85rem;
+  }
+}
+
+@media(max-width:400px){
+  .smg-panel__img-wrap{
+    width:85% !important;
+    height:50%;
+  }
+  .smg-panel__caption{
+    bottom:4%;
+  }
+}
+
+/* Reduced motion */
+@media(prefers-reduced-motion:reduce){
+  .smg-panel__img-wrap{
+    width:100% !important;
+    border-radius:0 !important;
+    transform:none !important;
+    opacity:1 !important;
+  }
+  .smg-panel__caption{
+    opacity:1 !important;
+    transform:translateX(-50%) !important;
+  }
+}

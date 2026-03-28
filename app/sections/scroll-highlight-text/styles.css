@@ -62,8 +62,13 @@
 
 /* Content wrapper */
 .shht-content {
+  box-sizing: border-box;
+  width: 100%;
   max-width: var(--shht-max-w, 900px);
-  padding: 40px;
+  padding-left: var(--shht-padding-h-desktop, 40px);
+  padding-right: var(--shht-padding-h-desktop, 40px);
+  padding-top: 40px;
+  padding-bottom: 40px;
   text-align: var(--shht-align, center);
 }
 
@@ -93,6 +98,10 @@
   font-size: var(--shht-text-size, clamp(28px, 4.5vw, 52px));
   line-height: var(--shht-text-lh, 1.25);
   margin-bottom: 40px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: break-word;
+  width: 100%;
 }
 
 .shht-paragraph:last-child {
@@ -101,7 +110,9 @@
 
 /* Each word */
 .shht-word {
-  display: inline;
+  display: inline-block;
+  white-space: normal;
+  word-spacing: 0.25em;
   color: var(--shht-muted, rgba(255,255,255,0.12));
   transition: color 0.25s ease;
 }
@@ -231,20 +242,55 @@
 /* ---- Responsive ---- */
 @media screen and (max-width: 749px) {
   .shht-content {
-    padding: 24px 20px;
+    padding-left: var(--shht-padding-h-mobile, 20px);
+    padding-right: var(--shht-padding-h-mobile, 20px);
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+  .shht-paragraph {
+    font-size: clamp(20px, 5vw, 36px);
+    line-height: 1.35;
+    margin-bottom: 28px;
+  }
+  .shht-eyebrow {
+    font-size: 10px;
+    margin-bottom: 16px;
   }
   .shht-progress-side {
-    right: 8px;
+    right: 6px;
   }
   .shht-progress-pip {
     width: 3px;
-    height: 14px;
+    height: 12px;
   }
   .shht-progress-pip.shht-pip--active {
-    height: 22px;
+    height: 20px;
   }
   .shht-side-label { display: none; }
   .shht-cta {
-    bottom: 24px;
+    bottom: 20px;
+  }
+  .shht-cta__btn {
+    padding: 12px 28px;
+    font-size: 13px;
+  }
+}
+
+@media screen and (max-width: 479px) {
+  .shht-content {
+    padding-left: var(--shht-padding-h-mobile, 14px);
+    padding-right: var(--shht-padding-h-mobile, 14px);
+    padding-top: 20px;
+    padding-bottom: 20px;
+  }
+  .shht-paragraph {
+    font-size: clamp(18px, 5vw, 28px);
+  }
+  .shht-cta__btn {
+    padding: 10px 24px;
+    font-size: 12px;
+  }
+  .shht-progress-side {
+    display: none;
   }
 }

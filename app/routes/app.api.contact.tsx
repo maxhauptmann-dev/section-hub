@@ -31,13 +31,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     section: "Section Help",
   };
 
-  const subject = `[Section Hub] ${topicLabels[topic] || "Support"} from ${name || "Customer"}`;
+  const subject = `[SectionIQ] ${topicLabels[topic] || "Support"} from ${name || "Customer"}`;
 
   const resend = new Resend(apiKey);
 
   try {
     await resend.emails.send({
-      from: "Section Hub <onboarding@resend.dev>",
+      from: "SectionIQ <onboarding@resend.dev>",
       to: [SUPPORT_EMAIL],
       replyTo: undefined, // We don't have the customer's email
       subject,
@@ -69,7 +69,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 ${escapeHtml(message)}
             </div>
             <p style="color: #9ca3af; font-size: 12px; margin-top: 20px;">
-              Sent via Section Hub Help Center
+              Sent via SectionIQ Help Center
             </p>
           </div>
         </div>

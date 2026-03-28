@@ -313,6 +313,7 @@ interface PageAnalysis {
     name: string;
     price: SectionMeta["price"];
     previewColor: string;
+    previewImage?: string;
     isOwned: boolean;
     isInstalled: boolean;
   }[];
@@ -336,12 +337,23 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     mainThemeName = mainTheme.name;
 
     const expectedFilenames = allSections.map((s) => `sections/section-${s.id}.liquid`);
-    const filesResp = await admin.graphql(
-      `query($themeId:ID!,$filenames:[String!]!){theme(id:$themeId){files(first:250,filenames:$filenames){nodes{filename}}}}`,
-      { variables: { themeId: mainTheme.id, filenames: expectedFilenames } }
-    );
-    const filesData = (await filesResp.json()) as any;
-    const sectionHubInstalledIds = (filesData.data?.theme?.files?.nodes || [])
+
+    // Shopify limits filenames to 50 per request, so we batch
+    const BATCH_SIZE = 50;
+    let sectionHubFiles: { filename: string }[] = [];
+
+    for (let i = 0; i < expectedFilenames.length; i += BATCH_SIZE) {
+      const batch = expectedFilenames.slice(i, i + BATCH_SIZE);
+      const filesResp = await admin.graphql(
+        `query($themeId:ID!,$filenames:[String!]!){theme(id:$themeId){files(first:250,filenames:$filenames){nodes{filename}}}}`,
+        { variables: { themeId: mainTheme.id, filenames: batch } }
+      );
+      const filesData = (await filesResp.json()) as any;
+      const batchFiles = filesData.data?.theme?.files?.nodes || [];
+      sectionHubFiles = [...sectionHubFiles, ...batchFiles];
+    }
+
+    const sectionHubInstalledIds = sectionHubFiles
       .map((f: { filename: string }) => {
         const m = f.filename.match(/^sections\/section-(.+)\.liquid$/);
         return m ? m[1] : null;
@@ -442,6 +454,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
           .map((s) => ({
             sectionType: st, id: s.id, name: s.name, price: s.price,
             previewColor: s.previewColor,
+            previewImage: s.previews?.[0]?.src || undefined,
             isOwned: purchasedHandles.has(s.id) || s.price.type === "free",
             isInstalled: sectionHubInstalledIds.includes(s.id),
           }));
@@ -509,10 +522,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
   let pages: PageAnalysis[] = [];
   try {
+    const allSections = getAllSections();
+    const sectionMap = new Map(allSections.map((s) => [s.id, s]));
     pages = JSON.parse(savedAnalysis.results);
     for (const page of pages) {
       for (const sec of page.matchingSectionIQSections || []) {
         sec.isOwned = purchasedHandles.has(sec.id) || sec.price?.type === "free";
+        // Always enrich with latest preview image from section data
+        const sectionData = sectionMap.get(sec.id);
+        if (sectionData?.previews?.[0]?.src) {
+          sec.previewImage = sectionData.previews[0].src;
+        }
       }
     }
   } catch {}
@@ -689,17 +709,17 @@ export default function StoreAnalyzerPage() {
         .pa-sugg-scroll{display:flex;gap:12px;overflow-x:auto;padding:12px 0 6px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
         .pa-sugg-scroll::-webkit-scrollbar{display:none}
         .pa-sugg-card{
-          flex:0 0 165px;
+          flex:0 0 148px;
           background:rgba(255,255,255,0.7);
           backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
           border:1px solid rgba(226,232,240,0.5);
-          border-radius:14px;padding:14px;cursor:pointer;
+          border-radius:14px;padding:10px 10px 12px;cursor:pointer;
           transition:all .3s cubic-bezier(.4,0,.2,1);text-align:center;position:relative;
           box-shadow:0 1px 4px rgba(0,0,0,0.04);
         }
         .pa-sugg-card:hover{border-color:#818cf8;box-shadow:0 8px 24px rgba(99,102,241,.14);transform:translateY(-4px) scale(1.02)}
-        .pa-sugg-card .pa-sugg-thumb{width:100%;height:72px;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff}
-        .pa-sugg-card .pa-owned{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px}
+        .pa-sugg-card .pa-sugg-thumb{width:100%;aspect-ratio:16/10;border-radius:10px;margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#fff;overflow:hidden}
+        .pa-sugg-card .pa-owned{position:absolute;top:8px;right:8px;background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff;font-size:9px;font-weight:700;padding:3px 8px;border-radius:8px;text-transform:uppercase;letter-spacing:.3px;z-index:2}
 
         .pa-close-btn{
           background:rgba(255,255,255,0.5);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
@@ -725,6 +745,13 @@ export default function StoreAnalyzerPage() {
           cursor:pointer;transition:all .25s cubic-bezier(.4,0,.2,1);
         }
         .pa-reanalyze-btn:hover{background:rgba(255,255,255,0.75);transform:translateY(-2px);box-shadow:0 4px 16px rgba(99,102,241,.12)}
+
+        /* Mobile Responsiveness */
+        @media(max-width:640px){
+          .pa-hero{padding:20px 16px;border-radius:14px}
+          .pa-glass{padding:14px 16px}
+          .pa-page-card{border-radius:14px}
+        }
       `}</style>
 
       <BlockStack gap="500">
@@ -926,11 +953,30 @@ export default function StoreAnalyzerPage() {
                                 <div key={sec.id} className="pa-sugg-card"
                                   onClick={() => navigate(`/app/section?id=${sec.id}`)} onKeyDown={() => {}} role="button" tabIndex={0}>
                                   {sec.isOwned && <span className="pa-owned">Owned</span>}
-                                  <div className="pa-sugg-thumb" style={{
-                                    background: `linear-gradient(135deg, ${sec.previewColor || "#6366f1"}, ${sec.previewColor || "#6366f1"}99)`,
-                                  }}>
-                                    {sec.name.charAt(0)}
-                                  </div>
+                                  {sec.previewImage ? (
+                                    <div className="pa-sugg-thumb" style={{
+                                      background: "#f8fafc",
+                                      padding: 0,
+                                      overflow: "hidden",
+                                    }}>
+                                      <img
+                                        src={sec.previewImage}
+                                        alt={sec.name}
+                                        style={{
+                                          width: "100%",
+                                          height: "100%",
+                                          objectFit: "cover",
+                                          display: "block",
+                                        }}
+                                      />
+                                    </div>
+                                  ) : (
+                                    <div className="pa-sugg-thumb" style={{
+                                      background: `linear-gradient(135deg, ${sec.previewColor && sec.previewColor !== "#ffffff" ? sec.previewColor : "#6366f1"}, ${sec.previewColor && sec.previewColor !== "#ffffff" ? sec.previewColor : "#6366f1"}99)`,
+                                    }}>
+                                      {sec.name.charAt(0)}
+                                    </div>
+                                  )}
                                   <div style={{ fontSize: 13, fontWeight: 600, color: "#1e293b" }}>{sec.name}</div>
                                   <div style={{ fontSize: 12, color: "#94a3b8", marginTop: 2 }}>
                                     {sec.price.type === "free" ? "Free" : `€${sec.price.amount}`}

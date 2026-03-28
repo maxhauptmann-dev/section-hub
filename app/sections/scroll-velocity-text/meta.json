@@ -1,0 +1,64 @@
+{
+  "id": "scroll-velocity-text",
+  "name": "SIQ - Velocity Text",
+  "description": "Cinematic scroll-driven text marquee with velocity-responsive speed. Massive typography flies across the screen, accelerating and decelerating based on scroll speed. Multiple text layers create depth with parallax. Includes stroke outlines, gradient fills, and blur effects for an ultra-premium feel.",
+  "category": [
+    "scrolling",
+    "Scroll Triggered",
+    "Premium",
+    "Mobile"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scrolling",
+    "Velocity",
+    "Typography",
+    "Parallax",
+    "Cinematic",
+    "Premium",
+    "Auto-animate",
+    "WOW",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scroll-velocity-text/default.webp",
+      "alt": "SH - Velocity Text - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

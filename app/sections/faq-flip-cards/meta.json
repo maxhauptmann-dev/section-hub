@@ -1,0 +1,57 @@
+{
+  "id": "faq-flip-cards",
+  "name": "SIQ - FAQ Flip Cards",
+  "description": "Interactive 3D flip card FAQ section. Each question appears as a card — click to flip and reveal the answer on the back. Features smooth 3D perspective animation, gradient backgrounds, category icons, and a premium card aesthetic. A truly unique FAQ experience.",
+  "category": "FAQ",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "FAQ",
+    "Flip Cards",
+    "3D",
+    "Interactive",
+    "Animated",
+    "Premium",
+    "Unique"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/faq-flip-cards/default.webp",
+      "alt": "FAQ Flip Cards - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "advanced"
+}

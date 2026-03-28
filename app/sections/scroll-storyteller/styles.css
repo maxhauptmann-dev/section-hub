@@ -358,7 +358,7 @@
 @media (max-width: 749px) {
   .shst-panel {
     grid-template-columns: 1fr;
-    grid-template-rows: 45vh 1fr;
+    grid-template-rows: 40vh 1fr;
   }
 
   .shst-panel--image-right .shst-panel__image {
@@ -374,19 +374,43 @@
   }
 
   .shst-panel__content {
-    padding: 28px 20px;
+    padding: 20px 16px;
   }
 
   .shst-panel__heading {
-    font-size: clamp(1.5rem, 7vw, 2.2rem);
+    font-size: clamp(1.3rem, 6vw, 1.8rem);
+    margin-bottom: 12px;
+  }
+
+  .shst-panel__text {
+    font-size: clamp(0.8rem, 3vw, 0.95rem);
+    line-height: 1.55;
+    margin-bottom: 16px;
+    max-width: 100%;
   }
 
   .shst-panel__number {
-    font-size: clamp(2.5rem, 12vw, 4rem);
+    font-size: clamp(2rem, 10vw, 3rem);
+    margin-bottom: 8px;
+  }
+
+  .shst-panel__eyebrow {
+    font-size: 0.6rem;
+    margin-bottom: 10px;
+  }
+
+  .shst-panel__btn {
+    padding: 10px 22px;
+    font-size: 0.75rem;
   }
 
   .shst-dots--right {
-    right: 12px;
+    right: 8px;
+  }
+
+  .shst-dot {
+    width: 8px;
+    height: 8px;
   }
 
   .shst-side-label {
@@ -394,7 +418,36 @@
   }
 
   .shst-counter {
-    right: 16px;
-    bottom: 16px;
+    right: 12px;
+    bottom: 12px;
+    font-size: 0.6rem;
+  }
+
+  .shst-counter__current {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .shst-panel {
+    grid-template-rows: 35vh 1fr;
+  }
+
+  .shst-panel__content {
+    padding: 14px 12px;
+  }
+
+  .shst-panel__heading {
+    font-size: clamp(1.1rem, 5.5vw, 1.5rem);
+  }
+
+  .shst-panel__text {
+    font-size: 0.8rem;
+    margin-bottom: 12px;
+  }
+
+  .shst-panel__btn {
+    padding: 8px 18px;
+    font-size: 0.7rem;
   }
 }

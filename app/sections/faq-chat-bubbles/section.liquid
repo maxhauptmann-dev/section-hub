@@ -1,0 +1,555 @@
+{{ 'section-faq-chat-bubbles.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign chat_bg = section.settings.chat_bg
+  assign chat_border = section.settings.chat_border
+  assign q_bubble_bg = section.settings.q_bubble_bg
+  assign q_bubble_text = section.settings.q_bubble_text
+  assign a_bubble_bg = section.settings.a_bubble_bg
+  assign a_bubble_text = section.settings.a_bubble_text
+  assign avatar_bg = section.settings.avatar_bg
+  assign avatar_text = section.settings.avatar_text
+  assign time_color = section.settings.time_color
+  assign typing_color = section.settings.typing_color
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.question_size
+  assign a_size = section.settings.answer_size
+  assign radius = section.settings.border_radius
+  assign bubble_radius = section.settings.bubble_radius
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign show_avatar = section.settings.show_avatar
+  assign show_time = section.settings.show_time
+  assign show_typing = section.settings.show_typing
+  assign user_label = section.settings.user_label
+  assign bot_label = section.settings.bot_label
+  assign bot_icon = section.settings.bot_icon
+  assign user_icon = section.settings.user_icon
+  assign chat_shadow = section.settings.chat_shadow
+  assign show_header_bar = section.settings.show_header_bar
+  assign header_bg = section.settings.header_bg
+  assign header_text = section.settings.header_text
+-%}
+
+<div
+  id="faq-cb-{{ sid }}"
+  class="faq-cb"
+  style="
+    --faq-cb-bg:{{ bg }};
+    --faq-cb-text:{{ text_color }};
+    --faq-cb-chat-bg:{{ chat_bg }};
+    --faq-cb-chat-border:{{ chat_border }};
+    --faq-cb-q-bg:{{ q_bubble_bg }};
+    --faq-cb-q-text:{{ q_bubble_text }};
+    --faq-cb-a-bg:{{ a_bubble_bg }};
+    --faq-cb-a-text:{{ a_bubble_text }};
+    --faq-cb-avatar-bg:{{ avatar_bg }};
+    --faq-cb-avatar-text:{{ avatar_text }};
+    --faq-cb-time:{{ time_color }};
+    --faq-cb-typing:{{ typing_color }};
+    --faq-cb-max-w:{{ max_w }}px;
+    --faq-cb-pad-y:{{ pad_y }}px;
+    --faq-cb-mt:{{ mt }}px;
+    --faq-cb-mb:{{ mb }}px;
+    --faq-cb-q-size:{{ q_size }}px;
+    --faq-cb-a-size:{{ a_size }}px;
+    --faq-cb-radius:{{ radius }}px;
+    --faq-cb-bubble-r:{{ bubble_radius }}px;
+    --faq-cb-header-bg:{{ header_bg }};
+    --faq-cb-header-text:{{ header_text }};
+  "
+>
+  <div class="faq-cb__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="faq-cb__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="faq-cb__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="faq-cb__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="faq-cb__chat{% if chat_shadow %} faq-cb__chat--shadow{% endif %}">
+      {%- if show_header_bar -%}
+        <div class="faq-cb__chat-header">
+          <span class="faq-cb__chat-header-icon">{{ bot_icon }}</span>
+          <div class="faq-cb__chat-header-info">
+            <span class="faq-cb__chat-header-name">{{ bot_label }}</span>
+            <span class="faq-cb__chat-header-status">Online</span>
+          </div>
+          <span class="faq-cb__chat-header-dot"></span>
+        </div>
+      {%- endif -%}
+
+      <div class="faq-cb__messages">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign q = block.settings.question
+            assign a = block.settings.answer
+            assign time_q = block.settings.time_question
+            assign time_a = block.settings.time_answer
+          -%}
+
+          <!-- Question bubble (user - right) -->
+          <div class="faq-cb__row faq-cb__row--user" data-faq-cb-row="{{ sid }}" {{ block.shopify_attributes }}>
+            <div class="faq-cb__bubble-wrap faq-cb__bubble-wrap--user">
+              <div class="faq-cb__bubble faq-cb__bubble--q">
+                <p class="faq-cb__bubble-text">{{ q }}</p>
+              </div>
+              {%- if show_time and time_q != blank -%}
+                <span class="faq-cb__time faq-cb__time--right">{{ time_q }}</span>
+              {%- endif -%}
+            </div>
+            {%- if show_avatar -%}
+              <span class="faq-cb__avatar faq-cb__avatar--user">{{ user_icon }}</span>
+            {%- endif -%}
+          </div>
+
+          <!-- Answer bubble (bot - left) -->
+          <div class="faq-cb__row faq-cb__row--bot" data-faq-cb-ans="{{ sid }}">
+            {%- if show_avatar -%}
+              <span class="faq-cb__avatar faq-cb__avatar--bot">{{ bot_icon }}</span>
+            {%- endif -%}
+            <div class="faq-cb__bubble-wrap faq-cb__bubble-wrap--bot">
+              {%- if show_typing -%}
+                <div class="faq-cb__typing" data-faq-cb-typing="{{ sid }}">
+                  <span class="faq-cb__typing-dot"></span>
+                  <span class="faq-cb__typing-dot"></span>
+                  <span class="faq-cb__typing-dot"></span>
+                </div>
+              {%- endif -%}
+              <div class="faq-cb__bubble faq-cb__bubble--a"{% if show_typing %} style="display:none" data-faq-cb-abubble="{{ sid }}"{% endif %}>
+                <div class="faq-cb__bubble-text">{{ a }}</div>
+              </div>
+              {%- if show_time and time_a != blank -%}
+                <span class="faq-cb__time faq-cb__time--left"{% if show_typing %} style="display:none" data-faq-cb-atime="{{ sid }}"{% endif %}>{{ time_a }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var sid='{{ sid }}';
+  var root=document.getElementById('faq-cb-'+sid);
+  if(!root)return;
+  var typings=root.querySelectorAll('[data-faq-cb-typing="'+sid+'"]');
+  if(!typings.length)return;
+  /* Show typing for 1.2s then reveal answer */
+  var observer=new IntersectionObserver(function(entries){
+    entries.forEach(function(entry){
+      if(!entry.isIntersecting)return;
+      var row=entry.target;
+      observer.unobserve(row);
+      var typing=row.querySelector('[data-faq-cb-typing="'+sid+'"]');
+      var bubble=row.querySelector('[data-faq-cb-abubble="'+sid+'"]');
+      var time=row.querySelector('[data-faq-cb-atime="'+sid+'"]');
+      if(!typing||!bubble)return;
+      typing.style.display='flex';
+      setTimeout(function(){
+        typing.style.display='none';
+        bubble.style.display='block';
+        if(time)time.style.display='block';
+      },1200);
+    });
+  },{threshold:0.3});
+  root.querySelectorAll('[data-faq-cb-ans="'+sid+'"]').forEach(function(r){
+    observer.observe(r);
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FAQ Chat",
+  "tag": "section",
+  "class": "section-faq-chat-bubbles",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Chat With Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Browse common questions and answers in a familiar chat format."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Chat window"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_header_bar",
+      "label": "Show chat header bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_avatar",
+      "label": "Show avatars",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_time",
+      "label": "Show timestamps",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_typing",
+      "label": "Typing animation",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "chat_shadow",
+      "label": "Chat window shadow",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "bot_label",
+      "label": "Bot name",
+      "default": "Support Team"
+    },
+    {
+      "type": "text",
+      "id": "bot_icon",
+      "label": "Bot avatar (emoji)",
+      "default": "🤖"
+    },
+    {
+      "type": "text",
+      "id": "user_icon",
+      "label": "User avatar (emoji)",
+      "default": "👤"
+    },
+    {
+      "type": "text",
+      "id": "user_label",
+      "label": "User name",
+      "default": "You"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Heading text",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "chat_bg",
+      "label": "Chat background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "chat_border",
+      "label": "Chat border",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "header_bg",
+      "label": "Header bar bg",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "header_text",
+      "label": "Header bar text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "q_bubble_bg",
+      "label": "Question bubble bg",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "q_bubble_text",
+      "label": "Question bubble text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "a_bubble_bg",
+      "label": "Answer bubble bg",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "a_bubble_text",
+      "label": "Answer bubble text",
+      "default": "#334155"
+    },
+    {
+      "type": "color",
+      "id": "avatar_bg",
+      "label": "Avatar background",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "avatar_text",
+      "label": "Avatar text",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "time_color",
+      "label": "Timestamp color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "color",
+      "id": "typing_color",
+      "label": "Typing dots color",
+      "default": "#94a3b8"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 500,
+      "max": 1000,
+      "step": 20,
+      "default": 680,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Chat window radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "bubble_radius",
+      "label": "Bubble radius",
+      "min": 4,
+      "max": 24,
+      "step": 2,
+      "default": 18,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "question_size",
+      "label": "Question size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_size",
+      "label": "Answer size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "Chat Message",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Your question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your answer here.</p>"
+        },
+        {
+          "type": "text",
+          "id": "time_question",
+          "label": "Question timestamp",
+          "default": "10:00 AM"
+        },
+        {
+          "type": "text",
+          "id": "time_answer",
+          "label": "Answer timestamp",
+          "default": "10:01 AM"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FAQ Chat",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take? 📦",
+            "answer": "<p>Great question! Standard shipping takes 3–7 business days. Need it faster? Our express option delivers in 1–2 days! 🚀</p>",
+            "time_question": "10:00 AM",
+            "time_answer": "10:01 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What if I need to return something?",
+            "answer": "<p>No worries at all! We have a 30-day hassle-free return policy. Just contact us and we will get you sorted within 48 hours. 😊</p>",
+            "time_question": "10:02 AM",
+            "time_answer": "10:02 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Which payment methods do you accept?",
+            "answer": "<p>We accept all major cards (Visa, MC, Amex), plus PayPal, Apple Pay, Google Pay, and Shop Pay. Everything is 256-bit SSL encrypted! 🔒</p>",
+            "time_question": "10:04 AM",
+            "time_answer": "10:04 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you ship to other countries?",
+            "answer": "<p>Absolutely! We ship to 60+ countries worldwide. International orders include tracking and typically arrive in 7–14 business days. 🌍</p>",
+            "time_question": "10:06 AM",
+            "time_answer": "10:07 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I track my order?",
+            "answer": "<p>Once your order ships, you will get an email with a tracking link. You can also check your order status anytime in your account dashboard! 📍</p>",
+            "time_question": "10:08 AM",
+            "time_answer": "10:08 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I change my order after placing it?",
+            "answer": "<p>You can modify or cancel within 1 hour of placing. After that it goes to fulfillment. For urgent changes, message us right away and we will do our best! ⚡</p>",
+            "time_question": "10:10 AM",
+            "time_answer": "10:11 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is there a warranty on products?",
+            "answer": "<p>Yes! Every product comes with a 1-year warranty. Premium members get an extended 2-year warranty at no extra cost. We have got you covered! 🛡️</p>",
+            "time_question": "10:12 AM",
+            "time_answer": "10:12 AM"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Thanks for all the help! 🙏",
+            "answer": "<p>You are welcome! If you have any other questions, feel free to ask anytime. We are always here to help! Have a wonderful day! 💜</p>",
+            "time_question": "10:14 AM",
+            "time_answer": "10:14 AM"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

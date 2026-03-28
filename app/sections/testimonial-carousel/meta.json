@@ -1,6 +1,6 @@
 {
   "id": "testimonial-carousel",
-  "name": "Testimonial Carousel",
+  "name": "SIQ - Testimonial Carousel",
   "description": "Fully customisable testimonial carousel with flexible sizing, spacing, multi-card view, star ratings, autoplay and manual navigation.",
   "category": [
     "Testimonials",
@@ -9,7 +9,7 @@
   "version": "2.1.0",
   "price": {
     "type": "one_time",
-    "amount": 29,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -20,11 +20,11 @@
     "Responsive",
     "Flexible"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0f172a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/testimonial-carousel1/default.webp",
+      "src": "/previews/testimonial-carousel/default.webp",
       "alt": "Testimonial Carousel - Light Mode",
       "label": "Light"
     }
@@ -62,5 +62,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

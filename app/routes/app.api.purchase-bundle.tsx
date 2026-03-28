@@ -76,19 +76,29 @@ export const action = async ({ request }: ActionFunctionArgs) => {
     },
   });
 
-  // Discount based on total selected count (including already-owned)
+  // If a fixed total was provided (predefined bundle), use it.
+  // Otherwise, calculate dynamic discount based on count.
   const totalSelected = sectionIds.length;
   let bundleDiscount = 0;
-  if (totalSelected >= 5) bundleDiscount = 25;
-  else if (totalSelected >= 3) bundleDiscount = 15;
-  else if (totalSelected >= 2) bundleDiscount = 10;
 
   const rawTotal = validSections.reduce(
     (sum, s) => sum + (s.price?.amount ?? 0),
     0,
   );
-  const bundleTotal =
-    Math.round(rawTotal * (1 - bundleDiscount / 100) * 100) / 100;
+
+  let bundleTotal: number;
+  if (body.total && body.total > 0) {
+    // Fixed-price predefined bundle
+    bundleTotal = body.total;
+    bundleDiscount = rawTotal > 0 ? Math.round((1 - bundleTotal / rawTotal) * 100) : 0;
+  } else {
+    // Dynamic discount for custom bundles
+    if (totalSelected >= 5) bundleDiscount = 25;
+    else if (totalSelected >= 3) bundleDiscount = 15;
+    else if (totalSelected >= 2) bundleDiscount = 10;
+    bundleTotal =
+      Math.round(rawTotal * (1 - bundleDiscount / 100) * 100) / 100;
+  }
 
   try {
     const appUrl =
@@ -96,9 +106,6 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       "https://section-hub-app.fly.dev";
     const sectionIdsParam = validSections.map((s) => s.id).join(",");
     const returnUrl = `${appUrl}/app/billing/complete?shop=${encodeURIComponent(shop)}&bundle=${encodeURIComponent(sectionIdsParam)}&discount=${bundleDiscount}`;
-
-    // Development stores cannot accept real charges – use test mode
-    const isTestCharge = shop.includes("sections-test") || process.env.NODE_ENV === "development";
 
     const response = await admin.graphql(
       `#graphql
@@ -117,13 +124,13 @@ export const action = async ({ request }: ActionFunctionArgs) => {
       }`,
       {
         variables: {
-          name: `Bundle (${validSections.length} Section${validSections.length !== 1 ? "s" : ""}) – Section Hub`,
+          name: `Bundle (${validSections.length} Section${validSections.length !== 1 ? "s" : ""}) – SectionIQ`,
           price: {
             amount: bundleTotal.toFixed(2),
             currencyCode: "EUR",
           },
           returnUrl,
-          test: isTestCharge,
+          test: false,
         },
       },
     );

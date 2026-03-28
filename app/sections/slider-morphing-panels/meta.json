@@ -1,12 +1,14 @@
 {
   "id": "slider-morphing-panels",
-  "name": "SS - Morphing Panels",
+  "name": "SIQ - Morphing Panels",
   "description": "Luxurious accordion-to-slider with expanding panels that morph smoothly between collapsed and full-width states. Each panel features full-bleed imagery with editorial content overlays. Warm cream and gold palette with staggered reveal animations, autoplay, keyboard navigation, and elegant hover expansions. Ideal for portfolios, case studies, and brand storytelling.",
-  "category": ["Slider"],
+  "category": [
+    "Slider"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 22,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -26,12 +28,30 @@
     "liquid": "section.liquid",
     "css": "styles.css"
   },
-  "author": "Section Hub",
-  "previewColor": "#f6f2ed",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin", "Studio", "Refresh", "Spotlight", "Trade"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh",
+      "Spotlight",
+      "Trade"
+    ],
     "os2": true
   },
   "createdAt": "2026-03-12",
-  "updatedAt": "2026-03-12"
+  "updatedAt": "2026-03-12",
+  "previews": [
+    {
+      "src": "/previews/slider-morphing-panels/default.webp",
+      "alt": "SS - Morphing Panels - Default",
+      "label": "Default"
+    }
+  ],
+  "tier": "premium"
 }

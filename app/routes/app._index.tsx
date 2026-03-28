@@ -312,16 +312,19 @@ export default function DashboardPage() {
           background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.4) 50%,transparent 60%);
           background-size:200% 200%;animation:sh-shimmer 4s ease-in-out infinite;pointer-events:none;
         }
+
+        @media(max-width:639px){
+          .sh-dashboard-wrap{padding-left:0;padding-right:0;margin-left:-4px;margin-right:-4px}
+        }
       `}</style>
-      <div style={{ maxWidth: "100%", overflowX: "hidden" }}>
+      <div className="sh-dashboard-wrap" style={{ maxWidth: "100%", overflowX: "hidden" }}>
       <BlockStack gap="500">
 
         {/* ═══ ONBOARDING (new users) ═══ */}
         {isNewUser && (
-          <Card padding="0">
-            <div style={{
+          <div style={{
               background: "linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%)",
-              borderRadius: 12, padding: "28px 20px",
+              borderRadius: 16, padding: "28px 20px",
             }}>
               <BlockStack gap="400">
                 <BlockStack gap="100">
@@ -402,8 +405,7 @@ export default function DashboardPage() {
                   ))}
                 </div>
               </BlockStack>
-            </div>
-          </Card>
+          </div>
         )}
 
         {/* ═══ STORE SCORE + PREMIUM (returning users) ═══ */}
@@ -488,7 +490,7 @@ export default function DashboardPage() {
                       <span style={{
                         background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.3)",
                         color: "white", fontSize: 12, fontWeight: 700, padding: "2px 10px", borderRadius: 20,
-                      }}>€8/mo</span>
+                      }}>€19/mo</span>
                     </InlineStack>
                     <div style={{ marginTop: 12, display: "flex", flexDirection: "column", gap: 6 }}>
                       {["📦 All sections included", "🔓 All Premium Blocks", "🆕 New sections monthly", "⚡ Priority support"].map((t) => (

@@ -1,12 +1,16 @@
 {
   "id": "scroll-highlight-text",
-  "name": "SS - Highlight Text",
+  "name": "SIQ - Highlight Text",
   "description": "Apple-inspired scroll-triggered text where words gradually highlight from muted to vivid as the user scrolls. Sticky full-viewport experience with large editorial typography, gradient word coloring, and optional background image with parallax. Multiple text blocks that reveal sequentially. 50+ settings.",
-  "category": ["Hero", "Scroll Triggered"],
+  "category": [
+    "Hero",
+    "Scroll Triggered",
+    "Mobile"
+  ],
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +25,23 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
-      "src": "/previews/scroll-highlight-text/default.webp",
-      "alt": "Scroll Highlight Text - Default",
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iMzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMTYiIGZpbGw9IiNmZmZmZmYiIGZvbnQtd2VpZ2h0PSI3MDAiPkhpZ2hsaWdodCBUZXh0PC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjUwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEwIiBmaWxsPSIjODg4OGFhIj5Xb3JkcyBoaWdobGlnaHQgYXMgeW91IHNjcm9sbDwvdGV4dD4KPHRleHQgeD0iMzAwIiB5PSIxNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJzeXN0ZW0tdWkiIGZvbnQtc2l6ZT0iMjQiIGZpbGw9IiM4ODg4YWEiPgo8dHNwYW4gZmlsbD0iI2ZmZmZmZiI+V2UgY3JhZnQgPC90c3Bhbj48dHNwYW4gZmlsbD0iIzgxOGNmOCI+YmVhdXRpZnVsPC90c3Bhbj48dHNwYW4gZmlsbD0iIzg4ODhhYSI+IHByb2R1Y3RzPC90c3Bhbj4KPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjIxMCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzg4ODhhYSI+Cjx0c3BhbiBmaWxsPSIjODE4Y2Y4Ij5kZXNpZ25lZDwvdHNwYW4+PHRzcGFuIGZpbGw9IiM4ODg4YWEiPiB0byA8L3RzcGFuPjx0c3BhbiBmaWxsPSIjODg4OGFhIj5pbnNwaXJlPC90c3Bhbj4KPC90ZXh0Pgo8dGV4dCB4PSIzMDAiIHk9IjM0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InN5c3RlbS11aSIgZm9udC1zaXplPSIxMCIgZmlsbD0iIzg4ODhhYSI+4oaTIFNjcm9sbCB0byBhY3RpdmF0ZTwvdGV4dD4KPC9zdmc+",
+      "alt": "SS - Highlight Text - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +54,10 @@
     {
       "version": "1.0.0",
       "date": "2026-03-13",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

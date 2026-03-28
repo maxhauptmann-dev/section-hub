@@ -1,0 +1,495 @@
+{% comment %}
+  Section Hub – Scroll Card Cascade v1.0
+  Cards fly in from alternating sides with rotation and depth as user scrolls.
+  Each card has its own scroll zone, stacking with parallax and 3D transforms.
+  Prefix: scc-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign section_height = section.settings.section_height
+  assign scroll_per = section.settings.scroll_per_card
+  assign fly_distance = section.settings.fly_distance
+  assign rotation = section.settings.rotation
+  assign card_width = section.settings.card_width
+  assign card_radius = section.settings.card_radius
+  assign card_padding = section.settings.card_padding
+  assign card_shadow = section.settings.card_shadow
+  assign stagger_offset = section.settings.stagger_offset
+  assign show_counter = section.settings.show_counter
+  assign show_progress = section.settings.show_progress
+  assign show_glow = section.settings.show_glow
+  assign glow_color = section.settings.glow_color
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+
+  assign total = section.blocks.size
+  assign total_scroll = total | times: scroll_per | plus: 100
+
+  if section_height == 'small'
+    assign sticky_h = '50vh'
+  elsif section_height == 'large'
+    assign sticky_h = '100vh'
+  else
+    assign sticky_h = '70vh'
+  endif
+-%}
+
+<style>
+  .scc-wrap--{{ sid }}{
+    --scc-bg:{{ bg }};
+    --scc-text:{{ text_color }};
+    --scc-accent:{{ accent }};
+    --scc-card-bg:{{ card_bg }};
+    --scc-card-border:{{ card_border }};
+    --scc-fly:{{ fly_distance }}vw;
+    --scc-rot:{{ rotation }}deg;
+    --scc-card-w:{{ card_width }}px;
+    --scc-radius:{{ card_radius }}px;
+    --scc-card-pad:{{ card_padding }}px;
+    --scc-sticky-h:{{ sticky_h }};
+    --scc-mt:{{ mt }}px;
+    --scc-mb:{{ mb }}px;
+    --scc-glow:{{ glow_color }};
+    --scc-stagger:{{ stagger_offset }}px;
+  }
+</style>
+
+{%- if total > 0 -%}
+<section class="scc-wrap scc-wrap--{{ sid }}" data-scc data-scc-panels="{{ total }}" data-scc-scroll-per="{{ scroll_per }}" data-scc-fly="{{ fly_distance }}" data-scc-rot="{{ rotation }}" data-scc-stagger="{{ stagger_offset }}">
+
+  {%- if heading != blank or subheading != blank -%}
+    <div class="scc-header" style="text-align:{{ heading_align }}">
+      {%- if heading != blank -%}
+        <h2 class="scc-heading">{{ heading }}</h2>
+      {%- endif -%}
+      {%- if subheading != blank -%}
+        <p class="scc-sub">{{ subheading }}</p>
+      {%- endif -%}
+    </div>
+  {%- endif -%}
+
+  <div class="scc-scroll" style="height:{{ total_scroll }}vh;">
+    <div class="scc-sticky">
+
+      {%- comment -%} Glow background {%- endcomment -%}
+      {%- if show_glow -%}
+        <div class="scc-glow" data-scc-glow></div>
+      {%- endif -%}
+
+      {%- comment -%} Card stack area {%- endcomment -%}
+      <div class="scc-stage" style="perspective:1200px;">
+        {%- for block in section.blocks -%}
+          {%- assign side = forloop.index | modulo: 2 -%}
+          <div
+            class="scc-card{% if side == 0 %} scc-card--right{% else %} scc-card--left{% endif %}"
+            data-scc-card="{{ forloop.index0 }}"
+            data-scc-side="{% if side == 0 %}right{% else %}left{% endif %}"
+            {{ block.shopify_attributes }}
+          >
+            <div class="scc-card__inner">
+              {%- if block.settings.image != blank -%}
+                <div class="scc-card__media">
+                  <img src="{{ block.settings.image | image_url: width: 800 }}" alt="{{ block.settings.image.alt | default: block.settings.title | escape }}" class="scc-card__img" loading="lazy">
+                </div>
+              {%- endif -%}
+              <div class="scc-card__body">
+                {%- if block.settings.icon != blank -%}
+                  <span class="scc-card__icon">{{ block.settings.icon }}</span>
+                {%- endif -%}
+                {%- if block.settings.title != blank -%}
+                  <h3 class="scc-card__title">{{ block.settings.title }}</h3>
+                {%- endif -%}
+                {%- if block.settings.description != blank -%}
+                  <p class="scc-card__desc">{{ block.settings.description }}</p>
+                {%- endif -%}
+                {%- if block.settings.badge != blank -%}
+                  <span class="scc-card__badge">{{ block.settings.badge }}</span>
+                {%- endif -%}
+              </div>
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+
+      {%- comment -%} Counter {%- endcomment -%}
+      {%- if show_counter -%}
+        <div class="scc-counter">
+          <span data-scc-counter>0</span> / {{ total }}
+        </div>
+      {%- endif -%}
+
+      {%- comment -%} Progress {%- endcomment -%}
+      {%- if show_progress -%}
+        <div class="scc-progress-bar">
+          <div class="scc-progress-fill" data-scc-progress></div>
+        </div>
+      {%- endif -%}
+
+    </div>
+  </div>
+</section>
+{%- endif -%}
+
+<script>
+(function(){
+  var wrap = document.querySelector('.scc-wrap--{{ sid }}');
+  if(!wrap) return;
+
+  var scrollEl = wrap.querySelector('.scc-scroll');
+  var stickyEl = wrap.querySelector('.scc-sticky');
+  var cards = wrap.querySelectorAll('[data-scc-card]');
+  var counterEl = wrap.querySelector('[data-scc-counter]');
+  var progressEl = wrap.querySelector('[data-scc-progress]');
+  var glowEl = wrap.querySelector('[data-scc-glow]');
+  var panelCount = cards.length;
+  var scrollPer = parseInt(wrap.dataset.sccScrollPer) || 120;
+  var flyDist = parseInt(wrap.dataset.sccFly) || 80;
+  var maxRot = parseInt(wrap.dataset.sccRot) || 15;
+  var stagger = parseInt(wrap.dataset.sccStagger) || 20;
+
+  /* On mobile, reduce fly distance and rotation for better visual */
+  if(window.innerWidth < 600){
+    flyDist = Math.min(flyDist, 40);
+    maxRot = Math.min(maxRot, 8);
+    stagger = Math.min(stagger, 12);
+  }
+
+  function easeOutBack(t){
+    var c1 = 1.70158;
+    var c3 = c1 + 1;
+    return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+  }
+
+  function update(){
+    var rect = scrollEl.getBoundingClientRect();
+    var stickyH = stickyEl.offsetHeight;
+    var total = scrollEl.offsetHeight - stickyH;
+    if(total <= 0) return;
+
+    var scrolled = Math.max(0, -rect.top);
+    var globalProgress = Math.min(scrolled / total, 1);
+    var arrivedCount = 0;
+
+    cards.forEach(function(card, i){
+      var cardStart = i / panelCount;
+      var cardEnd = (i + 1) / panelCount;
+      var cardProgress = Math.max(0, Math.min(1, (globalProgress - cardStart) / (cardEnd - cardStart)));
+      var eased = easeOutBack(cardProgress);
+
+      var isLeft = card.dataset.sccSide === 'left';
+      var startX = isLeft ? -flyDist : flyDist;
+      var startRot = isLeft ? -maxRot : maxRot;
+
+      var x = startX * (1 - eased);
+      var rot = startRot * (1 - eased);
+      var opacity = Math.min(cardProgress * 4, 1);
+      var y = stagger * i * (cardProgress < 1 ? (1 - cardProgress) * 0.5 : 0);
+      var z = -i * 2;
+
+      /* Cards that have arrived stack with slight offset */
+      if(cardProgress >= 1){
+        arrivedCount++;
+        x = 0;
+        rot = 0;
+        y = 0;
+        z = i * 1;
+      }
+
+      card.style.transform = 'translateX(' + x + 'vw) translateY(' + y + 'px) translateZ(' + z + 'px) rotateZ(' + rot + 'deg)';
+      card.style.opacity = opacity;
+      card.style.zIndex = i + 1;
+
+      /* Shadow grows as card arrives */
+      var shadowOpacity = Math.min(cardProgress * 0.15, 0.15);
+      card.style.boxShadow = '0 ' + (8 + cardProgress * 20) + 'px ' + (20 + cardProgress * 40) + 'px rgba(0,0,0,' + shadowOpacity + ')';
+    });
+
+    if(counterEl){
+      counterEl.textContent = arrivedCount;
+    }
+    if(progressEl){
+      progressEl.style.width = (globalProgress * 100) + '%';
+    }
+    if(glowEl){
+      glowEl.style.opacity = 0.15 + globalProgress * 0.25;
+      glowEl.style.transform = 'scale(' + (0.8 + globalProgress * 0.5) + ')';
+    }
+  }
+
+  window.addEventListener('scroll', function(){ requestAnimationFrame(update); }, {passive:true});
+  update();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Card Cascade",
+  "tag": "section",
+  "class": "section-scroll-card-cascade",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Header"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Scroll to discover what makes us different. Each card reveals another reason to love us."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "select",
+      "id": "section_height",
+      "label": "Section height",
+      "options": [
+        { "value": "small", "label": "Small" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "large", "label": "Large" }
+      ],
+      "default": "medium"
+    },
+    {
+      "type": "header",
+      "content": "Animation"
+    },
+    {
+      "type": "range",
+      "id": "scroll_per_card",
+      "label": "Scroll per card",
+      "min": 30,
+      "max": 150,
+      "step": 10,
+      "default": 70,
+      "unit": "vh"
+    },
+    {
+      "type": "range",
+      "id": "fly_distance",
+      "label": "Fly-in distance",
+      "min": 40,
+      "max": 120,
+      "step": 10,
+      "default": 80,
+      "unit": "vw"
+    },
+    {
+      "type": "range",
+      "id": "rotation",
+      "label": "Rotation amount",
+      "min": 0,
+      "max": 30,
+      "step": 3,
+      "default": 15,
+      "unit": "deg"
+    },
+    {
+      "type": "range",
+      "id": "stagger_offset",
+      "label": "Stack offset",
+      "min": 0,
+      "max": 40,
+      "step": 4,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Cards"
+    },
+    {
+      "type": "range",
+      "id": "card_width",
+      "label": "Card width",
+      "min": 260,
+      "max": 500,
+      "step": 10,
+      "default": 340,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "card_padding",
+      "label": "Card padding",
+      "min": 10,
+      "max": 40,
+      "step": 2,
+      "default": 20,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Dynamic shadows",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Display"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_counter",
+      "label": "Show counter",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_progress",
+      "label": "Show progress bar",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Background glow",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "glow_color",
+      "label": "Glow color",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#080816"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#f1f5f9"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#15152a"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#2a2a4a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "card",
+      "name": "Card",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon/Emoji",
+          "default": "✨"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Feature Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "A brief description of this amazing feature that sets us apart."
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Badge"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Card Cascade",
+      "blocks": [
+        { "type": "card", "settings": { "icon": "🚀", "title": "Lightning Fast Shipping", "description": "Orders shipped within 24 hours. Free express delivery on all orders over $99.", "badge": "Fast" } },
+        { "type": "card", "settings": { "icon": "💎", "title": "Premium Materials", "description": "Only the finest materials sourced from trusted artisans around the world." } },
+        { "type": "card", "settings": { "icon": "🛡️", "title": "Lifetime Guarantee", "description": "We stand behind every product. If anything goes wrong, we make it right.", "badge": "Guarantee" } },
+        { "type": "card", "settings": { "icon": "🌿", "title": "Sustainability First", "description": "Carbon-neutral production. Recyclable packaging. A commitment to the planet." } }
+      ]
+    }
+  ]
+}
+{% endschema %}

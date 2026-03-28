@@ -1,0 +1,66 @@
+{
+  "id": "before-after-morph",
+  "name": "SIQ - BA Morph Cards",
+  "description": "A responsive grid of before/after cards with a stunning circular morph reveal animation. Click or tap anywhere on a card to trigger an expanding ripple that reveals the 'after' state. Each card has an optional persistent toggle, label, badge, and CTA. 3 reveal modes (ripple, slide, fade), configurable grid columns, card sizes desktop & mobile, all gaps and paddings — fully customizable for beauty, fitness, and lifestyle brands.",
+  "category": [
+    "Conversion",
+    "Image",
+    "before and after",
+    "Gallery"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Before After",
+    "Cards",
+    "Grid",
+    "Morph",
+    "Ripple",
+    "Reveal",
+    "Transformation",
+    "Animation",
+    "Mobile First"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/before-after-morph/default.webp",
+      "alt": "BA Morph Cards — Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin",
+      "Studio",
+      "Refresh"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-05-10",
+  "updatedAt": "2026-05-10",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-05-10",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

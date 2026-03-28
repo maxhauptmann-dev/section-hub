@@ -1,11 +1,15 @@
 {
   "id": "hero-minimal",
-  "name": "Hero Minimal",
+  "name": "SIQ - Hero Minimal",
   "description": "A clean, minimalist hero section with headline, text, and animated CTA button.",
-  "category": ["Hero", "Video"],
+  "category": [
+    "Hero",
+    "Video"
+  ],
   "version": "1.1.0",
   "price": {
-    "type": "free"
+    "type": "free",
+    "amount": 0
   },
   "tags": [
     "OS2.0",
@@ -13,7 +17,7 @@
     "Clean",
     "Responsive"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -65,5 +69,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

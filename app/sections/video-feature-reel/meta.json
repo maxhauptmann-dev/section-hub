@@ -1,12 +1,12 @@
 {
   "id": "video-feature-reel",
-  "name": "SS - Video Feature Reel",
+  "name": "SIQ - Video Feature Reel",
   "description": "Vertical video feature reel with alternating video and editorial content rows. Each block has its own video, heading, text, stats, and CTA. Supports Shopify hosted video, YouTube/Vimeo, and MP4 URLs per block. Features alternating layout (video left/right), hover-to-play, glassmorphism/solid/minimal card styles, scroll-reveal animations, ambient glow, progress indicators, and accent dividers. Ideal for brand stories, product features, and campaign timelines. 70+ customization options.",
   "category": "Video",
   "version": "1.0.0",
   "price": {
     "type": "one_time",
-    "amount": 18,
+    "amount": 15,
     "currency": "EUR"
   },
   "tags": [
@@ -21,17 +21,31 @@
     "Premium",
     "Responsive"
   ],
-  "author": "Section Hub",
-  "previewColor": "#0a0a0a",
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
   "previews": [
     {
       "src": "/previews/video-feature-reel/default.webp",
-      "alt": "Video Feature Reel - Default",
+      "alt": "SS - Video Feature Reel - Default",
       "label": "Default"
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio", "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Refresh",
+      "Spotlight",
+      "Studio",
+      "Publisher",
+      "Trade",
+      "Taste",
+      "Colorblock",
+      "Ride",
+      "Origin",
+      "Crave"
+    ],
     "os2": true
   },
   "files": {
@@ -44,7 +58,10 @@
     {
       "version": "1.0.0",
       "date": "2025-07-09",
-      "changes": ["Initial release"]
+      "changes": [
+        "Initial release"
+      ]
     }
-  ]
+  ],
+  "tier": "premium"
 }

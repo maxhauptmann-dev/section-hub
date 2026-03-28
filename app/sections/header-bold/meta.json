@@ -1,12 +1,12 @@
 {
   "id": "header-bold",
-  "name": "Header – Bold",
+  "name": "SIQ - Header – Bold",
   "description": "A bold, eye-catching header section with strong typography.",
   "category": "Header",
   "version": "1.1.0",
   "price": {
     "type": "one_time",
-    "amount": 12,
+    "amount": 5,
     "currency": "EUR"
   },
   "tags": [
@@ -14,7 +14,7 @@
     "Header",
     "Bold"
   ],
-  "author": "Section Hub",
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
     {
@@ -54,5 +54,6 @@
         "Initial release"
       ]
     }
-  ]
+  ],
+  "tier": "basic"
 }

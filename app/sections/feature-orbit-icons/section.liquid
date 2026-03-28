@@ -1,0 +1,322 @@
+{{ 'section-feature-orbit-icons.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign accent2 = section.settings.accent_color_2
+  assign icon_bg = section.settings.icon_bg
+  assign icon_color = section.settings.icon_color
+  assign ring_color = section.settings.ring_color
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign speed = section.settings.speed
+  assign direction = section.settings.direction
+  assign pause = section.settings.pause_hover
+  assign orbit_size = section.settings.orbit_size
+  assign icon_size = section.settings.icon_size
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign center_text = section.settings.center_text
+  assign center_icon = section.settings.center_icon
+  assign show_ring = section.settings.show_ring
+  assign show_glow = section.settings.show_glow
+  assign total = section.blocks.size
+  assign angle_step = 360.0 | divided_by: total
+-%}
+
+<div
+  id="foi-{{ sid }}"
+  class="foi"
+  style="
+    --foi-bg:{{ bg }};
+    --foi-text:{{ text_color }};
+    --foi-accent:{{ accent }};
+    --foi-accent2:{{ accent2 }};
+    --foi-icon-bg:{{ icon_bg }};
+    --foi-icon-c:{{ icon_color }};
+    --foi-ring-c:{{ ring_color }};
+    --foi-pad-y:{{ pad_y }}px;
+    --foi-mt:{{ mt }}px;
+    --foi-mb:{{ mb }}px;
+    --foi-speed:{{ speed }}s;
+    --foi-orbit:{{ orbit_size }}px;
+    --foi-icon-size:{{ icon_size }}px;
+  "
+>
+  <div class="foi__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="foi__header">
+        {%- if heading != blank -%}
+          <h2 class="foi__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="foi__sub">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="foi__stage">
+      {%- if show_glow -%}
+        <div class="foi__glow" aria-hidden="true"></div>
+      {%- endif -%}
+
+      <!-- Center element -->
+      <div class="foi__center">
+        {%- if center_icon != blank -%}
+          <span class="foi__center-icon">{{ center_icon }}</span>
+        {%- endif -%}
+        {%- if center_text != blank -%}
+          <span class="foi__center-text">{{ center_text }}</span>
+        {%- endif -%}
+      </div>
+
+      <!-- Orbit ring -->
+      {%- if show_ring -%}
+        <div class="foi__ring-line" aria-hidden="true"></div>
+      {%- endif -%}
+
+      <!-- Rotating container -->
+      <div class="foi__orbit{% if pause %} foi__orbit--pause{% endif %} foi__orbit--{{ direction }}">
+        {%- for block in section.blocks -%}
+          {%- liquid
+            assign angle = forloop.index0 | times: angle_step
+            assign emoji = block.settings.emoji
+            assign label = block.settings.label
+          -%}
+          <div
+            class="foi__item"
+            style="--foi-angle:{{ angle }}deg;"
+            {{ block.shopify_attributes }}
+          >
+            <div class="foi__item-inner">
+              <span class="foi__emoji">{{ emoji }}</span>
+              {%- if label != blank -%}
+                <span class="foi__label">{{ label }}</span>
+              {%- endif -%}
+            </div>
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "SIQ - Orbit Features",
+  "tag": "section",
+  "class": "section-feature-orbit-icons",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Why Choose Us"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Everything revolves around quality."
+    },
+    {
+      "type": "text",
+      "id": "center_icon",
+      "label": "Center emoji",
+      "default": "⭐"
+    },
+    {
+      "type": "text",
+      "id": "center_text",
+      "label": "Center text",
+      "default": "Our Values"
+    },
+    {
+      "type": "header",
+      "content": "Orbit"
+    },
+    {
+      "type": "range",
+      "id": "orbit_size",
+      "label": "Orbit radius",
+      "min": 120,
+      "max": 280,
+      "step": 10,
+      "default": 180,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Rotation speed",
+      "min": 10,
+      "max": 60,
+      "step": 2,
+      "default": 24,
+      "unit": "s"
+    },
+    {
+      "type": "select",
+      "id": "direction",
+      "label": "Direction",
+      "options": [
+        { "value": "cw", "label": "Clockwise" },
+        { "value": "ccw", "label": "Counter-clockwise" }
+      ],
+      "default": "cw"
+    },
+    {
+      "type": "checkbox",
+      "id": "pause_hover",
+      "label": "Pause on hover",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_ring",
+      "label": "Show orbit ring",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_glow",
+      "label": "Show center glow",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Style"
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon bubble size",
+      "min": 48,
+      "max": 88,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#0a0a1a"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent 1",
+      "default": "#a855f7"
+    },
+    {
+      "type": "color",
+      "id": "accent_color_2",
+      "label": "Accent 2",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg",
+      "label": "Icon background",
+      "default": "#1e1e3a"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "ring_color",
+      "label": "Ring color",
+      "default": "#2a2a4a"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 40,
+      "max": 140,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "feature",
+      "name": "Feature",
+      "settings": [
+        {
+          "type": "text",
+          "id": "emoji",
+          "label": "Emoji / Icon",
+          "default": "🚀"
+        },
+        {
+          "type": "text",
+          "id": "label",
+          "label": "Label",
+          "default": "Feature"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Orbit Features",
+      "blocks": [
+        { "type": "feature", "settings": { "emoji": "🚀", "label": "Fast Shipping" } },
+        { "type": "feature", "settings": { "emoji": "🛡️", "label": "Secure" } },
+        { "type": "feature", "settings": { "emoji": "💎", "label": "Premium" } },
+        { "type": "feature", "settings": { "emoji": "🌿", "label": "Sustainable" } },
+        { "type": "feature", "settings": { "emoji": "💬", "label": "24/7 Support" } },
+        { "type": "feature", "settings": { "emoji": "🎁", "label": "Free Returns" } }
+      ]
+    }
+  ]
+}
+{% endschema %}

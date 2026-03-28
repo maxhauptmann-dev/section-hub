@@ -1,0 +1,63 @@
+{
+  "id": "scroll-morph-gallery",
+  "name": "SIQ - Morph Gallery",
+  "description": "Stunning scroll-driven gallery where images morph and transform as you scroll. Each image starts small and rounded, then expands to full-width with parallax depth as the user scrolls past. Includes smooth clip-path transitions, scale effects, and staggered reveal timing for a high-end editorial feel.",
+  "category": [
+    "images",
+    "Scroll Triggered",
+    "Premium"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Images",
+    "Gallery",
+    "Scroll Triggered",
+    "Morph",
+    "Transform",
+    "Parallax",
+    "Premium",
+    "WOW",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/scroll-morph-gallery/default.webp",
+      "alt": "SH - Morph Gallery - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

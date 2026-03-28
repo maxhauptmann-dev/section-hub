@@ -1,0 +1,446 @@
+/* ═══════════════════════════════════════
+   SectionHub – Trending Countdown Reveal
+   Prefix: tcr-
+   ═══════════════════════════════════════ */
+
+/* ── Reset ── */
+.tcr { background: var(--tcr-bg, #0a0a0a); position: relative; overflow: clip; }
+.tcr * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ── Desktop / Mobile toggle ── */
+.tcr-mobile-only { display: none; }
+@media (max-width: 749px) {
+  .tcr-desktop-only { display: none !important; }
+  .tcr-mobile-only  { display: block !important; }
+}
+
+/* ═══════════════════════════════
+   SCROLL TRACK (desktop)
+   ═══════════════════════════════ */
+.tcr-track {
+  position: relative;
+  /* height set by JS: enough viewports to drive all phases */
+}
+
+.tcr-sticky {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════
+   MESH GRADIENT BACKGROUND
+   ═══════════════════════════════ */
+.tcr-bg { position: absolute; inset: 0; z-index: 0; }
+
+.tcr-mesh { position: absolute; inset: 0; overflow: hidden; }
+.tcr-mesh__blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+.tcr-mesh__blob--1 {
+  width: 50vw; height: 50vw;
+  background: var(--tcr-grad-1, #1a472a);
+  bottom: -10%; left: -5%;
+  animation: tcr-b1 18s ease-in-out infinite alternate;
+}
+.tcr-mesh__blob--2 {
+  width: 40vw; height: 40vw;
+  background: var(--tcr-grad-2, #4a3f0a);
+  bottom: -5%; right: 10%;
+  animation: tcr-b2 22s ease-in-out infinite alternate;
+}
+.tcr-mesh__blob--3 {
+  width: 35vw; height: 35vw;
+  background: var(--tcr-grad-3, #0a2a1a);
+  top: 20%; left: 30%;
+  animation: tcr-b3 20s ease-in-out infinite alternate;
+  opacity: 0.6;
+}
+.tcr-mesh__noise {
+  position: absolute; inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+  background-size: 200px 200px;
+  opacity: 0.35;
+  pointer-events: none;
+}
+.tcr-mesh::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at center, transparent 40%, var(--tcr-bg, #0a0a0a) 100%);
+  z-index: 1;
+  pointer-events: none;
+}
+
+@keyframes tcr-b1 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(8vw,-6vh) scale(1.15)} }
+@keyframes tcr-b2 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(-6vw,4vh) scale(1.1)} }
+@keyframes tcr-b3 { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(5vw,8vh) scale(0.9)} }
+
+/* ═══════════════════════════════
+   HERO CONTENT (Phase 1)
+   ═══════════════════════════════ */
+.tcr-hero {
+  position: absolute;
+  top: 0; left: 0; bottom: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0 clamp(20px, 4vw, 60px) 0 clamp(40px, 6vw, 80px);
+  z-index: 5;
+  max-width: 560px;
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.tcr-hero__heading {
+  font-family: var(--tcr-heading-ff);
+  font-weight: var(--tcr-heading-fw, 900);
+  font-style: var(--tcr-heading-fst, normal);
+  color: var(--tcr-heading-c, #fff);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  line-height: 1.08;
+  margin-bottom: 16px;
+}
+.tcr-hero__heading--sm { font-size: clamp(1.6rem, 3vw, 2.4rem); }
+.tcr-hero__heading--md { font-size: clamp(2rem, 4vw, 3.4rem); }
+.tcr-hero__heading--lg { font-size: clamp(2.6rem, 5vw, 4.6rem); }
+.tcr-hero__heading--xl { font-size: clamp(3.2rem, 7vw, 6rem); }
+
+.tcr-hero__desc {
+  font-family: var(--tcr-body-ff);
+  font-weight: var(--tcr-body-fw, 400);
+  color: var(--tcr-text-c, #ccc);
+  font-size: clamp(0.82rem, 1.1vw, 0.95rem);
+  line-height: 1.65;
+  margin-bottom: 24px;
+  opacity: 0.85;
+}
+
+/* ── CTA row ── */
+.tcr-cta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+.tcr-cta__arrow {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(255,255,255,0.3);
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  background: transparent;
+  transition: background 0.3s, border-color 0.3s;
+  text-decoration: none;
+  flex-shrink: 0;
+}
+.tcr-cta__arrow:hover { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.5); }
+.tcr-cta__arrow svg { width: 16px; height: 16px; }
+
+.tcr-cta__btn {
+  display: inline-flex; align-items: center;
+  padding: 12px 28px;
+  border-radius: 50px;
+  background: var(--tcr-btn-bg, #fff);
+  color: var(--tcr-btn-c, #0a0a0a);
+  font-family: var(--tcr-body-ff);
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  border: 2px solid var(--tcr-btn-bg, #fff);
+  cursor: pointer;
+  transition: transform 0.3s, box-shadow 0.3s, background 0.3s, color 0.3s, border-color 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.tcr-cta__btn:hover { transform: scale(1.04); box-shadow: 0 4px 20px rgba(255,255,255,0.15); }
+
+/* ── Solid (default) ── */
+.tcr-cta__btn--solid {
+  background: var(--tcr-btn-bg, #fff);
+  color: var(--tcr-btn-c, #0a0a0a);
+  border-color: var(--tcr-btn-bg, #fff);
+}
+
+/* ── Outline ── */
+.tcr-cta__btn--outline {
+  background: transparent;
+  color: var(--tcr-btn-bg, #fff);
+  border-color: var(--tcr-btn-bg, #fff);
+}
+.tcr-cta__btn--outline:hover {
+  background: var(--tcr-btn-bg, #fff);
+  color: var(--tcr-btn-c, #0a0a0a);
+}
+
+/* ── Animated pulse ── */
+.tcr-cta__btn--animated {
+  animation: tcr-btn-pulse 2s ease-in-out infinite;
+}
+@keyframes tcr-btn-pulse {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(255,255,255,0.4); }
+  50% { transform: scale(1.06); box-shadow: 0 0 20px 8px rgba(255,255,255,0.15); }
+}
+.tcr-cta__btn--animated:hover {
+  animation: none;
+  transform: scale(1.08);
+  box-shadow: 0 4px 24px rgba(255,255,255,0.25);
+}
+
+/* ── Solid shimmer ── */
+.tcr-cta__btn--shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,0.35) 50%, transparent 70%);
+  animation: tcr-btn-shimmer 2.5s ease-in-out infinite;
+}
+@keyframes tcr-btn-shimmer {
+  0% { left: -100%; }
+  60%, 100% { left: 100%; }
+}
+
+/* ═══════════════════════════════
+   COUNTDOWN TIMER
+   ═══════════════════════════════ */
+.tcr-timer {
+  display: flex;
+  gap: 8px;
+}
+.tcr-timer__unit {
+  background: var(--tcr-timer-bg, #fff);
+  color: var(--tcr-timer-c, #0a0a0a);
+  border-radius: 8px;
+  padding: 8px 4px;
+  min-width: 52px;
+  text-align: center;
+  font-family: var(--tcr-heading-ff);
+}
+.tcr-timer__num {
+  font-size: 1.8rem;
+  font-weight: 800;
+  line-height: 1;
+  display: block;
+}
+.tcr-timer__label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+  opacity: 0.7;
+  display: block;
+  margin-top: 2px;
+  font-family: var(--tcr-body-ff);
+}
+
+/* ═══════════════════════════════
+   PRODUCT CARDS STAGE
+   ═══════════════════════════════ */
+.tcr-cards {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.tcr-card {
+  position: absolute;
+  top: 0; left: 0;
+  pointer-events: auto;
+  border-radius: var(--tcr-card-radius, 14px);
+  overflow: hidden;
+  will-change: transform, opacity, width, height;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+/* ── Full-card colour overlay (covers everything during colour phases) ── */
+.tcr-card__color {
+  position: absolute;
+  inset: 0;
+  background: var(--tcr-card-color, #e8b4c8);
+  border-radius: var(--tcr-card-radius, 14px);
+  z-index: 3;
+  transition: opacity 0.35s ease;
+}
+
+/* ── Product detail – always rendered, revealed when colour fades ── */
+.tcr-card__detail {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  padding: 10px 18px 10px 8px;
+  gap: 14px;
+  height: 100%;
+  background: var(--tcr-card-detail-bg, #fff);
+  border-radius: var(--tcr-card-radius, 14px);
+}
+
+.tcr-card__img-wrap {
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f0f0f0;
+}
+.tcr-card__img-wrap img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+.tcr-card__img-wrap svg {
+  width: 60px; height: 60px;
+  opacity: 0.35;
+  margin: 25px;
+}
+
+.tcr-card__info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Coloured title bar (the persisting colour strip behind the name) ── */
+.tcr-card__info-bar {
+  background: var(--tcr-bar-color, var(--tcr-card-color, #e8b4c8));
+  border-radius: 8px;
+  padding: 10px 18px;
+  opacity: 0; /* starts hidden, JS fades it in during Phase 4 */
+  transition: opacity 0.3s ease;
+}
+.tcr-card__info-title {
+  font-family: var(--tcr-heading-ff);
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--tcr-title-c, #111);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.4;
+}
+.tcr-card__info-price {
+  font-family: var(--tcr-body-ff);
+  font-weight: 500;
+  font-size: 0.92rem;
+  color: var(--tcr-card-price-c, #444);
+  padding-left: 2px;
+}
+
+.tcr-card__arrow {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.12);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  color: var(--tcr-card-arrow-c, #333);
+  text-decoration: none;
+  transition: background 0.3s, border-color 0.3s;
+}
+.tcr-card__arrow:hover { background: rgba(0,0,0,0.05); border-color: rgba(0,0,0,0.3); }
+.tcr-card__arrow svg { width: 16px; height: 16px; }
+
+/* ═══════════════════════════════
+   MOBILE – Static Layout
+   ═══════════════════════════════ */
+.tcr-m {
+  position: relative;
+  padding: 48px 16px;
+}
+
+.tcr-m__hero {
+  margin-bottom: 32px;
+}
+.tcr-m__heading {
+  font-family: var(--tcr-heading-ff);
+  font-weight: var(--tcr-heading-fw, 900);
+  color: var(--tcr-heading-c, #fff);
+  text-transform: uppercase;
+  font-size: clamp(1.6rem, 6vw, 2.4rem);
+  line-height: 1.1;
+  margin-bottom: 12px;
+}
+.tcr-m__desc {
+  font-family: var(--tcr-body-ff);
+  color: var(--tcr-text-c, #ccc);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+.tcr-m__cta {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 24px;
+}
+.tcr-m__timer {
+  display: flex; gap: 6px; margin-bottom: 32px;
+}
+.tcr-m__timer .tcr-timer__unit {
+  min-width: 44px;
+  padding: 6px 2px;
+}
+.tcr-m__timer .tcr-timer__num { font-size: 1.4rem; }
+
+/* Mobile product list */
+.tcr-m__list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.tcr-m__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border-radius: var(--tcr-card-radius, 10px);
+  background: var(--tcr-card-detail-bg, #fff);
+  text-decoration: none;
+}
+.tcr-m__item-img {
+  width: 60px; height: 60px;
+  border-radius: 6px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f5f5f5;
+}
+.tcr-m__item-img img { width: 100%; height: 100%; object-fit: cover; }
+.tcr-m__item-img svg { width: 36px; height: 36px; opacity: 0.4; margin: 12px; }
+.tcr-m__item-info { flex: 1; min-width: 0; }
+.tcr-m__item-title {
+  font-family: var(--tcr-heading-ff);
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--tcr-title-c, #111);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.tcr-m__item-price {
+  font-family: var(--tcr-body-ff);
+  font-weight: 500;
+  font-size: 0.8rem;
+  color: var(--tcr-card-price-c, #555);
+}
+.tcr-m__item-arrow {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0,0,0,0.1);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; color: var(--tcr-card-arrow-c, #333);
+}
+.tcr-m__item-arrow svg { width: 12px; height: 12px; }
+
+/* Color accent bar on mobile items */
+.tcr-m__item::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 5px;
+  border-radius: 10px 0 0 10px;
+  background: var(--tcr-item-color, #e8b4c8);
+}
+.tcr-m__item { position: relative; overflow: hidden; }

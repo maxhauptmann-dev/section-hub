@@ -105,21 +105,25 @@
   cursor: pointer;
   --isg-tilt-x: 0deg;
   --isg-tilt-y: 0deg;
-  transform: rotate(var(--isg-card-rot, 0deg));
-  transition: transform 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-              box-shadow 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --isg-card-rot-current: var(--isg-card-rot, 0deg);
+  transform: rotate(var(--isg-card-rot-current));
+  will-change: transform;
+  transition: box-shadow 0.35s ease;
   transform-origin: center center;
   opacity: 0;
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
 
-/* Hover state — uses CSS custom properties set by JS via rAF */
+/* Hover state — smooth tilt via JS rAF, no transition fighting */
 .isg-card--hover {
-  transform: perspective(600px) rotateX(var(--isg-tilt-x, 0deg)) rotateY(var(--isg-tilt-y, 0deg)) translateY(-6px) scale(1.02);
+  transform: perspective(800px)
+    rotate(var(--isg-card-rot-current))
+    rotateX(var(--isg-tilt-x, 0deg))
+    rotateY(var(--isg-tilt-y, 0deg))
+    translateY(-6px)
+    scale(1.02);
   z-index: 10;
-  transition: transform 0.1s linear,
-              box-shadow 0.3s ease;
 }
 
 /* Scatter animation on reveal */
@@ -136,6 +140,11 @@
     opacity: 1;
     transform: rotate(var(--isg-card-rot, 0deg)) translateY(0) scale(1);
   }
+}
+
+/* After animation completes, keep card visible without animation */
+.isg-card.isg-visible:not(.isg-card--hover) {
+  transition: box-shadow 0.35s ease;
 }
 
 /* Neat grid: no rotation */

@@ -1,0 +1,569 @@
+{% comment %}
+  Section Hub – Countdown Deal Popup v1.0
+  Urgency popup with animated countdown timer, product image,
+  discount code, pulsing CTA, and confetti on copy.
+  Prefix: cdp-
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+  assign s = section.settings
+-%}
+
+<style>
+  #cdp-{{ sid }}{
+    --cdp-overlay:{{ s.overlay_bg }};
+    --cdp-bg:{{ s.modal_bg }};
+    --cdp-heading:{{ s.heading_color }};
+    --cdp-text:{{ s.text_color }};
+    --cdp-accent:{{ s.accent_color }};
+    --cdp-accent2:{{ s.accent2_color }};
+    --cdp-border:{{ s.border_color }};
+    --cdp-btn-bg:{{ s.btn_bg }};
+    --cdp-btn-text:{{ s.btn_text_color }};
+    --cdp-timer-bg:{{ s.timer_bg }};
+    --cdp-timer-text:{{ s.timer_text }};
+    --cdp-radius:{{ s.modal_radius }}px;
+    --cdp-max-w:{{ s.modal_width }}px;
+  }
+</style>
+
+<div class="cdp-overlay" id="cdp-{{ sid }}"
+  data-cdp-trigger="{{ s.trigger_type }}"
+  data-cdp-delay="{{ s.trigger_delay }}"
+  data-cdp-scroll="{{ s.trigger_scroll }}"
+  data-cdp-cookie="{{ s.cookie_days }}"
+  data-cdp-hours="{{ s.timer_hours }}"
+  data-cdp-minutes="{{ s.timer_minutes }}"
+>
+
+  <div class="cdp-modal">
+    <button class="cdp-close" data-cdp-close aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+
+    {%- comment -%} Left: Image {%- endcomment -%}
+    {%- if s.image != blank -%}
+      <div class="cdp-image">
+        <img src="{{ s.image | image_url: width: 800 }}" alt="{{ s.image_alt | default: s.headline | escape }}" loading="lazy">
+        {%- if s.badge_text != blank -%}
+          <span class="cdp-badge">{{ s.badge_text }}</span>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Right: Content {%- endcomment -%}
+    <div class="cdp-content">
+
+      {%- comment -%} Main State {%- endcomment -%}
+      <div class="cdp-main" data-cdp-main>
+        {%- if s.eyebrow != blank -%}
+          <span class="cdp-eyebrow">{{ s.eyebrow }}</span>
+        {%- endif -%}
+
+        {%- if s.headline != blank -%}
+          <h2 class="cdp-heading">{{ s.headline }}</h2>
+        {%- endif -%}
+
+        {%- if s.subheading != blank -%}
+          <p class="cdp-sub">{{ s.subheading }}</p>
+        {%- endif -%}
+
+        {%- comment -%} Countdown Timer {%- endcomment -%}
+        <div class="cdp-timer" data-cdp-timer>
+          <div class="cdp-timer__unit">
+            <span class="cdp-timer__num" data-cdp-h>00</span>
+            <span class="cdp-timer__label">{{ s.label_hours }}</span>
+          </div>
+          <span class="cdp-timer__sep">:</span>
+          <div class="cdp-timer__unit">
+            <span class="cdp-timer__num" data-cdp-m>00</span>
+            <span class="cdp-timer__label">{{ s.label_minutes }}</span>
+          </div>
+          <span class="cdp-timer__sep">:</span>
+          <div class="cdp-timer__unit">
+            <span class="cdp-timer__num" data-cdp-s>00</span>
+            <span class="cdp-timer__label">{{ s.label_seconds }}</span>
+          </div>
+        </div>
+
+        {%- comment -%} Discount Code {%- endcomment -%}
+        {%- if s.discount_code != blank -%}
+          <div class="cdp-code-wrap">
+            <span class="cdp-code-label">{{ s.code_label }}</span>
+            <div class="cdp-code" data-cdp-code>{{ s.discount_code }}</div>
+          </div>
+        {%- endif -%}
+
+        {%- comment -%} CTA Button {%- endcomment -%}
+        {%- if s.btn_text != blank -%}
+          <a href="{{ s.btn_url }}" class="cdp-btn cdp-btn--pulse" data-cdp-cta>
+            {{ s.btn_text }}
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          </a>
+        {%- endif -%}
+
+        {%- if s.show_no_thanks -%}
+          <button class="cdp-dismiss" data-cdp-close>{{ s.no_thanks_text }}</button>
+        {%- endif -%}
+      </div>
+
+      {%- comment -%} Copied State {%- endcomment -%}
+      <div class="cdp-copied" data-cdp-copied>
+        <span class="cdp-copied__icon">✓</span>
+        <span class="cdp-copied__text">{{ s.copied_text }}</span>
+      </div>
+
+    </div>
+
+    {%- comment -%} Confetti canvas {%- endcomment -%}
+    <canvas class="cdp-confetti" data-cdp-confetti></canvas>
+  </div>
+</div>
+
+<script>
+(function(){
+  var el = document.getElementById('cdp-{{ sid }}');
+  if(!el) return;
+
+  var cookieKey = 'cdp_{{ sid }}';
+  var cookieDays = parseInt(el.dataset.cdpCookie) || 7;
+
+  function getCk(n){ var v=document.cookie.match('(^|;)\\s*'+n+'\\s*=\\s*([^;]+)'); return v?v.pop():''; }
+  function setCk(n,v,d){ var dt=new Date(); dt.setTime(dt.getTime()+d*864e5); document.cookie=n+'='+v+';expires='+dt.toUTCString()+';path=/;SameSite=Lax'; }
+
+  if(getCk(cookieKey)==='1') return;
+
+  /* Show / Close */
+  function show(){ el.classList.add('cdp-overlay--visible'); startTimer(); }
+  function close(){ el.classList.remove('cdp-overlay--visible'); setCk(cookieKey,'1',cookieDays); }
+
+  el.querySelectorAll('[data-cdp-close]').forEach(function(b){ b.addEventListener('click',close); });
+  el.addEventListener('click',function(e){ if(e.target===el) close(); });
+
+  /* Trigger */
+  var tType = el.dataset.cdpTrigger;
+  var tDelay = parseInt(el.dataset.cdpDelay) || 3;
+  var tScroll = parseInt(el.dataset.cdpScroll) || 50;
+
+  if(tType==='delay'){
+    setTimeout(show, tDelay*1000);
+  } else if(tType==='scroll'){
+    var fired=false;
+    window.addEventListener('scroll',function(){
+      if(fired) return;
+      var pct=(window.scrollY/(document.body.scrollHeight-window.innerHeight))*100;
+      if(pct>=tScroll){ fired=true; show(); }
+    },{passive:true});
+  } else if(tType==='exit'){
+    var fired2=false;
+    document.addEventListener('mouseleave',function(e){
+      if(fired2) return;
+      if(e.clientY<0){ fired2=true; show(); }
+    });
+  }
+
+  /* Countdown Timer */
+  var hEl = el.querySelector('[data-cdp-h]');
+  var mEl = el.querySelector('[data-cdp-m]');
+  var sEl = el.querySelector('[data-cdp-s]');
+  var timerHours = parseInt(el.dataset.cdpHours) || 0;
+  var timerMinutes = parseInt(el.dataset.cdpMinutes) || 30;
+  var totalSec = timerHours * 3600 + timerMinutes * 60;
+  var timerInterval;
+
+  /* Persist end-time in sessionStorage */
+  var endKey = 'cdp_end_{{ sid }}';
+  function startTimer(){
+    var stored = sessionStorage.getItem(endKey);
+    var endTime;
+    /* In the theme editor always use fresh time from settings */
+    if(stored && !window.Shopify?.designMode){
+      endTime = parseInt(stored);
+    } else {
+      endTime = Date.now() + totalSec * 1000;
+      sessionStorage.setItem(endKey, endTime);
+    }
+    function tick(){
+      var remain = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+      var h = Math.floor(remain / 3600);
+      var m = Math.floor((remain % 3600) / 60);
+      var s = remain % 60;
+      hEl.textContent = h < 10 ? '0'+h : h;
+      mEl.textContent = m < 10 ? '0'+m : m;
+      sEl.textContent = s < 10 ? '0'+s : s;
+      if(remain <= 0) clearInterval(timerInterval);
+    }
+    tick();
+    timerInterval = setInterval(tick, 1000);
+  }
+
+  /* Copy discount code */
+  var codeEl = el.querySelector('[data-cdp-code]');
+  var copiedEl = el.querySelector('[data-cdp-copied]');
+  var mainEl = el.querySelector('[data-cdp-main]');
+
+  if(codeEl){
+    codeEl.addEventListener('click',function(){
+      var code = codeEl.textContent.trim();
+      if(navigator.clipboard) navigator.clipboard.writeText(code);
+      copiedEl.classList.add('cdp-copied--show');
+      mainEl.style.opacity = '0.3';
+      fireConfetti();
+      setTimeout(function(){
+        copiedEl.classList.remove('cdp-copied--show');
+        mainEl.style.opacity = '1';
+      }, 2000);
+    });
+  }
+
+  /* Confetti */
+  var canvas = el.querySelector('[data-cdp-confetti]');
+  function fireConfetti(){
+    if(!canvas) return;
+    var ctx = canvas.getContext('2d');
+    var W = canvas.parentElement.offsetWidth;
+    var H = canvas.parentElement.offsetHeight;
+    canvas.width = W; canvas.height = H;
+    canvas.style.display = 'block';
+    var particles = [];
+    var colors = ['#6366f1','#f43f5e','#facc15','#22c55e','#3b82f6','#ec4899'];
+    for(var i=0;i<60;i++){
+      particles.push({
+        x: W/2 + (Math.random()-0.5)*100,
+        y: H/2,
+        vx: (Math.random()-0.5)*12,
+        vy: -Math.random()*10 - 4,
+        w: 6+Math.random()*6,
+        h: 4+Math.random()*4,
+        color: colors[Math.floor(Math.random()*colors.length)],
+        rotation: Math.random()*360,
+        rv: (Math.random()-0.5)*10,
+        gravity: 0.25+Math.random()*0.1,
+        opacity: 1
+      });
+    }
+    var frame = 0;
+    function draw(){
+      ctx.clearRect(0,0,W,H);
+      var alive=false;
+      particles.forEach(function(p){
+        p.x += p.vx;
+        p.vy += p.gravity;
+        p.y += p.vy;
+        p.rotation += p.rv;
+        if(frame>30) p.opacity -= 0.02;
+        if(p.opacity<=0) return;
+        alive=true;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation*Math.PI/180);
+        ctx.globalAlpha = Math.max(0,p.opacity);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+        ctx.restore();
+      });
+      frame++;
+      if(alive && frame<120) requestAnimationFrame(draw);
+      else { ctx.clearRect(0,0,W,H); canvas.style.display='none'; }
+    }
+    requestAnimationFrame(draw);
+  }
+
+  /* Theme editor: reset timer when settings change */
+  document.addEventListener('shopify:section:load', function(e){
+    if(e.detail && e.detail.sectionId === '{{ sid }}'){
+      if(timerInterval) clearInterval(timerInterval);
+      sessionStorage.removeItem(endKey);
+      timerHours = parseInt(el.dataset.cdpHours) || 0;
+      timerMinutes = parseInt(el.dataset.cdpMinutes) || 30;
+      totalSec = timerHours * 3600 + timerMinutes * 60;
+      startTimer();
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - Deal Popup",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "LIMITED TIME OFFER"
+    },
+    {
+      "type": "text",
+      "id": "headline",
+      "label": "Headline",
+      "default": "Flash Sale: 25% Off"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Don't miss this exclusive deal. Grab your favorite items before time runs out!"
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Product image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "default": "Deal product"
+    },
+    {
+      "type": "text",
+      "id": "badge_text",
+      "label": "Image badge text",
+      "default": "-25%"
+    },
+    {
+      "type": "header",
+      "content": "Countdown"
+    },
+    {
+      "type": "range",
+      "id": "timer_hours",
+      "label": "Hours",
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "timer_minutes",
+      "label": "Minutes",
+      "min": 0,
+      "max": 59,
+      "step": 1,
+      "default": 30
+    },
+    {
+      "type": "text",
+      "id": "label_hours",
+      "label": "Hours label",
+      "default": "Hours"
+    },
+    {
+      "type": "text",
+      "id": "label_minutes",
+      "label": "Minutes label",
+      "default": "Minutes"
+    },
+    {
+      "type": "text",
+      "id": "label_seconds",
+      "label": "Seconds label",
+      "default": "Seconds"
+    },
+    {
+      "type": "header",
+      "content": "Discount Code"
+    },
+    {
+      "type": "text",
+      "id": "discount_code",
+      "label": "Discount code",
+      "default": "FLASH25",
+      "info": "Leave blank to hide. Click to copy."
+    },
+    {
+      "type": "text",
+      "id": "code_label",
+      "label": "Code label",
+      "default": "Your exclusive code:"
+    },
+    {
+      "type": "text",
+      "id": "copied_text",
+      "label": "Copied text",
+      "default": "Code copied!"
+    },
+    {
+      "type": "header",
+      "content": "Button"
+    },
+    {
+      "type": "text",
+      "id": "btn_text",
+      "label": "Button text",
+      "default": "Shop the Sale"
+    },
+    {
+      "type": "url",
+      "id": "btn_url",
+      "label": "Button link"
+    },
+    {
+      "type": "header",
+      "content": "Dismiss"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_no_thanks",
+      "label": "Show dismiss link",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "no_thanks_text",
+      "label": "Dismiss text",
+      "default": "No thanks, I'll pay full price"
+    },
+    {
+      "type": "header",
+      "content": "Trigger"
+    },
+    {
+      "type": "select",
+      "id": "trigger_type",
+      "label": "When to show",
+      "options": [
+        { "value": "delay", "label": "After delay" },
+        { "value": "scroll", "label": "After scroll %" },
+        { "value": "exit", "label": "Exit intent" }
+      ],
+      "default": "delay"
+    },
+    {
+      "type": "range",
+      "id": "trigger_delay",
+      "label": "Delay",
+      "min": 1,
+      "max": 30,
+      "step": 1,
+      "default": 4,
+      "unit": "s"
+    },
+    {
+      "type": "range",
+      "id": "trigger_scroll",
+      "label": "Scroll threshold",
+      "min": 10,
+      "max": 90,
+      "step": 5,
+      "default": 50,
+      "unit": "%"
+    },
+    {
+      "type": "range",
+      "id": "cookie_days",
+      "label": "Hide for X days",
+      "min": 1,
+      "max": 90,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "modal_width",
+      "label": "Modal width",
+      "min": 500,
+      "max": 900,
+      "step": 20,
+      "default": 740,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "modal_radius",
+      "label": "Roundness",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "overlay_bg",
+      "label": "Overlay",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "modal_bg",
+      "label": "Modal background",
+      "default": "#0f0f1a"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text",
+      "default": "#a0a0b8"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#f43f5e"
+    },
+    {
+      "type": "color",
+      "id": "accent2_color",
+      "label": "Accent 2 (gradient)",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Borders",
+      "default": "#1e1e3a"
+    },
+    {
+      "type": "color",
+      "id": "timer_bg",
+      "label": "Timer background",
+      "default": "#1a1a30"
+    },
+    {
+      "type": "color",
+      "id": "timer_text",
+      "label": "Timer text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "btn_bg",
+      "label": "Button background",
+      "default": "#f43f5e"
+    },
+    {
+      "type": "color",
+      "id": "btn_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - Deal Popup"
+    }
+  ]
+}
+{% endschema %}

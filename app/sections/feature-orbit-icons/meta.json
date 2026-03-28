@@ -1,0 +1,59 @@
+{
+  "id": "feature-orbit-icons",
+  "name": "SIQ - Feature Orbit Icons",
+  "description": "Auto-rotating orbital ring of feature icons or USPs. Icons circle around a central highlight element with smooth infinite CSS animation. Great for showcasing brand values, features, or benefits in a dynamic, eye-catching way.",
+  "category": [
+    "Social Proof"
+  ],
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Features",
+    "Orbit",
+    "Icons",
+    "Animated",
+    "Auto-rotate",
+    "Premium",
+    "USP"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiB2aWV3Qm94PSIwIDAgNjAwIDM2MCI+CjxyZWN0IHdpZHRoPSI2MDAiIGhlaWdodD0iMzYwIiBmaWxsPSIjMGYwZjFhIi8+CjxjaXJjbGUgY3g9IjMwMCIgY3k9IjE4MCIgcj0iMTIwIiBmaWxsPSJub25lIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIgc3Ryb2tlLWRhc2hhcnJheT0iNiw0Ii8+CjxjaXJjbGUgY3g9IjMwMCIgY3k9IjE4MCIgcj0iNTAiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzgxOGNmOCIgc3Ryb2tlLXdpZHRoPSIyIi8+Cjx0ZXh0IHg9IjMwMCIgeT0iMTg0IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic3lzdGVtLXVpIiBmb250LXNpemU9IjEyIiBmaWxsPSIjZmZmZmZmIiBmb250LXdlaWdodD0iNzAwIj5CcmFuZDwvdGV4dD4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iNTUiIHI9IjIyIiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIzMDAiIHk9IjYwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0Ij7wn5qAPC90ZXh0Pgo8Y2lyY2xlIGN4PSI0MjAiIGN5PSIxMjAiIHI9IjIyIiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSI0MjAiIHk9IjEyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCI+4q2QPC90ZXh0Pgo8Y2lyY2xlIGN4PSI0MjAiIGN5PSIyNDAiIHI9IjIyIiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSI0MjAiIHk9IjI0NSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCI+8J+UkjwvdGV4dD4KPGNpcmNsZSBjeD0iMzAwIiBjeT0iMzA1IiByPSIyMiIgZmlsbD0iIzFhMWEyZSIgc3Ryb2tlPSIjMmEyYTQ0IiBzdHJva2Utd2lkdGg9IjEiLz4KPHRleHQgeD0iMzAwIiB5PSIzMTAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtc2l6ZT0iMTQiPvCfko48L3RleHQ+CjxjaXJjbGUgY3g9IjE4MCIgY3k9IjI0MCIgcj0iMjIiIGZpbGw9IiMxYTFhMmUiIHN0cm9rZT0iIzJhMmE0NCIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjx0ZXh0IHg9IjE4MCIgeT0iMjQ1IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LXNpemU9IjE0Ij7wn4y/PC90ZXh0Pgo8Y2lyY2xlIGN4PSIxODAiIGN5PSIxMjAiIHI9IjIyIiBmaWxsPSIjMWExYTJlIiBzdHJva2U9IiMyYTJhNDQiIHN0cm9rZS13aWR0aD0iMSIvPgo8dGV4dCB4PSIxODAiIHk9IjEyNSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1zaXplPSIxNCI+8J+TpjwvdGV4dD4KPC9zdmc+",
+      "alt": "Feature Orbit Icons - Default",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-14",
+  "updatedAt": "2026-03-14",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-14",
+      "changes": [
+        "Initial release"
+      ]
+    }
+  ],
+  "tier": "premium"
+}

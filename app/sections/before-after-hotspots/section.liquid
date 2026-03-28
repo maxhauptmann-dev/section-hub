@@ -1,0 +1,809 @@
+{%- comment -%}
+  Section Hub — Before / After Hotspots v1
+  Interactive hotspot pins on a main image, each pin opens a mini slider popup.
+{%- endcomment -%}
+
+{%- assign sid = section.id -%}
+{%- assign heading_font = section.settings.heading_font -%}
+{%- assign body_font    = section.settings.body_font -%}
+{{ heading_font | font_face: font_display: 'swap' }}
+{{ body_font    | font_face: font_display: 'swap' }}
+
+<style>
+#bah-{{ sid }}.bah-section {
+  --bah-bg:               {{ section.settings.bg_color }};
+  --bah-text:             {{ section.settings.text_color }};
+  --bah-muted:            {{ section.settings.muted_color }};
+  --bah-accent:           {{ section.settings.accent_color }};
+  --bah-pin-bg:           {{ section.settings.pin_bg_color }};
+  --bah-pin-color:        {{ section.settings.pin_text_color }};
+  --bah-pin-ring:         {{ section.settings.pin_ring_color }};
+  --bah-popup-bg:         {{ section.settings.popup_bg_color }};
+  --bah-mw:               {{ section.settings.max_width }}px;
+  --bah-pt:               {{ section.settings.padding_top }}px;
+  --bah-pb:               {{ section.settings.padding_bottom }}px;
+  --bah-pt-m:             {{ section.settings.padding_top_mobile }}px;
+  --bah-pb-m:             {{ section.settings.padding_bottom_mobile }}px;
+  --bah-header-gap:       {{ section.settings.header_gap }}px;
+  --bah-header-gap-m:     {{ section.settings.header_gap_mobile }}px;
+  --bah-img-h:            {{ section.settings.image_height }}px;
+  --bah-img-h-m:          {{ section.settings.image_height_mobile }}px;
+  --bah-img-radius:       {{ section.settings.image_radius }}px;
+  --bah-pin-size:         {{ section.settings.pin_size }}px;
+  --bah-popup-w:          {{ section.settings.popup_width }}px;
+  --bah-popup-p:          {{ section.settings.popup_padding }}px;
+  --bah-popup-radius:     {{ section.settings.popup_radius }}px;
+  --bah-popup-img-h:      {{ section.settings.popup_image_height }}px;
+  --bah-popup-img-radius: {{ section.settings.popup_image_radius }}px;
+  --bah-btn-radius:       {{ section.settings.button_radius }}px;
+  --bah-heading-size:     {{ section.settings.heading_size }}px;
+  --bah-heading-size-m:   {{ section.settings.heading_size_mobile }}px;
+  --bah-heading-weight:   {{ section.settings.heading_weight }};
+  --bah-heading-ls:       {{ section.settings.heading_letter_spacing }}em;
+  --bah-heading-style:    {{ heading_font.style }};
+  --bah-body-size:        {{ section.settings.body_size }}px;
+  --bah-body-style:       {{ body_font.style }};
+  --bah-eyebrow-size:     {{ section.settings.eyebrow_size }}px;
+  --bah-font-heading:     {{ heading_font.family }}, {{ heading_font.fallback_families }};
+  --bah-font-body:        {{ body_font.family }},    {{ body_font.fallback_families }};
+  --bah-stage-shadow:     {% if section.settings.stage_shadow %}0 8px 40px rgba(0,0,0,0.12){% else %}none{% endif %};
+}
+</style>
+
+<div class="bah-overlay" id="bah-ov-{{ sid }}"></div>
+
+<section id="bah-{{ sid }}" class="bah-section" aria-label="{{ section.settings.heading | default: 'Before & After Hotspots' }}">
+  <div class="bah-wrap">
+
+    {%- if section.settings.eyebrow != blank or section.settings.heading != blank or section.settings.subheading != blank -%}
+      <div class="bah-header">
+        {%- if section.settings.eyebrow != blank -%}
+          <p class="bah-eyebrow">{{ section.settings.eyebrow }}</p>
+        {%- endif -%}
+        {%- if section.settings.heading != blank -%}
+          <h2 class="bah-heading">{{ section.settings.heading }}</h2>
+        {%- endif -%}
+        {%- if section.settings.subheading != blank -%}
+          <p class="bah-subheading">{{ section.settings.subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="bah-stage" id="bah-stage-{{ sid }}">
+
+      {%- if section.settings.main_image != blank -%}
+        {{ section.settings.main_image | image_url: width: 1600 | image_tag:
+          class: 'bah-stage-img',
+          loading: 'lazy',
+          widths: '600,900,1200,1600',
+          sizes: '(max-width:749px) 92vw, min(92vw, 1100px)'
+        }}
+      {%- else -%}
+        <div class="bah-stage-placeholder">
+          {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.hint_text != blank -%}
+        <span class="bah-hint">{{ section.settings.hint_text }}</span>
+      {%- endif -%}
+
+      {%- for block in section.blocks -%}
+        {%- assign pin_x = block.settings.pin_x -%}
+        {%- assign pin_y = block.settings.pin_y -%}
+        {%- assign pin_num = forloop.index -%}
+
+        <div
+          class="bah-pin"
+          id="bah-pin-{{ sid }}-{{ forloop.index0 }}"
+          style="left: {{ pin_x }}%; top: {{ pin_y }}%;"
+          data-pin="{{ forloop.index0 }}"
+          aria-label="{{ block.settings.popup_title | default: 'Hotspot' }} — Click to compare"
+          role="button"
+          tabindex="0"
+          {{ block.shopify_attributes }}
+        >
+          <div class="bah-pin-dot">
+            <span class="bah-pin-num">{{ pin_num }}</span>
+          </div>
+
+          <div class="bah-popup" id="bah-pop-{{ sid }}-{{ forloop.index0 }}">
+            <div class="bah-popup-header">
+              <span class="bah-popup-title">{{ block.settings.popup_title | default: 'Transformation' }}</span>
+              <button class="bah-popup-close" aria-label="Close" data-close="{{ forloop.index0 }}">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+
+            <div class="bah-mini-slider" id="bah-ms-{{ sid }}-{{ forloop.index0 }}" data-mini-slider>
+              {%- if block.settings.image_after != blank -%}
+                {{ block.settings.image_after | image_url: width: 700 | image_tag:
+                  class: 'bah-mini-img bah-mini-img--after',
+                  loading: 'lazy',
+                  widths: '280,560,700',
+                  sizes: '280px'
+                }}
+              {%- else -%}
+                <div class="bah-mini-img bah-mini-img--after" style="background:linear-gradient(135deg,#d4cec6,#c0bab0);"></div>
+              {%- endif -%}
+
+              {%- if block.settings.image_before != blank -%}
+                {{ block.settings.image_before | image_url: width: 700 | image_tag:
+                  class: 'bah-mini-img bah-mini-img--before',
+                  loading: 'lazy',
+                  widths: '280,560,700',
+                  sizes: '280px'
+                }}
+              {%- else -%}
+                <div class="bah-mini-img bah-mini-img--before" style="background:linear-gradient(135deg,#e8e4de,#d4cec6);clip-path:inset(0 50% 0 0);"></div>
+              {%- endif -%}
+
+              <div class="bah-mini-handle">
+                <div class="bah-mini-knob">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M9 6l-4 6 4 6"/><path d="M15 6l4 6-4 6"/>
+                  </svg>
+                </div>
+              </div>
+
+              <span class="bah-mini-label bah-mini-label--before">{{ block.settings.label_before | default: 'Before' }}</span>
+              <span class="bah-mini-label bah-mini-label--after">{{ block.settings.label_after | default: 'After' }}</span>
+            </div>
+
+            {%- if block.settings.popup_description != blank -%}
+              <p class="bah-popup-desc">{{ block.settings.popup_description }}</p>
+            {%- endif -%}
+
+            {%- if block.settings.button_label != blank -%}
+              <a class="bah-popup-btn" href="{{ block.settings.button_link | default: '#' }}">{{ block.settings.button_label }}</a>
+            {%- endif -%}
+          </div>
+
+        </div>
+      {%- endfor -%}
+
+    </div>
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var ROOT    = document.getElementById('bah-{{ sid }}');
+  var STAGE   = document.getElementById('bah-stage-{{ sid }}');
+  var OVERLAY = document.getElementById('bah-ov-{{ sid }}');
+  if (!ROOT || !STAGE) return;
+
+  var openIdx = -1;
+
+  /* ── Determine best popup direction ── */
+  function getDir(pin, stageRect) {
+    var r = pin.getBoundingClientRect();
+    var pinCx = r.left + r.width  / 2 - stageRect.left;
+    var pinCy = r.top  + r.height / 2 - stageRect.top;
+    var sw = stageRect.width;
+    var sh = stageRect.height;
+    if (pinCx < sw * 0.35) return 'right';
+    if (pinCx > sw * 0.65) return 'left';
+    if (pinCy < sh * 0.5)  return 'bottom';
+    return 'top';
+  }
+
+  /* track popups moved to body on mobile */
+  var movedPops = {};
+
+  function openPin(idx) {
+    closeAll();
+    var pin = document.getElementById('bah-pin-{{ sid }}-' + idx);
+    var pop = document.getElementById('bah-pop-{{ sid }}-' + idx);
+    if (!pin || !pop) return;
+
+    var isMobile = window.innerWidth < 750;
+
+    if (isMobile && pop.parentElement !== document.body) {
+      /* move popup out of pin so position:fixed works correctly */
+      pop._origParent = pin;
+      document.body.appendChild(pop);
+      movedPops[idx] = pop;
+    }
+
+    var dir = isMobile ? 'bottom' : getDir(pin, STAGE.getBoundingClientRect());
+    pop.className = 'bah-popup bah-popup--' + dir;
+
+    requestAnimationFrame(function(){
+      pop.classList.add('bah-popup--open');
+    });
+    pin.classList.add('active');
+    OVERLAY.classList.add('active');
+    ROOT.classList.add('pins-opened');
+    openIdx = idx;
+
+    initMiniSlider(idx);
+  }
+
+  function closeAll() {
+    document.querySelectorAll('#bah-{{ sid }} .bah-pin').forEach(function(p){ p.classList.remove('active'); });
+    /* close & return any body-moved popups back to their pin */
+    Object.keys(movedPops).forEach(function(k) {
+      var pop = movedPops[k];
+      pop.classList.remove('bah-popup--open');
+      if (pop._origParent) pop._origParent.appendChild(pop);
+      delete movedPops[k];
+    });
+    document.querySelectorAll('#bah-{{ sid }} .bah-popup').forEach(function(p){ p.classList.remove('bah-popup--open'); });
+    OVERLAY.classList.remove('active');
+    ROOT.classList.remove('pins-opened');
+    openIdx = -1;
+  }
+
+  /* ── Pin click / keyboard ── */
+  document.querySelectorAll('#bah-{{ sid }} .bah-pin').forEach(function(pin) {
+    pin.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var idx = +pin.dataset.pin;
+      if (openIdx === idx) closeAll(); else openPin(idx);
+    });
+    pin.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        pin.click();
+      }
+    });
+  });
+
+  /* ── Close buttons ── */
+  document.querySelectorAll('#bah-{{ sid }} .bah-popup-close').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      closeAll();
+    });
+  });
+
+  /* ── Popup click doesn't bubble up ── */
+  document.querySelectorAll('#bah-{{ sid }} .bah-popup').forEach(function(p) {
+    p.addEventListener('click', function(e) { e.stopPropagation(); });
+  });
+
+  /* ── Overlay & stage close ── */
+  OVERLAY.addEventListener('click', closeAll);
+  STAGE.addEventListener('click', function(e) {
+    if (!e.target.closest('.bah-pin')) closeAll();
+  });
+
+  /* ── Mini slider logic ── */
+  var inited = {};
+  function initMiniSlider(idx) {
+    if (inited[idx]) return;
+    inited[idx] = true;
+
+    var ms     = document.getElementById('bah-ms-{{ sid }}-' + idx);
+    if (!ms) return;
+    var before = ms.querySelector('.bah-mini-img--before');
+    var handle = ms.querySelector('.bah-mini-handle');
+    if (!before || !handle) return;
+
+    var dragging = false;
+    function setPos(clientX) {
+      var r   = ms.getBoundingClientRect();
+      var pct = Math.max(2, Math.min(98, ((clientX - r.left) / r.width) * 100));
+      before.style.clipPath = 'inset(0 ' + (100 - pct) + '% 0 0)';
+      handle.style.left     = pct + '%';
+    }
+    function down(e) {
+      e.preventDefault();
+      dragging = true;
+      setPos(e.touches ? e.touches[0].clientX : e.clientX);
+    }
+    function move(e) {
+      if (!dragging) return;
+      e.preventDefault();
+      setPos(e.touches ? e.touches[0].clientX : e.clientX);
+    }
+    function up() { dragging = false; }
+
+    ms.addEventListener('mousedown',  down);
+    ms.addEventListener('touchstart', down, { passive: false });
+    window.addEventListener('mousemove',  move, { passive: false });
+    window.addEventListener('touchmove',  move, { passive: false });
+    window.addEventListener('mouseup',  up);
+    window.addEventListener('touchend', up);
+  }
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - BA Hotspots",
+  "tag": "section",
+  "class": "section-hub--ba-hotspots",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow text",
+      "default": "Results"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Tap to Explore the Transformation"
+    },
+    {
+      "type": "text",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Click each pin to see before & after results up close"
+    },
+    {
+      "type": "text",
+      "id": "hint_text",
+      "label": "Hint label on image",
+      "default": "Tap the pins to compare"
+    },
+    {
+      "type": "header",
+      "content": "Main Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "main_image",
+      "label": "Main image"
+    },
+    {
+      "type": "range",
+      "id": "image_height",
+      "label": "Image height — desktop",
+      "min": 300,
+      "max": 900,
+      "step": 20,
+      "default": 520,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_height_mobile",
+      "label": "Image height — mobile",
+      "min": 200,
+      "max": 600,
+      "step": 10,
+      "default": 320,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "image_radius",
+      "label": "Corner radius",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "checkbox",
+      "id": "stage_shadow",
+      "label": "Drop shadow on image",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Hotspot Pins"
+    },
+    {
+      "type": "range",
+      "id": "pin_size",
+      "label": "Pin size",
+      "min": 28,
+      "max": 56,
+      "step": 2,
+      "default": 38,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "pin_bg_color",
+      "label": "Pin background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "pin_text_color",
+      "label": "Pin number color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "pin_ring_color",
+      "label": "Pin ring (hover)",
+      "default": "#8b7355"
+    },
+    {
+      "type": "header",
+      "content": "Popup"
+    },
+    {
+      "type": "range",
+      "id": "popup_width",
+      "label": "Popup width — desktop",
+      "min": 220,
+      "max": 400,
+      "step": 10,
+      "default": 280,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "popup_padding",
+      "label": "Popup inner padding",
+      "min": 8,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "popup_radius",
+      "label": "Popup corner radius",
+      "min": 0,
+      "max": 28,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "popup_image_height",
+      "label": "Popup slider image height",
+      "min": 100,
+      "max": 280,
+      "step": 10,
+      "default": 180,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "popup_image_radius",
+      "label": "Popup image corner radius",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "button_radius",
+      "label": "CTA button corner radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "default": 8,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max content width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_gap",
+      "label": "Header gap — desktop",
+      "min": 16,
+      "max": 80,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "header_gap_mobile",
+      "label": "Header gap — mobile",
+      "min": 12,
+      "max": 60,
+      "step": 4,
+      "default": 32,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Padding top — desktop",
+      "min": 0,
+      "max": 148,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Padding bottom — desktop",
+      "min": 0,
+      "max": 148,
+      "step": 4,
+      "default": 80,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Padding top — mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom_mobile",
+      "label": "Padding bottom — mobile",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 48,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Section background",
+      "default": "#f8f7f4"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1a1a1a"
+    },
+    {
+      "type": "color",
+      "id": "muted_color",
+      "label": "Muted / subtext color",
+      "default": "#777777"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent color",
+      "default": "#8b7355"
+    },
+    {
+      "type": "color",
+      "id": "popup_bg_color",
+      "label": "Popup background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "font_picker",
+      "id": "heading_font",
+      "label": "Heading font",
+      "default": "helvetica_n7"
+    },
+    {
+      "type": "font_picker",
+      "id": "body_font",
+      "label": "Body font",
+      "default": "helvetica_n4"
+    },
+    {
+      "type": "select",
+      "id": "heading_weight",
+      "label": "Heading weight",
+      "options": [
+        { "value": "400", "label": "Regular" },
+        { "value": "600", "label": "Semi Bold" },
+        { "value": "700", "label": "Bold" },
+        { "value": "800", "label": "Extra Bold" }
+      ],
+      "default": "800"
+    },
+    {
+      "type": "select",
+      "id": "heading_letter_spacing",
+      "label": "Heading letter spacing",
+      "options": [
+        { "value": "-0.04", "label": "Tighter" },
+        { "value": "-0.03", "label": "Tight" },
+        { "value": "-0.02", "label": "Slightly tight" },
+        { "value": "0",     "label": "Normal" },
+        { "value": "0.02",  "label": "Wide" }
+      ],
+      "default": "-0.03"
+    },
+    {
+      "type": "range",
+      "id": "heading_size",
+      "label": "Heading size — desktop",
+      "min": 22,
+      "max": 72,
+      "step": 1,
+      "default": 40,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "heading_size_mobile",
+      "label": "Heading size — mobile",
+      "min": 18,
+      "max": 48,
+      "step": 1,
+      "default": 28,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "body_size",
+      "label": "Body text size",
+      "min": 12,
+      "max": 20,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "eyebrow_size",
+      "label": "Eyebrow text size",
+      "min": 10,
+      "max": 16,
+      "step": 1,
+      "default": 12,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "hotspot",
+      "name": "Hotspot Pin",
+      "settings": [
+        {
+          "type": "header",
+          "content": "Pin Position"
+        },
+        {
+          "type": "range",
+          "id": "pin_x",
+          "label": "Horizontal position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "default": 30,
+          "unit": "%"
+        },
+        {
+          "type": "range",
+          "id": "pin_y",
+          "label": "Vertical position",
+          "min": 5,
+          "max": 95,
+          "step": 1,
+          "default": 40,
+          "unit": "%"
+        },
+        {
+          "type": "header",
+          "content": "Popup Content"
+        },
+        {
+          "type": "text",
+          "id": "popup_title",
+          "label": "Popup title",
+          "default": "Zone 1 Result"
+        },
+        {
+          "type": "text",
+          "id": "popup_description",
+          "label": "Short description"
+        },
+        {
+          "type": "header",
+          "content": "Comparison Images"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_before",
+          "label": "Before image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_after",
+          "label": "After image"
+        },
+        {
+          "type": "text",
+          "id": "label_before",
+          "label": "Before label",
+          "default": "Before"
+        },
+        {
+          "type": "text",
+          "id": "label_after",
+          "label": "After label",
+          "default": "After"
+        },
+        {
+          "type": "header",
+          "content": "CTA Button"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "label": "Button text"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - BA Hotspots",
+      "blocks": [
+        {
+          "type": "hotspot",
+          "settings": {
+            "pin_x": 25,
+            "pin_y": 38,
+            "popup_title": "Skin Texture",
+            "popup_description": "Visible improvement in pore size and smoothness after 4 weeks.",
+            "label_before": "Before",
+            "label_after": "After"
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "pin_x": 62,
+            "pin_y": 55,
+            "popup_title": "Hydration & Glow",
+            "popup_description": "Moisture levels increased by 60%. Skin looks visibly plumper.",
+            "label_before": "Before",
+            "label_after": "After"
+          }
+        },
+        {
+          "type": "hotspot",
+          "settings": {
+            "pin_x": 45,
+            "pin_y": 72,
+            "popup_title": "Redness Reduction",
+            "popup_description": "Calming formula reduces visible redness and irritation.",
+            "label_before": "Before",
+            "label_after": "After"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

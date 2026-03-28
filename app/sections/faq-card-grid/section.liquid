@@ -1,0 +1,517 @@
+{{ 'section-faq-card-grid.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign sid = section.id
+  assign bg = section.settings.bg_color
+  assign text_color = section.settings.text_color
+  assign accent = section.settings.accent_color
+  assign card_bg = section.settings.card_bg
+  assign card_border = section.settings.card_border
+  assign answer_color = section.settings.answer_color
+  assign badge_bg = section.settings.badge_bg
+  assign badge_text = section.settings.badge_text
+  assign max_w = section.settings.max_width
+  assign pad_y = section.settings.padding_y
+  assign mt = section.settings.margin_top
+  assign mb = section.settings.margin_bottom
+  assign q_size = section.settings.question_size
+  assign a_size = section.settings.answer_size
+  assign radius = section.settings.border_radius
+  assign columns = section.settings.columns
+  assign gap = section.settings.gap
+  assign card_style = section.settings.card_style
+  assign show_badge = section.settings.show_badge
+  assign show_icon = section.settings.show_icon
+  assign open_style = section.settings.open_style
+  assign card_shadow = section.settings.card_shadow
+  assign heading = section.settings.heading
+  assign subheading = section.settings.subheading
+  assign heading_align = section.settings.heading_align
+  assign icon_style = section.settings.icon_style
+  assign hover_lift = section.settings.hover_lift
+-%}
+
+<div
+  id="faq-cg-{{ sid }}"
+  class="faq-cg"
+  style="
+    --faq-cg-bg: {{ bg }};
+    --faq-cg-text: {{ text_color }};
+    --faq-cg-accent: {{ accent }};
+    --faq-cg-card-bg: {{ card_bg }};
+    --faq-cg-card-border: {{ card_border }};
+    --faq-cg-answer: {{ answer_color }};
+    --faq-cg-badge-bg: {{ badge_bg }};
+    --faq-cg-badge-text: {{ badge_text }};
+    --faq-cg-max-w: {{ max_w }}px;
+    --faq-cg-pad-y: {{ pad_y }}px;
+    --faq-cg-mt: {{ mt }}px;
+    --faq-cg-mb: {{ mb }}px;
+    --faq-cg-q-size: {{ q_size }}px;
+    --faq-cg-a-size: {{ a_size }}px;
+    --faq-cg-radius: {{ radius }}px;
+    --faq-cg-cols: {{ columns }};
+    --faq-cg-gap: {{ gap }}px;
+  "
+>
+  <div class="faq-cg__inner">
+    {%- if heading != blank or subheading != blank -%}
+      <div class="faq-cg__header" style="text-align:{{ heading_align }}">
+        {%- if heading != blank -%}
+          <h2 class="faq-cg__heading">{{ heading }}</h2>
+        {%- endif -%}
+        {%- if subheading != blank -%}
+          <p class="faq-cg__subheading">{{ subheading }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    <div class="faq-cg__grid">
+      {%- for block in section.blocks -%}
+        {%- liquid
+          assign q = block.settings.question
+          assign a = block.settings.answer
+          assign badge_label = block.settings.badge
+          assign icon = block.settings.icon
+          assign card_accent = block.settings.card_accent
+        -%}
+        <div
+          class="faq-cg__card{% if card_style == 'bordered' %} faq-cg__card--bordered{% endif %}{% if card_style == 'glass' %} faq-cg__card--glass{% endif %}{% if card_shadow %} faq-cg__card--shadow{% endif %}{% if hover_lift %} faq-cg__card--lift{% endif %}"
+          data-faq-card="{{ sid }}"
+          {% if card_accent != blank %}style="--faq-cg-card-accent: {{ card_accent }}"{% endif %}
+          {{ block.shopify_attributes }}
+        >
+          {%- if card_accent != blank -%}
+            <div class="faq-cg__card-accent"></div>
+          {%- endif -%}
+
+          <button
+            class="faq-cg__question"
+            aria-expanded="false"
+            data-faq-cg-toggle="{{ sid }}"
+          >
+            <div class="faq-cg__q-top">
+              {%- if show_icon and icon != blank -%}
+                <span class="faq-cg__icon{% if icon_style == 'circle' %} faq-cg__icon--circle{% endif %}{% if icon_style == 'square' %} faq-cg__icon--square{% endif %}">{{ icon }}</span>
+              {%- endif -%}
+              {%- if show_badge and badge_label != blank -%}
+                <span class="faq-cg__badge">{{ badge_label }}</span>
+              {%- endif -%}
+            </div>
+            <span class="faq-cg__q-text">{{ q }}</span>
+            <span class="faq-cg__expand-hint" aria-hidden="true">
+              {%- if open_style == 'arrow' -%}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+              {%- else -%}
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              {%- endif -%}
+            </span>
+          </button>
+
+          <div class="faq-cg__answer">
+            <div class="faq-cg__answer-inner">{{ a }}</div>
+          </div>
+        </div>
+      {%- endfor -%}
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  const sid = '{{ sid }}';
+  const root = document.getElementById('faq-cg-' + sid);
+  if (!root) return;
+
+  root.addEventListener('click', function(e) {
+    const btn = e.target.closest('[data-faq-cg-toggle="' + sid + '"]');
+    if (!btn) return;
+    const card = btn.closest('.faq-cg__card');
+    const answer = card.querySelector('.faq-cg__answer');
+    const isOpen = card.classList.contains('faq-cg__card--open');
+
+    if (isOpen) {
+      card.classList.remove('faq-cg__card--open');
+      btn.setAttribute('aria-expanded', 'false');
+      answer.style.maxHeight = '0';
+    } else {
+      card.classList.add('faq-cg__card--open');
+      btn.setAttribute('aria-expanded', 'true');
+      answer.style.maxHeight = answer.scrollHeight + 'px';
+    }
+  });
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ - FAQ Card Grid",
+  "tag": "section",
+  "class": "section-faq-card-grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Got Questions?"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheading",
+      "default": "Find answers to the most common questions about our products and services."
+    },
+    {
+      "type": "select",
+      "id": "heading_align",
+      "label": "Heading alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "header",
+      "content": "Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns",
+      "label": "Columns",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "label": "Card gap",
+      "min": 8,
+      "max": 32,
+      "step": 4,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Card style"
+    },
+    {
+      "type": "select",
+      "id": "card_style",
+      "label": "Card style",
+      "options": [
+        { "value": "flat", "label": "Flat" },
+        { "value": "bordered", "label": "Bordered" },
+        { "value": "glass", "label": "Glassmorphism" }
+      ],
+      "default": "bordered"
+    },
+    {
+      "type": "checkbox",
+      "id": "card_shadow",
+      "label": "Card shadow",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "hover_lift",
+      "label": "Hover lift effect",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "open_style",
+      "label": "Toggle icon style",
+      "options": [
+        { "value": "plus", "label": "Plus / Minus" },
+        { "value": "arrow", "label": "Arrow" }
+      ],
+      "default": "arrow"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_badge",
+      "label": "Show category badges",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icon",
+      "label": "Show card icons",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "icon_style",
+      "label": "Icon background style",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "circle", "label": "Circle" },
+        { "value": "square", "label": "Rounded square" }
+      ],
+      "default": "circle"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background",
+      "default": "#f8fafc"
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Text color",
+      "default": "#1e293b"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent",
+      "default": "#6366f1"
+    },
+    {
+      "type": "color",
+      "id": "card_bg",
+      "label": "Card background",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "card_border",
+      "label": "Card border",
+      "default": "#e2e8f0"
+    },
+    {
+      "type": "color",
+      "id": "answer_color",
+      "label": "Answer text",
+      "default": "#64748b"
+    },
+    {
+      "type": "color",
+      "id": "badge_bg",
+      "label": "Badge background",
+      "default": "#ede9fe"
+    },
+    {
+      "type": "color",
+      "id": "badge_text",
+      "label": "Badge text",
+      "default": "#6366f1"
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "max_width",
+      "label": "Max width",
+      "min": 600,
+      "max": 1400,
+      "step": 20,
+      "default": 1100,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "padding_y",
+      "label": "Vertical padding",
+      "min": 20,
+      "max": 120,
+      "step": 4,
+      "default": 64,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_top",
+      "label": "Margin top",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Margin bottom",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "label": "Card radius",
+      "min": 0,
+      "max": 24,
+      "step": 2,
+      "default": 14,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "question_size",
+      "label": "Question size",
+      "min": 14,
+      "max": 26,
+      "step": 1,
+      "default": 16,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "answer_size",
+      "label": "Answer size",
+      "min": 13,
+      "max": 22,
+      "step": 1,
+      "default": 15,
+      "unit": "px"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "faq_item",
+      "name": "FAQ Card",
+      "settings": [
+        {
+          "type": "text",
+          "id": "question",
+          "label": "Question",
+          "default": "Your question here"
+        },
+        {
+          "type": "richtext",
+          "id": "answer",
+          "label": "Answer",
+          "default": "<p>Your answer here.</p>"
+        },
+        {
+          "type": "text",
+          "id": "badge",
+          "label": "Category badge",
+          "default": "General"
+        },
+        {
+          "type": "text",
+          "id": "icon",
+          "label": "Icon (emoji)",
+          "default": "💬"
+        },
+        {
+          "type": "color",
+          "id": "card_accent",
+          "label": "Top accent color"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ - FAQ Card Grid",
+      "blocks": [
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How long does shipping take?",
+            "answer": "<p>Standard shipping takes 3–7 business days. Express options deliver within 1–2 days.</p>",
+            "badge": "Shipping",
+            "icon": "📦",
+            "card_accent": "#6366f1"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "What is your return policy?",
+            "answer": "<p>We offer a hassle-free 30-day return policy. Items must be in original condition. Simply contact our team to initiate a return.</p>",
+            "badge": "Returns",
+            "icon": "🔄",
+            "card_accent": "#ec4899"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Which payment methods do you accept?",
+            "answer": "<p>We accept all major credit cards, PayPal, Apple Pay, Google Pay, and Shop Pay for secure checkout.</p>",
+            "badge": "Payment",
+            "icon": "💳",
+            "card_accent": "#10b981"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Do you offer international shipping?",
+            "answer": "<p>Yes! We ship to over 50 countries. International delivery typically takes 7–14 business days. Customs fees may apply.</p>",
+            "badge": "Shipping",
+            "icon": "🌍",
+            "card_accent": "#6366f1"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How can I track my order?",
+            "answer": "<p>Once shipped, you will receive an email with tracking details. You can also log into your account to view real-time status.</p>",
+            "badge": "Orders",
+            "icon": "📍",
+            "card_accent": "#f59e0b"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Can I modify my order after placing it?",
+            "answer": "<p>Orders can be modified within 1 hour of placement. After that, the order enters processing. Contact support ASAP for changes.</p>",
+            "badge": "Orders",
+            "icon": "✏️",
+            "card_accent": "#f59e0b"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "Is my data secure?",
+            "answer": "<p>Absolutely. We use industry-standard SSL encryption and never store your payment information. Your privacy is our priority.</p>",
+            "badge": "Security",
+            "icon": "🔒",
+            "card_accent": "#14b8a6"
+          }
+        },
+        {
+          "type": "faq_item",
+          "settings": {
+            "question": "How do I contact support?",
+            "answer": "<p>Reach us via email at support@example.com or use the live chat widget. Our team responds within 24 hours, Mon–Fri.</p>",
+            "badge": "Support",
+            "icon": "💬",
+            "card_accent": "#8b5cf6"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,535 @@
+{% comment %}
+  SIQ – Scroll Type Showcase  (prefix: sts)
+  Horizontal-scroll text with per-word fonts, fill modes, sizes.
+  ALL blocks go into ONE row (single track). No multi-row splitting.
+{% endcomment %}
+
+{%- liquid
+  assign sid = section.id
+
+  assign bg_type        = section.settings.bg_type
+  assign bg_color       = section.settings.bg_color
+  assign bg_grad_from   = section.settings.bg_grad_from
+  assign bg_grad_to     = section.settings.bg_grad_to
+  assign bg_grad_angle  = section.settings.bg_grad_angle
+
+  assign outline_color  = section.settings.outline_color
+  assign fill_color     = section.settings.fill_color
+  assign stroke_width   = section.settings.stroke_width
+  assign fill_mode      = section.settings.fill_mode
+  assign font_size      = section.settings.font_size
+  assign font_size_m    = section.settings.font_size_mobile
+  assign speed          = section.settings.speed
+  assign word_gap       = section.settings.word_gap
+  assign row_gap        = section.settings.row_gap
+  assign row_gap_m      = section.settings.row_gap_mobile
+  assign py             = section.settings.padding_top_bottom
+  assign py_m           = section.settings.padding_top_bottom_mobile
+  assign row_count      = section.settings.row_count
+
+  assign sep_type       = section.settings.separator_type
+  assign sep_char       = section.settings.separator_char
+  assign sep_image      = section.settings.separator_image
+
+  assign block_count = section.blocks.size
+-%}
+
+{%- comment -%} ── background style ── {%- endcomment -%}
+{%- capture bg_style -%}
+  {%- if bg_type == 'solid' -%}
+    background:{{ bg_color }};
+  {%- elsif bg_type == 'gradient' -%}
+    background:linear-gradient({{ bg_grad_angle }}deg,{{ bg_grad_from }},{{ bg_grad_to }});
+  {%- else -%}
+    background:transparent;
+  {%- endif -%}
+{%- endcapture -%}
+
+{%- comment -%} ── Capture the word markup once, then duplicate per row ── {%- endcomment -%}
+{%- capture word_markup -%}
+  {%- for b in section.blocks -%}
+    {%- assign text = b.settings.text | default: 'Word' -%}
+    {%- assign font = b.settings.font_family | default: 'sans' -%}
+
+    {%- assign word_fill = b.settings.fill_mode_override -%}
+    {%- if word_fill == 'inherit' or word_fill == blank -%}
+      {%- assign effective_fill = fill_mode -%}
+    {%- else -%}
+      {%- assign effective_fill = word_fill -%}
+    {%- endif -%}
+
+    <span class="sts__word sts__word--{{ font }}"
+          data-block-id="{{ b.id }}"
+          data-sts-fill="{{ effective_fill }}"
+          {{ b.shopify_attributes }}>
+      <span class="sts__word-outline" aria-hidden="true">{{ text }}</span>
+      <span class="sts__word-fill">{{ text }}</span>
+    </span>
+
+    {%- unless forloop.last -%}
+      {%- if sep_type == 'char' -%}
+        <span class="sts__separator" aria-hidden="true">{{ sep_char }}</span>
+      {%- elsif sep_type == 'image' and sep_image != blank -%}
+        <span class="sts__separator" aria-hidden="true">
+          <img class="sts__sep-img"
+               src="{{ sep_image | image_url: width: 80 }}"
+               alt="" width="40" height="40" loading="lazy">
+        </span>
+      {%- endif -%}
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+
+<style>
+  #sts-{{ sid }}{
+    --sts-outline-color:{{ outline_color }};
+    --sts-fill-color:{{ fill_color }};
+    --sts-stroke:{{ stroke_width }}px;
+    --sts-gap:{{ word_gap }}em;
+    --sts-row-gap:{{ row_gap }}px;
+    --sts-row-gap-m:{{ row_gap_m }}px;
+    --sts-py:{{ py }}px;
+    --sts-py-m:{{ py_m }}px;
+  }
+  #sts-{{ sid }} .sts__word{
+    font-size:{{ font_size }}px;
+  }
+  @media(max-width:767px){
+    #sts-{{ sid }} .sts__word{
+      font-size:{{ font_size_m }}px;
+    }
+  }
+  {%- for b in section.blocks -%}
+    {%- if b.settings.custom_size > 0 -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{ font-size:{{ b.settings.custom_size }}px; }
+    {%- endif -%}
+    {%- if b.settings.custom_color != blank -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{
+        --sts-word-fill:{{ b.settings.custom_color }};
+        --sts-word-outline:{{ b.settings.custom_color }};
+      }
+    {%- endif -%}
+    {%- if b.settings.custom_weight != blank -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{ font-weight:{{ b.settings.custom_weight }}; }
+    {%- endif -%}
+    {%- if b.settings.letter_spacing != 0 -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{ letter-spacing:{{ b.settings.letter_spacing }}em; }
+    {%- endif -%}
+    {%- if b.settings.italic -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{ font-style:italic; }
+    {%- endif -%}
+    {%- if b.settings.uppercase -%}
+      #sts-{{ sid }} [data-block-id="{{ b.id }}"]{ text-transform:uppercase; }
+    {%- endif -%}
+  {%- endfor -%}
+</style>
+
+<section id="sts-{{ sid }}" class="sts" data-sts-speed="{{ speed }}">
+  <div class="sts__bg" style="{{ bg_style }}"></div>
+  <div class="sts__inner">
+
+    {%- for r in (1..row_count) -%}
+      {%- assign row_dir = r | modulo: 2 -%}
+      <div class="sts__row" data-sts-row data-sts-dir="{% if row_dir == 1 %}ltr{% else %}rtl{% endif %}">
+        <div class="sts__track" data-sts-track>
+          {{ word_markup }}
+        </div>
+      </div>
+    {%- endfor -%}
+
+  </div>
+</section>
+
+<script>
+(function(){
+  var root = document.getElementById('sts-{{ sid }}');
+  if(!root) return;
+
+  var speed = parseFloat(root.getAttribute('data-sts-speed')) || 1;
+  var rows  = root.querySelectorAll('[data-sts-row]');
+
+  function update(){
+    var wh   = window.innerHeight;
+    var rect = root.getBoundingClientRect();
+
+    /* section progress 0→1 */
+    var progress = (wh - rect.top) / (wh + rect.height);
+    if(progress < 0) progress = 0;
+    if(progress > 1) progress = 1;
+
+    rows.forEach(function(row){
+      var track = row.querySelector('[data-sts-track]');
+      if(!track) return;
+
+      var trackW = track.scrollWidth;
+      var viewW  = root.offsetWidth;
+      var dir    = row.getAttribute('data-sts-dir');
+
+      /* ── horizontal scroll ── */
+      var maxShift   = (trackW - viewW) * 0.5;
+      var baseOffset = -(trackW - viewW) * 0.5;
+      var scrollAmt  = (progress - 0.5) * maxShift * speed;
+      var tx;
+
+      if(dir === 'rtl'){
+        tx = -baseOffset - scrollAmt;
+      } else {
+        tx = baseOffset + scrollAmt;
+      }
+
+      track.style.transform = 'translate3d(' + tx + 'px,0,0)';
+
+      /* ── per-word fill animation ── */
+      var words = track.querySelectorAll('.sts__word');
+      var total = words.length;
+
+      words.forEach(function(w, idx){
+        var mode = w.getAttribute('data-sts-fill');
+
+        /* each word gets a progress slice (overlapping for smoother feel) */
+        var wordStart = idx / (total + 1);
+        var wordEnd   = (idx + 2) / (total + 1);
+        var wp = (progress - wordStart) / (wordEnd - wordStart);
+        if(wp < 0) wp = 0;
+        if(wp > 1) wp = 1;
+
+        if(mode === 'outline'){
+          var fillEl = w.querySelector('.sts__word-fill');
+          if(fillEl){
+            var clipRight = 100 - (wp * 100);
+            fillEl.style.clipPath = 'inset(0 ' + clipRight + '% 0 0)';
+          }
+        } else if(mode === 'opacity'){
+          var outlineEl = w.querySelector('.sts__word-outline');
+          if(outlineEl){
+            outlineEl.style.opacity = 0.15 + wp * 0.85;
+          }
+        }
+        /* solid: nothing to animate */
+      });
+    });
+  }
+
+  var ticking = false;
+  function onScroll(){
+    if(!ticking){
+      ticking = true;
+      requestAnimationFrame(function(){
+        update();
+        ticking = false;
+      });
+    }
+  }
+
+  window.addEventListener('scroll', onScroll, {passive:true});
+  window.addEventListener('resize', onScroll, {passive:true});
+  update();
+})();
+</script>
+
+{% schema %}
+{
+  "name": "SIQ Scroll Type Show",
+  "tag": "div",
+  "class": "sts-wrapper",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Background"
+    },
+    {
+      "type": "select",
+      "id": "bg_type",
+      "label": "Background type",
+      "options": [
+        { "value": "none",     "label": "None / Transparent" },
+        { "value": "solid",    "label": "Solid colour" },
+        { "value": "gradient", "label": "Gradient" }
+      ],
+      "default": "solid"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background colour",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "bg_grad_from",
+      "label": "Gradient from",
+      "default": "#0a0a0a"
+    },
+    {
+      "type": "color",
+      "id": "bg_grad_to",
+      "label": "Gradient to",
+      "default": "#1a1a2e"
+    },
+    {
+      "type": "range",
+      "id": "bg_grad_angle",
+      "label": "Gradient angle (°)",
+      "min": 0,
+      "max": 360,
+      "step": 5,
+      "default": 180
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size",
+      "label": "Font size (px)",
+      "min": 30,
+      "max": 300,
+      "step": 5,
+      "default": 120
+    },
+    {
+      "type": "range",
+      "id": "font_size_mobile",
+      "label": "Mobile font size (px)",
+      "min": 20,
+      "max": 160,
+      "step": 2,
+      "default": 48
+    },
+    {
+      "type": "color",
+      "id": "outline_color",
+      "label": "Outline / stroke colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "fill_color",
+      "label": "Fill colour",
+      "default": "#ffffff"
+    },
+    {
+      "type": "range",
+      "id": "stroke_width",
+      "label": "Stroke width (px)",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "fill_mode",
+      "label": "Fill mode (section default)",
+      "options": [
+        { "value": "outline", "label": "Outline → Fill (clip)" },
+        { "value": "opacity", "label": "Opacity fade" },
+        { "value": "solid",   "label": "Solid (no animation)" }
+      ],
+      "default": "outline"
+    },
+    {
+      "type": "header",
+      "content": "Scroll & Layout"
+    },
+    {
+      "type": "range",
+      "id": "speed",
+      "label": "Scroll speed",
+      "min": 1,
+      "max": 10,
+      "step": 1,
+      "default": 3
+    },
+    {
+      "type": "range",
+      "id": "word_gap",
+      "label": "Word gap (em)",
+      "min": 0,
+      "max": 3,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "row_count",
+      "label": "Number of rows",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "row_gap",
+      "label": "Row gap (px)",
+      "min": 0,
+      "max": 100,
+      "step": 2,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "row_gap_mobile",
+      "label": "Row gap mobile (px)",
+      "min": 0,
+      "max": 60,
+      "step": 2,
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding_top_bottom",
+      "label": "Vertical padding (px)",
+      "min": 0,
+      "max": 200,
+      "step": 4,
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "padding_top_bottom_mobile",
+      "label": "Vertical padding mobile (px)",
+      "min": 0,
+      "max": 120,
+      "step": 4,
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "Separator"
+    },
+    {
+      "type": "select",
+      "id": "separator_type",
+      "label": "Separator between words",
+      "options": [
+        { "value": "none",  "label": "None" },
+        { "value": "char",  "label": "Character" },
+        { "value": "image", "label": "Image / icon" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "text",
+      "id": "separator_char",
+      "label": "Separator character",
+      "default": "·"
+    },
+    {
+      "type": "image_picker",
+      "id": "separator_image",
+      "label": "Separator image"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "word",
+      "name": "Word",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Text",
+          "default": "Word"
+        },
+        {
+          "type": "select",
+          "id": "font_family",
+          "label": "Font family",
+          "options": [
+            { "value": "sans",    "label": "Sans-serif" },
+            { "value": "serif",   "label": "Serif" },
+            { "value": "mono",    "label": "Monospace" },
+            { "value": "script",  "label": "Script / Cursive" },
+            { "value": "cond",    "label": "Condensed" },
+            { "value": "display", "label": "Display / Impact" },
+            { "value": "theme",   "label": "Theme font" }
+          ],
+          "default": "sans"
+        },
+        {
+          "type": "select",
+          "id": "fill_mode_override",
+          "label": "Fill mode override",
+          "options": [
+            { "value": "inherit", "label": "Use section default" },
+            { "value": "outline", "label": "Outline → Fill" },
+            { "value": "opacity", "label": "Opacity fade" },
+            { "value": "solid",   "label": "Solid (no animation)" }
+          ],
+          "default": "inherit"
+        },
+        {
+          "type": "range",
+          "id": "custom_size",
+          "label": "Custom size (0 = section default)",
+          "min": 0,
+          "max": 300,
+          "step": 5,
+          "default": 0
+        },
+        {
+          "type": "color",
+          "id": "custom_color",
+          "label": "Custom colour (blank = default)"
+        },
+        {
+          "type": "select",
+          "id": "custom_weight",
+          "label": "Font weight",
+          "options": [
+            { "value": "",    "label": "Default" },
+            { "value": "100", "label": "100 – Thin" },
+            { "value": "200", "label": "200 – Extra Light" },
+            { "value": "300", "label": "300 – Light" },
+            { "value": "400", "label": "400 – Regular" },
+            { "value": "500", "label": "500 – Medium" },
+            { "value": "600", "label": "600 – Semi Bold" },
+            { "value": "700", "label": "700 – Bold" },
+            { "value": "800", "label": "800 – Extra Bold" },
+            { "value": "900", "label": "900 – Black" }
+          ],
+          "default": ""
+        },
+        {
+          "type": "range",
+          "id": "letter_spacing",
+          "label": "Letter spacing (em)",
+          "min": -1,
+          "max": 3,
+          "step": 1,
+          "default": 0
+        },
+        {
+          "type": "checkbox",
+          "id": "italic",
+          "label": "Italic",
+          "default": false
+        },
+        {
+          "type": "checkbox",
+          "id": "uppercase",
+          "label": "Uppercase",
+          "default": false
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "SIQ Scroll Type Show",
+      "category": "Text",
+      "blocks": [
+        { "type": "word", "settings": { "text": "Create", "font_family": "sans" } },
+        { "type": "word", "settings": { "text": "Design", "font_family": "serif", "italic": true } },
+        { "type": "word", "settings": { "text": "Build",  "font_family": "mono", "uppercase": true } },
+        { "type": "word", "settings": { "text": "Launch", "font_family": "display" } },
+        { "type": "word", "settings": { "text": "Grow",   "font_family": "script" } },
+        { "type": "word", "settings": { "text": "Scale",  "font_family": "cond", "uppercase": true } }
+      ]
+    }
+  ]
+}
+{% endschema %}

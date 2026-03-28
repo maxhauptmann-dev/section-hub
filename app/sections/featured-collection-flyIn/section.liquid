@@ -4,8 +4,7 @@
 {% endcomment %}
 
 {%- liquid
-  assign col           = section.settings.collection
-  assign col_obj       = collections[col]
+  assign col_obj       = section.settings.collection
   assign limit         = section.settings.products_to_show
   assign columns       = section.settings.columns_desktop
   assign layout        = section.settings.layout_style
@@ -63,40 +62,42 @@
 
     {%- comment -%} ── Header ── {%- endcomment -%}
     <div class="fcfi-header">
-      {%- if heading != blank -%}
-        <{{ heading_tag }} class="fcfi-heading fcfi-heading--{{ heading_size }}">
-          {{ heading }}
-        </{{ heading_tag }}>
-      {%- endif -%}
+      <div class="fcfi-header__text">
+        {%- if heading != blank -%}
+          <{{ heading_tag }} class="fcfi-heading fcfi-heading--{{ heading_size }}">
+            {{ heading }}
+          </{{ heading_tag }}>
+        {%- endif -%}
 
-      {%- if description != blank -%}
-        <div class="fcfi-description fcfi-description--{{ desc_size }}">
-          {{ description }}
-        </div>
-      {%- endif -%}
+        {%- if description != blank -%}
+          <div class="fcfi-description fcfi-description--{{ desc_size }}">
+            {{ description }}
+          </div>
+        {%- endif -%}
+      </div>
 
-      {%- if btn_label != blank -%}
-        <div class="fcfi-btn-wrap">
+      <div class="fcfi-header__actions">
+        {%- if btn_label != blank -%}
           <a
             href="{{ btn_link }}"
             class="fcfi-btn fcfi-btn--{{ btn_style }}"
           >
             {{ btn_label }}
           </a>
-        </div>
-      {%- endif -%}
+        {%- endif -%}
 
-      {%- comment -%} Carousel navigation arrows (only in carousel mode) {%- endcomment -%}
-      {%- if layout == 'carousel' -%}
-        <div class="fcfi-nav">
-          <button class="fcfi-nav__btn fcfi-nav__btn--prev" data-fcfi-prev aria-label="Previous">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
-          </button>
-          <button class="fcfi-nav__btn fcfi-nav__btn--next" data-fcfi-next aria-label="Next">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
-          </button>
-        </div>
-      {%- endif -%}
+        {%- comment -%} Carousel navigation arrows (only in carousel mode) {%- endcomment -%}
+        {%- if layout == 'carousel' -%}
+          <div class="fcfi-nav">
+            <button class="fcfi-nav__btn fcfi-nav__btn--prev" data-fcfi-prev aria-label="Previous">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button class="fcfi-nav__btn fcfi-nav__btn--next" data-fcfi-next aria-label="Next">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        {%- endif -%}
+      </div>
     </div>
 
     {%- comment -%} ── Products ── {%- endcomment -%}
@@ -115,19 +116,20 @@
             >
               <a href="{{ product.url }}" class="fcfi-product-card__link">
                 <div class="fcfi-product-card__media {{ ratio_class | strip }}">
-                  {%- if product.featured_image -%}
+                  {%- assign card_image = product.featured_media.preview_image | default: product.featured_image -%}
+                  {%- if card_image != blank -%}
                     <img
-                      src="{{ product.featured_image | image_url: width: 600 }}"
+                      src="{{ card_image | image_url: width: 600 }}"
                       srcset="
-                        {{ product.featured_image | image_url: width: 300 }} 300w,
-                        {{ product.featured_image | image_url: width: 450 }} 450w,
-                        {{ product.featured_image | image_url: width: 600 }} 600w
+                        {{ card_image | image_url: width: 300 }} 300w,
+                        {{ card_image | image_url: width: 450 }} 450w,
+                        {{ card_image | image_url: width: 600 }} 600w
                       "
                       sizes="(max-width: 749px) 50vw, calc(100vw / {{ columns }})"
-                      alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                      alt="{{ card_image.alt | default: product.title | escape }}"
                       loading="lazy"
-                      width="{{ product.featured_image.width }}"
-                      height="{{ product.featured_image.height }}"
+                      width="{{ card_image.width }}"
+                      height="{{ card_image.height }}"
                       class="fcfi-product-card__img"
                     >
                   {%- else -%}

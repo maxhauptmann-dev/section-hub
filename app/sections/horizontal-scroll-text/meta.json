@@ -1,0 +1,53 @@
+{
+  "id": "horizontal-scroll-text",
+  "name": "SIQ - Horizontal Scroll Text",
+  "description": "Bold horizontal scrolling text that reveals from outlined to filled as you scroll. Large oversized typography scrolls left or right when the section enters the viewport. Outline-to-fill reveal effect creates a striking visual. Configurable: scroll direction, text colors, outline style, font size, speed, background color and padding. On mobile shows static text.",
+  "category": "Scroll Triggered",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 10,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Text",
+    "Horizontal",
+    "Marquee",
+    "Typography",
+    "Outline",
+    "Premium",
+    "Responsive"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#ffffff",
+  "previews": [
+    {
+      "src": "/previews/horizontal-scroll-text/default.webp",
+      "alt": "SIQ - Horizontal Scroll Text",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-19",
+  "updatedAt": "2026-03-19",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-19",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "advanced"
+}

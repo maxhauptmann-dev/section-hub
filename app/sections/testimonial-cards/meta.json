@@ -1,20 +1,35 @@
 {
   "id": "testimonial-cards",
-  "name": "Testimonial Cards",
+  "name": "SIQ - Testimonial Cards",
   "description": "Trustpilot-style testimonial cards with star ratings, overall score, and carousel. Fully customizable colors, sizes, and text.",
   "category": "Testimonials",
   "version": "1.2.0",
   "price": {
     "type": "one_time",
-    "amount": 9,
+    "amount": 5,
     "currency": "EUR"
   },
-  "tags": ["OS2.0", "Trust", "Carousel", "Responsive", "Trustpilot", "Social Proof"],
-  "author": "Section Hub",
+  "tags": [
+    "OS2.0",
+    "Trust",
+    "Carousel",
+    "Responsive",
+    "Trustpilot",
+    "Social Proof"
+  ],
+  "author": "SectionIQ",
   "previewColor": "#ffffff",
   "previews": [
-    { "src": "/previews/testimonial-cards/default.webp", "alt": "Testimonial Cards - Light Mode", "label": "Light" },
-    { "src": "/previews/testimonial-cards/dark.svg", "alt": "Testimonial Cards - Dark Mode", "label": "Dark" }
+    {
+      "src": "/previews/testimonial-cards/default.webp",
+      "alt": "Testimonial Cards - Light Mode",
+      "label": "Light"
+    },
+    {
+      "src": "/previews/testimonial-cards/dark.svg",
+      "alt": "Testimonial Cards - Dark Mode",
+      "label": "Dark"
+    }
   ],
   "changelog": [
     {
@@ -43,7 +58,13 @@
     }
   ],
   "compatibility": {
-    "themes": ["Dawn", "Sense", "Craft", "Crave", "Origin"],
+    "themes": [
+      "Dawn",
+      "Sense",
+      "Craft",
+      "Crave",
+      "Origin"
+    ],
     "os2": true
   },
   "files": {
@@ -51,5 +72,6 @@
     "css": "styles.css"
   },
   "createdAt": "2026-02-09",
-  "updatedAt": "2026-03-04"
+  "updatedAt": "2026-03-04",
+  "tier": "basic"
 }

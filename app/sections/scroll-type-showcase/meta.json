@@ -1,0 +1,54 @@
+{
+  "id": "scroll-type-showcase",
+  "name": "SIQ - Scroll Type Show",
+  "description": "Advanced horizontal scroll text section with multiple font families per word. Mix sans-serif, serif, mono, script, condensed and display fonts in one section. Features per-word color, size, weight, italic, rotation and fill mode overrides. Multiple rows with alternating scroll directions. Outline-to-fill, dim-to-bright or solid fill modes. Gradient or solid backgrounds. 12 separator options including custom text and image.",
+  "category": "Scroll Triggered",
+  "version": "1.0.0",
+  "price": {
+    "type": "one_time",
+    "amount": 15,
+    "currency": "EUR"
+  },
+  "tags": [
+    "OS2.0",
+    "Scroll Triggered",
+    "Text",
+    "Typography",
+    "Multi-Font",
+    "Horizontal",
+    "Outline",
+    "Premium",
+    "Responsive",
+    "Gradient"
+  ],
+  "author": "SectionIQ",
+  "previewColor": "#0a0a0a",
+  "previews": [
+    {
+      "src": "/previews/scroll-type-showcase/default.webp",
+      "alt": "SIQ - Scroll Type Showcase",
+      "label": "Default"
+    }
+  ],
+  "compatibility": {
+    "themes": [
+      "Dawn", "Sense", "Craft", "Refresh", "Spotlight", "Studio",
+      "Publisher", "Trade", "Taste", "Colorblock", "Ride", "Origin", "Crave"
+    ],
+    "os2": true
+  },
+  "files": {
+    "liquid": "section.liquid",
+    "css": "styles.css"
+  },
+  "createdAt": "2026-03-19",
+  "updatedAt": "2026-03-19",
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-03-19",
+      "changes": ["Initial release"]
+    }
+  ],
+  "tier": "premium"
+}

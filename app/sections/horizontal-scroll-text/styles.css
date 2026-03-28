@@ -1,0 +1,74 @@
+/* ===== SIQ Horizontal Scroll Text – styles.css ===== */
+/* prefix: hst */
+
+.hst {
+  position: relative;
+  background: var(--hst-bg, #ffffff);
+  overflow: hidden;
+  padding: var(--hst-py, 60px) 0;
+}
+
+.hst__track {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  will-change: transform;
+}
+
+/* ── each word ── */
+.hst__word {
+  position: relative;
+  display: inline-block;
+  font-size: var(--hst-fs, 120px);
+  font-weight: var(--hst-fw, 800);
+  line-height: 1.1;
+  letter-spacing: var(--hst-ls, -0.02em);
+  text-transform: var(--hst-tt, uppercase);
+  margin-right: var(--hst-gap, 0.4em);
+  flex-shrink: 0;
+}
+
+/* outline (always visible) */
+.hst__word-outline {
+  color: transparent;
+  -webkit-text-stroke: var(--hst-stroke, 2px) var(--hst-outline-color, #1a1a1a);
+}
+
+/* filled (clips based on progress) */
+.hst__word-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  color: var(--hst-fill-color, #1a1a1a);
+  -webkit-text-stroke: 0;
+  clip-path: inset(0 100% 0 0);
+  transition: clip-path 0.05s linear;
+}
+
+.hst__separator {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--hst-fs, 120px);
+  margin-right: var(--hst-gap, 0.4em);
+  flex-shrink: 0;
+  color: var(--hst-fill-color, #1a1a1a);
+  opacity: 0.35;
+}
+
+/* ── mobile: smaller font, animation still runs ── */
+@media (max-width: 767px) {
+  .hst {
+    padding: var(--hst-py-m, 32px) 0;
+  }
+
+  .hst__word {
+    font-size: var(--hst-fs-m, 48px);
+  }
+
+  .hst__separator {
+    font-size: var(--hst-fs-m, 48px);
+  }
+}
